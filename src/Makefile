@@ -27,8 +27,8 @@
 #---------------------
 # a. MPI Version
 #---------------------
-#FC = mpif90
-FC=/usr/local/bin/mpif90
+FC = mpif90
+#FC=/usr/local/bin/mpif90
 mpimod  = quick_mpi_module.f90
 mpimod_o= quick_mpi_module.o
 #---------------------
