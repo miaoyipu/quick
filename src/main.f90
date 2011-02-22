@@ -128,7 +128,7 @@
       ! Output MPI Information  
       if (bMPI .and. mpisize.eq.1) then
         bMPI=.false.
-        write(iOutFile,'("WARNING: NODE=1, TURN OFF MPI)')
+        write(iOutFile,'("WARNING: NODE=1, TURN OFF MPI")')
       endif
       
       if (bMPI) then

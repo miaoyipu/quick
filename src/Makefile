@@ -67,18 +67,21 @@ libfolder = ../lib/
 # quick modules and object files
 #----------------------
 modfolder = ./modules
-modfile = quick_size_module.f90 quick_amber_interface_module.f90 quick_basis_module.f90 \
+
+modfile1 = quick_method_module.f90
+modobj1  = quick_method_module.o
+modfile2 = quick_size_module.f90 quick_amber_interface_module.f90 quick_basis_module.f90 \
 		quick_calculated_module.f90 quick_constants_module.f90 quick_divcon_module.f90 \
 		quick_ecp_module.f90 quick_electrondensity_module.f90 quick_files_module.f90 \
 		quick_gaussian_class_module.f90 quick_geocnverg_module.f90 quick_gridpoints_module.f90 \
 		quick_mfcc_module.f90 quick_molspec_module.f90 quick_params_module.f90 quick_pb_module.f90 \
-		quick_scratch_module.f90 quick_timer_module.f90 quick_method_module.f90 quick_all_module.f90
-modobj  = quick_size_module.o quick_amber_interface_module.o quick_basis_module.o \
+		quick_scratch_module.f90 quick_timer_module.f90 quick_all_module.f90
+modobj2  = quick_size_module.o quick_amber_interface_module.o quick_basis_module.o \
 		quick_calculated_module.o quick_constants_module.o quick_divcon_module.o \
 		quick_ecp_module.o quick_electrondensity_module.o quick_files_module.o \
 		quick_gaussian_class_module.o quick_geocnverg_module.o quick_gridpoints_module.o \
 		quick_mfcc_module.o quick_molspec_module.o quick_params_module.o quick_pb_module.o \
-		quick_scratch_module.o quick_timer_module.o quick_method_module.o quick_all_module.o
+		quick_scratch_module.o quick_timer_module.o quick_all_module.o
 #.DEFAULT:
 #	-touch $@
 
@@ -100,7 +103,8 @@ all: quick
 
 quick_modules.o:
 	cd ${modfolder} && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c  ${mpimod}
-	cd ${modfolder} && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c  ${modfile}
+	cd ${modfolder} && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c  ${modfile1}
+	cd ${modfolder} && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c  ${modfile2}
 	mv ${modfolder}/*.mod ${modfolder}/*.o ./
 	
 main.o: main.f90 quick_modules.o
@@ -204,7 +208,7 @@ fake_amber_interface.o: fake_amber_interface.f90
 amber_interface.o: amber_interface.f90 quick_modules.o qmmm_module.mod
 	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       amber_interface.f90
 									
-OBJ = $(mpimod_o) main.o ${modobj} initialize.o readInput.o fmm.o overlap.o \
+OBJ = $(mpimod_o) main.o ${modobj1} ${modobj2} initialize.o readInput.o fmm.o overlap.o \
 		subs.o getMolSad.o getMol.o shell.o spdfgh.o hrr.o schwarz.o fullx.o \
 		getEnergy.o inidivcon.o ecp.o electdii.o hfoperator.o nuclear.o dftoperator.o \
 		shelldft.o dft.o gridform.o pteval.o denspt.o sedftoperator.o repulsion.o \
