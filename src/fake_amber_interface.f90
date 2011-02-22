@@ -14,8 +14,8 @@ subroutine qm2_quick_energy(escf,scf_mchg)
    
    include 'mpif.h'
 
-   double precision, intent(out)   :: escf
-   double precision, intent(inout) :: scf_mchg(1)
+   double precision   :: escf
+   double precision   :: scf_mchg(1)
 
    return
 end subroutine qm2_quick_energy

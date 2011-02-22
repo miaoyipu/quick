@@ -244,7 +244,7 @@ ambermod:
 
 # - 1. Clean object files
 clean: neat
-	-rm -f .cppdefs $(OBJ) quick
+	-rm -f .cppdefs *.mod *.o quick
 	
 neat:
 	-rm -f $(TMPFILES)
