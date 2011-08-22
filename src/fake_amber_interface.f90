@@ -12,7 +12,6 @@ subroutine qm2_quick_energy(escf,scf_mchg)
    use allmod
    implicit none
    
-   include 'mpif.h'
 
    double precision   :: escf
    double precision   :: scf_mchg(1)

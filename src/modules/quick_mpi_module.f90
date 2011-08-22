@@ -5,8 +5,20 @@
 !	Created by Yipu Miao on 2/18/11.
 !	Copyright 2011 University of Florida. All rights reserved.
 !
-    module quick_mpi_module
-    
+
+! quick MPI module.
+module quick_mpi_module
+
+!------------------------------------------------------------------------
+!  ATTRIBUTES  : mpierror,mpirank,myid,namelen,mpisiz,pname
+!                master,bMPI
+!  SUBROUTINES : check_quick_mpi
+!                print_quick_mpi
+!  FUNCTIONS   : none
+!  DESCRIPTION : This module is to gather MPI information
+!  AUTHOR      : Yipu Miao
+!------------------------------------------------------------------------    
+
     integer :: mpierror
     integer :: mpirank
     integer :: myid
@@ -18,5 +30,43 @@
 
     integer, allocatable :: MPI_STATUS(:)
     integer, parameter :: MIN_1E_MPI_BASIS=200
+    
+    contains
+    
+    !----------------
+    ! check mpi setup
+    !----------------
+    subroutine check_quick_mpi(io,ierr)
+        implicit none
+        integer io, ierr
+        
+        ierr=1
+        
+        if (bMPI .and. mpisize.eq.1) then
+            bMPI=.false.
+            call PrtWrn(io,"NODE=1, TURN OFF MPI")
+        endif
+        
+        ierr=0
+        return
+    end subroutine
+    
+    
+    !----------------
+    ! print mpi setup
+    !----------------
+    subroutine print_quick_mpi(io,ierr)
+        implicit none
+        integer io,ierr
+        
+        ierr=1
+        
+        write (io,*)
+        write (io,'(" - MPI Enabled -")')
+        write (io,'(" TOTAL PROCESSOR = ",i5)') mpisize
+        write (io,'(" MASTER NAME     = ",A30)') pname
+        
+        ierr=0
+    end subroutine print_quick_mpi
 
-    end module quick_mpi_module
+end module quick_mpi_module

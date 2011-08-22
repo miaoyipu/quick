@@ -182,13 +182,13 @@ if(quick_method%B3LYP)then
        do LL=KK,jshell
 !          Nxiao1=Nxiao1+1
             cutoffTest1 = TESTtmp*Ycutoff(KK,LL)
-          If(cutoffTest1.gt.integralCutOff)then
+          If(cutoffTest1.gt.quick_method%integralCutoff)then
             DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                   cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
 !            DNmax=max(cutmatrix(II,JJ),cutmatrix(KK,LL) &
 !                  )
             cutoffTest=testCutoff*DNmax
-            If(cutoffTest.gt.integralCutOff)then
+            If(cutoffTest.gt.quick_method%integralCutoff)then
               IIxiao=II
               JJxiao=JJ
               KKxiao=KK
@@ -212,13 +212,13 @@ else
        do LL=KK,jshell
 !          Nxiao1=Nxiao1+1
             cutoffTest1 = TESTtmp*Ycutoff(KK,LL)
-          If(cutoffTest1.gt.integralCutOff)then
+          If(cutoffTest1.gt.quick_method%integralCutoff)then
 !            DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
 !                  cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
             DNmax=max(cutmatrix(II,JJ),cutmatrix(KK,LL) &
                   )
             cutoffTest=testCutoff*DNmax
-            If(cutoffTest.gt.integralCutOff)then
+            If(cutoffTest.gt.quick_method%integralCutoff)then
               IIxiao=II
               JJxiao=JJ
               KKxiao=KK
@@ -299,7 +299,7 @@ endif
 !        call gridform(iangular(Ireg))
 !        do Irad=iradial(ireg-1)+1,iradial(ireg)
 !            do Iatm=1,natom
-!                rad = radii(iattype(iatm))
+!                rad = radii(quick_molspec%iattype(iatm))
 !                rad3 = rad*rad*rad
 !                do Iang=1,iangular(Ireg)
 
@@ -308,7 +308,7 @@ endif
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -318,10 +318,10 @@ endif
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -337,7 +337,7 @@ endif
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -356,7 +356,7 @@ endif
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -416,7 +416,7 @@ endif
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -428,7 +428,7 @@ endif
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2
@@ -454,7 +454,7 @@ endif
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -464,10 +464,10 @@ endif
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -483,7 +483,7 @@ endif
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -502,7 +502,7 @@ endif
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -556,7 +556,7 @@ endif
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -568,7 +568,7 @@ endif
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2
@@ -595,7 +595,7 @@ endif
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -605,10 +605,10 @@ endif
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -624,7 +624,7 @@ endif
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -643,7 +643,7 @@ endif
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -697,7 +697,7 @@ endif
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -709,7 +709,7 @@ endif
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2
@@ -734,7 +734,7 @@ endif
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -744,10 +744,10 @@ endif
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -763,7 +763,7 @@ endif
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -782,7 +782,7 @@ endif
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -836,7 +836,7 @@ endif
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -848,7 +848,7 @@ endif
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2
@@ -873,7 +873,7 @@ endif
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -883,10 +883,10 @@ endif
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -902,7 +902,7 @@ endif
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -921,7 +921,7 @@ endif
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -975,7 +975,7 @@ endif
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -987,7 +987,7 @@ endif
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2
@@ -1200,13 +1200,13 @@ if(quick_method%B3LYP)then
        do LL=KK,jshell
 !          Nxiao1=Nxiao1+1
             cutoffTest1 = TESTtmp*Ycutoff(KK,LL)
-          If(cutoffTest1.gt.integralCutOff)then
+          If(cutoffTest1.gt.quick_method%integralCutoff)then
             DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                   cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
 !            DNmax=max(cutmatrix(II,JJ),cutmatrix(KK,LL) &
 !                  )
             cutoffTest=testCutoff*DNmax
-            If(cutoffTest.gt.integralCutOff)then
+            If(cutoffTest.gt.quick_method%integralCutoff)then
               IIxiao=II
               JJxiao=JJ
               KKxiao=KK
@@ -1230,13 +1230,13 @@ else
        do LL=KK,jshell
 !          Nxiao1=Nxiao1+1
             cutoffTest1 = TESTtmp*Ycutoff(KK,LL)
-          If(cutoffTest1.gt.integralCutOff)then
+          If(cutoffTest1.gt.quick_method%integralCutoff)then
 !            DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
 !                  cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
             DNmax=max(cutmatrix(II,JJ),cutmatrix(KK,LL) &
                   )
             cutoffTest=testCutoff*DNmax
-            If(cutoffTest.gt.integralCutOff)then
+            If(cutoffTest.gt.quick_method%integralCutoff)then
               IIxiao=II
               JJxiao=JJ
               KKxiao=KK
@@ -1325,7 +1325,7 @@ endif
 !        call gridform(iangular(Ireg))
 !        do Irad=iradial(ireg-1)+1,iradial(ireg)
 !            do Iatm=1,natom
-!                rad = radii(iattype(iatm))
+!                rad = radii(quick_molspec%iattype(iatm))
 !                rad3 = rad*rad*rad
 !                do Iang=1,iangular(Ireg)
 
@@ -1334,7 +1334,7 @@ if(quick_method%B3LYP)then
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -1344,10 +1344,10 @@ if(quick_method%B3LYP)then
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -1362,7 +1362,7 @@ if(quick_method%B3LYP)then
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -1381,7 +1381,7 @@ if(quick_method%B3LYP)then
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -1441,7 +1441,7 @@ if(quick_method%B3LYP)then
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz &
                                 +phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -1453,7 +1453,7 @@ if(quick_method%B3LYP)then
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2
@@ -1479,7 +1479,7 @@ endif
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -1489,10 +1489,10 @@ endif
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -1508,7 +1508,7 @@ endif
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -1527,7 +1527,7 @@ endif
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -1581,7 +1581,7 @@ endif
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -1593,7 +1593,7 @@ endif
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2
@@ -1618,7 +1618,7 @@ endif
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -1628,10 +1628,10 @@ endif
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -1647,7 +1647,7 @@ endif
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -1666,7 +1666,7 @@ endif
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -1720,7 +1720,7 @@ endif
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -1732,7 +1732,7 @@ endif
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2
@@ -1757,7 +1757,7 @@ endif
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -1767,10 +1767,10 @@ endif
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -1786,7 +1786,7 @@ endif
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -1805,7 +1805,7 @@ endif
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -1859,7 +1859,7 @@ endif
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -1871,7 +1871,7 @@ endif
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2
@@ -1896,7 +1896,7 @@ endif
            If(quick_method%ISG.eq.1)then
              Iradtemp=50
            else
-             If(iattype(iatm).le.10)then
+             If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
              else
                Iradtemp=26
@@ -1906,10 +1906,10 @@ endif
            do Irad=1,Iradtemp
              If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
-               rad = radii(iattype(iatm))
+               rad = radii(quick_molspec%iattype(iatm))
              else
                call gridformSG0(iatm,Iradtemp+1-Irad,iiangt,RGRID,RWT)
-               rad = radii2(iattype(iatm))
+               rad = radii2(quick_molspec%iattype(iatm))
              endif
 
              rad3 = rad*rad*rad
@@ -1925,7 +1925,7 @@ endif
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -1944,7 +1944,7 @@ endif
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
 
@@ -1998,7 +1998,7 @@ endif
 !                                +DABS(phi)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -2010,7 +2010,7 @@ endif
         dphi2dz=dphidzxiao(Jbas)
 !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
 !                                        +DABS(phi2)
-!                                        if (quicktest < tol ) then
+!                                        if (quicktest < quick_method%DMCutoff ) then
 !                                            continue
 !                                        else
                                             temp = phi*phi2

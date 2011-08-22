@@ -58,3 +58,12 @@
     IERR=0
     RETURN
     END SUBROUTINE MPI_BARRIER
+!=======================================================================
+
+    SUBROUTINE MPI_ABORT(MPI_COMM_WORLD,STATUS,IERR)
+    IMPLICIT NONE
+    INTEGER :: IERR,MPI_COMM_WORLD,STATUS
+
+    IERR=0
+    RETURN
+    END SUBROUTINE MPI_BARRIER

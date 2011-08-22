@@ -12,7 +12,7 @@
 
     do Ibas=1,nbasis
         do Jbas=Ibas,nbasis
-            O(Jbas,Ibas)=0.d0
+            quick_qm_struct%o(Jbas,Ibas)=0.d0
         enddo
     enddo
 
@@ -23,13 +23,13 @@
 ! a subset of the Nuclear attractions.
 
     do Iatm=1,natom
-        Iatmfirst = Ifirst(Iatm)
-        Iatmlast = Ilast(Iatm)
+        Iatmfirst = quick_basis%first_basis_function(Iatm)
+        Iatmlast = quick_basis%last_basis_function(Iatm)
         xIatm = xyz(1,Iatm)
         yIatm = xyz(2,Iatm)
         zIatm = xyz(3,Iatm)
-        chgIatm = chg(Iatm )
-        ITyp = iattype(Iatm)
+        chgIatm = quick_molspec%chg(Iatm )
+        ITyp = quick_molspec%iattype(Iatm)
         do Ibas=Iatmfirst,Iatmlast
             do Jbas=Ibas,Iatmlast
                 param=(EK1prm(itype(1,Jbas),itype(2,Jbas),itype(3,Jbas),ITyp)+ &
@@ -40,8 +40,7 @@
                 /2.d0
                 do Icon=1,ncontract(ibas)
                     do Jcon=1,ncontract(jbas)
-
-                        O(Jbas,Ibas)=O(Jbas,Ibas)+dcoeff(Jcon,Jbas)* &
+                        quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+dcoeff(Jcon,Jbas)* &
                         dcoeff(Icon,Ibas)* &
                         (param* &
                         ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -63,19 +62,19 @@
 ! The next term is the two electron 1 center repulsion_prims.
 
     do Iatm=1,natom
-        Iatmfirst = Ifirst(Iatm)
-        Iatmlast = Ilast(Iatm)
+        Iatmfirst = quick_basis%first_basis_function(Iatm)
+        Iatmlast = quick_basis%last_basis_function(Iatm)
         do I=Iatmfirst,iatmlast
         ! Set some variables to reduce access time for some of the more
         ! used quantities.
 
-            xI = xyz(1,ncenter(I))
-            yI = xyz(2,ncenter(I))
-            zI = xyz(3,ncenter(I))
+            xI = xyz(1,quick_basis%ncenter(I))
+            yI = xyz(2,quick_basis%ncenter(I))
+            zI = xyz(3,quick_basis%ncenter(I))
             itype1I=itype(1,I)
             itype2I=itype(2,I)
             itype3I=itype(3,I)
-            DENSEII=DENSE(I,I)
+            DENSEII=quick_qm_struct%dense(I,I)
 
         ! do all the (ii|ii) integrals.
             Ibas=I
@@ -99,20 +98,20 @@
                     enddo
                 enddo
             enddo
-            O(I,I) = O(I,I)+DENSEII*repint
+            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEII*repint
 
             do J=I+1,iatmlast
             ! Set some variables to reduce access time for some of the more
             ! used quantities. (AGAIN)
 
-                xJ = xyz(1,ncenter(J))
-                yJ = xyz(2,ncenter(J))
-                zJ = xyz(3,ncenter(J))
+                xJ = xyz(1,quick_basis%ncenter(J))
+                yJ = xyz(2,quick_basis%ncenter(J))
+                zJ = xyz(3,quick_basis%ncenter(J))
                 itype1J=itype(1,J)
                 itype2J=itype(2,J)
                 itype3J=itype(3,J)
-                DENSEJI=DENSE(J,I)
-                DENSEJJ=DENSE(J,J)
+                DENSEJI=quick_qm_struct%dense(J,I)
+                DENSEJJ=quick_qm_struct%dense(J,J)
 
             ! Find  all the (ii|jj) integrals.
                 Ibas=I
@@ -136,8 +135,8 @@
                         enddo
                     enddo
                 enddo
-                O(I,I) = O(I,I)+DENSEJJ*repint
-                O(J,J) = O(J,J)+DENSEII*repint
+                quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEJJ*repint
+                quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+DENSEII*repint
 
             ! Find  all the (ij|jj) integrals.
                 Ibas=I
@@ -162,8 +161,8 @@
                         enddo
                     enddo
                 enddo
-                O(J,I) = O(J,I)+DENSEJJ*repint
-                O(J,J) = O(J,J)+2.d0*DENSEJI*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEJJ*repint
+                quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEJI*repint
 
             ! Find  all the (ii|ij) integrals.
                 Ibas=I
@@ -188,8 +187,8 @@
                         enddo
                     enddo
                 enddo
-                O(J,I) = O(J,I)+DENSEII*repint
-                O(I,I) = O(I,I)+2.d0*DENSEJI*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEII*repint
+                quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEJI*repint
 
             ! Find all the (ij|ij) integrals
                 Ibas=I
@@ -214,21 +213,21 @@
                         enddo
                     enddo
                 enddo
-                O(J,I) = O(J,I)+2.d0*DENSEJI*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEJI*repint
 
                 do K=J+1,iatmlast
                 ! Set some variables to reduce access time for some of the more
                 ! used quantities. (AGAIN)
 
-                    xK = xyz(1,ncenter(K))
-                    yK = xyz(2,ncenter(K))
-                    zK = xyz(3,ncenter(K))
+                    xK = xyz(1,quick_basis%ncenter(K))
+                    yK = xyz(2,quick_basis%ncenter(K))
+                    zK = xyz(3,quick_basis%ncenter(K))
                     itype1K=itype(1,K)
                     itype2K=itype(2,K)
                     itype3K=itype(3,K)
-                    DENSEKI=DENSE(K,I)
-                    DENSEKJ=DENSE(K,J)
-                    DENSEKK=DENSE(K,K)
+                    DENSEKI=quick_qm_struct%dense(K,I)
+                    DENSEKJ=quick_qm_struct%dense(K,J)
+                    DENSEKK=quick_qm_struct%dense(K,K)
 
                 ! Find all the (ij|ik) integrals where j>i,k>j
                     Ibas=I
@@ -253,8 +252,8 @@
                             enddo
                         enddo
                     enddo
-                    O(J,I) = O(J,I)+2.d0*DENSEKI*repint
-                    O(K,I) = O(K,I)+2.d0*DENSEJI*repint
+                    quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEKI*repint
+                    quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+2.d0*DENSEJI*repint
 
                 ! Find all the (ij|kk) integrals where j>i, k>j.
                     Ibas=I
@@ -279,8 +278,8 @@
                             enddo
                         enddo
                     enddo
-                    O(J,I) = O(J,I)+DENSEKK*repint
-                    O(K,K) = O(K,K)+2.d0*DENSEJI*repint
+                    quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEKK*repint
+                    quick_qm_struct%o(K,K) = quick_qm_struct%o(K,K)+2.d0*DENSEJI*repint
 
                 ! Find all the (ik|jj) integrals where j>i, k>j.
                     Ibas=I
@@ -305,8 +304,8 @@
                             enddo
                         enddo
                     enddo
-                    O(K,I) = O(K,I)+DENSEJJ*repint
-                    O(J,J) = O(J,J)+2.d0*DENSEKI*repint
+                    quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+DENSEJJ*repint
+                    quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEKI*repint
 
                 ! Find all the (ii|jk) integrals where j>i, k>j.
                     Ibas=I
@@ -331,26 +330,26 @@
                             enddo
                         enddo
                     enddo
-                    O(K,J) = O(K,J)+DENSEII*repint
-                    O(I,I) = O(I,I)+2.d0*DENSEKJ*repint
+                    quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)+DENSEII*repint
+                    quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEKJ*repint
                 enddo
 
                 do K=I+1,iatmlast-1
-                    xK = xyz(1,ncenter(K))
-                    yK = xyz(2,ncenter(K))
-                    zK = xyz(3,ncenter(K))
+                    xK = xyz(1,quick_basis%ncenter(K))
+                    yK = xyz(2,quick_basis%ncenter(K))
+                    zK = xyz(3,quick_basis%ncenter(K))
                     itype1K=itype(1,K)
                     itype2K=itype(2,K)
                     itype3K=itype(3,K)
 
                     do L=K+1,iatmlast
-                        xL = xyz(1,ncenter(L))
-                        yL = xyz(2,ncenter(L))
-                        zL = xyz(3,ncenter(L))
+                        xL = xyz(1,quick_basis%ncenter(L))
+                        yL = xyz(2,quick_basis%ncenter(L))
+                        zL = xyz(3,quick_basis%ncenter(L))
                         itype1L=itype(1,L)
                         itype2L=itype(2,L)
                         itype3L=itype(3,L)
-                        DENSELK=DENSE(L,K)
+                        DENSELK=quick_qm_struct%dense(L,K)
 
                     ! Find the (ij|kl) integrals where j>i,k>i,l>k.
                         Ibas=I
@@ -376,8 +375,8 @@
                                 enddo
                             enddo
                         enddo
-                        O(J,I) = O(J,I)+2.d0*DENSELK*repint
-                        O(L,K) = O(L,K)+2.d0*DENSEJI*repint
+                        quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSELK*repint
+                        quick_qm_struct%o(L,K) = quick_qm_struct%o(L,K)+2.d0*DENSEJI*repint
                     enddo
                 enddo
             enddo
@@ -391,9 +390,9 @@
 ! Ibas,Jbas,Iatm, where Ibas is on Iatm.
 
     do Ibas=1,nbasis
-        Iatm = ncenter(Ibas)
-        Iatmlast = Ilast(Iatm)
-        ITyp = iattype(Iatm)
+        Iatm = quick_basis%ncenter(Ibas)
+        Iatmlast = quick_basis%last_basis_function(Iatm)
+        ITyp = quick_molspec%iattype(Iatm)
         do Jbas = Ibas,Iatmlast
             param=(At2prm(itype(1,Jbas),itype(2,Jbas),itype(3,Jbas),ITyp)+ &
             At2prm(itype(1,Ibas),itype(2,Ibas),itype(3,Ibas),ITyp)) &
@@ -403,49 +402,49 @@
                     do Icon=1,ncontract(ibas)
                         do Jcon=1,ncontract(jbas)
 
-                            O(Jbas,Ibas)=O(Jbas,Ibas)+param* &
+                            quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+param* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
                             attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                             itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                             itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                            xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                            xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                            xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)), &
+                            xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                            xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                            xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)), &
                             xyz(1,Jatm),xyz(2,Jatm),xyz(3,Jatm), &
-                            chg(Jatm))
+                            quick_molspec%chg(Jatm))
                         enddo
                     enddo
                 endif
             enddo
         enddo
         do Jbas = Iatmlast+1,nbasis
-            Jatm=ncenter(Jbas)
-            JTyp = iattype(Jatm)
+            Jatm=quick_basis%ncenter(Jbas)
+            JTyp = quick_molspec%iattype(Jatm)
             param=(Bndprm(itype(1,Jbas),itype(2,Jbas),itype(3,Jbas),JTyp)+ &
             Bndprm(itype(1,Ibas),itype(2,Ibas),itype(3,Ibas),ITyp)) &
             /2.d0
             do Icon=1,ncontract(ibas)
                 do Jcon=1,ncontract(jbas)
-                    O(Jbas,Ibas)=O(Jbas,Ibas)+param* &
+                    quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+param* &
                     dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
                     attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                     itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                     itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                    xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                    xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                    xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)), &
+                    xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                    xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                    xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)), &
                     xyz(1,Jatm),xyz(2,Jatm),xyz(3,Jatm), &
-                    chg(Jatm))
-                    O(Jbas,Ibas)=O(Jbas,Ibas)+param* &
+                    quick_molspec%chg(Jatm))
+                    quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+param* &
                     dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
                     attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                     itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                     itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                    xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                    xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                    xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)), &
+                    xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                    xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                    xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)), &
                     xyz(1,Iatm),xyz(2,Iatm),xyz(3,Iatm), &
-                    chg(Iatm))
+                    quick_molspec%chg(Iatm))
                 enddo
             enddo
         enddo
@@ -456,13 +455,13 @@
 ! Now we do the two center 2e- repulsion_prim terms.
 
     do Iatm=1,natom
-        Iatmfirst = Ifirst(Iatm)
-        Iatmlast = Ilast(Iatm)
+        Iatmfirst = quick_basis%first_basis_function(Iatm)
+        Iatmlast = quick_basis%last_basis_function(Iatm)
         do Ibas = Iatmfirst,Iatmlast
             do Jbas = Ibas,Iatmlast
                 do Jatm = Iatm+1,natom
-                    Jatmfirst = Ifirst(Jatm)
-                    Jatmlast = Ilast(Jatm)
+                    Jatmfirst = quick_basis%first_basis_function(Jatm)
+                    Jatmlast = quick_basis%last_basis_function(Jatm)
                     do IIbas = Jatmfirst,Jatmlast
                         do JJbas = IIbas,Jatmlast
                             repint = 0.d0
@@ -488,14 +487,17 @@
                                 enddo
                             enddo
                             if (JJbas == IIbas) then
-                                O(Jbas,Ibas)=O(Jbas,Ibas)+DENSE(JJbas,IIbas)*repint
+                                quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+quick_qm_struct%dense(JJbas,IIbas)*repint
                             else
-                                O(Jbas,Ibas)=O(Jbas,Ibas)+2.d0*DENSE(JJbas,IIbas)*repint
+                                quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+ &
+                                    2.d0*quick_qm_struct%dense(JJbas,IIbas)*repint
                             endif
                             if (Jbas == Ibas) then
-                                O(JJbas,IIbas)=O(JJbas,IIbas)+DENSE(Jbas,Ibas)*repint
+                                quick_qm_struct%o(JJbas,IIbas)=quick_qm_struct%o(JJbas,IIbas)+ &
+                                    quick_qm_struct%dense(Jbas,Ibas)*repint
                             else
-                                O(JJbas,IIbas)=O(JJbas,IIbas)+2.d0*DENSE(Jbas,Ibas)*repint
+                                quick_qm_struct%o(JJbas,IIbas)=quick_qm_struct%o(JJbas,IIbas)+&
+                                    2.d0*quick_qm_struct%dense(Jbas,Ibas)*repint
                             endif
                         enddo
                     enddo
@@ -527,14 +529,14 @@
 
 ! First, find the grid point.
 
-    aelec=0.d0
-    belec=0.d0
+    quick_qm_struct%aelec=0.d0
+    quick_qm_struct%belec=0.d0
 
     do Ireg=1,iregion
         call gridform(iangular(Ireg))
         do Irad=iradial(ireg-1)+1,iradial(ireg)
             do Iatm=1,natom
-                rad = radii(iattype(iatm))
+                rad = radii(quick_molspec%iattype(iatm))
                 rad3 = rad*rad*rad
                 do Iang=1,iangular(Ireg)
                     gridx=xyz(1,Iatm)+rad*RGRID(Irad)*XANG(Iang)
@@ -547,7 +549,7 @@
                     weight=SSW(gridx,gridy,gridz,Iatm) &
                     *WTANG(Iang)*RWT(Irad)*rad3
 
-                    if (weight < tol ) then
+                    if (weight < quick_method%DMCutoff ) then
                         continue
                     else
 
@@ -557,11 +559,11 @@
                         call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
 
-                        if (density < tol ) then
+                        if (density < quick_method%DMCutoff ) then
                             continue
                         else
-                            aelec = weight*density+aelec
-                            belec = weight*densityb+belec
+                            quick_qm_struct%aelec = weight*density+quick_qm_struct%aelec
+                            quick_qm_struct%belec = weight*densityb+quick_qm_struct%belec
 
                         ! This allows the calculation of the derivative of the functional
                         ! with regard to the density (dfdr), with regard to the alpha-alpha
@@ -590,7 +592,7 @@
                                 dphidz,Ibas)
                                 quicktest = DABS(dphidx)+DABS(dphidy)+DABS(dphidz) &
                                 +DABS(phi)
-                                if (quicktest < tol ) then
+                                if (quicktest < quick_method%DMCutoff ) then
                                     continue
                                 else
                                     do Jbas=Ibas,nbasis
@@ -598,14 +600,14 @@
                                         dphi2dz,Jbas)
                                         quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
                                         +DABS(phi2)
-                                        if (quicktest < tol ) then
+                                        if (quicktest < quick_method%DMCutoff ) then
                                             continue
                                         else
                                             temp = phi*phi2
                                             tempgx = phi*dphi2dx + phi2*dphidx
                                             tempgy = phi*dphi2dy + phi2*dphidy
                                             tempgz = phi*dphi2dz + phi2*dphidz
-                                            O(Jbas,Ibas)=O(Jbas,Ibas)+(temp*dfdr+ &
+                                            quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+(temp*dfdr+ &
                                             xdot*tempgx+ydot*tempgy+zdot*tempgz)*weight
                                         endif
                                     enddo
@@ -622,9 +624,9 @@
 
     do Ibas=1,nbasis
         do Jbas=Ibas,nbasis
-            O(Ibas,Jbas) = O(Jbas,Ibas)
+            quick_qm_struct%o(Ibas,Jbas) = quick_qm_struct%o(Jbas,Ibas)
         enddo
     enddo
 
-    END subroutine sedftoperator
+    end subroutine sedftoperator
 

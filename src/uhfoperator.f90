@@ -17,34 +17,34 @@
 
     do Ibas=1,nbasis
         do Jbas=Ibas,nbasis
-            O(Jbas,Ibas) = 0.d0
+            quick_qm_struct%o(Jbas,Ibas) = 0.d0
             do Icon=1,ncontract(ibas)
                 do Jcon=1,ncontract(jbas)
 
                 ! The first part is the kinetic energy.
 
-                    O(Jbas,Ibas)=O(Jbas,Ibas)+ &
+                    quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+ &
                     dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
                     ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                     itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                     itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                    xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                    xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                    xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
+                    xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                    xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                    xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
 
                 ! Next is a loop over atoms to contruct the attraction terms.
 
                     do iatom = 1,natom
-                        O(Jbas,Ibas)=O(Jbas,Ibas)+ &
+                        quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+ &
                         dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
                         attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                         itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                         itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                        xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                        xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                        xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)), &
+                        xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                        xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                        xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)), &
                         xyz(1,iatom),xyz(2,iatom),xyz(3,iatom), &
-                        chg(iatom))
+                        quick_molspec%chg(iatom))
                     enddo
                 enddo
             enddo
@@ -65,14 +65,14 @@
     ! Set some variables to reduce access time for some of the more
     ! used quantities.
 
-        xI = xyz(1,ncenter(I))
-        yI = xyz(2,ncenter(I))
-        zI = xyz(3,ncenter(I))
+        xI = xyz(1,quick_basis%ncenter(I))
+        yI = xyz(2,quick_basis%ncenter(I))
+        zI = xyz(3,quick_basis%ncenter(I))
         itype1I=itype(1,I)
         itype2I=itype(2,I)
         itype3I=itype(3,I)
-        DENSEII=DENSE(I,I) + DENSEB(I,I)
-        DENSEIIX=DENSE(I,I)
+        DENSEII=quick_qm_struct%dense(I,I) + quick_qm_struct%denseb(I,I)
+        DENSEIIX=quick_qm_struct%dense(I,I)
 
     ! do all the (ii|ii) integrals.
         Ibas=I
@@ -96,23 +96,23 @@
                 enddo
             enddo
         enddo
-        O(I,I) = O(I,I)+DENSEII*repint
-        O(I,I) = O(I,I)-DENSEIIX*repint
+        quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEII*repint
+        quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEIIX*repint
 
         do J=I+1,nbasis
         ! Set some variables to reduce access time for some of the more
         ! used quantities. (AGAIN)
 
-            xJ = xyz(1,ncenter(J))
-            yJ = xyz(2,ncenter(J))
-            zJ = xyz(3,ncenter(J))
+            xJ = xyz(1,quick_basis%ncenter(J))
+            yJ = xyz(2,quick_basis%ncenter(J))
+            zJ = xyz(3,quick_basis%ncenter(J))
             itype1J=itype(1,J)
             itype2J=itype(2,J)
             itype3J=itype(3,J)
-            DENSEJI=DENSE(J,I)+DENSEB(J,I)
-            DENSEJJ=DENSE(J,J)+DENSEB(J,J)
-            DENSEJIX=DENSE(J,I)
-            DENSEJJX=DENSE(J,J)
+            DENSEJI=quick_qm_struct%dense(J,I)+quick_qm_struct%denseb(J,I)
+            DENSEJJ=quick_qm_struct%dense(J,J)+quick_qm_struct%denseb(J,J)
+            DENSEJIX=quick_qm_struct%dense(J,I)
+            DENSEJJX=quick_qm_struct%dense(J,J)
 
         ! Find  all the (ii|jj) integrals.
             Ibas=I
@@ -136,9 +136,9 @@
                     enddo
                 enddo
             enddo
-            O(I,I) = O(I,I)+DENSEJJ*repint
-            O(J,J) = O(J,J)+DENSEII*repint
-            O(J,I) = O(J,I)-DENSEJIX*repint
+            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEJJ*repint
+            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+DENSEII*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
 
         ! Find  all the (ij|jj) integrals.
             Ibas=I
@@ -163,10 +163,10 @@
                     enddo
                 enddo
             enddo
-            O(J,I) = O(J,I)+DENSEJJ*repint
-            O(J,J) = O(J,J)+2.d0*DENSEJI*repint
-            O(J,I) = O(J,I)-DENSEJJX*repint
-            O(J,J) = O(J,J)-2.d0*DENSEJIX*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEJJ*repint
+            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEJI*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJJX*repint
+            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)-2.d0*DENSEJIX*repint
 
         ! Find  all the (ii|ij) integrals.
             Ibas=I
@@ -191,10 +191,10 @@
                     enddo
                 enddo
             enddo
-            O(J,I) = O(J,I)+DENSEII*repint
-            O(I,I) = O(I,I)+2.d0*DENSEJI*repint
-            O(J,I) = O(J,I)-DENSEIIX*repint
-            O(I,I) = O(I,I)-2.d0*DENSEJIX*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEII*repint
+            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEJI*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEIIX*repint
+            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-2.d0*DENSEJIX*repint
         ! Find all the (ij|ij) integrals
             Ibas=I
             Jbas=J
@@ -218,27 +218,27 @@
                     enddo
                 enddo
             enddo
-            O(J,I) = O(J,I)+2.d0*DENSEJI*repint
-            O(J,J) = O(J,J)-DENSEIIX*repint
-            O(I,I) = O(I,I)-DENSEJJX*repint
-            O(J,I) = O(J,I)-DENSEJIX*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEJI*repint
+            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)-DENSEIIX*repint
+            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEJJX*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
 
             do K=J+1,nbasis
             ! Set some variables to reduce access time for some of the more
             ! used quantities. (AGAIN)
 
-                xK = xyz(1,ncenter(K))
-                yK = xyz(2,ncenter(K))
-                zK = xyz(3,ncenter(K))
+                xK = xyz(1,quick_basis%ncenter(K))
+                yK = xyz(2,quick_basis%ncenter(K))
+                zK = xyz(3,quick_basis%ncenter(K))
                 itype1K=itype(1,K)
                 itype2K=itype(2,K)
                 itype3K=itype(3,K)
-                DENSEKI=DENSE(K,I)+DENSEB(K,I)
-                DENSEKJ=DENSE(K,J)+DENSEB(K,J)
-                DENSEKK=DENSE(K,K)+DENSEB(K,K)
-                DENSEKIX=DENSE(K,I)
-                DENSEKJX=DENSE(K,J)
-                DENSEKKX=DENSE(K,K)
+                DENSEKI=quick_qm_struct%dense(K,I)+quick_qm_struct%denseb(K,I)
+                DENSEKJ=quick_qm_struct%dense(K,J)+quick_qm_struct%denseb(K,J)
+                DENSEKK=quick_qm_struct%dense(K,K)+quick_qm_struct%denseb(K,K)
+                DENSEKIX=quick_qm_struct%dense(K,I)
+                DENSEKJX=quick_qm_struct%dense(K,J)
+                DENSEKKX=quick_qm_struct%dense(K,K)
 
             ! Find all the (ij|ik) integrals where j>i,k>j
                 Ibas=I
@@ -263,12 +263,12 @@
                         enddo
                     enddo
                 enddo
-                O(J,I) = O(J,I)+2.d0*DENSEKI*repint
-                O(K,I) = O(K,I)+2.d0*DENSEJI*repint
-                O(I,I) = O(I,I)-2.d0*DENSEKJX*repint
-                O(J,I) = O(J,I)-DENSEKIX*repint
-                O(K,I) = O(K,I)-DENSEJIX*repint
-                O(K,J) = O(K,J)-DENSEIIX*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEKI*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+2.d0*DENSEJI*repint
+                quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-2.d0*DENSEKJX*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKIX*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEJIX*repint
+                quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSEIIX*repint
 
             ! Find all the (ij|kk) integrals where j>i, k>j.
                 Ibas=I
@@ -293,10 +293,10 @@
                         enddo
                     enddo
                 enddo
-                O(J,I) = O(J,I)+DENSEKK*repint
-                O(K,K) = O(K,K)+2.d0*DENSEJI*repint
-                O(K,I) = O(K,I)-DENSEKJX*repint
-                O(K,J) = O(K,J)-DENSEKIX*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEKK*repint
+                quick_qm_struct%o(K,K) = quick_qm_struct%o(K,K)+2.d0*DENSEJI*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEKJX*repint
+                quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSEKIX*repint
 
             ! Find all the (ik|jj) integrals where j>i, k>j.
                 Ibas=I
@@ -321,10 +321,10 @@
                         enddo
                     enddo
                 enddo
-                O(K,I) = O(K,I)+DENSEJJ*repint
-                O(J,J) = O(J,J)+2.d0*DENSEKI*repint
-                O(K,J) = O(K,J)-DENSEJIX*repint
-                O(J,I) = O(J,I)-DENSEKJX*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+DENSEJJ*repint
+                quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEKI*repint
+                quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSEJIX*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKJX*repint
 
             ! Find all the (ii|jk) integrals where j>i, k>j.
                 Ibas=I
@@ -349,39 +349,39 @@
                         enddo
                     enddo
                 enddo
-                O(K,J) = O(K,J)+DENSEII*repint
-                O(I,I) = O(I,I)+2.d0*DENSEKJ*repint
-                O(J,I) = O(J,I)-DENSEKIX*repint
-                O(K,I) = O(K,I)-DENSEJIX*repint
+                quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)+DENSEII*repint
+                quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEKJ*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKIX*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEJIX*repint
             enddo
 
             do K=I+1,nbasis-1
-                xK = xyz(1,ncenter(K))
-                yK = xyz(2,ncenter(K))
-                zK = xyz(3,ncenter(K))
+                xK = xyz(1,quick_basis%ncenter(K))
+                yK = xyz(2,quick_basis%ncenter(K))
+                zK = xyz(3,quick_basis%ncenter(K))
                 itype1K=itype(1,K)
                 itype2K=itype(2,K)
                 itype3K=itype(3,K)
-                DENSEKI=DENSE(K,I)+DENSEB(K,I)
-                DENSEKJ=DENSE(K,J)+DENSEB(K,J)
-                DENSEKK=DENSE(K,K)+DENSEB(K,K)
-                DENSEKIX=DENSE(K,I)
-                DENSEKJX=DENSE(K,J)
-                DENSEKKX=DENSE(K,K)
+                DENSEKI=quick_qm_struct%dense(K,I)+quick_qm_struct%denseb(K,I)
+                DENSEKJ=quick_qm_struct%dense(K,J)+quick_qm_struct%denseb(K,J)
+                DENSEKK=quick_qm_struct%dense(K,K)+quick_qm_struct%denseb(K,K)
+                DENSEKIX=quick_qm_struct%dense(K,I)
+                DENSEKJX=quick_qm_struct%dense(K,J)
+                DENSEKKX=quick_qm_struct%dense(K,K)
 
                 do L=K+1,nbasis
-                    xL = xyz(1,ncenter(L))
-                    yL = xyz(2,ncenter(L))
-                    zL = xyz(3,ncenter(L))
+                    xL = xyz(1,quick_basis%ncenter(L))
+                    yL = xyz(2,quick_basis%ncenter(L))
+                    zL = xyz(3,quick_basis%ncenter(L))
                     itype1L=itype(1,L)
                     itype2L=itype(2,L)
                     itype3L=itype(3,L)
-                    DENSELJ=DENSE(L,J)+DENSEB(L,J)
-                    DENSELI=DENSE(L,I)+DENSEB(L,I)
-                    DENSELK=DENSE(L,K)+DENSEB(L,K)
-                    DENSELJX=DENSE(L,J)
-                    DENSELIX=DENSE(L,I)
-                    DENSELKX=DENSE(L,K)
+                    DENSELJ=quick_qm_struct%dense(L,J)+quick_qm_struct%denseb(L,J)
+                    DENSELI=quick_qm_struct%dense(L,I)+quick_qm_struct%denseb(L,I)
+                    DENSELK=quick_qm_struct%dense(L,K)+quick_qm_struct%denseb(L,K)
+                    DENSELJX=quick_qm_struct%dense(L,J)
+                    DENSELIX=quick_qm_struct%dense(L,I)
+                    DENSELKX=quick_qm_struct%dense(L,K)
 
                 ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
                 ! can be equal.
@@ -409,23 +409,23 @@
                             enddo
                         enddo
                     enddo
-                    O(J,I) = O(J,I)+2.d0*DENSELK*repint
-                    O(L,K) = O(L,K)+2.d0*DENSEJI*repint
-                    O(K,I) = O(K,I)-DENSELJX*repint
-                    O(L,I) = O(L,I)-DENSEKJX*repint
+                    quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSELK*repint
+                    quick_qm_struct%o(L,K) = quick_qm_struct%o(L,K)+2.d0*DENSEJI*repint
+                    quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSELJX*repint
+                    quick_qm_struct%o(L,I) = quick_qm_struct%o(L,I)-DENSEKJX*repint
                     if (J == K) then
-                        O(J,K) = O(J,K)-2.d0*DENSELIX*repint
-                        O(J,L) = O(J,L)-DENSEKIX*repint
-                        O(L,J) = O(L,J)-DENSEKIX*repint
+                        quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-2.d0*DENSELIX*repint
+                        quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
+                        quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
                     elseif (J == L) then
-                        O(J,L) = O(J,L)-2.d0*DENSEKIX*repint
-                        O(J,K) = O(J,K)-DENSELIX*repint
-                        O(K,J) = O(K,J)-DENSELIX*repint
+                        quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-2.d0*DENSEKIX*repint
+                        quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
+                        quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
                     else
-                        O(J,K) = O(J,K)-DENSELIX*repint
-                        O(J,L) = O(J,L)-DENSEKIX*repint
-                        O(K,J) = O(K,J)-DENSELIX*repint
-                        O(L,J) = O(L,J)-DENSEKIX*repint
+                        quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
+                        quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
+                        quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
+                        quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
                     endif
                 enddo
             enddo
@@ -434,11 +434,11 @@
 
     do Ibas=1,nbasis
         do Jbas=Ibas+1,nbasis
-            O(Ibas,Jbas) = O(Jbas,Ibas)
+            quick_qm_struct%o(Ibas,Jbas) = quick_qm_struct%o(Jbas,Ibas)
         enddo
     enddo
 
-    END subroutine uhfoperatora
+    end subroutine uhfoperatora
 
 ! CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 ! Ed Brothers. December 20, 2001
@@ -452,7 +452,7 @@
 ! for the beta portion of the unrestricted HF erquation.
 ! Fock matrix is as follows:
 
-! O(I,J) =  F(I,J) = KE(I,J) + IJ attraction to each atom + repulsion_prim
+! quick_qm_struct%o(I,J) =  F(I,J) = KE(I,J) + IJ attraction to each atom + repulsion_prim
 ! with each possible basis  - 1/2 exchange with each
 ! possible basis.
 
@@ -460,34 +460,34 @@
 
     do Ibas=1,nbasis
         do Jbas=Ibas,nbasis
-            O(Jbas,Ibas) = 0.d0
+            quick_qm_struct%o(Jbas,Ibas) = 0.d0
             do Icon=1,ncontract(ibas)
                 do Jcon=1,ncontract(jbas)
 
                 ! The first part is the kinetic energy.
 
-                    O(Jbas,Ibas)=O(Jbas,Ibas)+ &
+                    quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+ &
                     dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
                     ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                     itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                     itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                    xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                    xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                    xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
+                    xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                    xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                    xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
 
                 ! Next is a loop over atoms to contruct the attraction terms.
 
                     do iatom = 1,natom
-                        O(Jbas,Ibas)=O(Jbas,Ibas)+ &
+                        quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+ &
                         dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
                         attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                         itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                         itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                        xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                        xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                        xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)), &
+                        xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                        xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                        xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)), &
                         xyz(1,iatom),xyz(2,iatom),xyz(3,iatom), &
-                        chg(iatom))
+                        quick_molspec%chg(iatom))
                     enddo
                 enddo
             enddo
@@ -510,14 +510,14 @@
     ! Set some variables to reduce access time for some of the more
     ! used quantities.
 
-        xI = xyz(1,ncenter(I))
-        yI = xyz(2,ncenter(I))
-        zI = xyz(3,ncenter(I))
+        xI = xyz(1,quick_basis%ncenter(I))
+        yI = xyz(2,quick_basis%ncenter(I))
+        zI = xyz(3,quick_basis%ncenter(I))
         itype1I=itype(1,I)
         itype2I=itype(2,I)
         itype3I=itype(3,I)
-        DENSEII=DENSE(I,I) + DENSEB(I,I)
-        DENSEIIX=DENSEB(I,I)
+        DENSEII=quick_qm_struct%dense(I,I) + quick_qm_struct%denseb(I,I)
+        DENSEIIX=quick_qm_struct%denseb(I,I)
 
     ! do all the (ii|ii) integrals.
         Ibas=I
@@ -541,23 +541,23 @@
                 enddo
             enddo
         enddo
-        O(I,I) = O(I,I)+DENSEII*repint
-        O(I,I) = O(I,I)-DENSEIIX*repint
+        quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEII*repint
+        quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEIIX*repint
 
         do J=I+1,nbasis
         ! Set some variables to reduce access time for some of the more
         ! used quantities. (AGAIN)
 
-            xJ = xyz(1,ncenter(J))
-            yJ = xyz(2,ncenter(J))
-            zJ = xyz(3,ncenter(J))
+            xJ = xyz(1,quick_basis%ncenter(J))
+            yJ = xyz(2,quick_basis%ncenter(J))
+            zJ = xyz(3,quick_basis%ncenter(J))
             itype1J=itype(1,J)
             itype2J=itype(2,J)
             itype3J=itype(3,J)
-            DENSEJI=DENSE(J,I)+DENSEB(J,I)
-            DENSEJJ=DENSE(J,J)+DENSEB(J,J)
-            DENSEJIX=DENSEB(J,I)
-            DENSEJJX=DENSEB(J,J)
+            DENSEJI=quick_qm_struct%dense(J,I)+quick_qm_struct%denseb(J,I)
+            DENSEJJ=quick_qm_struct%dense(J,J)+quick_qm_struct%denseb(J,J)
+            DENSEJIX=quick_qm_struct%denseb(J,I)
+            DENSEJJX=quick_qm_struct%denseb(J,J)
 
         ! Find  all the (ii|jj) integrals.
             Ibas=I
@@ -581,9 +581,9 @@
                     enddo
                 enddo
             enddo
-            O(I,I) = O(I,I)+DENSEJJ*repint
-            O(J,J) = O(J,J)+DENSEII*repint
-            O(J,I) = O(J,I)-DENSEJIX*repint
+            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEJJ*repint
+            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+DENSEII*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
 
         ! Find  all the (ij|jj) integrals.
             Ibas=I
@@ -608,10 +608,10 @@
                     enddo
                 enddo
             enddo
-            O(J,I) = O(J,I)+DENSEJJ*repint
-            O(J,J) = O(J,J)+2.d0*DENSEJI*repint
-            O(J,I) = O(J,I)-DENSEJJX*repint
-            O(J,J) = O(J,J)-2.d0*DENSEJIX*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEJJ*repint
+            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEJI*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJJX*repint
+            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)-2.d0*DENSEJIX*repint
 
         ! Find  all the (ii|ij) integrals.
             Ibas=I
@@ -636,10 +636,10 @@
                     enddo
                 enddo
             enddo
-            O(J,I) = O(J,I)+DENSEII*repint
-            O(I,I) = O(I,I)+2.d0*DENSEJI*repint
-            O(J,I) = O(J,I)-DENSEIIX*repint
-            O(I,I) = O(I,I)-2.d0*DENSEJIX*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEII*repint
+            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEJI*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEIIX*repint
+            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-2.d0*DENSEJIX*repint
         ! Find all the (ij|ij) integrals
             Ibas=I
             Jbas=J
@@ -663,27 +663,27 @@
                     enddo
                 enddo
             enddo
-            O(J,I) = O(J,I)+2.d0*DENSEJI*repint
-            O(J,J) = O(J,J)-DENSEIIX*repint
-            O(I,I) = O(I,I)-DENSEJJX*repint
-            O(J,I) = O(J,I)-DENSEJIX*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEJI*repint
+            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)-DENSEIIX*repint
+            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEJJX*repint
+            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
 
             do K=J+1,nbasis
             ! Set some variables to reduce access time for some of the more
             ! used quantities. (AGAIN)
 
-                xK = xyz(1,ncenter(K))
-                yK = xyz(2,ncenter(K))
-                zK = xyz(3,ncenter(K))
+                xK = xyz(1,quick_basis%ncenter(K))
+                yK = xyz(2,quick_basis%ncenter(K))
+                zK = xyz(3,quick_basis%ncenter(K))
                 itype1K=itype(1,K)
                 itype2K=itype(2,K)
                 itype3K=itype(3,K)
-                DENSEKI=DENSE(K,I)+DENSEB(K,I)
-                DENSEKJ=DENSE(K,J)+DENSEB(K,J)
-                DENSEKK=DENSE(K,K)+DENSEB(K,K)
-                DENSEKIX=DENSEB(K,I)
-                DENSEKJX=DENSEB(K,J)
-                DENSEKKX=DENSEB(K,K)
+                DENSEKI=quick_qm_struct%dense(K,I)+quick_qm_struct%denseb(K,I)
+                DENSEKJ=quick_qm_struct%dense(K,J)+quick_qm_struct%denseb(K,J)
+                DENSEKK=quick_qm_struct%dense(K,K)+quick_qm_struct%denseb(K,K)
+                DENSEKIX=quick_qm_struct%denseb(K,I)
+                DENSEKJX=quick_qm_struct%denseb(K,J)
+                DENSEKKX=quick_qm_struct%denseb(K,K)
 
             ! Find all the (ij|ik) integrals where j>i,k>j
                 Ibas=I
@@ -708,12 +708,12 @@
                         enddo
                     enddo
                 enddo
-                O(J,I) = O(J,I)+2.d0*DENSEKI*repint
-                O(K,I) = O(K,I)+2.d0*DENSEJI*repint
-                O(I,I) = O(I,I)-2.d0*DENSEKJX*repint
-                O(J,I) = O(J,I)-DENSEKIX*repint
-                O(K,I) = O(K,I)-DENSEJIX*repint
-                O(K,J) = O(K,J)-DENSEIIX*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEKI*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+2.d0*DENSEJI*repint
+                quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-2.d0*DENSEKJX*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKIX*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEJIX*repint
+                quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSEIIX*repint
 
             ! Find all the (ij|kk) integrals where j>i, k>j.
                 Ibas=I
@@ -738,10 +738,10 @@
                         enddo
                     enddo
                 enddo
-                O(J,I) = O(J,I)+DENSEKK*repint
-                O(K,K) = O(K,K)+2.d0*DENSEJI*repint
-                O(K,I) = O(K,I)-DENSEKJX*repint
-                O(K,J) = O(K,J)-DENSEKIX*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEKK*repint
+                quick_qm_struct%o(K,K) = quick_qm_struct%o(K,K)+2.d0*DENSEJI*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEKJX*repint
+                quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSEKIX*repint
 
             ! Find all the (ik|jj) integrals where j>i, k>j.
                 Ibas=I
@@ -766,10 +766,10 @@
                         enddo
                     enddo
                 enddo
-                O(K,I) = O(K,I)+DENSEJJ*repint
-                O(J,J) = O(J,J)+2.d0*DENSEKI*repint
-                O(K,J) = O(K,J)-DENSEJIX*repint
-                O(J,I) = O(J,I)-DENSEKJX*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+DENSEJJ*repint
+                quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEKI*repint
+                quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSEJIX*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKJX*repint
 
             ! Find all the (ii|jk) integrals where j>i, k>j.
                 Ibas=I
@@ -794,39 +794,39 @@
                         enddo
                     enddo
                 enddo
-                O(K,J) = O(K,J)+DENSEII*repint
-                O(I,I) = O(I,I)+2.d0*DENSEKJ*repint
-                O(J,I) = O(J,I)-DENSEKIX*repint
-                O(K,I) = O(K,I)-DENSEJIX*repint
+                quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)+DENSEII*repint
+                quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEKJ*repint
+                quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKIX*repint
+                quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEJIX*repint
             enddo
 
             do K=I+1,nbasis-1
-                xK = xyz(1,ncenter(K))
-                yK = xyz(2,ncenter(K))
-                zK = xyz(3,ncenter(K))
+                xK = xyz(1,quick_basis%ncenter(K))
+                yK = xyz(2,quick_basis%ncenter(K))
+                zK = xyz(3,quick_basis%ncenter(K))
                 itype1K=itype(1,K)
                 itype2K=itype(2,K)
                 itype3K=itype(3,K)
-                DENSEKI=DENSE(K,I)+DENSEB(K,I)
-                DENSEKJ=DENSE(K,J)+DENSEB(K,J)
-                DENSEKK=DENSE(K,K)+DENSEB(K,K)
-                DENSEKIX=DENSEB(K,I)
-                DENSEKJX=DENSEB(K,J)
-                DENSEKKX=DENSEB(K,K)
+                DENSEKI=quick_qm_struct%dense(K,I)+quick_qm_struct%denseb(K,I)
+                DENSEKJ=quick_qm_struct%dense(K,J)+quick_qm_struct%denseb(K,J)
+                DENSEKK=quick_qm_struct%dense(K,K)+quick_qm_struct%denseb(K,K)
+                DENSEKIX=quick_qm_struct%denseb(K,I)
+                DENSEKJX=quick_qm_struct%denseb(K,J)
+                DENSEKKX=quick_qm_struct%denseb(K,K)
 
                 do L=K+1,nbasis
-                    xL = xyz(1,ncenter(L))
-                    yL = xyz(2,ncenter(L))
-                    zL = xyz(3,ncenter(L))
+                    xL = xyz(1,quick_basis%ncenter(L))
+                    yL = xyz(2,quick_basis%ncenter(L))
+                    zL = xyz(3,quick_basis%ncenter(L))
                     itype1L=itype(1,L)
                     itype2L=itype(2,L)
                     itype3L=itype(3,L)
-                    DENSELJ=DENSE(L,J)+DENSEB(L,J)
-                    DENSELI=DENSE(L,I)+DENSEB(L,I)
-                    DENSELK=DENSE(L,K)+DENSEB(L,K)
-                    DENSELJX=DENSEB(L,J)
-                    DENSELIX=DENSEB(L,I)
-                    DENSELKX=DENSEB(L,K)
+                    DENSELJ=quick_qm_struct%dense(L,J)+quick_qm_struct%denseb(L,J)
+                    DENSELI=quick_qm_struct%dense(L,I)+quick_qm_struct%denseb(L,I)
+                    DENSELK=quick_qm_struct%dense(L,K)+quick_qm_struct%denseb(L,K)
+                    DENSELJX=quick_qm_struct%denseb(L,J)
+                    DENSELIX=quick_qm_struct%denseb(L,I)
+                    DENSELKX=quick_qm_struct%denseb(L,K)
 
                 ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
                 ! can be equal.
@@ -854,23 +854,23 @@
                             enddo
                         enddo
                     enddo
-                    O(J,I) = O(J,I)+2.d0*DENSELK*repint
-                    O(L,K) = O(L,K)+2.d0*DENSEJI*repint
-                    O(K,I) = O(K,I)-DENSELJX*repint
-                    O(L,I) = O(L,I)-DENSEKJX*repint
+                    quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSELK*repint
+                    quick_qm_struct%o(L,K) = quick_qm_struct%o(L,K)+2.d0*DENSEJI*repint
+                    quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSELJX*repint
+                    quick_qm_struct%o(L,I) = quick_qm_struct%o(L,I)-DENSEKJX*repint
                     if (J == K) then
-                        O(J,K) = O(J,K)-2.d0*DENSELIX*repint
-                        O(J,L) = O(J,L)-DENSEKIX*repint
-                        O(L,J) = O(L,J)-DENSEKIX*repint
+                        quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-2.d0*DENSELIX*repint
+                        quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
+                        quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
                     elseif (J == L) then
-                        O(J,L) = O(J,L)-2.d0*DENSEKIX*repint
-                        O(J,K) = O(J,K)-DENSELIX*repint
-                        O(K,J) = O(K,J)-DENSELIX*repint
+                        quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-2.d0*DENSEKIX*repint
+                        quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
+                        quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
                     else
-                        O(J,K) = O(J,K)-DENSELIX*repint
-                        O(J,L) = O(J,L)-DENSEKIX*repint
-                        O(K,J) = O(K,J)-DENSELIX*repint
-                        O(L,J) = O(L,J)-DENSEKIX*repint
+                        quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
+                        quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
+                        quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
+                        quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
                     endif
                 enddo
             enddo
@@ -879,9 +879,9 @@
 
     do Ibas=1,nbasis
         do Jbas=Ibas+1,nbasis
-            O(Ibas,Jbas) = O(Jbas,Ibas)
+            quick_qm_struct%o(Ibas,Jbas) = quick_qm_struct%o(Jbas,Ibas)
         enddo
     enddo
 
-    END subroutine uhfoperatorb
+    end subroutine uhfoperatorb
 

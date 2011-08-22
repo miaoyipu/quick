@@ -5,23 +5,15 @@
 !	Created by Yipu Miao on 2/18/11.
 !	Copyright 2011 University of Florida. All rights reserved.
 !
-
-!********************************************************
 ! Following modules contains all global variables used in divpb.              
 ! -- Ning Liao 05/15/2004
-! Add to modules.f90
-! -- Yipu Miao 05/07/2010
 ! div PB modules includes:
 ! divpb_interface: 
 ! divpb_private:
 !    contains: initialize_divpbVars()
 !              deallocate_divpbVars(ierror)
-!----------------------------------------------------------------------
-!
-!----------------------------------------------------------------------
-! Interface modules
-!----------------------------------------------------------------------
-!
+
+! PB Interface modules
   module divpb_interface
 ! 
 !comment

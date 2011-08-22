@@ -1,3 +1,4 @@
+#include "config.h"
 !
 !	amber_interface.f90
 !	amber_interface
@@ -141,7 +142,7 @@ subroutine qm2_quick_energy(escf,scf_mchg)
       
       ! symbol of atom type
       do i=1,iatomtype
-        atomxiao(i)=symbol(qmmm_struct%qm_type_id(i))
+        atom_type_sym(i)=symbol(qmmm_struct%qm_type_id(i))
       enddo
             
     
@@ -158,7 +159,7 @@ subroutine qm2_quick_energy(escf,scf_mchg)
     !------------------END MPI/ALL NODES---------------------------------    
 
     !allocate essential variables
-    if (quick_first_call) call allocateAtoms()
+    if (quick_first_call) call alloc(quick_molspec)
 
 !*****************************************************************
 ! 2. Next step is to read job and initial guess
@@ -195,24 +196,24 @@ subroutine qm2_quick_energy(escf,scf_mchg)
     if (qmmm_mpi%commqmmm_master .and. qmmm_nml%verbosity > 1) then
         write(6,'(" QMMM QUICK:")')
         write(6,'(" QMMM QUICK:    Electronic Energy       = ",f20.12," eV (", f20.12," kcal)")') &
-                                eel * AU_TO_EV, eel * AU_TO_KCAL
+                                quick_qm_struct%Eel * AU_TO_EV, quick_qm_struct%Eel * AU_TO_KCAL
         write(6,'(" QMMM QUICK:    Repulsive Energy        = ",f20.12," eV (", f20.12," kcal)")') &
-                                ecore * AU_TO_EV, ecore * AU_TO_KCAL
+                                quick_qm_struct%Ecore * AU_TO_EV, quick_qm_struct%Ecore * AU_TO_KCAL
         write(6,'(" QMMM QUICK:    Total Energy            = ",f20.12," eV (", f20.12," kcal)")') &
-                                etot * AU_TO_EV, etot * AU_TO_KCAL
+                                quick_qm_struct%Etot * AU_TO_EV, quick_qm_struct%Etot * AU_TO_KCAL
 
     end if
     
-    escf=etot * AU_TO_KCAL
-    qmmm_struct%elec_eng = eel * AU_TO_EV
-    qmmm_struct%enuclr_qmqm = ecore * AU_TO_EV 
+    escf=quick_qm_struct%Etot * AU_TO_KCAL
+    qmmm_struct%elec_eng = quick_qm_struct%Eel * AU_TO_EV
+    qmmm_struct%enuclr_qmqm = quick_qm_struct%Ecore * AU_TO_EV 
             
     call dipole
     
     call zmake
     
     do i=1,natom
-        scf_mchg(i)=Mulliken(I)
+        scf_mchg(i)=quick_qm_struct%Mulliken(I)
     enddo
     
     
@@ -220,26 +221,26 @@ subroutine qm2_quick_energy(escf,scf_mchg)
     
     do j=1,natom
         do k=1,3
-            GRADIENT((j-1)*3+K)=0d0
+            quick_qm_struct%gradient((j-1)*3+K)=0d0
         enddo
     enddo
   
-    IF (analgrad) THEN
-           !            IF (UNRST) THEN
-           !                IF (HF) call uhfgrad
-           !                IF (DFT) call uDFTgrad
-           !                IF (SEDFT) call uSEDFTgrad
-           !            ELSE
-           IF (HF) then
+    if (analgrad) then
+           !            if (UNRST) then
+           !                if (HF) call uhfgrad
+           !                if (DFT) call uDFTgrad
+           !                if (SEDFT) call uSEDFTgrad
+           !            else
+           if (HF) then
                 if (bMPI) then
                     call mpi_hfgrad
                 else
                     call hfgrad
                 endif
            endif
-           !                IF (DFT) call DFTgrad
-           !                IF (SEDFT) call SEDFTgrad
-           !            ENDIF
+           !                if (DFT) call DFTgrad
+           !                if (SEDFT) call SEDFTgrad
+           !            endif
 
     endif
         
@@ -351,8 +352,6 @@ subroutine read_AMBER_job
     debug     = .false. ! if debug?
     readdmx   = .false. ! read density matrix
     zmat      = .false. ! if do zmat conversion?
-    calcdens  = .false.
-    calcdenslap = .false.
     writepmat = .false. ! write density matrix
 ! AG 03/05/2007
     itolecp   = 0
@@ -402,7 +401,7 @@ subroutine read_AMBER_job
     
     if(pmaxrms.lt.0.0001d0)then
       integralCutoff=1.0d0/(10.0d0**7.0d0)
-      Primlimit=1.0d0/(10.0d0**7.0d0)
+      quick_method%primLimit=1.0d0/(10.0d0**7.0d0)
     endif
     
     endif
@@ -440,7 +439,7 @@ subroutine AMBER_interface_get_qm_forces(dxyzqm)
       if (qmmm_mpi%commqmmm_master) then
         do i=1,qmmm_struct%nquant_nlink
            do j = 1,3
-              dxyzqm(j,i) = gradient((i-1)*3+j) * AU_TO_KCAL * A_TO_BOHRS
+              dxyzqm(j,i) = quick_qm_struct%gradient((i-1)*3+j) * AU_TO_KCAL * A_TO_BOHRS
            end do
         end do
       endif

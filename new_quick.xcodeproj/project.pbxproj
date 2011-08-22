@@ -1,0 +1,874 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A6A113F130DD9E5009B360A /* amber_interface.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A0597130DD9E4009B360A /* amber_interface.f90 */; };
+		0A6A1141130DD9E5009B360A /* calMP2.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A0599130DD9E4009B360A /* calMP2.f90 */; };
+		0A6A1143130DD9E5009B360A /* CPHF.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A059C130DD9E4009B360A /* CPHF.f90 */; };
+		0A6A1145130DD9E5009B360A /* quick_debug.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A059E130DD9E4009B360A /* quick_debug.f90 */; };
+		0A6A1147130DD9E5009B360A /* dft.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05A0130DD9E4009B360A /* dft.f90 */; };
+		0A6A114A130DD9E5009B360A /* ecp.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05A3130DD9E4009B360A /* ecp.f90 */; };
+		0A6A114C130DD9E5009B360A /* fake_amber_interface.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05A5130DD9E4009B360A /* fake_amber_interface.f90 */; };
+		0A6A114D130DD9E5009B360A /* finalize.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05A6130DD9E4009B360A /* finalize.f90 */; };
+		0A6A114E130DD9E5009B360A /* fmm.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05A7130DD9E4009B360A /* fmm.f90 */; };
+		0A6A114F130DD9E5009B360A /* frequency.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05A8130DD9E4009B360A /* frequency.f90 */; };
+		0A6A1151130DD9E5009B360A /* getEnergy.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05AA130DD9E4009B360A /* getEnergy.f90 */; };
+		0A6A1152130DD9E5009B360A /* getMol.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05AB130DD9E4009B360A /* getMol.f90 */; };
+		0A6A1153130DD9E5009B360A /* getMolSad.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05AC130DD9E4009B360A /* getMolSad.f90 */; };
+		0A6A1154130DD9E5009B360A /* gradient.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05AD130DD9E4009B360A /* gradient.f90 */; };
+		0A6A1156130DD9E5009B360A /* hessian.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05AF130DD9E4009B360A /* hessian.f90 */; };
+		0A6A1157130DD9E5009B360A /* hfoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05B0130DD9E4009B360A /* hfoperator.f90 */; };
+		0A6A1159130DD9E5009B360A /* inidivcon.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05B2130DD9E4009B360A /* inidivcon.f90 */; };
+		0A6A115A130DD9E5009B360A /* initialize.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05B3130DD9E4009B360A /* initialize.f90 */; };
+		0A6A115D130DD9E5009B360A /* main.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05B6130DD9E4009B360A /* main.f90 */; };
+		0A6A1160130DD9E5009B360A /* mpi_setup.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05B9130DD9E4009B360A /* mpi_setup.f90 */; };
+		0A6A1161130DD9E5009B360A /* nuclear.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05BA130DD9E4009B360A /* nuclear.f90 */; };
+		0A6A1162130DD9E5009B360A /* optimize.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05BB130DD9E4009B360A /* optimize.f90 */; };
+		0A6A1166130DD9E5009B360A /* read_job_and_atom.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05BF130DD9E4009B360A /* read_job_and_atom.f90 */; };
+		0A6A1168130DD9E5009B360A /* scf.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05C1130DD9E4009B360A /* scf.f90 */; };
+		0A6A1169130DD9E5009B360A /* schwarz.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05C2130DD9E4009B360A /* schwarz.f90 */; };
+		0A6A116A130DD9E5009B360A /* sedftoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05C3130DD9E4009B360A /* sedftoperator.f90 */; };
+		0A6A116B130DD9E5009B360A /* shell.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05C4130DD9E4009B360A /* shell.f90 */; };
+		0A6A116F130DD9E5009B360A /* udftoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05C8130DD9E4009B360A /* udftoperator.f90 */; };
+		0A6A1170130DD9E5009B360A /* uelectdii.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05C9130DD9E4009B360A /* uelectdii.f90 */; };
+		0A6A1171130DD9E5009B360A /* uhfoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05CA130DD9E4009B360A /* uhfoperator.f90 */; };
+		0A6A1172130DD9E5009B360A /* uscf.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05CB130DD9E4009B360A /* uscf.f90 */; };
+		0A6A1173130DD9E5009B360A /* usedftoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A05CC130DD9E4009B360A /* usedftoperator.f90 */; };
+		0A6A11B8130DDB93009B360A /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A11B7130DDB93009B360A /* Makefile */; };
+		0A6A123F130EE0A4009B360A /* quick_all_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A1229130EE0A4009B360A /* quick_all_module.f90 */; };
+		0A6A1241130EE0A4009B360A /* quick_amber_interface_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A122B130EE0A4009B360A /* quick_amber_interface_module.f90 */; };
+		0A6A1242130EE0A4009B360A /* quick_basis_module_.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A122C130EE0A4009B360A /* quick_basis_module_.f90 */; };
+		0A6A1243130EE0A4009B360A /* quick_calculated_module_.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A122D130EE0A4009B360A /* quick_calculated_module_.f90 */; };
+		0A6A1244130EE0A4009B360A /* quick_constants_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A122E130EE0A4009B360A /* quick_constants_module.f90 */; };
+		0A6A1245130EE0A4009B360A /* quick_divcon_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A122F130EE0A4009B360A /* quick_divcon_module.f90 */; };
+		0A6A1246130EE0A4009B360A /* quick_ecp_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A1230130EE0A4009B360A /* quick_ecp_module.f90 */; };
+		0A6A1247130EE0A4009B360A /* quick_electrondensity_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A1231130EE0A4009B360A /* quick_electrondensity_module.f90 */; };
+		0A6A1248130EE0A4009B360A /* quick_files_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A1232130EE0A4009B360A /* quick_files_module.f90 */; };
+		0A6A1249130EE0A4009B360A /* quick_gaussian_class_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A1233130EE0A4009B360A /* quick_gaussian_class_module.f90 */; };
+		0A6A124B130EE0A4009B360A /* quick_gridpoints_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A1235130EE0A4009B360A /* quick_gridpoints_module.f90 */; };
+		0A6A124C130EE0A4009B360A /* quick_mfcc_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A1236130EE0A4009B360A /* quick_mfcc_module.f90 */; };
+		0A6A124E130EE0A4009B360A /* quick_molspec_module_.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A1238130EE0A4009B360A /* quick_molspec_module_.f90 */; };
+		0A6A124F130EE0A4009B360A /* quick_mpi_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A1239130EE0A4009B360A /* quick_mpi_module.f90 */; };
+		0A6A1250130EE0A4009B360A /* quick_params_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A123A130EE0A4009B360A /* quick_params_module.f90 */; };
+		0A6A1251130EE0A4009B360A /* quick_pb_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A123B130EE0A4009B360A /* quick_pb_module.f90 */; };
+		0A6A1252130EE0A4009B360A /* quick_scratch_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A123C130EE0A4009B360A /* quick_scratch_module.f90 */; };
+		0A6A1253130EE0A4009B360A /* quick_size_module.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A123D130EE0A4009B360A /* quick_size_module.f90 */; };
+		0A6A1254130EE0A4009B360A /* quick_timer_module_.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A123E130EE0A4009B360A /* quick_timer_module_.f90 */; };
+		0A6A125B130EE62F009B360A /* quick_method_module_.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6A125A130EE62F009B360A /* quick_method_module_.f90 */; };
+		0AD3FB5C1315C08700E34039 /* lbfgs.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FB541315C08700E34039 /* lbfgs.f90 */; };
+		0AD3FB5F1315C08700E34039 /* sum2Mat.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FB571315C08700E34039 /* sum2Mat.f90 */; };
+		0AD3FBD41315C25100E34039 /* upcase.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FBD31315C25100E34039 /* upcase.f90 */; };
+		0AD3FBD61315C26500E34039 /* rdword.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FBD51315C26500E34039 /* rdword.f90 */; };
+		0AD3FBDA1315C2A000E34039 /* getNum.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FBD91315C2A000E34039 /* getNum.f90 */; };
+		0AD3FBDE1315C2E200E34039 /* rdinum.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FBDD1315C2E200E34039 /* rdinum.f90 */; };
+		0AD3FBE01315C2F100E34039 /* getinum.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FBDF1315C2F100E34039 /* getinum.f90 */; };
+		0AD3FBE21315C30100E34039 /* iwhole.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FBE11315C30100E34039 /* iwhole.f90 */; };
+		0AD3FBE41315C31400E34039 /* iatoi.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FBE31315C31400E34039 /* iatoi.f90 */; };
+		0AD3FC0A1315C46500E34039 /* vett.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC091315C46500E34039 /* vett.f90 */; };
+		0AD3FC0E1315C4A800E34039 /* PrtAct.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC0D1315C4A800E34039 /* PrtAct.f90 */; };
+		0AD3FC101315C4B400E34039 /* PrtWrn.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC0F1315C4B400E34039 /* PrtWrn.f90 */; };
+		0AD3FC121315C4C000E34039 /* PriCol.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC111315C4C000E34039 /* PriCol.f90 */; };
+		0AD3FC141315C51E00E34039 /* PriSym.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC131315C51E00E34039 /* PriSym.f90 */; };
+		0AD3FC161315C53000E34039 /* diag.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC151315C53000E34039 /* diag.f90 */; };
+		0AD3FC181315C57200E34039 /* tridi.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC171315C57200E34039 /* tridi.f90 */; };
+		0AD3FC1A1315C5A500E34039 /* eigval.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC191315C5A500E34039 /* eigval.f90 */; };
+		0AD3FC1C1315C5C100E34039 /* degen.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC1B1315C5C100E34039 /* degen.f90 */; };
+		0AD3FC1E1315C5F200E34039 /* eigvec.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC1D1315C5F200E34039 /* eigvec.f90 */; };
+		0AD3FC201315C60C00E34039 /* orthog.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC1F1315C60C00E34039 /* orthog.f90 */; };
+		0AD3FC221315C62800E34039 /* random.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC211315C62800E34039 /* random.f90 */; };
+		0AD3FC251315C64200E34039 /* PrtLab.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC241315C64200E34039 /* PrtLab.f90 */; };
+		0AD3FC271315C65500E34039 /* EffChar.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC261315C65500E34039 /* EffChar.f90 */; };
+		0AD3FC2B1315C6A600E34039 /* Lsolve.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC2A1315C6A600E34039 /* Lsolve.f90 */; };
+		0AD3FC2D1315C6C600E34039 /* ssw.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC2C1315C6C600E34039 /* ssw.f90 */; };
+		0AD3FC2F1315C6D100E34039 /* order.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC2E1315C6D100E34039 /* order.f90 */; };
+		0AD3FC331315C71D00E34039 /* Angles.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC321315C71D00E34039 /* Angles.f90 */; };
+		0AD3FC371315C75600E34039 /* copyDMat.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC361315C75600E34039 /* copyDMat.f90 */; };
+		0AD3FC391315C76300E34039 /* copySym.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC381315C76300E34039 /* copySym.f90 */; };
+		0AD3FC3B1315C77600E34039 /* matMul.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC3A1315C77600E34039 /* matMul.f90 */; };
+		0AD3FC3D1315C78600E34039 /* greedy_distrubute.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC3C1315C78600E34039 /* greedy_distrubute.f90 */; };
+		0AD3FC4D1315C82800E34039 /* denspt.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC3E1315C82800E34039 /* denspt.f90 */; };
+		0AD3FC4E1315C82800E34039 /* dipole.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC3F1315C82800E34039 /* dipole.f90 */; };
+		0AD3FC501315C82800E34039 /* hrr.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC411315C82800E34039 /* hrr.f90 */; };
+		0AD3FC511315C82800E34039 /* iatoimp.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC421315C82800E34039 /* iatoimp.f90 */; };
+		0AD3FC521315C82800E34039 /* PrtDat.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC431315C82800E34039 /* PrtDat.f90 */; };
+		0AD3FC531315C82800E34039 /* PrtTim.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC441315C82800E34039 /* PrtTim.f90 */; };
+		0AD3FC541315C82800E34039 /* pteval.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC451315C82800E34039 /* pteval.f90 */; };
+		0AD3FC551315C82800E34039 /* rdnum.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC461315C82800E34039 /* rdnum.f90 */; };
+		0AD3FC561315C82800E34039 /* spdfgh.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC471315C82800E34039 /* spdfgh.f90 */; };
+		0AD3FC571315C82800E34039 /* whatis.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC481315C82800E34039 /* whatis.f90 */; };
+		0AD3FC581315C82800E34039 /* whole.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC491315C82800E34039 /* whole.f90 */; };
+		0AD3FC591315C82800E34039 /* wrtRestart.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC4A1315C82800E34039 /* wrtRestart.f90 */; };
+		0AD3FC5A1315C82800E34039 /* xnorm.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC4B1315C82800E34039 /* xnorm.f90 */; };
+		0AD3FC5B1315C82800E34039 /* zmake.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FC4C1315C82800E34039 /* zmake.f90 */; };
+		0AD3FD7E13171C5000E34039 /* quick_open.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3FD7D13171C5000E34039 /* quick_open.f90 */; };
+		0AFB42DB131D683C008456E2 /* readPDB.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AFB42DA131D683C008456E2 /* readPDB.f90 */; };
+		0AFB440713213D5A008456E2 /* rdnml.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0AFB440613213D5A008456E2 /* rdnml.f90 */; };
+		8DD76FB00486AB0100D96B5E /* new_quick.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* new_quick.1 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76FAF0486AB0100D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				8DD76FB00486AB0100D96B5E /* new_quick.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0A07462E13281CE800CEC9FB /* basis.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = basis.f90; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.c; };
+		0A0747BF132A93F900CEC9FB /* zeroMatrix.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = zeroMatrix.f90; path = subs/zeroMatrix.f90; sourceTree = "<group>"; };
+		0A160FC31367330F0046BA7B /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = modules/Makefile; sourceTree = "<group>"; };
+		0A546A501326EFF0007CF0ED /* MFCC.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = MFCC.f90; sourceTree = "<group>"; };
+		0A6A04CB130DD9E2009B360A /* 3-21G */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "3-21G"; sourceTree = "<group>"; };
+		0A6A04CC130DD9E2009B360A /* 3-21G(D).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "3-21G(D).BAS"; sourceTree = "<group>"; };
+		0A6A04CD130DD9E2009B360A /* 3-21G(D,P).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "3-21G(D,P).BAS"; sourceTree = "<group>"; };
+		0A6A04CE130DD9E2009B360A /* 3-21G.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "3-21G.BAS"; sourceTree = "<group>"; };
+		0A6A04CF130DD9E2009B360A /* 6-311G */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G"; sourceTree = "<group>"; };
+		0A6A04D0130DD9E2009B360A /* 6-311G(2D,2P)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(2D,2P)++.BAS"; sourceTree = "<group>"; };
+		0A6A04D1130DD9E2009B360A /* 6-311G(2D,2P).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(2D,2P).BAS"; sourceTree = "<group>"; };
+		0A6A04D2130DD9E2009B360A /* 6-311G(2DF,2PD)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(2DF,2PD)++.BAS"; sourceTree = "<group>"; };
+		0A6A04D3130DD9E2009B360A /* 6-311G(2DF,2PD).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(2DF,2PD).BAS"; sourceTree = "<group>"; };
+		0A6A04D4130DD9E2009B360A /* 6-311G(D)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(D)++.BAS"; sourceTree = "<group>"; };
+		0A6A04D5130DD9E2009B360A /* 6-311G(D).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(D).BAS"; sourceTree = "<group>"; };
+		0A6A04D6130DD9E2009B360A /* 6-311G(D,P)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(D,P)++.BAS"; sourceTree = "<group>"; };
+		0A6A04D7130DD9E2009B360A /* 6-311G(D,P).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(D,P).BAS"; sourceTree = "<group>"; };
+		0A6A04D8130DD9E2009B360A /* 6-311G(DF,PD)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(DF,PD)++.BAS"; sourceTree = "<group>"; };
+		0A6A04D9130DD9E2009B360A /* 6-311G(DF,PD).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311G(DF,PD).BAS"; sourceTree = "<group>"; };
+		0A6A04DA130DD9E2009B360A /* 6-311GSS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-311GSS"; sourceTree = "<group>"; };
+		0A6A04DB130DD9E2009B360A /* 6-31G */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G"; sourceTree = "<group>"; };
+		0A6A04DC130DD9E2009B360A /* 6-31G(2D,2P)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(2D,2P)++.BAS"; sourceTree = "<group>"; };
+		0A6A04DD130DD9E2009B360A /* 6-31G(2D,2P).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(2D,2P).BAS"; sourceTree = "<group>"; };
+		0A6A04DE130DD9E2009B360A /* 6-31G(2DF,2PD)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(2DF,2PD)++.BAS"; sourceTree = "<group>"; };
+		0A6A04DF130DD9E2009B360A /* 6-31G(2DF,2PD).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(2DF,2PD).BAS"; sourceTree = "<group>"; };
+		0A6A04E0130DD9E2009B360A /* 6-31G(D)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(D)++.BAS"; sourceTree = "<group>"; };
+		0A6A04E1130DD9E2009B360A /* 6-31G(D).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(D).BAS"; sourceTree = "<group>"; };
+		0A6A04E2130DD9E2009B360A /* 6-31G(D,P)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(D,P)++.BAS"; sourceTree = "<group>"; };
+		0A6A04E3130DD9E2009B360A /* 6-31G(D,P).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(D,P).BAS"; sourceTree = "<group>"; };
+		0A6A04E4130DD9E2009B360A /* 6-31G(DF,PD)++.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(DF,PD)++.BAS"; sourceTree = "<group>"; };
+		0A6A04E5130DD9E2009B360A /* 6-31G(DF,PD).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G(DF,PD).BAS"; sourceTree = "<group>"; };
+		0A6A04E6130DD9E2009B360A /* 6-31G.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31G.BAS"; sourceTree = "<group>"; };
+		0A6A04E7130DD9E2009B360A /* 6-31GS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31GS"; sourceTree = "<group>"; };
+		0A6A04E8130DD9E2009B360A /* 6-31GSS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "6-31GSS"; sourceTree = "<group>"; };
+		0A6A04E9130DD9E2009B360A /* 6311PPGSS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 6311PPGSS; sourceTree = "<group>"; };
+		0A6A04EA130DD9E2009B360A /* 631PPGSS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 631PPGSS; sourceTree = "<group>"; };
+		0A6A04EB130DD9E2009B360A /* CC-PVDZ */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "CC-PVDZ"; sourceTree = "<group>"; };
+		0A6A04EC130DD9E2009B360A /* CC-PVDZ.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "CC-PVDZ.BAS"; sourceTree = "<group>"; };
+		0A6A04ED130DD9E2009B360A /* CC-PVQZ.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "CC-PVQZ.BAS"; sourceTree = "<group>"; };
+		0A6A04EE130DD9E2009B360A /* CC-PVTZ */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "CC-PVTZ"; sourceTree = "<group>"; };
+		0A6A04EF130DD9E2009B360A /* CC-PVTZ.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "CC-PVTZ.BAS"; sourceTree = "<group>"; };
+		0A6A04F0130DD9E2009B360A /* CUSTOM */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CUSTOM; sourceTree = "<group>"; };
+		0A6A04F1130DD9E2009B360A /* G3LARGE.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = G3LARGE.BAS; sourceTree = "<group>"; };
+		0A6A04F2130DD9E2009B360A /* G3MP2LARGE.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = G3MP2LARGE.BAS; sourceTree = "<group>"; };
+		0A6A04F3130DD9E2009B360A /* SBKJC_VDZ_ECP */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SBKJC_VDZ_ECP; sourceTree = "<group>"; };
+		0A6A04F4130DD9E2009B360A /* STO-3G */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "STO-3G"; sourceTree = "<group>"; };
+		0A6A04F5130DD9E2009B360A /* STO-3G.BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "STO-3G.BAS"; sourceTree = "<group>"; };
+		0A6A0579130DD9E4009B360A /* quick.graffle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = quick.graffle; sourceTree = "<group>"; };
+		0A6A057A130DD9E4009B360A /* quick.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = quick.pdf; sourceTree = "<group>"; };
+		0A6A057B130DD9E4009B360A /* QUICK_MPI.key */ = {isa = PBXFileReference; lastKnownFileType = file; path = QUICK_MPI.key; sourceTree = "<group>"; };
+		0A6A0597130DD9E4009B360A /* amber_interface.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = amber_interface.f90; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		0A6A0599130DD9E4009B360A /* calMP2.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = calMP2.f90; sourceTree = "<group>"; };
+		0A6A059C130DD9E4009B360A /* CPHF.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = CPHF.f90; sourceTree = "<group>"; };
+		0A6A059E130DD9E4009B360A /* quick_debug.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = quick_debug.f90; sourceTree = "<group>"; };
+		0A6A05A0130DD9E4009B360A /* dft.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = dft.f90; sourceTree = "<group>"; };
+		0A6A05A3130DD9E4009B360A /* ecp.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = ecp.f90; sourceTree = "<group>"; };
+		0A6A05A5130DD9E4009B360A /* fake_amber_interface.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = fake_amber_interface.f90; sourceTree = "<group>"; };
+		0A6A05A6130DD9E4009B360A /* finalize.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = finalize.f90; sourceTree = "<group>"; };
+		0A6A05A7130DD9E4009B360A /* fmm.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = fmm.f90; sourceTree = "<group>"; };
+		0A6A05A8130DD9E4009B360A /* frequency.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = frequency.f90; sourceTree = "<group>"; };
+		0A6A05AA130DD9E4009B360A /* getEnergy.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = getEnergy.f90; sourceTree = "<group>"; };
+		0A6A05AB130DD9E4009B360A /* getMol.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = getMol.f90; sourceTree = "<group>"; };
+		0A6A05AC130DD9E4009B360A /* getMolSad.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = getMolSad.f90; sourceTree = "<group>"; };
+		0A6A05AD130DD9E4009B360A /* gradient.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = gradient.f90; sourceTree = "<group>"; };
+		0A6A05AF130DD9E4009B360A /* hessian.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = hessian.f90; sourceTree = "<group>"; };
+		0A6A05B0130DD9E4009B360A /* hfoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = hfoperator.f90; sourceTree = "<group>"; };
+		0A6A05B2130DD9E4009B360A /* inidivcon.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = inidivcon.f90; sourceTree = "<group>"; };
+		0A6A05B3130DD9E4009B360A /* initialize.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = initialize.f90; sourceTree = "<group>"; };
+		0A6A05B6130DD9E4009B360A /* main.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = main.f90; sourceTree = "<group>"; };
+		0A6A05B9130DD9E4009B360A /* mpi_setup.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = mpi_setup.f90; sourceTree = "<group>"; };
+		0A6A05BA130DD9E4009B360A /* nuclear.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = nuclear.f90; sourceTree = "<group>"; };
+		0A6A05BB130DD9E4009B360A /* optimize.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = optimize.f90; sourceTree = "<group>"; };
+		0A6A05BF130DD9E4009B360A /* read_job_and_atom.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = read_job_and_atom.f90; sourceTree = "<group>"; };
+		0A6A05C1130DD9E4009B360A /* scf.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = scf.f90; sourceTree = "<group>"; };
+		0A6A05C2130DD9E4009B360A /* schwarz.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = schwarz.f90; sourceTree = "<group>"; };
+		0A6A05C3130DD9E4009B360A /* sedftoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = sedftoperator.f90; sourceTree = "<group>"; };
+		0A6A05C4130DD9E4009B360A /* shell.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = shell.f90; sourceTree = "<group>"; };
+		0A6A05C8130DD9E4009B360A /* udftoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = udftoperator.f90; sourceTree = "<group>"; };
+		0A6A05C9130DD9E4009B360A /* uelectdii.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = uelectdii.f90; sourceTree = "<group>"; };
+		0A6A05CA130DD9E4009B360A /* uhfoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = uhfoperator.f90; sourceTree = "<group>"; };
+		0A6A05CB130DD9E4009B360A /* uscf.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = uscf.f90; sourceTree = "<group>"; };
+		0A6A05CC130DD9E4009B360A /* usedftoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = usedftoperator.f90; sourceTree = "<group>"; };
+		0A6A11B7130DDB93009B360A /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		0A6A1229130EE0A4009B360A /* quick_all_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_all_module.f90; path = modules/quick_all_module.f90; sourceTree = "<group>"; };
+		0A6A122B130EE0A4009B360A /* quick_amber_interface_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_amber_interface_module.f90; path = modules/quick_amber_interface_module.f90; sourceTree = "<group>"; };
+		0A6A122C130EE0A4009B360A /* quick_basis_module_.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_basis_module_.f90; path = modules/quick_basis_module_.f90; sourceTree = "<group>"; };
+		0A6A122D130EE0A4009B360A /* quick_calculated_module_.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_calculated_module_.f90; path = modules/quick_calculated_module_.f90; sourceTree = "<group>"; };
+		0A6A122E130EE0A4009B360A /* quick_constants_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_constants_module.f90; path = modules/quick_constants_module.f90; sourceTree = "<group>"; };
+		0A6A122F130EE0A4009B360A /* quick_divcon_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_divcon_module.f90; path = modules/quick_divcon_module.f90; sourceTree = "<group>"; };
+		0A6A1230130EE0A4009B360A /* quick_ecp_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_ecp_module.f90; path = modules/quick_ecp_module.f90; sourceTree = "<group>"; };
+		0A6A1231130EE0A4009B360A /* quick_electrondensity_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_electrondensity_module.f90; path = modules/quick_electrondensity_module.f90; sourceTree = "<group>"; };
+		0A6A1232130EE0A4009B360A /* quick_files_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_files_module.f90; path = modules/quick_files_module.f90; sourceTree = "<group>"; };
+		0A6A1233130EE0A4009B360A /* quick_gaussian_class_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_gaussian_class_module.f90; path = modules/quick_gaussian_class_module.f90; sourceTree = "<group>"; };
+		0A6A1235130EE0A4009B360A /* quick_gridpoints_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_gridpoints_module.f90; path = modules/quick_gridpoints_module.f90; sourceTree = "<group>"; };
+		0A6A1236130EE0A4009B360A /* quick_mfcc_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_mfcc_module.f90; path = modules/quick_mfcc_module.f90; sourceTree = "<group>"; };
+		0A6A1238130EE0A4009B360A /* quick_molspec_module_.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_molspec_module_.f90; path = modules/quick_molspec_module_.f90; sourceTree = "<group>"; };
+		0A6A1239130EE0A4009B360A /* quick_mpi_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_mpi_module.f90; path = modules/quick_mpi_module.f90; sourceTree = "<group>"; };
+		0A6A123A130EE0A4009B360A /* quick_params_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_params_module.f90; path = modules/quick_params_module.f90; sourceTree = "<group>"; };
+		0A6A123B130EE0A4009B360A /* quick_pb_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_pb_module.f90; path = modules/quick_pb_module.f90; sourceTree = "<group>"; };
+		0A6A123C130EE0A4009B360A /* quick_scratch_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_scratch_module.f90; path = modules/quick_scratch_module.f90; sourceTree = "<group>"; };
+		0A6A123D130EE0A4009B360A /* quick_size_module.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_size_module.f90; path = modules/quick_size_module.f90; sourceTree = "<group>"; };
+		0A6A123E130EE0A4009B360A /* quick_timer_module_.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_timer_module_.f90; path = modules/quick_timer_module_.f90; sourceTree = "<group>"; };
+		0A6A125A130EE62F009B360A /* quick_method_module_.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_method_module_.f90; path = modules/quick_method_module_.f90; sourceTree = "<group>"; };
+		0A6A5F3F134B73E8002CA3E1 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		0A6A67C613538FDE002CA3E1 /* transpose.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = transpose.f90; path = subs/transpose.f90; sourceTree = "<group>"; };
+		0A6A68621354C174002CA3E1 /* quick_one_electron_integral.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = quick_one_electron_integral.f90; sourceTree = "<group>"; };
+		0A7122D713C764970085CD79 /* depend */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = depend; sourceTree = "<group>"; };
+		0AA68A1913ABD128005D9B9C /* Makefile.backup */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = Makefile.backup; sourceTree = "<group>"; };
+		0ABB963A135F945C0026657A /* gpu.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu.cu; path = cuda/gpu.cu; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		0ABB963B135F945C0026657A /* gpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpu.h; path = cuda/gpu.h; sourceTree = "<group>"; };
+		0ABB964A135FA7260026657A /* gpu_write_info.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = gpu_write_info.f90; path = cuda/gpu_write_info.f90; sourceTree = "<group>"; };
+		0ABB964C135FAD600026657A /* gpu_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpu_info.h; path = cuda/gpu_info.h; sourceTree = "<group>"; };
+		0ABB964D135FAD600026657A /* gpu_info.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu_info.cu; path = cuda/gpu_info.cu; sourceTree = "<group>"; };
+		0ABD36E413DF719700047E10 /* gpu_get2e.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu_get2e.cu; path = cuda/gpu_get2e.cu; sourceTree = "<group>"; };
+		0AC9F077135CD83200F99F88 /* matComp.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = matComp.f90; path = subs/matComp.f90; sourceTree = "<group>"; };
+		0AC9F33C135F3E2600F99F88 /* fmt.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = fmt.f90; path = subs/fmt.f90; sourceTree = "<group>"; };
+		0AD3FB541315C08700E34039 /* lbfgs.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = lbfgs.f90; path = subs/lbfgs.f90; sourceTree = "<group>"; };
+		0AD3FB571315C08700E34039 /* sum2Mat.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = sum2Mat.f90; path = subs/sum2Mat.f90; sourceTree = "<group>"; };
+		0AD3FBD31315C25100E34039 /* upcase.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = upcase.f90; path = subs/upcase.f90; sourceTree = "<group>"; };
+		0AD3FBD51315C26500E34039 /* rdword.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = rdword.f90; path = subs/rdword.f90; sourceTree = "<group>"; };
+		0AD3FBD91315C2A000E34039 /* getNum.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = getNum.f90; path = subs/getNum.f90; sourceTree = "<group>"; };
+		0AD3FBDD1315C2E200E34039 /* rdinum.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = rdinum.f90; path = subs/rdinum.f90; sourceTree = "<group>"; };
+		0AD3FBDF1315C2F100E34039 /* getinum.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = getinum.f90; path = subs/getinum.f90; sourceTree = "<group>"; };
+		0AD3FBE11315C30100E34039 /* iwhole.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = iwhole.f90; path = subs/iwhole.f90; sourceTree = "<group>"; };
+		0AD3FBE31315C31400E34039 /* iatoi.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = iatoi.f90; path = subs/iatoi.f90; sourceTree = "<group>"; };
+		0AD3FC091315C46500E34039 /* vett.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = vett.f90; path = subs/vett.f90; sourceTree = "<group>"; };
+		0AD3FC0D1315C4A800E34039 /* PrtAct.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = PrtAct.f90; path = subs/PrtAct.f90; sourceTree = "<group>"; };
+		0AD3FC0F1315C4B400E34039 /* PrtWrn.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = PrtWrn.f90; path = subs/PrtWrn.f90; sourceTree = "<group>"; };
+		0AD3FC111315C4C000E34039 /* PriCol.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = PriCol.f90; path = subs/PriCol.f90; sourceTree = "<group>"; };
+		0AD3FC131315C51E00E34039 /* PriSym.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = PriSym.f90; path = subs/PriSym.f90; sourceTree = "<group>"; };
+		0AD3FC151315C53000E34039 /* diag.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = diag.f90; path = subs/diag.f90; sourceTree = "<group>"; };
+		0AD3FC171315C57200E34039 /* tridi.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = tridi.f90; path = subs/tridi.f90; sourceTree = "<group>"; };
+		0AD3FC191315C5A500E34039 /* eigval.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = eigval.f90; path = subs/eigval.f90; sourceTree = "<group>"; };
+		0AD3FC1B1315C5C100E34039 /* degen.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = degen.f90; path = subs/degen.f90; sourceTree = "<group>"; };
+		0AD3FC1D1315C5F200E34039 /* eigvec.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = eigvec.f90; path = subs/eigvec.f90; sourceTree = "<group>"; };
+		0AD3FC1F1315C60C00E34039 /* orthog.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = orthog.f90; path = subs/orthog.f90; sourceTree = "<group>"; };
+		0AD3FC211315C62800E34039 /* random.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = random.f90; path = subs/random.f90; sourceTree = "<group>"; };
+		0AD3FC241315C64200E34039 /* PrtLab.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = PrtLab.f90; path = subs/PrtLab.f90; sourceTree = "<group>"; };
+		0AD3FC261315C65500E34039 /* EffChar.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = EffChar.f90; path = subs/EffChar.f90; sourceTree = "<group>"; };
+		0AD3FC2A1315C6A600E34039 /* Lsolve.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = Lsolve.f90; path = subs/Lsolve.f90; sourceTree = "<group>"; };
+		0AD3FC2C1315C6C600E34039 /* ssw.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = ssw.f90; path = subs/ssw.f90; sourceTree = "<group>"; };
+		0AD3FC2E1315C6D100E34039 /* order.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = order.f90; path = subs/order.f90; sourceTree = "<group>"; };
+		0AD3FC321315C71D00E34039 /* Angles.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = Angles.f90; path = subs/Angles.f90; sourceTree = "<group>"; };
+		0AD3FC361315C75600E34039 /* copyDMat.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = copyDMat.f90; path = subs/copyDMat.f90; sourceTree = "<group>"; };
+		0AD3FC381315C76300E34039 /* copySym.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = copySym.f90; path = subs/copySym.f90; sourceTree = "<group>"; };
+		0AD3FC3A1315C77600E34039 /* matMul.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = matMul.f90; path = subs/matMul.f90; sourceTree = "<group>"; };
+		0AD3FC3C1315C78600E34039 /* greedy_distrubute.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = greedy_distrubute.f90; path = subs/greedy_distrubute.f90; sourceTree = "<group>"; };
+		0AD3FC3E1315C82800E34039 /* denspt.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = denspt.f90; path = subs/denspt.f90; sourceTree = "<group>"; };
+		0AD3FC3F1315C82800E34039 /* dipole.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = dipole.f90; path = subs/dipole.f90; sourceTree = "<group>"; };
+		0AD3FC411315C82800E34039 /* hrr.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = hrr.f90; path = subs/hrr.f90; sourceTree = "<group>"; };
+		0AD3FC421315C82800E34039 /* iatoimp.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = iatoimp.f90; path = subs/iatoimp.f90; sourceTree = "<group>"; };
+		0AD3FC431315C82800E34039 /* PrtDat.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = PrtDat.f90; path = subs/PrtDat.f90; sourceTree = "<group>"; };
+		0AD3FC441315C82800E34039 /* PrtTim.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = PrtTim.f90; path = subs/PrtTim.f90; sourceTree = "<group>"; };
+		0AD3FC451315C82800E34039 /* pteval.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = pteval.f90; path = subs/pteval.f90; sourceTree = "<group>"; };
+		0AD3FC461315C82800E34039 /* rdnum.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = rdnum.f90; path = subs/rdnum.f90; sourceTree = "<group>"; };
+		0AD3FC471315C82800E34039 /* spdfgh.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = spdfgh.f90; path = subs/spdfgh.f90; sourceTree = "<group>"; };
+		0AD3FC481315C82800E34039 /* whatis.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = whatis.f90; path = subs/whatis.f90; sourceTree = "<group>"; };
+		0AD3FC491315C82800E34039 /* whole.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = whole.f90; path = subs/whole.f90; sourceTree = "<group>"; };
+		0AD3FC4A1315C82800E34039 /* wrtRestart.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = wrtRestart.f90; path = subs/wrtRestart.f90; sourceTree = "<group>"; };
+		0AD3FC4B1315C82800E34039 /* xnorm.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = xnorm.f90; path = subs/xnorm.f90; sourceTree = "<group>"; };
+		0AD3FC4C1315C82800E34039 /* zmake.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = zmake.f90; path = subs/zmake.f90; sourceTree = "<group>"; };
+		0AD3FD7D13171C5000E34039 /* quick_open.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = quick_open.f90; path = subs/quick_open.f90; sourceTree = "<group>"; };
+		0AE64231132181120042932C /* findBlock.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = findBlock.f90; path = subs/findBlock.f90; sourceTree = "<group>"; };
+		0AEDAB971396DB78002B9820 /* gpu_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpu_type.h; path = cuda/gpu_type.h; sourceTree = "<group>"; };
+		0AEDAB981396DB78002B9820 /* gpu_type.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu_type.cu; path = cuda/gpu_type.cu; sourceTree = "<group>"; };
+		0AEDAC5B13994F38002B9820 /* gpu_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpu_common.h; path = cuda/gpu_common.h; sourceTree = "<group>"; };
+		0AFB42DA131D683C008456E2 /* readPDB.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = readPDB.f90; path = subs/readPDB.f90; sourceTree = "<group>"; };
+		0AFB440613213D5A008456E2 /* rdnml.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = rdnml.f90; path = subs/rdnml.f90; sourceTree = "<group>"; };
+		0AFB446513214550008456E2 /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = version.h; path = include/version.h; sourceTree = "<group>"; };
+		8DD76FB20486AB0100D96B5E /* new_quick */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = new_quick; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6A0FF2C0290799A04C91782 /* new_quick.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = new_quick.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76FAD0486AB0100D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* new_quick */ = {
+			isa = PBXGroup;
+			children = (
+				0A26859111A5BB46002D1008 /* modules */,
+				08FB7795FE84155DC02AAC07 /* Source */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = new_quick;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				0A6A04CA130DD9E2009B360A /* basis */,
+				0A6A04F6130DD9E2009B360A /* bin */,
+				0A6A0578130DD9E4009B360A /* info */,
+				0A6A057C130DD9E4009B360A /* lib */,
+				0A6A0596130DD9E4009B360A /* src */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		0A26859111A5BB46002D1008 /* modules */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = modules;
+			sourceTree = "<group>";
+		};
+		0A6A04CA130DD9E2009B360A /* basis */ = {
+			isa = PBXGroup;
+			children = (
+				0A6A04CB130DD9E2009B360A /* 3-21G */,
+				0A6A04CC130DD9E2009B360A /* 3-21G(D).BAS */,
+				0A6A04CD130DD9E2009B360A /* 3-21G(D,P).BAS */,
+				0A6A04CE130DD9E2009B360A /* 3-21G.BAS */,
+				0A6A04CF130DD9E2009B360A /* 6-311G */,
+				0A6A04D0130DD9E2009B360A /* 6-311G(2D,2P)++.BAS */,
+				0A6A04D1130DD9E2009B360A /* 6-311G(2D,2P).BAS */,
+				0A6A04D2130DD9E2009B360A /* 6-311G(2DF,2PD)++.BAS */,
+				0A6A04D3130DD9E2009B360A /* 6-311G(2DF,2PD).BAS */,
+				0A6A04D4130DD9E2009B360A /* 6-311G(D)++.BAS */,
+				0A6A04D5130DD9E2009B360A /* 6-311G(D).BAS */,
+				0A6A04D6130DD9E2009B360A /* 6-311G(D,P)++.BAS */,
+				0A6A04D7130DD9E2009B360A /* 6-311G(D,P).BAS */,
+				0A6A04D8130DD9E2009B360A /* 6-311G(DF,PD)++.BAS */,
+				0A6A04D9130DD9E2009B360A /* 6-311G(DF,PD).BAS */,
+				0A6A04DA130DD9E2009B360A /* 6-311GSS */,
+				0A6A04DB130DD9E2009B360A /* 6-31G */,
+				0A6A04DC130DD9E2009B360A /* 6-31G(2D,2P)++.BAS */,
+				0A6A04DD130DD9E2009B360A /* 6-31G(2D,2P).BAS */,
+				0A6A04DE130DD9E2009B360A /* 6-31G(2DF,2PD)++.BAS */,
+				0A6A04DF130DD9E2009B360A /* 6-31G(2DF,2PD).BAS */,
+				0A6A04E0130DD9E2009B360A /* 6-31G(D)++.BAS */,
+				0A6A04E1130DD9E2009B360A /* 6-31G(D).BAS */,
+				0A6A04E2130DD9E2009B360A /* 6-31G(D,P)++.BAS */,
+				0A6A04E3130DD9E2009B360A /* 6-31G(D,P).BAS */,
+				0A6A04E4130DD9E2009B360A /* 6-31G(DF,PD)++.BAS */,
+				0A6A04E5130DD9E2009B360A /* 6-31G(DF,PD).BAS */,
+				0A6A04E6130DD9E2009B360A /* 6-31G.BAS */,
+				0A6A04E7130DD9E2009B360A /* 6-31GS */,
+				0A6A04E8130DD9E2009B360A /* 6-31GSS */,
+				0A6A04E9130DD9E2009B360A /* 6311PPGSS */,
+				0A6A04EA130DD9E2009B360A /* 631PPGSS */,
+				0A6A04EB130DD9E2009B360A /* CC-PVDZ */,
+				0A6A04EC130DD9E2009B360A /* CC-PVDZ.BAS */,
+				0A6A04ED130DD9E2009B360A /* CC-PVQZ.BAS */,
+				0A6A04EE130DD9E2009B360A /* CC-PVTZ */,
+				0A6A04EF130DD9E2009B360A /* CC-PVTZ.BAS */,
+				0A6A04F0130DD9E2009B360A /* CUSTOM */,
+				0A6A04F1130DD9E2009B360A /* G3LARGE.BAS */,
+				0A6A04F2130DD9E2009B360A /* G3MP2LARGE.BAS */,
+				0A6A04F3130DD9E2009B360A /* SBKJC_VDZ_ECP */,
+				0A6A04F4130DD9E2009B360A /* STO-3G */,
+				0A6A04F5130DD9E2009B360A /* STO-3G.BAS */,
+			);
+			path = basis;
+			sourceTree = "<group>";
+		};
+		0A6A04F6130DD9E2009B360A /* bin */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = bin;
+			sourceTree = "<group>";
+		};
+		0A6A0578130DD9E4009B360A /* info */ = {
+			isa = PBXGroup;
+			children = (
+				0A6A0579130DD9E4009B360A /* quick.graffle */,
+				0A6A057A130DD9E4009B360A /* quick.pdf */,
+				0A6A057B130DD9E4009B360A /* QUICK_MPI.key */,
+			);
+			path = info;
+			sourceTree = "<group>";
+		};
+		0A6A057C130DD9E4009B360A /* lib */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		0A6A0596130DD9E4009B360A /* src */ = {
+			isa = PBXGroup;
+			children = (
+				0A7122D713C764970085CD79 /* depend */,
+				0AA68A1913ABD128005D9B9C /* Makefile.backup */,
+				0AC9F402135F69B200F99F88 /* cuda */,
+				0A6A5F3F134B73E8002CA3E1 /* config.h */,
+				0AFB445613214528008456E2 /* include */,
+				0A6A11CE130DDE2F009B360A /* modules */,
+				0AD3FADF1315BD1800E34039 /* subs */,
+				0A6A11B7130DDB93009B360A /* Makefile */,
+				0A6A68621354C174002CA3E1 /* quick_one_electron_integral.f90 */,
+				0A6A059E130DD9E4009B360A /* quick_debug.f90 */,
+				0A07462E13281CE800CEC9FB /* basis.f90 */,
+				0A6A0597130DD9E4009B360A /* amber_interface.f90 */,
+				0A6A0599130DD9E4009B360A /* calMP2.f90 */,
+				0A6A059C130DD9E4009B360A /* CPHF.f90 */,
+				0AD3FC3F1315C82800E34039 /* dipole.f90 */,
+				0A6A05A0130DD9E4009B360A /* dft.f90 */,
+				0A6A05A3130DD9E4009B360A /* ecp.f90 */,
+				0A6A05A5130DD9E4009B360A /* fake_amber_interface.f90 */,
+				0A6A05A6130DD9E4009B360A /* finalize.f90 */,
+				0A6A05A7130DD9E4009B360A /* fmm.f90 */,
+				0A6A05A8130DD9E4009B360A /* frequency.f90 */,
+				0A6A05AA130DD9E4009B360A /* getEnergy.f90 */,
+				0A6A05AB130DD9E4009B360A /* getMol.f90 */,
+				0A6A05AC130DD9E4009B360A /* getMolSad.f90 */,
+				0A6A05AD130DD9E4009B360A /* gradient.f90 */,
+				0A6A05AF130DD9E4009B360A /* hessian.f90 */,
+				0A6A05B0130DD9E4009B360A /* hfoperator.f90 */,
+				0A6A05B2130DD9E4009B360A /* inidivcon.f90 */,
+				0A6A05B3130DD9E4009B360A /* initialize.f90 */,
+				0A6A05B6130DD9E4009B360A /* main.f90 */,
+				0A6A05B9130DD9E4009B360A /* mpi_setup.f90 */,
+				0A6A05BA130DD9E4009B360A /* nuclear.f90 */,
+				0A6A05BB130DD9E4009B360A /* optimize.f90 */,
+				0A6A05BF130DD9E4009B360A /* read_job_and_atom.f90 */,
+				0A6A05C1130DD9E4009B360A /* scf.f90 */,
+				0A6A05C2130DD9E4009B360A /* schwarz.f90 */,
+				0A6A05C3130DD9E4009B360A /* sedftoperator.f90 */,
+				0A6A05C4130DD9E4009B360A /* shell.f90 */,
+				0A6A05C8130DD9E4009B360A /* udftoperator.f90 */,
+				0A6A05C9130DD9E4009B360A /* uelectdii.f90 */,
+				0A6A05CA130DD9E4009B360A /* uhfoperator.f90 */,
+				0A6A05CB130DD9E4009B360A /* uscf.f90 */,
+				0A6A05CC130DD9E4009B360A /* usedftoperator.f90 */,
+				0A546A501326EFF0007CF0ED /* MFCC.f90 */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		0A6A11CE130DDE2F009B360A /* modules */ = {
+			isa = PBXGroup;
+			children = (
+				0A6A1229130EE0A4009B360A /* quick_all_module.f90 */,
+				0A6A122B130EE0A4009B360A /* quick_amber_interface_module.f90 */,
+				0A6A122C130EE0A4009B360A /* quick_basis_module_.f90 */,
+				0A6A122D130EE0A4009B360A /* quick_calculated_module_.f90 */,
+				0A6A122E130EE0A4009B360A /* quick_constants_module.f90 */,
+				0A6A122F130EE0A4009B360A /* quick_divcon_module.f90 */,
+				0A6A1230130EE0A4009B360A /* quick_ecp_module.f90 */,
+				0A6A1231130EE0A4009B360A /* quick_electrondensity_module.f90 */,
+				0A6A1232130EE0A4009B360A /* quick_files_module.f90 */,
+				0A6A1233130EE0A4009B360A /* quick_gaussian_class_module.f90 */,
+				0A6A1235130EE0A4009B360A /* quick_gridpoints_module.f90 */,
+				0A6A1236130EE0A4009B360A /* quick_mfcc_module.f90 */,
+				0A6A1238130EE0A4009B360A /* quick_molspec_module_.f90 */,
+				0A6A1239130EE0A4009B360A /* quick_mpi_module.f90 */,
+				0A6A123A130EE0A4009B360A /* quick_params_module.f90 */,
+				0A6A123B130EE0A4009B360A /* quick_pb_module.f90 */,
+				0A6A123C130EE0A4009B360A /* quick_scratch_module.f90 */,
+				0A6A123D130EE0A4009B360A /* quick_size_module.f90 */,
+				0A6A123E130EE0A4009B360A /* quick_timer_module_.f90 */,
+				0A6A125A130EE62F009B360A /* quick_method_module_.f90 */,
+				0A160FC31367330F0046BA7B /* Makefile */,
+			);
+			name = modules;
+			sourceTree = "<group>";
+		};
+		0AC9F402135F69B200F99F88 /* cuda */ = {
+			isa = PBXGroup;
+			children = (
+				0ABD36E413DF719700047E10 /* gpu_get2e.cu */,
+				0ABB963A135F945C0026657A /* gpu.cu */,
+				0ABB963B135F945C0026657A /* gpu.h */,
+				0ABB964C135FAD600026657A /* gpu_info.h */,
+				0ABB964D135FAD600026657A /* gpu_info.cu */,
+				0ABB964A135FA7260026657A /* gpu_write_info.f90 */,
+				0AEDAC5B13994F38002B9820 /* gpu_common.h */,
+				0AEDAB971396DB78002B9820 /* gpu_type.h */,
+				0AEDAB981396DB78002B9820 /* gpu_type.cu */,
+			);
+			name = cuda;
+			sourceTree = "<group>";
+		};
+		0AD3FADF1315BD1800E34039 /* subs */ = {
+			isa = PBXGroup;
+			children = (
+				0AD3FC3E1315C82800E34039 /* denspt.f90 */,
+				0AFB440613213D5A008456E2 /* rdnml.f90 */,
+				0A0747BF132A93F900CEC9FB /* zeroMatrix.f90 */,
+				0AD3FC411315C82800E34039 /* hrr.f90 */,
+				0AD3FC421315C82800E34039 /* iatoimp.f90 */,
+				0AD3FC431315C82800E34039 /* PrtDat.f90 */,
+				0AD3FC441315C82800E34039 /* PrtTim.f90 */,
+				0AD3FC451315C82800E34039 /* pteval.f90 */,
+				0AD3FC461315C82800E34039 /* rdnum.f90 */,
+				0AD3FC471315C82800E34039 /* spdfgh.f90 */,
+				0AD3FC481315C82800E34039 /* whatis.f90 */,
+				0AD3FC491315C82800E34039 /* whole.f90 */,
+				0AD3FC4A1315C82800E34039 /* wrtRestart.f90 */,
+				0AD3FC4B1315C82800E34039 /* xnorm.f90 */,
+				0AD3FC4C1315C82800E34039 /* zmake.f90 */,
+				0AD3FC3C1315C78600E34039 /* greedy_distrubute.f90 */,
+				0AD3FC3A1315C77600E34039 /* matMul.f90 */,
+				0AD3FC381315C76300E34039 /* copySym.f90 */,
+				0AD3FC361315C75600E34039 /* copyDMat.f90 */,
+				0AD3FC321315C71D00E34039 /* Angles.f90 */,
+				0AD3FC2E1315C6D100E34039 /* order.f90 */,
+				0AD3FC2C1315C6C600E34039 /* ssw.f90 */,
+				0AD3FC2A1315C6A600E34039 /* Lsolve.f90 */,
+				0AD3FC261315C65500E34039 /* EffChar.f90 */,
+				0AD3FC241315C64200E34039 /* PrtLab.f90 */,
+				0AD3FC211315C62800E34039 /* random.f90 */,
+				0AD3FC1F1315C60C00E34039 /* orthog.f90 */,
+				0AD3FC1D1315C5F200E34039 /* eigvec.f90 */,
+				0AD3FC1B1315C5C100E34039 /* degen.f90 */,
+				0AD3FC191315C5A500E34039 /* eigval.f90 */,
+				0AD3FC171315C57200E34039 /* tridi.f90 */,
+				0AD3FC151315C53000E34039 /* diag.f90 */,
+				0AD3FC131315C51E00E34039 /* PriSym.f90 */,
+				0AD3FC111315C4C000E34039 /* PriCol.f90 */,
+				0AD3FC0F1315C4B400E34039 /* PrtWrn.f90 */,
+				0AD3FC0D1315C4A800E34039 /* PrtAct.f90 */,
+				0AD3FBE31315C31400E34039 /* iatoi.f90 */,
+				0A6A67C613538FDE002CA3E1 /* transpose.f90 */,
+				0AD3FBE11315C30100E34039 /* iwhole.f90 */,
+				0AD3FBDF1315C2F100E34039 /* getinum.f90 */,
+				0AD3FBDD1315C2E200E34039 /* rdinum.f90 */,
+				0AD3FBD91315C2A000E34039 /* getNum.f90 */,
+				0AD3FBD51315C26500E34039 /* rdword.f90 */,
+				0AD3FBD31315C25100E34039 /* upcase.f90 */,
+				0AD3FB541315C08700E34039 /* lbfgs.f90 */,
+				0AD3FB571315C08700E34039 /* sum2Mat.f90 */,
+				0AD3FC091315C46500E34039 /* vett.f90 */,
+				0AD3FD7D13171C5000E34039 /* quick_open.f90 */,
+				0AC9F33C135F3E2600F99F88 /* fmt.f90 */,
+				0AFB42DA131D683C008456E2 /* readPDB.f90 */,
+				0AE64231132181120042932C /* findBlock.f90 */,
+				0AC9F077135CD83200F99F88 /* matComp.f90 */,
+			);
+			name = subs;
+			sourceTree = "<group>";
+		};
+		0AFB445613214528008456E2 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				0AFB446513214550008456E2 /* version.h */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76FB20486AB0100D96B5E /* new_quick */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				C6A0FF2C0290799A04C91782 /* new_quick.1 */,
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		0A9FB48B126F58E300D1BF58 /* build_with_make */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION) quick.cuda";
+			buildConfigurationList = 0A9FB49C126F58EB00D1BF58 /* Build configuration list for PBXLegacyTarget "build_with_make" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = /Users/miao/Workspace/new_quick/src;
+			dependencies = (
+			);
+			name = build_with_make;
+			passBuildSettingsInEnvironment = 1;
+			productName = build_with_make;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		8DD76FA90486AB0100D96B5E /* new_quick */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "new_quick" */;
+			buildPhases = (
+				8DD76FAB0486AB0100D96B5E /* Sources */,
+				8DD76FAD0486AB0100D96B5E /* Frameworks */,
+				8DD76FAF0486AB0100D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = new_quick;
+			productInstallPath = "$(HOME)/bin";
+			productName = new_quick;
+			productReference = 8DD76FB20486AB0100D96B5E /* new_quick */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "new_quick" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* new_quick */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DD76FA90486AB0100D96B5E /* new_quick */,
+				0A9FB48B126F58E300D1BF58 /* build_with_make */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76FAB0486AB0100D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A6A113F130DD9E5009B360A /* amber_interface.f90 in Sources */,
+				0A6A1141130DD9E5009B360A /* calMP2.f90 in Sources */,
+				0A6A1143130DD9E5009B360A /* CPHF.f90 in Sources */,
+				0A6A1145130DD9E5009B360A /* quick_debug.f90 in Sources */,
+				0A6A1147130DD9E5009B360A /* dft.f90 in Sources */,
+				0A6A114A130DD9E5009B360A /* ecp.f90 in Sources */,
+				0A6A114C130DD9E5009B360A /* fake_amber_interface.f90 in Sources */,
+				0A6A114D130DD9E5009B360A /* finalize.f90 in Sources */,
+				0A6A114E130DD9E5009B360A /* fmm.f90 in Sources */,
+				0A6A114F130DD9E5009B360A /* frequency.f90 in Sources */,
+				0A6A1151130DD9E5009B360A /* getEnergy.f90 in Sources */,
+				0A6A1152130DD9E5009B360A /* getMol.f90 in Sources */,
+				0A6A1153130DD9E5009B360A /* getMolSad.f90 in Sources */,
+				0A6A1154130DD9E5009B360A /* gradient.f90 in Sources */,
+				0A6A1156130DD9E5009B360A /* hessian.f90 in Sources */,
+				0A6A1157130DD9E5009B360A /* hfoperator.f90 in Sources */,
+				0A6A1159130DD9E5009B360A /* inidivcon.f90 in Sources */,
+				0A6A115A130DD9E5009B360A /* initialize.f90 in Sources */,
+				0A6A115D130DD9E5009B360A /* main.f90 in Sources */,
+				0A6A1160130DD9E5009B360A /* mpi_setup.f90 in Sources */,
+				0A6A1161130DD9E5009B360A /* nuclear.f90 in Sources */,
+				0A6A1162130DD9E5009B360A /* optimize.f90 in Sources */,
+				0A6A1166130DD9E5009B360A /* read_job_and_atom.f90 in Sources */,
+				0A6A1168130DD9E5009B360A /* scf.f90 in Sources */,
+				0A6A1169130DD9E5009B360A /* schwarz.f90 in Sources */,
+				0A6A116A130DD9E5009B360A /* sedftoperator.f90 in Sources */,
+				0A6A116B130DD9E5009B360A /* shell.f90 in Sources */,
+				0A6A116F130DD9E5009B360A /* udftoperator.f90 in Sources */,
+				0A6A1170130DD9E5009B360A /* uelectdii.f90 in Sources */,
+				0A6A1171130DD9E5009B360A /* uhfoperator.f90 in Sources */,
+				0A6A1172130DD9E5009B360A /* uscf.f90 in Sources */,
+				0A6A1173130DD9E5009B360A /* usedftoperator.f90 in Sources */,
+				0A6A11B8130DDB93009B360A /* Makefile in Sources */,
+				0A6A123F130EE0A4009B360A /* quick_all_module.f90 in Sources */,
+				0A6A1241130EE0A4009B360A /* quick_amber_interface_module.f90 in Sources */,
+				0A6A1242130EE0A4009B360A /* quick_basis_module_.f90 in Sources */,
+				0A6A1243130EE0A4009B360A /* quick_calculated_module_.f90 in Sources */,
+				0A6A1244130EE0A4009B360A /* quick_constants_module.f90 in Sources */,
+				0A6A1245130EE0A4009B360A /* quick_divcon_module.f90 in Sources */,
+				0A6A1246130EE0A4009B360A /* quick_ecp_module.f90 in Sources */,
+				0A6A1247130EE0A4009B360A /* quick_electrondensity_module.f90 in Sources */,
+				0A6A1248130EE0A4009B360A /* quick_files_module.f90 in Sources */,
+				0A6A1249130EE0A4009B360A /* quick_gaussian_class_module.f90 in Sources */,
+				0A6A124B130EE0A4009B360A /* quick_gridpoints_module.f90 in Sources */,
+				0A6A124C130EE0A4009B360A /* quick_mfcc_module.f90 in Sources */,
+				0A6A124E130EE0A4009B360A /* quick_molspec_module_.f90 in Sources */,
+				0A6A124F130EE0A4009B360A /* quick_mpi_module.f90 in Sources */,
+				0A6A1250130EE0A4009B360A /* quick_params_module.f90 in Sources */,
+				0A6A1251130EE0A4009B360A /* quick_pb_module.f90 in Sources */,
+				0A6A1252130EE0A4009B360A /* quick_scratch_module.f90 in Sources */,
+				0A6A1253130EE0A4009B360A /* quick_size_module.f90 in Sources */,
+				0A6A1254130EE0A4009B360A /* quick_timer_module_.f90 in Sources */,
+				0A6A125B130EE62F009B360A /* quick_method_module_.f90 in Sources */,
+				0AD3FB5C1315C08700E34039 /* lbfgs.f90 in Sources */,
+				0AD3FB5F1315C08700E34039 /* sum2Mat.f90 in Sources */,
+				0AD3FBD41315C25100E34039 /* upcase.f90 in Sources */,
+				0AD3FBD61315C26500E34039 /* rdword.f90 in Sources */,
+				0AD3FBDA1315C2A000E34039 /* getNum.f90 in Sources */,
+				0AD3FBDE1315C2E200E34039 /* rdinum.f90 in Sources */,
+				0AD3FBE01315C2F100E34039 /* getinum.f90 in Sources */,
+				0AD3FBE21315C30100E34039 /* iwhole.f90 in Sources */,
+				0AD3FBE41315C31400E34039 /* iatoi.f90 in Sources */,
+				0AD3FC0A1315C46500E34039 /* vett.f90 in Sources */,
+				0AD3FC0E1315C4A800E34039 /* PrtAct.f90 in Sources */,
+				0AD3FC101315C4B400E34039 /* PrtWrn.f90 in Sources */,
+				0AD3FC121315C4C000E34039 /* PriCol.f90 in Sources */,
+				0AD3FC141315C51E00E34039 /* PriSym.f90 in Sources */,
+				0AD3FC161315C53000E34039 /* diag.f90 in Sources */,
+				0AD3FC181315C57200E34039 /* tridi.f90 in Sources */,
+				0AD3FC1A1315C5A500E34039 /* eigval.f90 in Sources */,
+				0AD3FC1C1315C5C100E34039 /* degen.f90 in Sources */,
+				0AD3FC1E1315C5F200E34039 /* eigvec.f90 in Sources */,
+				0AD3FC201315C60C00E34039 /* orthog.f90 in Sources */,
+				0AD3FC221315C62800E34039 /* random.f90 in Sources */,
+				0AD3FC251315C64200E34039 /* PrtLab.f90 in Sources */,
+				0AD3FC271315C65500E34039 /* EffChar.f90 in Sources */,
+				0AD3FC2B1315C6A600E34039 /* Lsolve.f90 in Sources */,
+				0AD3FC2D1315C6C600E34039 /* ssw.f90 in Sources */,
+				0AD3FC2F1315C6D100E34039 /* order.f90 in Sources */,
+				0AD3FC331315C71D00E34039 /* Angles.f90 in Sources */,
+				0AD3FC371315C75600E34039 /* copyDMat.f90 in Sources */,
+				0AD3FC391315C76300E34039 /* copySym.f90 in Sources */,
+				0AD3FC3B1315C77600E34039 /* matMul.f90 in Sources */,
+				0AD3FC3D1315C78600E34039 /* greedy_distrubute.f90 in Sources */,
+				0AD3FC4D1315C82800E34039 /* denspt.f90 in Sources */,
+				0AD3FC4E1315C82800E34039 /* dipole.f90 in Sources */,
+				0AD3FC501315C82800E34039 /* hrr.f90 in Sources */,
+				0AD3FC511315C82800E34039 /* iatoimp.f90 in Sources */,
+				0AD3FC521315C82800E34039 /* PrtDat.f90 in Sources */,
+				0AD3FC531315C82800E34039 /* PrtTim.f90 in Sources */,
+				0AD3FC541315C82800E34039 /* pteval.f90 in Sources */,
+				0AD3FC551315C82800E34039 /* rdnum.f90 in Sources */,
+				0AD3FC561315C82800E34039 /* spdfgh.f90 in Sources */,
+				0AD3FC571315C82800E34039 /* whatis.f90 in Sources */,
+				0AD3FC581315C82800E34039 /* whole.f90 in Sources */,
+				0AD3FC591315C82800E34039 /* wrtRestart.f90 in Sources */,
+				0AD3FC5A1315C82800E34039 /* xnorm.f90 in Sources */,
+				0AD3FC5B1315C82800E34039 /* zmake.f90 in Sources */,
+				0AD3FD7E13171C5000E34039 /* quick_open.f90 in Sources */,
+				0AFB42DB131D683C008456E2 /* readPDB.f90 in Sources */,
+				0AFB440713213D5A008456E2 /* rdnml.f90 in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0A9FB48C126F58E300D1BF58 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = build_with_make;
+			};
+			name = Debug;
+		};
+		0A9FB48D126F58E300D1BF58 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = build_with_make;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		1DEB928608733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PRODUCT_NAME = new_quick;
+			};
+			name = Debug;
+		};
+		1DEB928708733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PRODUCT_NAME = new_quick;
+			};
+			name = Release;
+		};
+		1DEB928A08733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		1DEB928B08733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0A9FB49C126F58EB00D1BF58 /* Build configuration list for PBXLegacyTarget "build_with_make" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A9FB48C126F58E300D1BF58 /* Debug */,
+				0A9FB48D126F58E300D1BF58 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "new_quick" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928608733DD80010E9CD /* Debug */,
+				1DEB928708733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "new_quick" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928A08733DD80010E9CD /* Debug */,
+				1DEB928B08733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

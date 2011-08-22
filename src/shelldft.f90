@@ -70,9 +70,9 @@ ITT=0
               do KKK=1,Kprim(KK)
                 Nprik=kstart(KK)+KKK-1
                        cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-!                       print*,cutoffprim,primlimit
+!                       print*,cutoffprim,quick_method%primLimit
 !                       stop
-                     If(cutoffprim.gt.primlimit)then
+                     If(cutoffprim.gt.quick_method%primLimit)then
                        CD=Apri(Nprik,Npril)
                        ABCD=AB+CD
                        ROU=AB*CD/ABCD
@@ -187,7 +187,7 @@ ITT=0
               do KKK=1,Kprim(KK)
                 Nprik=kstart(KK)+KKK-1
                        cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-                     If(cutoffprim.gt.primlimit)then
+                     If(cutoffprim.gt.quick_method%primLimit)then
                        ITT=ITT+1
                        X44(ITT)=X2*XCoeff(Nprik,Npril,K,L)
                      endif
@@ -479,9 +479,9 @@ ITT=0
               do KKK=1,Kprim(KK)
                 Nprik=kstart(KK)+KKK-1
                        cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-!                       print*,cutoffprim,primlimit
+!                       print*,cutoffprim,quick_method%primLimit
 !                       stop
-                     If(cutoffprim.gt.primlimit)then
+                     If(cutoffprim.gt.quick_method%primLimit)then
                        CD=Apri(Nprik,Npril)
                        ABCD=AB+CD
                        ROU=AB*CD/ABCD
@@ -596,7 +596,7 @@ ITT=0
               do KKK=1,Kprim(KK)
                 Nprik=kstart(KK)+KKK-1
                        cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-                     If(cutoffprim.gt.primlimit)then
+                     If(cutoffprim.gt.quick_method%primLimit)then
                        ITT=ITT+1
                        X44(ITT)=X2*XCoeff(Nprik,Npril,K,L)
                      endif

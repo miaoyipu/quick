@@ -6,18 +6,81 @@
 !	Copyright 2011 University of Florida. All rights reserved.
 !
 
-!********************************************************
-! Contants module
-!--------------------------------------------------------
-!
-    module quick_constants_module
+!  Contants module. Store inportant constant. Most of them are attached with
+!  parameter property
+
+module quick_constants_module
     implicit none
+    ! general floating point constants
+    
+    double precision,parameter :: TEN_TO_MINUS1 = 1.0d-1
+    double precision,parameter :: TEN_TO_MINUS2 = 1.0d-2
+    double precision,parameter :: TEN_TO_MINUS3 = 1.0d-3
+    double precision,parameter :: TEN_TO_MINUS4 = 1.0d-4
+    double precision,parameter :: TEN_TO_MINUS5 = 1.0d-5
+    double precision,parameter :: TEN_TO_MINUS6 = 1.0d-6
+    double precision,parameter :: TEN_TO_MINUS7 = 1.0d-7
+    double precision,parameter :: TEN_TO_MINUS8 = 1.0d-8
+    double precision,parameter :: TEN_TO_MINUS9 = 1.0d-9
+    double precision,parameter :: TEN_TO_MINUS10= 1.0d-10
+    double precision,parameter :: TEN_TO_MINUS11= 1.0d-11
+    double precision,parameter :: TEN_TO_MINUS12= 1.0d-12
+    double precision,parameter :: TEN_TO_MINUS13= 1.0d-13
+    double precision,parameter :: TEN_TO_MINUS14= 1.0d-14
+    double precision,parameter :: TEN_TO_MINUS15= 1.0d-15
+    double precision,parameter :: TEN_TO_MINUS16= 1.0d-16
+    double precision,parameter :: TEN_TO_MINUS17= 1.0d-17
+    
+    
+    double precision,parameter :: ZERO      =0.0d0
+    double precision,parameter :: ONE       =1.0d0
+    double precision,parameter :: TWO       =2.0d0
+    double precision,parameter :: THREE     =3.0d0
+    double precision,parameter :: FOUR      =4.0d0
+    double precision,parameter :: FIVE      =5.0d0
+    double precision,parameter :: SIX       =6.0d0
+    double precision,parameter :: SEVEN     =7.0d0
+    double precision,parameter :: EIGHT     =8.0d0
+    double precision,parameter :: NING      =9.0d0
+    double precision,parameter :: TEN       =10.0d0
+    double precision,parameter :: SIXTEEN   =16.0d0
+    double precision,parameter :: THRITYTWO =32.0d0
+    double precision,parameter :: SIXTYFOUR =64.0d0
+    
+    ! some mathmatical constants
+    double precision, parameter :: PI = 3.1415926535897932384626433832795d0
+    double precision, parameter :: PITO3HALF = PI**1.5
+    double precision, parameter :: PITO2 = PI*PI
+    double precision, parameter :: X0 = 2.0d0*(PI)**(2.5d0)
+!    double precision, parameter :: X00 = 1.0d0
 
-    double precision :: PI,X0,X00,integralCutoff,integralCutoff1,primLimit,gradCutoff,PIto3half
- 
-    double precision, parameter :: bohr = 0.5291772083d0
+    ! some physical constants
+    double precision, parameter :: BOHR = 0.5291772083d0        ! bohr constant
+    double precision, parameter :: HBAR = 627.509d0 * 0.0241888d-3 * 20.455d0
+                                                                !Planck's constant in internal units
+    double precision, parameter :: BOLTZMANN = 1.380658d-23     !Boltzmann's constant in J/K
+    double precision, parameter :: AVOGADRO = 6.0221367d+23     !Avogadro's number
+    double precision, parameter :: CHARGE_ON_ELEC = 1.60217733d-19
+                                                                !Charge on an electron in Coulombs
+    
+    ! some unit convertor
+    double precision, parameter :: J_PER_CAL    = 4.184d0
+    double precision, parameter :: JPKC         = J_PER_CAL * 1000.0d0  !kilocalories per joule
+    
+    double precision, parameter :: BOHRS_TO_A   = 0.529177083D0         ! Bohrs to A, same with bohr constant
+    double precision, parameter :: A_TO_BOHRS   = 1.0d0 / BOHRS_TO_A
+    
+    double precision, parameter :: AU_TO_EV     = 27.21d0               !Conversion from AU to EV 
+    double precision, parameter :: EV_TO_AU     = 1.0d0/AU_TO_EV
+    double precision, parameter :: EV_TO_KCAL   = 23.061d0              ! conversion from EV to KCAL
+    double precision, parameter :: KCAL_TO_EV   = 1.0d0/EV_TO_KCAL
+    double precision, parameter :: AU_TO_KCAL   = AU_TO_EV*EV_TO_KCAL
+    double precision, parameter :: KCAL_TO_AU   = 1.0d0/AU_TO_KCAL
+    
 
-    character(len=2), dimension(0:92) :: symbol = &
+    integer, parameter :: SYMBOL_MAX = 92       ! Max element supported
+    
+    character(len=2), dimension(0:92) :: SYMBOL = &
    & (/'XX','H ','HE','LI','BE','B ','C ','N ','O ','F ','NE', &
    & 'NA','MG','AL','SI','P ','S ','CL','AR','K ','CA', &
    & 'SC','TI','V ','CR','MN','FE','CO','NI','CU','ZN', &
@@ -29,11 +92,9 @@
    & 'TL','PB','BI','PO','AT','RN','FR','RA','AC','TH', &
    & 'PA','U '/)
 
-    character(len=2), dimension(1:10) :: atomXiao
+    double precision, dimension(0:83) :: EMASS
 
-    double precision, dimension(0:83) :: eMass
-
-    data emass &
+    data EMASS &
     /0.d0, 1.0079d0, 4.0026d0, 6.941d0, 9.01218d0, &
     10.81d0, 12.011d0,14.0067d0, 15.99994d0, 18.99840d0, &
     20.179d0, 22.9898d0, 24.305d0, 26.98154d0, 28.0855d0, &
@@ -50,7 +111,7 @@
     207.200d0, 208.9804d0/
 
 
-    double precision, dimension(-2:30) :: fact = &
+    double precision, dimension(-2:30) :: FACT = &
     (/   0.d0,0.d0,1.d0,1.d0,  2.000000000000000D0, &
     6.000000000000000D0,24.00000000000000D0   , &
     120.0000000000000D0,720.0000000000000D0   , &
@@ -67,21 +128,22 @@
     1.0888869450418352D+28,3.0488834461171384D+29, &
     8.8417619937397008D+30,2.6525285981219103D+32/)
 
-    double precision, dimension(0:83) :: radii
-    double precision, dimension(0:83) :: radii2
+    double precision, dimension(0:83) :: RADII
+    double precision, dimension(0:83) :: RADII2
 
-    data radii &
+    data RADII &
     /0.d0,1.d0,0.5882d0,3.0769d0,2.0513d0,1.5385d0, &
     1.2308d0,1.0256d0,0.8791d0,0.7692d0,0.6838d0, &
     4.0909d0,3.1579d0,2.5714d0,2.1687d0,1.8750d0, &
     1.6514d0,1.4754d0,1.3333d0,65*2.25d0/
 
-! Xiao HE 02/11/2007    
-    data radii2 &
+    ! Xiao HE 02/11/2007    
+    data RADII2 &
     /0.d0,1.30d0,0.0d0,1.95d0,2.20d0,1.45d0, &
     1.20d0,1.10d0,1.10d0,1.20d0,0.0d0, &
     2.30d0,2.20d0,2.10d0,1.30d0,1.30d0, &
     1.10d0,1.45d0,0.0d0,65*2.25d0/
+    
+    
 
-    end module quick_constants_module
-!********************************************************
+end module quick_constants_module

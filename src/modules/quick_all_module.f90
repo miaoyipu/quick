@@ -45,7 +45,7 @@
     use quick_molspec_module
     use quick_gridpoints_module
     use quick_calculated_module
-    use quick_geocnverg_module
+    use quick_gaussian_class_module
     use quick_SCRATCH_module
     use quick_files_module
     use quick_constants_module

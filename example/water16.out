@@ -1,0 +1,205 @@
+  **************************************************************************
+  **                      QUICK-0.06 June 12                              **
+  **                                                                      **
+  **                        Copyright (c) 2011                            **
+  **                Regents of the University of Florida                  **
+  **                       All Rights Reserved.                           **
+  **                                                                      **
+  **  This software provided pursuant to a license agreement containing   **
+  **  restrictions on its disclosure, duplication, and use. This software **
+  **  contains confidential and proprietary information, and may not be   **
+  **  extracted or distributed, in whole or in part, for any purpose      **
+  **  whatsoever, without the express written permission of the authors.  **
+  **  This notice, and the associated author list, must be attached to    **
+  **  all copies, or extracts, of this software. Any additional           **
+  **  restrictions set forth in the license agreement also apply to this  **
+  **  software.                                                           **
+  **************************************************************************
+
+  Cite this work as:
+  Miao, Y.: He, X.: Ayers,K: Brothers, E.: Merz,K. M. QUICK;
+  University of Florida, Gainesville, FL, 2010
+
+  If you have any comment or queries, please send email for technic support:
+  quick@qtp.ufl.edu
+
+ TASK STARTS ON: Sat Jul 23 13:14:56 2011
+ INPUT FILE:     water16.in
+ OUTPUT FILE:    water16.out
+ BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
+
+ @ Read Job And Atom
+
+  -------------------------------------
+KEYWORD=HF BASIS=6-31G ENERGY                                                                                                                                                                                   
+  -------------------------------------
+ ============== JOB CARD =============
+| METHOD = HATREE FOCK
+| SAD INITAL GUESS 
+| USE DIIS SCF
+| PRINT ENERGY EVERY CYCLE
+| MAX SCF CYCLES =    200
+| MAX DIIS CYCLES =   10
+| DELTA DENSITY START CYCLE = 1000
+| COMPUATIONAL CUTOFF: 
+|      TWO-e INTEGRAL   =  0.100E-06
+|      BASIS SET PRIME  =  0.100E-06
+|      MATRIX ELEMENTS  =  0.100E-09
+|      BASIS FUNCTION   =  0.100E-09
+| DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+| BASIS SET = 6-31G.BAS
+| BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31G.BAS
+
+ @ Finish reading job
+
+
+ @ Begin SAD initial guess
+
+ For Atom Kind =    1
+ ELEMENT = O 
+BASIS FUNCTIONS =    9
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.05
+RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
+
+SCF CYCLE      =        2      TIME      =     0.04
+RMS CHANGE     = 0.813251E-01  MAX CHANGE= 0.295520E+00
+
+SCF CYCLE      =        3      TIME      =   0.05
+DIIS CYCLE     =        1      MAX ERROR = 0.237159E-01
+RMS CHANGE     = 0.640345E-02  MAX CHANGE= 0.258596E-01
+
+SCF CYCLE      =        4      TIME      =   0.05
+DIIS CYCLE     =        2      MAX ERROR = 0.962311E-02
+RMS CHANGE     = 0.233510E-02  MAX CHANGE= 0.103941E-01
+
+SCF CYCLE      =        5      TIME      =   0.05
+DIIS CYCLE     =        3      MAX ERROR = 0.288507E-02
+RMS CHANGE     = 0.133240E-02  MAX CHANGE= 0.645826E-02
+
+SCF CYCLE      =        6      TIME      =   0.05
+DIIS CYCLE     =        4      MAX ERROR = 0.990266E-03
+RMS CHANGE     = 0.986522E-03  MAX CHANGE= 0.489327E-02
+
+SCF CYCLE      =        7      TIME      =   0.05
+DIIS CYCLE     =        5      MAX ERROR = 0.364363E-04
+RMS CHANGE     = 0.292852E-04  MAX CHANGE= 0.163976E-03
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =        8      TIME      =     0.05
+RMS CHANGE     = 0.515945E-05  MAX CHANGE= 0.268031E-04
+CONVERGED!!!!!
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
+
+ @ End Energy calculation
+
+ For Atom Kind =    2
+ ELEMENT = H 
+BASIS FUNCTIONS =    2
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.00
+RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
+
+SCF CYCLE      =        2      TIME      =     0.00
+RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
+
+SCF CYCLE      =        3      TIME      =   0.00
+DIIS CYCLE     =        1      MAX ERROR = 0.543720E-02
+RMS CHANGE     = 0.492246E-02  MAX CHANGE= 0.776945E-02
+
+SCF CYCLE      =        4      TIME      =   0.00
+DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
+RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        5      TIME      =     0.00
+RMS CHANGE     = 0.142040E-10  MAX CHANGE= 0.224882E-10
+CONVERGED!!!!!
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
+
+ @ End Energy calculation
+
+
+ @ Finish SAD initial guess
+
+
+ @ Begin to Read Mol Info
+
+
+ =========== Molecule Input ==========
+| TOTAL MOLECULAR CHARGE  =    0    MULTIPLICITY                =    1
+| TOTOAL ATOM NUMBER      =   48    NUMBER OF ATOM TYPES        =    2
+| NUMBER OF HYDROGEN ATOM =   32    NUMBER OF NON-HYDROGEN ATOM =   16
+| NUMBER OF ELECTRONS     =  160
+
+ -- INPUT GEOMETRY -- :
+    O          -0.5643      -0.5734      -2.5273
+    O          -3.5590      -1.8435      -2.1456
+    O          -0.7806       0.5496       1.5597
+    O          -2.3521      -2.1876       0.7218
+    O          -2.7879       1.0651      -0.8010
+    O          -0.7439       3.0665       3.6962
+    O          -2.2986       3.5277       1.0071
+    O           1.9001      -0.3040      -0.1640
+    O           2.2878      -2.1786      -2.7939
+    O           0.0172      -3.5649      -1.1306
+    O           0.6726      -2.5006       1.9095
+    O           3.7088       2.3443      -0.2631
+    O           2.3191       0.8862      -3.2167
+    O           0.3389       2.5935      -0.7537
+    O           2.5721       3.9953      -2.7283
+    O           1.8879       2.3905       2.2242
+    H           1.5341       3.0011       2.8797
+    H          -0.0809      -1.3359      -2.1921
+    H           0.1191      -0.0635      -2.9730
+    H          -3.9769      -2.3774      -2.8238
+    H          -2.6618      -1.7188      -2.4740
+    H          -1.5385      -0.0144       1.3705
+    H          -0.9513       1.3228       1.0103
+    H          -3.1967      -2.0267       0.2916
+    H          -1.8897      -2.7435       0.0858
+    H          -3.3631       0.3723      -1.1384
+    H          -1.9954       0.9732      -1.3413
+    H          -1.1428       2.2205       3.4790
+    H          -1.2679       3.6925       3.1867
+    H          -3.0130       2.9889       0.6537
+    H          -1.6862       3.5879       0.2682
+    H           1.0341       0.1185      -0.1486
+    H           1.8553      -0.9123       0.5813
+    H           2.6044      -1.6508      -2.0546
+    H           2.4443      -1.6056      -3.5500
+    H           0.5482      -3.5172      -0.3297
+    H           0.6702      -3.7095      -1.8231
+    H          -0.1721      -2.0381       1.8606
+    H           0.6431      -2.9289       2.7670
+    H           3.6123       1.4063      -0.0710
+    H           3.6198       2.7473       0.6069
+    H           2.5496       1.0766      -2.3014
+    H           2.4175       1.7397      -3.6493
+    H           0.6674       2.9573      -1.5817
+    H           1.0771       2.7218      -0.1482
+    H           3.2604       3.8077      -2.0802
+    H           2.7565       4.8955      -3.0037
+    H           1.3161       1.6222       2.3217
+
+============== BASIS INFOS ==============
+| BASIS FUNCTIONS =  208
+| NSHELL =  112 NPRIM  =  288
+| JSHELL =  112 JBASIS =  288
+
+
+ @ End Reading Mol Info 
+
+
+ @ Begin Energy Calculation
+

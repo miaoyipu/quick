@@ -21,7 +21,7 @@
 !    gby=0.d0
 !    gbz=0.d0
 
-    do Ibas=1,nbasis
+    DO Ibas=1,nbasis
         DENSEIJ=DENSE(Ibas,Ibas)
         If(DABS(DENSEIJ) < tol)then
           continue
@@ -34,9 +34,9 @@
         dphidz=dphidzxiao(Ibas)
                                 quicktest = DABS(dphidx+dphidy+dphidz+ &
                                 phi)
-                                if (quicktest < tol ) then
+                                IF (quicktest < tol ) THEN
                                     continue
-                                else
+                                ELSE
 
         densitya=densitya+DENSEIJ*phi*phi/2.0d0
 !        densityb=densityb+DENSEBIJ*phi*phi
@@ -47,7 +47,7 @@
 !        gby=gby+DENSEBIJ*2.d0*phi*dphidy
 !        gbz=gbz+DENSEBIJ*2.d0*phi*dphidz
 
-        do Jbas=Ibas+1,nbasis
+        DO Jbas=Ibas+1,nbasis
             DENSEIJ=DENSE(Jbas,Ibas)
 !            DENSEBIJ=DENSEB(Jbas,Ibas)
 !            call pteval(gridx,gridy,gridz,phi2,dphi2dx,dphi2dy,dphi2dz,Jbas)
@@ -57,9 +57,9 @@
         dphi2dz=dphidzxiao(Jbas)
 !                                quicktest = DABS( &
 !                                phi2)
-!                                if (quicktest < tol ) then
+!                                IF (quicktest < tol ) THEN
 !                                    continue
-!                                else
+!                                ELSE
 
             densitya=densitya+DENSEIJ*phi*phi2
 !            densityb=densityb+2.d0*DENSEBIJ*phi*phi2
@@ -69,13 +69,13 @@
 !            gbx=gbx+DENSEBIJ*2.d0*(phi*dphi2dx+phi2*dphidx)
 !            gby=gby+DENSEBIJ*2.d0*(phi*dphi2dy+phi2*dphidy)
 !            gbz=gbz+DENSEBIJ*2.d0*(phi*dphi2dz+phi2*dphidz)
-!                               endif
-        enddo
-                                       endif
+!                               Endif
+        ENDDO
+                                       Endif
       endif
-    enddo
+    ENDDO
 
-!    if( .NOT. quick_method%UNRST) then
+!    IF( .NOT. UNRST) THEN
 !        densitya=densitya/2.d0
         densityb=densitya
 !        gax =gax*.5d0
@@ -84,7 +84,7 @@
         gbx =gax
         gby =gay
         gbz =gaz
-!    endif
+!    ENDIF
 
     END subroutine denspt
 

@@ -6,7 +6,12 @@
     implicit double precision(a-h,o-z)
 
     logical :: done,failed
+    integer :: nelec,nelecb
+    double precision :: V2(3,nbasis)
     done = .false.
+    
+    nelec = quick_molspec%nelec
+    nelecb = quick_molspec%nelecb
 
 ! The purpose of this subroutine is to perform open shell
 ! scf cycles.  This is very close to the subroutine 'SCF' At this
@@ -48,10 +53,10 @@
       end do
     end if
 
-    done=jscf.ge.iscf
+    done=jscf.ge.quick_method%iscf
 
     do WHILE (.not.done)
-        if (quick_method%diisscf .AND. PRMS < 1.D-1) call uelectdiis(jscf,PRMS)
+        if (quick_method%diisscf .and. PRMS < 1.D-1) call uelectdiis(jscf,PRMS)
         call cpu_time(t1)
         jscf=jscf+1
 
@@ -61,7 +66,7 @@
             do I=1,nbasis
                 do J=1,nbasis
                     write (ioutfile,'("DENSEA[",I4,",",I4,"]=",F18.10)') &
-                    J,I,DENSE(J,I)
+                    J,I,quick_qm_struct%dense(J,I)
                 enddo
             enddo
             write(ioutfile,'(//,"BETA DENSITY MATRIX AT START OF", &
@@ -69,7 +74,7 @@
             do I=1,nbasis
                 do J=1,nbasis
                     write (ioutfile,'("DENSEB[",I4,",",I4,"]=",F18.10)') &
-                    J,I,DENSEB(J,I)
+                    J,I,quick_qm_struct%denseb(J,I)
                 enddo
             enddo
         endif
@@ -89,7 +94,7 @@
             do I=1,nbasis
                 do J=1,nbasis
                     write (ioutfile,'("OPERATORA[",I4,",",I4,"]=",F18.10)') &
-                    J,I,O(J,I)
+                    J,I,quick_qm_struct%o(J,I)
                 enddo
             enddo
         endif
@@ -108,9 +113,9 @@
             do J=1,nbasis
                 HOLDIJ = 0.0D0
                 do K=1,nbasis
-                    HOLDIJ = HOLDIJ + O(K,I)*X(K,J)
+                    HOLDIJ = HOLDIJ + quick_qm_struct%o(K,I)*quick_qm_struct%x(K,J)
                 enddo
-                HOLD(I,J) = HOLDIJ
+                quick_scratch%hold(I,J) = HOLDIJ
             enddo
         enddo
 
@@ -118,9 +123,9 @@
             do J=1,nbasis
                 OIJ = 0.0D0
                 do K=1,nbasis
-                    OIJ = OIJ + X(K,J)*HOLD(K,I)
+                    OIJ = OIJ + quick_qm_struct%x(K,J)*quick_scratch%hold(K,I)
                 enddo
-                O(I,J) = OIJ
+                quick_qm_struct%o(I,J) = OIJ
             enddo
         enddo
     
@@ -129,7 +134,8 @@
     ! There is a problem if HOLD is used for evec1.
        
        
-        CALL DIAG(nbasis,O,nbasis,TOL,V2,E,IDEGEN,VEC, &
+        CALL DIAG(nbasis,quick_qm_struct%o,nbasis,quick_method%DMCutoff,V2,quick_qm_struct%E, &
+            quick_qm_struct%idegen,quick_qm_struct%vec, &
         IERROR)
         
 
@@ -141,9 +147,9 @@
             do J=1,nbasis
                 CIJ = 0.0D0
                 do K=1,nbasis
-                    CIJ = CIJ + X(K,I)*VEC(K,J)
+                    CIJ = CIJ + quick_qm_struct%x(K,I)*quick_qm_struct%vec(K,J)
                 enddo
-                CO(I,J) = CIJ
+                quick_qm_struct%co(I,J) = CIJ
             enddo
         enddo
         
@@ -154,15 +160,15 @@
 
         do I=1,nbasis
             do J=1,nbasis
-                HOLD(J,I) = DENSE(J,I)
+                quick_scratch%hold(J,I) = quick_qm_struct%dense(J,I)
             enddo
         enddo
 
         do I=1,nbasis
             do J=1,nbasis
-                DENSE(J,I) = 0.d0
+                quick_qm_struct%dense(J,I) = 0.d0
                 do K=1,nelec
-                    DENSE(J,I) = DENSE(J,I) + (CO(J,K)*CO(I,K))
+                    quick_qm_struct%dense(J,I) = quick_qm_struct%dense(J,I) + (quick_qm_struct%co(J,K)*quick_qm_struct%co(I,K))
                 enddo
             enddo
         enddo
@@ -174,8 +180,8 @@
         PCHANGE=0.d0
         do I=1,nbasis
             do J=1,nbasis
-                PRMS=PRMS+(DENSE(J,I)-HOLD(J,I))**2.d0
-                PCHANGE=MAX(PCHANGE,ABS(DENSE(J,I)-HOLD(J,I)))
+                PRMS=PRMS+(quick_qm_struct%dense(J,I)-quick_scratch%hold(J,I))**2.d0
+                PCHANGE=MAX(PCHANGE,ABS(quick_qm_struct%dense(J,I)-quick_scratch%hold(J,I)))
             enddo
         enddo
         PRMS = (PRMS/nbasis**2.d0)**0.5d0
@@ -202,9 +208,9 @@
             do J=1,nbasis
                 HOLDIJ = 0.0D0
                 do K=1,nbasis
-                    HOLDIJ = HOLDIJ + O(K,I)*X(K,J)
+                    HOLDIJ = HOLDIJ + quick_qm_struct%o(K,I)*quick_qm_struct%x(K,J)
                 enddo
-                HOLD2(I,J) = HOLDIJ
+                quick_scratch%hold2(I,J) = HOLDIJ
             enddo
         enddo
 
@@ -212,9 +218,9 @@
             do J=1,nbasis
                 OIJ = 0.0D0
                 do K=1,nbasis
-                    OIJ = OIJ + X(K,J)*HOLD2(K,I)
+                    OIJ = OIJ + quick_qm_struct%x(K,J)*quick_scratch%hold2(K,I)
                 enddo
-                O(I,J) = OIJ
+                quick_qm_struct%o(I,J) = OIJ
             enddo
         enddo
 
@@ -223,8 +229,8 @@
     ! In this case VEC is now C'.
     ! There is a problem if HOLD is used for evec1.
 
-        CALL DIAG(nbasis,O,nbasis,TOL,V2,EB,IDEGEN,VEC, &
-        IERROR)
+        CALL DIAG(nbasis,quick_qm_struct%o,nbasis,quick_method%DMCutoff,V2,&
+        quick_qm_struct%EB,quick_qm_struct%idegen,quick_qm_struct%vec,IERROR)
 
     
     ! 4)  Calculate C = XC'
@@ -235,9 +241,9 @@
             do J=1,nbasis
                 CIJ = 0.0D0
                 do K=1,nbasis
-                    CIJ = CIJ + X(K,I)*VEC(K,J)
+                    CIJ = CIJ + quick_qm_struct%x(K,I)*quick_qm_struct%vec(K,J)
                 enddo
-                COB(I,J) = CIJ
+                quick_qm_struct%cob(I,J) = CIJ
             enddo
         enddo
 
@@ -247,15 +253,15 @@
 
         do I=1,nbasis
             do J=1,nbasis
-                HOLD2(J,I) = DENSEB(J,I)
+                quick_scratch%hold2(J,I) = quick_qm_struct%denseb(J,I)
             enddo
         enddo
 
         do I=1,nbasis
             do J=1,nbasis
-                DENSEB(J,I) = 0.d0
+                quick_qm_struct%denseb(J,I) = 0.d0
                 do K=1,nelecb
-                    DENSEB(J,I) = DENSEB(J,I) + (COB(J,K)*COB(I,K))
+                    quick_qm_struct%denseb(J,I) = quick_qm_struct%denseb(J,I) + (quick_qm_struct%cob(J,K)*quick_qm_struct%cob(I,K))
                 enddo
             enddo
         enddo
@@ -265,8 +271,8 @@
         prms2=0.d0
         do I=1,nbasis
             do J=1,nbasis
-                PRMS2=PRMS2+(DENSEB(J,I)-HOLD2(J,I))**2.d0
-                PCHANGE=MAX(PCHANGE,ABS(DENSEB(J,I)-HOLD2(J,I)))
+                PRMS2=PRMS2+(quick_qm_struct%denseb(J,I)-quick_scratch%hold2(J,I))**2.d0
+                PCHANGE=MAX(PCHANGE,ABS(quick_qm_struct%denseb(J,I)-quick_scratch%hold2(J,I)))
             enddo
         enddo
         PRMS2 = (PRMS2/nbasis**2.d0)**0.5d0
@@ -283,19 +289,19 @@
         PRMS,PCHANGE
         if (quick_method%DFT .OR. quick_method%SEDFT) then
             write (ioutfile,'("ALPHA ELECTRON DENSITY    =",F16.10)') &
-            aelec
+            quick_qm_struct%aelec
             write (ioutfile,'("BETA ELECTRON DENSITY     =",F16.10)') &
-            belec
+            quick_qm_struct%belec
         endif
 
         if (quick_method%prtgap) write (ioutfile,'("ALPHA HOMO-LUMO GAP (EV) =", &
-        & 11x,F12.6)') (E(nelec+1) - E(nelec))*27.2116d0
+        & 11x,F12.6)') (quick_qm_struct%E(nelec+1) - quick_qm_struct%E(nelec))*27.2116d0
         if (quick_method%prtgap) write (ioutfile,'("BETA HOMO-LUMO GAP (EV)  =", &
-        & 11x,F12.6)') (EB(nelecb+1) - EB(nelecb))*27.2116d0
-        if (PRMS < PMAXRMS .AND. pchange < PMAXRMS*100.d0)then
+        & 11x,F12.6)') (quick_qm_struct%EB(nelecb+1) - quick_qm_struct%EB(nelecb))*27.2116d0
+        if (PRMS < quick_method%pmaxrms .and. pchange < quick_method%pmaxrms*100.d0)then
             write (ioutfile,'("CONVERGED!!!!!")')
             done=.true.
-        elseif(jscf >= iscf) then
+        elseif(jscf >= quick_method%iscf) then
             write (ioutfile,'("RAN OUT OF CYCLES.  NO CONVERGENCE.")')
             done=.true.
             failed=.true.
@@ -305,8 +311,8 @@
                 & "TRY MODifYING ALPHA DENSITY MATRIX.")')
                 do Ibas=1,nbasis
                     do Jbas=1,nbasis
-                        DENSE(Jbas,Ibas) =.7d0*HOLD(Jbas,Ibas) &
-                        +.3d0*DENSE(Jbas,Ibas)
+                        quick_qm_struct%dense(Jbas,Ibas) =.7d0*quick_scratch%hold(Jbas,Ibas) &
+                        +.3d0*quick_qm_struct%dense(Jbas,Ibas)
                     enddo
                 enddo
             else
@@ -314,8 +320,8 @@
                 & "TRY MODifYING BETA DENSITY MATRIX.")')
                 do Ibas=1,nbasis
                     do Jbas=1,nbasis
-                        DENSEB(Jbas,Ibas) = .7d0*HOLD2(Jbas,Ibas) &
-                        +.3d0*DENSEB(Jbas,Ibas)
+                        quick_qm_struct%denseb(Jbas,Ibas) = .7d0*quick_scratch%hold2(Jbas,Ibas) &
+                        +.3d0*quick_qm_struct%denseb(Jbas,Ibas)
                     enddo
                 enddo
             endif
@@ -325,4 +331,4 @@
         endif
     enddo
 
-    END subroutine uscf
+    end subroutine uscf

@@ -6,21 +6,19 @@
 !	Copyright 2011 University of Florida. All rights reserved.
 !
 
-!********************************************************
-! Gaussian Module
-!--------------------------------------------------------
-!
-! Kenneth Ayers 1/23/04
+! Gaussian Module, Kenneth Ayers 1/23/04
+module quick_gaussian_class_module
+
 ! This file defines the data types needed for a higher abstraction level
 ! of gaussian orbitals.
-    module quick_gaussian_class_module
+
     implicit none
 
     type gaussian
-    integer :: ncontract
-    integer, dimension(3) :: itype
-    double precision, pointer, dimension(:) :: aexp,dcoeff
+        integer :: ncontract
+        integer, dimension(3) :: itype
+        double precision, pointer, dimension(:) :: aexp,dcoeff
     end type gaussian
+    
+end module quick_gaussian_class_module
 
-    end module quick_gaussian_class_module
-!********************************************************

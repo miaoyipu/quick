@@ -1,0 +1,405 @@
+  **************************************************************************
+  **                      QUICK 0.01-2010-Jul                             **
+  **                                                                      **
+  **                        Copyright (c) 2010                            **
+  **                Regents of the University of Florida                  **
+  **                       All Rights Reserved.                           **
+  **                                                                      **
+  **  This software provided pursuant to a license agreement containing   **
+  **  restrictions on its disclosure, duplication, and use. This software **
+  **  contains confidential and proprietary information, and may not be   **
+  **  extracted or distributed, in whole or in part, for any purpose      **
+  **  whatsoever, without the express written permission of the authors.  **
+  **  This notice, and the associated author list, must be attached to    **
+  **  all copies, or extracts, of this software. Any additional           **
+  **  restrictions set forth in the license agreement also apply to this  **
+  **  software.                                                           **
+  **************************************************************************
+
+  Cite this work as:
+  Miao, Y.: He, X.: Ayers,K: Brothers, E.: Merz,K. M. QUICK;
+  University of Florida, Gainesville, FL, 2010
+ Task starts on: Tue Dec  7 22:05:08 2010
+ INPUT FILE:   ACE_GLY6_NME.in               
+ OUTPUT FILE:  ACE_GLY6_NME.out              
+ TOTAL PROCESSOR =     4
+ MASTER NAME     = qtpclnt135.qtp.ufl.edu        
+
+ @  Read Atom types 
+
+ATOM TYPES=   4
+ATOM NUMBER=  54
+
+ @ Read Job Type
+
+  -------------------------------------
+KEYWORD=DIVCON ZMAKE NCYC=1000 DENSERMS=0.00001 HF BASIS=STO-3G ENERGY                                                                                                                                          
+  -------------------------------------
+PDB INPUT = FALSE (DEFAULT)
+MFCC = FALSE (DEFAULT)
+Fast Multipole Methods = FALSE (DEFAULT)
+Second order perturbation theory = FALSE (DEFAULT)
+METHOD = HARTREE FOCK
+GAS PHASE (DEFAULT)
+PRINT TOTAL ENERGY OF EACH CYCLE = TRUE
+BASIS FILE=/Users/miao/Workspace/new_quick/basis/STO-3G                                    
+Initial density matrix guess = SAD (default)
+SUM INNER ELECTRONS INTO CORE = FALSE (DEFAULT)
+do NOT PRINT HOMO-LUMO GAP (DEFAULT)
+NO OPTIMIZE GEOMETRY (DEFAULT)
+NO ANALYTICAL GRADIENT CALCULATION (DEFAULT)
+NO ANALYTICAL HESSIAN CALCULATION (DEFAULT)
+NO CALCULATION OF FREQUENCIES (DEFAULT)
+UTILIZE PULAY'S DIIS METHOD FOR SCF CONVERGENCE ACCELERATION. (BY DEFAULT)
+DIV AND CON= TRUE
+DIV AND CON ON ATOM BASIS (BY DEFAULT)
+DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-04
+DELTA DENSITY CYCLE STARTS FROM CYCLE1000
+NO READ IN DMX GUESS (DEFAULT) 
+GENERATING Z-MATRIX
+NO EXTERNAL POINT CHARGES (DEFAULT) 
+TOTAL MOLECULAR CHARGE =  0 (DEFAULT)
+MULTIPLICITY = 1 (DEFAULT)
+MAX SCF CYCLES = 200 (DEFAULT)
+MATRIX ELEMENTS LESS THAN 0.100E-09 CONSIDERED ZERO. (DEFAULT)
+BASIS FUNCTION MAGNITUDE LESS THAN   0.1E-09 A.U. CONSIDERED ZERO. (DEFAULT)
+THRESHOLD FOR ECP-INTEGRALS PRESCREENING =     0.10000E-11  (DEFAULT)
+
+
+ @ Finish reading job
+
+
+
+ @ Begin SAD initial guess
+
+ For Atom Kind =    1
+ ELEMENT = C 
+NUMBER OF ALPHA ELECTRONS =    4
+NUMBER OF BETA ELECTRONS  =    2
+BASIS FUNCTIONS =    5
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.02
+RMS CHANGE     = 0.245482E+00  MAX CHANGE= 0.665739E+00
+
+SCF CYCLE      =        2      TIME      =     0.02
+RMS CHANGE     = 0.635587E-12  MAX CHANGE= 0.153785E-11
+CONVERGED!!!!!
+ELECTRONIC ENERGY  =     0.000000000
+CORE_CORE REPULSION=     0.000000000
+TOTAL ENERGY       =     0.000000000
+
+ @ End Energy calculation
+
+ For Atom Kind =    2
+ ELEMENT = H 
+NUMBER OF ALPHA ELECTRONS =    1
+NUMBER OF BETA ELECTRONS  =    0
+BASIS FUNCTIONS =    1
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.00
+RMS CHANGE     = 0.100000E-07  MAX CHANGE= 0.100000E-07
+CONVERGED!!!!!
+ELECTRONIC ENERGY  =     0.000000000
+CORE_CORE REPULSION=     0.000000000
+TOTAL ENERGY       =     0.000000000
+
+ @ End Energy calculation
+
+ For Atom Kind =    3
+ ELEMENT = O 
+NUMBER OF ALPHA ELECTRONS =    5
+NUMBER OF BETA ELECTRONS  =    3
+BASIS FUNCTIONS =    5
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.02
+RMS CHANGE     = 0.238978E+00  MAX CHANGE= 0.599156E+00
+
+SCF CYCLE      =        2      TIME      =     0.02
+RMS CHANGE     = 0.317828E-12  MAX CHANGE= 0.909770E-12
+CONVERGED!!!!!
+ELECTRONIC ENERGY  =     0.000000000
+CORE_CORE REPULSION=     0.000000000
+TOTAL ENERGY       =     0.000000000
+
+ @ End Energy calculation
+
+ For Atom Kind =    4
+ ELEMENT = N 
+NUMBER OF ALPHA ELECTRONS =    5
+NUMBER OF BETA ELECTRONS  =    2
+BASIS FUNCTIONS =    5
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.02
+RMS CHANGE     = 0.242566E+00  MAX CHANGE= 0.658473E+00
+
+SCF CYCLE      =        2      TIME      =     0.02
+RMS CHANGE     = 0.609001E-12  MAX CHANGE= 0.153329E-11
+CONVERGED!!!!!
+ELECTRONIC ENERGY  =     0.000000000
+CORE_CORE REPULSION=     0.000000000
+TOTAL ENERGY       =     0.000000000
+
+ @ End Energy calculation
+
+
+ @ Finish SAD initial guess
+
+
+ @ Begin to Read Mol Info
+
+TOTOAL ATOM NUMBER =   54
+NUMBER OF HYDROGEN ATOM =   25
+NUMBER OF NON-HYDROGEN ATOM =   29
+DEGREE OF FREEdoM =   156
+
+NUMBER OF ELECTRONS =  220
+BASIS FUNCTIONS =  170
+
+
+INPUT GEOMETRY:
+C          -0.4100       0.1460       0.1540
+H          -0.7910      -0.8660       0.0190
+H          -0.5030       0.4330       1.2010
+H          -0.9840       0.8360      -0.4640
+C           1.0480       0.2380      -0.2450
+O           1.6590      -0.7550      -0.6620
+N           1.7480       1.5260      -0.1360
+H           1.4920       2.4630       0.1390
+C           3.1280       1.2770      -0.5440
+H           3.3320       0.2080      -0.4840
+H           3.2650       1.6160      -1.5710
+C           4.0970       2.0130       0.3490
+O           3.9220       3.1900       0.6740
+N           5.2850       1.3050       0.8470
+H           5.6640       0.3740       0.7440
+C           6.0170       2.2630       1.6710
+H           5.6900       3.2730       1.4230
+H           5.8110       2.0630       2.7220
+C           7.5030       2.1560       1.4330
+O           8.0800       1.0670       1.3780
+N           8.2880       3.3870       1.2620
+H           8.0830       4.3760       1.2610
+C           9.6700       2.9660       1.0520
+H           9.7910       1.9420       1.4060
+H           9.9010       3.0120      -0.0120
+C          10.6270       3.8610       1.8020
+O          10.5180       5.0900       1.7920
+N          11.7230       3.2490       2.5670
+H          12.0380       2.3060       2.7430
+C          12.4660       4.3510       3.1720
+H          12.2320       5.2740       2.6420
+H          12.1740       4.4490       4.2180
+C          13.9530       4.1060       3.0980
+O          14.4510       3.0120       3.3780
+N          14.8360       5.2040       2.6780
+H          14.7050       6.1660       2.4000
+C          16.1950       4.6690       2.7040
+H          16.2150       3.7710       3.3220
+H          16.5010       4.4180       1.6890
+C          17.1620       5.6790       3.2730
+O          17.1450       6.8650       2.9340
+N          18.1550       5.2350       4.2620
+H          18.3870       4.3570       4.7050
+C          18.9340       6.4180       4.6190
+H          18.8060       7.1780       3.8480
+H          18.5800       6.8060       5.5740
+C          20.4010       6.0830       4.7390
+O          20.7960       5.0790       5.3370
+N          21.3890       6.9810       4.1240
+H          21.3400       7.8400       3.5950
+C          22.6990       6.4140       4.3970
+H          22.5850       5.4950       4.9730
+H          23.2030       6.1920       3.4560
+H          23.2930       7.1280       4.9670
+
+ @ End Reading Mol Info 
+
+
+ @ Now Begin Div & Con Fragment
+
+NUMBER OF FRAG= 54
+RBuffer=   7.00 A
+============================================================
+The Core and Buffer Atoms before elimination
+============================================================
+Frag       CoreAtom     CoreTot     BufAtom       BufTot  SubTot
+    1  1                  1       2-18              17       18
+    2  2                  1       1,3-15            14       15
+    3  3                  1       1-2,4-18          17       18
+    4  4                  1       1-3,5-15          14       15
+    5  5                  1       1-4,6-19          18       19
+    6  6                  1       1-5,7-20          19       20
+    7  7                  1       1-6,8-21          20       21
+    8  8                  1       1-7,9-22          21       22
+    9  9                  1       1-8,10-24         23       24
+   10  10                 1       1-9,11-22,24      22       23
+   11  11                 1       1-10,12-22,25     22       23
+   12  12                 1       1-11,13-26        25       26
+   13  13                 1       1-12,14-27        26       27
+   14  14                 1       1-13,15-28        27       28
+   15  15                 1       1-14,16-29        28       29
+   16  16                 1       1,3,5-15,17-31    28       29
+   17  17                 1       1,3,5-16,18-29,3  27       28
+   18  18                 1       1,3,5-17,19-29,3  27       28
+   19  19                 1       5-18,20-33        28       29
+   20  20                 1       6-19,21-34        28       29
+   21  21                 1       7-20,22-35        28       29
+   22  22                 1       8-21,23-36        28       29
+   23  23                 1       9,12-22,24-38     27       28
+   24  24                 1       9-10,12-23,25-36  27       28
+   25  25                 1       11-24,26-36,39    26       27
+   26  26                 1       12-25,27-40       28       29
+   27  27                 1       13-26,28-41       28       29
+   28  28                 1       14-27,29-42       28       29
+   29  29                 1       15-28,30-43       28       29
+   30  30                 1       16,19-29,31-45    27       28
+   31  31                 1       16-17,19-30,32-4  27       28
+   32  32                 1       18-31,33-43,46    26       27
+   33  33                 1       19-32,34-47       28       29
+   34  34                 1       20-33,35-48       28       29
+   35  35                 1       21-34,36-49       28       29
+   36  36                 1       22-35,37-50       28       29
+   37  37                 1       23,26-36,38-52    27       28
+   38  38                 1       23-24,26-37,39-5  27       28
+   39  39                 1       25-38,40-50,52    26       27
+   40  40                 1       26-39,41-54       28       29
+   41  41                 1       27-40,42-54       27       28
+   42  42                 1       28-41,43-54       26       27
+   43  43                 1       29-42,44-54       25       26
+   44  44                 1       30,33-43,45-54    22       23
+   45  45                 1       30-31,33-44,46-5  23       24
+   46  46                 1       32-45,47-54       22       23
+   47  47                 1       33-46,48-54       21       22
+   48  48                 1       34-47,49-54       20       21
+   49  49                 1       35-48,50-54       19       20
+   50  50                 1       36-49,51-54       18       19
+   51  51                 1       37,40-50,52-54    15       16
+   52  52                 1       37-51,53-54       17       18
+   53  53                 1       40-52,54          14       15
+   54  54                 1       40-53             14       15
+-----------------------------------------------------------
+Total Frag=  54
+===========================================================
+ move the subsystem            1  into           15
+ move the subsystem            2  into           15
+ move the subsystem            3  into           15
+ move the subsystem            4  into           15
+ move the subsystem            5  into           15
+ move the subsystem            6  into           15
+ move the subsystem            7  into           15
+ move the subsystem            8  into           15
+ move the subsystem            9  into           15
+ move the subsystem           10  into           15
+ move the subsystem           11  into           15
+ move the subsystem           12  into           15
+ move the subsystem           13  into           15
+ move the subsystem           14  into           15
+ move the subsystem           17  into           16
+ move the subsystem           41  into           40
+ move the subsystem           42  into           40
+ move the subsystem           43  into           40
+ move the subsystem           44  into           40
+ move the subsystem           45  into           40
+ move the subsystem           46  into           40
+ move the subsystem           47  into           40
+ move the subsystem           48  into           40
+ move the subsystem           49  into           40
+ move the subsystem           50  into           40
+ move the subsystem           51  into           40
+ move the subsystem           52  into           40
+ move the subsystem           53  into           40
+ move the subsystem           54  into           40
+============================================================
+The Core and Buffer Atoms
+============================================================
+Frag       CoreAtom     CoreTot     BufAtom       BufTot     SubAtom     SubTot    Elec    NBasis
+    1  1-15              15       16-29             14       1-29              29   121    93
+    2  16-17              2       1,3,5-15,18-31    27       1,3,5-31          29   126    97
+    3  18                 1       1,3,5-17,19-29,3  27       1,3,5-29,32       28   120    92
+    4  19                 1       5-18,20-33        28       5-33              29   126    97
+    5  20                 1       6-19,21-34        28       6-34              29   128    97
+    6  21                 1       7-20,22-35        28       7-35              29   127    97
+    7  22                 1       8-21,23-36        28       8-36              29   121    93
+    8  23                 1       9,12-22,24-38     27       9,12-38           28   125    96
+    9  24                 1       9-10,12-23,25-36  27       9-10,12-36,38     28   120    92
+   10  25                 1       11-24,26-36,39    26       11-36,39          27   114    87
+   11  26                 1       12-25,27-40       28       12-40             29   126    97
+   12  27                 1       13-26,28-41       28       13-41             29   128    97
+   13  28                 1       14-27,29-42       28       14-42             29   127    97
+   14  29                 1       15-28,30-43       28       15-43             29   121    93
+   15  30                 1       16,19-29,31-45    27       16,19-45          28   125    96
+   16  31                 1       16-17,19-30,32-4  27       16-17,19-43,45    28   120    92
+   17  32                 1       18-31,33-43,46    26       18-43,46          27   114    87
+   18  33                 1       19-32,34-47       28       19-47             29   126    97
+   19  34                 1       20-33,35-48       28       20-48             29   128    97
+   20  35                 1       21-34,36-49       28       21-49             29   127    97
+   21  36                 1       22-35,37-50       28       22-50             29   121    93
+   22  37                 1       23,26-36,38-52    27       23,26-52          28   125    96
+   23  38                 1       23-24,26-37,39-5  27       23-24,26-50,52    28   120    92
+   24  39                 1       25-38,40-50,52    26       25-50,52          27   114    87
+   25  40-54             15       26-39             14       26-54             29   121    93
+-----------------------------------------------------------
+Total Frag=  25
+NBasis Max=  97
+===========================================================
+-----------------------------------------------------------
+         MPI INFORMATION
+-----------------------------------------------------------
+ MPI SIZE =   4
+ NODE  TotFrag     NBasis  Frag
+   0       7      651    20  11   2  21   1  24  10
+   1       6      568    19   6  22  25   7   9
+   2       6      568    18   5   4  14  23   3
+   3       6      565    13  12  15   8  16  17
+-----------------------------------------------------------
+
+ @ Now End Div & Con Fragment
+
+
+ @ Begin Energy Calculation
+
+ 
+ -------------------------------
+SCF CYCLE=    1
+E(Fermi)    =   -0.0179326  AFTER  18 N.C. Cycles
+SCF TIME =         7.58
+DC DIAG TIME =         0.01
+DIIS CYCLE     =        1
+DIIS TIME =         0.00
+RMS CHANGE     = 0.363685E+00  MAX CHANGE= 0.126182E+01
+TOTAL ENERGY= -1468.762449126
+DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
+ 
+ -------------------------------
+SCF CYCLE=    2
+E(Fermi)    =   -0.0653720  AFTER  16 N.C. Cycles
+SCF TIME =        12.59
+DC DIAG TIME =         0.01
+DIIS CYCLE     =        1
+DIIS TIME =         0.00
+RMS CHANGE     = 0.310786E-01  MAX CHANGE= 0.677965E+00
+TOTAL ENERGY= -1466.909963846
+DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
+ 
+ -------------------------------
+SCF CYCLE=    3
+E(Fermi)    =   -0.1391711  AFTER  16 N.C. Cycles
+SCF TIME =        12.62
+DC DIAG TIME =         0.01
+DIIS CYCLE     =        1
+DIIS TIME =         0.00
+RMS CHANGE     = 0.208127E-01  MAX CHANGE= 0.396660E+00
+TOTAL ENERGY= -1467.850423040
+DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)

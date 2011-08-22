@@ -29,27 +29,27 @@
                 xdis3=xdistance**3.0d0
                 xdis5=xdis3*xdis3/xdistance               
 
-                        do Iang=Qstart(IIsh),Qfinal(IIsh) 
-                         X1temp=constant2*gccoeff(ips,ksumtype(IIsh)+Iang)
-                         do Jang=Qstart(JJsh),Qfinal(JJsh)
-                          NBI1=Qsbasis(IIsh,Iang)
-                          NBI2=Qfbasis(IIsh,Iang)
-                          NBJ1=Qsbasis(JJsh,Jang)
-                          NBJ2=Qfbasis(JJsh,Jang)
+                        do Iang=quick_basis%Qstart(IIsh),quick_basis%Qfinal(IIsh) 
+                         X1temp=constant2*quick_basis%gccoeff(ips,quick_basis%ksumtype(IIsh)+Iang)
+                         do Jang=quick_basis%Qstart(JJsh),quick_basis%Qfinal(JJsh)
+                          NBI1=quick_basis%Qsbasis(IIsh,Iang)
+                          NBI2=quick_basis%Qfbasis(IIsh,Iang)
+                          NBJ1=quick_basis%Qsbasis(JJsh,Jang)
+                          NBJ2=quick_basis%Qfbasis(JJsh,Jang)
 
-                          III1=Ksumtype(IIsh)+NBI1
-                          III2=Ksumtype(IIsh)+NBI2
-                          JJJ1=Ksumtype(JJsh)+NBJ1
-                          JJJ2=Ksumtype(JJsh)+NBJ2
+                          III1=quick_basis%ksumtype(IIsh)+NBI1
+                          III2=quick_basis%ksumtype(IIsh)+NBI2
+                          JJJ1=quick_basis%ksumtype(JJsh)+NBJ1
+                          JJJ2=quick_basis%ksumtype(JJsh)+NBJ2
  
-                           Xconstant=X1temp*gccoeff(jps,ksumtype(JJsh)+Jang)
+                           Xconstant=X1temp*quick_basis%gccoeff(jps,quick_basis%ksumtype(JJsh)+Jang)
  
                             Nvalue=Iang+Jang
 
                             do III=III1,III2
-                             itemp1=trans(KLMN(1,III),KLMN(2,III),KLMN(3,III))
+                             itemp1=trans(quick_basis%KLMN(1,III),quick_basis%KLMN(2,III),quick_basis%KLMN(3,III))
                               do JJJ=max(III,JJJ1),JJJ2
-                               itemp2=trans(KLMN(1,JJJ),KLMN(2,JJJ),KLMN(3,JJJ))
+                               itemp2=trans(quick_basis%KLMN(1,JJJ),quick_basis%KLMN(2,JJJ),quick_basis%KLMN(3,JJJ))
 
                                 select case (Nvalue)
 
@@ -57,8 +57,8 @@
                                   call overlapzero(a,b,fmmonearray)
                                   valfmmone=fmmonearray(0,0,1)*xdistance
                                 case(1)
-                                  call overlapone(a,b,KLMN(1,III),KLMN(2,III),KLMN(3,III), &
-                                       KLMN(1,JJJ),KLMN(2,JJJ),KLMN(3,JJJ),Ax,Ay,Az,Bx, &
+                                  call overlapone(a,b,quick_basis%KLMN(1,III),quick_basis%KLMN(2,III),quick_basis%KLMN(3,III), &
+                                       quick_basis%KLMN(1,JJJ),quick_basis%KLMN(2,JJJ),quick_basis%KLMN(3,JJJ),Ax,Ay,Az,Bx, &
                                        By,Bz,fmmonearray)
 !                                  call overlapzero(a,b)
                                   valfmmone=fmmonearray(0,0,1)*xdistance
@@ -69,8 +69,8 @@
                                   valfmmone=valfmmone+fmmonearray(1,1,2)*xdis3* &
                                             (Cy-Py)
                                 case(2)
-                                  call overlaptwo(a,b,KLMN(1,III),KLMN(2,III),KLMN(3,III), &
-                                       KLMN(1,JJJ),KLMN(2,JJJ),KLMN(3,JJJ),Ax,Ay,Az,Bx, &
+                                  call overlaptwo(a,b,quick_basis%KLMN(1,III),quick_basis%KLMN(2,III),quick_basis%KLMN(3,III), &
+                                       quick_basis%KLMN(1,JJJ),quick_basis%KLMN(2,JJJ),quick_basis%KLMN(3,JJJ),Ax,Ay,Az,Bx, &
                                        By,Bz,fmmonearray)
 !                                  call overlapzero(a,b)
                                   valfmmone=fmmonearray(0,0,1)*xdistance
@@ -98,7 +98,8 @@
                                
                                 end select                                 
 
-                                O(JJJ,III)=O(JJJ,III)+Xconstant*cons(III)*cons(JJJ)*valfmmone
+                                quick_qm_struct%o(JJJ,III)=quick_qm_struct%o(JJJ,III)+ &
+                                        Xconstant*quick_basis%cons(III)*quick_basis%cons(JJJ)*valfmmone
                               enddo
                             enddo
 

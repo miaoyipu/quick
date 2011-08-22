@@ -6,10 +6,8 @@
 !	Copyright 2011 University of Florida. All rights reserved.
 !
 
-!********************************************************
 ! MFCC Module
-!--------------------------------------------------------
-    module quick_mfcc_module
+module quick_mfcc_module
     implicit none
 
 !    integer, allocatable, dimension(:) :: mfccatom,mfcccharge
@@ -65,5 +63,4 @@
     double precision, allocatable, dimension(:,:,:) :: mfccdens,mfccdenscap,mfccdenscon &
                                             ,mfccdenscon2,mfccdensconi,mfccdensconj
 
-    end module quick_mfcc_module
-!********************************************************
+end module quick_mfcc_module

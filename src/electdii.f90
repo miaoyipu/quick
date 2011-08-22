@@ -14,14 +14,15 @@
 subroutine electdiis(jscf,PRMS)
   use allmod
   implicit double precision(a-h,o-z)
+  
   include "mpif.h"
 
   logical :: diisdone
-  double precision:: oldEnergy=0,E1e
+  double precision:: oldEnergy=0.0d0,E1e
   double precision:: oneElecO(nbasis,nbasis)
-  dimension B(MAXDIISSCF+1,MAXDIISSCF+1),BSAVE(MAXDIISSCF+1,MAXDIISSCF+1)
-  dimension BCOPY(MAXDIISSCF+1,MAXDIISSCF+1),W(MAXDIISSCF+1)
-  dimension COEFF(MAXDIISSCF+1),RHS(MAXDIISSCF+1)
+  dimension B(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1),BSAVE(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
+  dimension BCOPY(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1),W(quick_method%maxdiisscf+1)
+  dimension COEFF(quick_method%maxdiisscf+1),RHS(quick_method%maxdiisscf+1)
 
 
   ! The purpose of this subroutine is to utilize Pulay's accelerated
@@ -112,16 +113,16 @@ subroutine electdiis(jscf,PRMS)
      ! 1)  Form the operator matrix for step i, O(i).
      !--------------------------------------------
      temp=0.0d0
-     temp=Sum2Mat(DENSE,Smatrix,nbasis)
+     temp=Sum2Mat(quick_qm_struct%dense,quick_qm_struct%s,nbasis)
 
      ! Determine dii cycle
      idiis=idiis+1
 
-     if(idiis.le.MAXDIISSCF)then
+     if(idiis.le.quick_method%maxdiisscf)then
         IDIISfinal=idiis
         IIxiao=idiis
      else
-        IDIISfinal=MAXDIISSCF
+        IDIISfinal=quick_method%maxdiisscf
         IIxiao=1
      endif
 
@@ -135,7 +136,7 @@ subroutine electdiis(jscf,PRMS)
      call cpu_time(timer_begin%TOp)
 
      ! Normal opertor selection
-     if(jscf.le.(NCYC-1))then
+     if(jscf.le.(quick_method%ncyc-1))then
         if (quick_method%HF) then
            if (bMPI) then
               call MPI_hfoperator(oneElecO) ! MPI HF
@@ -163,14 +164,14 @@ subroutine electdiis(jscf,PRMS)
         !-----------------------------------------------
         if (quick_method%debug) write(ioutfile,*) 'ELECTRON NORMALIZATION=',temp
 
-        if(jscf.ge.NCYC)then
+        if(jscf.ge.quick_method%ncyc)then
            ! save density matrix
-           call CopyDMat(DENSE,DENSESAVE,nbasis)
-           call CopyDMat(Osave,O,nbasis)
+           call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseSave,nbasis)
+           call CopyDMat(quick_qm_struct%oSave,quick_qm_struct%o,nbasis)
 
            do I=1,nbasis
               do J=1,nbasis
-                 DENSE(J,I)=DENSE(J,I)-DENSEOLD(J,I)
+                 quick_qm_struct%dense(J,I)=quick_qm_struct%dense(J,I)-quick_qm_struct%denseOld(J,I)
               enddo
            enddo
 
@@ -178,15 +179,15 @@ subroutine electdiis(jscf,PRMS)
            if (quick_method%DFT) call dftoperatordelta
 
            ! recover density
-           call CopyDMat(DENSESAVE,DENSE,nbasis)
+           call CopyDMat(quick_qm_struct%denseSave,quick_qm_struct%dense,nbasis)
         endif
         !-----------------------------------------------                
         ! End of Delta Matrix
         !-----------------------------------------------
 
         call cpu_time(timer_begin%TDII)
-        call CopyDMat(O,Osave,nbasis)
-        call CopyDMat(DENSE,DENSEOLD,nbasis)
+        call CopyDMat(quick_qm_struct%o,quick_qm_struct%oSave,nbasis)
+        call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseOld,nbasis)
 
         !-----------------------------------------------
         ! 2)  Form error matrix for step i.
@@ -202,20 +203,21 @@ subroutine electdiis(jscf,PRMS)
         ! The first part is ODS
 !        call DMatMul(nbasis,DENSE,Smatrix,HOLD)   ! HOLD=D*S
 !        call DMatMul(nbasis,O,HOLD,allerror(IIxiao,1:nbasis,1:nbasis)) ! e=O*HOLD
-        HOLD=MATMUL(DENSE,Smatrix)
-        allerror(IIxiao,1:nbasis,1:nbasis)=MATMUL(O,HOLD)
+
+        quick_scratch%hold=MATMUL(quick_qm_struct%dense,quick_qm_struct%s)
+        allerror(IIxiao,1:nbasis,1:nbasis)=MATMUL(quick_qm_struct%o,quick_scratch%hold)
         ! Calculate D O. then calculate S (DO) and subtract that from the allerror matrix.
         ! This means we now have the e(i) matrix.
         ! allerror=ODS-SDO
 !       call DMatMul(nbasis,DENSE,O,HOLD)  ! HOLD=D*O
 !       call DMatMul(nbasis,Smatrix,HOLD,HOLD2)  !HOLD2=S*HOLD
-        HOLD=MATMUL(DENSE,O)
-        HOLD2=MATMUL(Smatrix,HOLD)
+        quick_scratch%hold=MATMUL(quick_qm_struct%dense,quick_qm_struct%o)
+        quick_scratch%hold2=MATMUL(quick_qm_struct%s,quick_scratch%hold)
 
         errormax = 0.d0
         do I=1,nbasis
            do J=1,nbasis
-              allerror(IIxiao,I,J) = allerror(IIxiao,I,J) - HOLD2(i,j) !e=ODS=SDO
+              allerror(IIxiao,I,J) = allerror(IIxiao,I,J) - quick_scratch%hold2(i,j) !e=ODS=SDO
               errormax = max(allerror(IIxiao,I,J),errormax)
            enddo
         enddo
@@ -228,8 +230,8 @@ subroutine electdiis(jscf,PRMS)
         !-----------------------------------------------
 !        call DMatMul(nbasis,allerror(IIxiao,1:nbasis,1:nbasis),X,HOLD)  ! HOLD=e(i)*X
 !        call DMatMul(nbasis,X,HOLD,allerror(IIxiao,1:nbasis,1:nbasis))  ! e'(i)=X*HOLD
-         HOLD=MATMUL(allerror(IIxiao,1:nbasis,1:nbasis),X)
-         allerror(IIxiao,1:nbasis,1:nbasis)=MATMUL(X,HOLD)
+         quick_scratch%hold=MATMUL(allerror(IIxiao,1:nbasis,1:nbasis),quick_qm_struct%x)
+         allerror(IIxiao,1:nbasis,1:nbasis)=MATMUL(quick_qm_struct%x,quick_scratch%hold)
 
         !-----------------------------------------------
         ! 4)  Store the e'(I) and O(i).
@@ -237,13 +239,13 @@ subroutine electdiis(jscf,PRMS)
         ! all operator.
         !-----------------------------------------------
 
-        if(idiis.le.MAXDIISSCF)then
-           call CopyDMat(O,alloperator(IIxiao,1:nbasis,1:nbasis),nbasis)
+        if(idiis.le.quick_method%maxdiisscf)then
+           call CopyDMat(quick_qm_struct%o,alloperator(IIxiao,1:nbasis,1:nbasis),nbasis)
         else
-           do K=1,MAXDIISSCF-1
+           do K=1,quick_method%maxdiisscf-1
               call CopyDMat(alloperator(K+1,1:nbasis,1:nbasis),alloperator(K,1:nbasis,1:nbasis),nbasis)
            enddo
-           call CopyDMat(O,alloperator(MAXDIISSCF,1:nbasis,1:nbasis),nbasis)
+           call CopyDMat(quick_qm_struct%o,alloperator(quick_method%maxdiisscf,1:nbasis,1:nbasis),nbasis)
         endif
         
         !-----------------------------------------------
@@ -271,7 +273,7 @@ subroutine electdiis(jscf,PRMS)
            enddo
         enddo
 
-        if(IDIIS.gt.MAXDIISSCF)then
+        if(IDIIS.gt.quick_method%maxdiisscf)then
            do I=1,IDIISfinal-1
               do J=1,IDIISfinal-1
                  B(J,I) = BCOPY(J+1,I+1)
@@ -281,35 +283,35 @@ subroutine electdiis(jscf,PRMS)
 
         ! Now copy the current matrix into HOLD2 transposed.  This will be the
         ! Transpose[ej] used in B(i,j) = Trace(e(i) Transpose(e(j)))
-        call CopyDMat(allerror(IIxiao,1:nbasis,1:nbasis),HOLD2,nbasis)
+        call CopyDMat(allerror(IIxiao,1:nbasis,1:nbasis),quick_scratch%hold2,nbasis)
 
         do I=1,IDIISfinal
            ! Copy the transpose of error matrix I into HOLD.
-           call CopyDMat(allerror(I,1:nbasis,1:nbasis),HOLD,nbasis)
+           call CopyDMat(allerror(I,1:nbasis,1:nbasis),quick_scratch%hold,nbasis)
 
            ! Calculate and sum together the diagonal elements of e(i) Transpose(e(j))).
-           BIJ=Sum2Mat(HOLD2,HOLD,nbasis)
+           BIJ=Sum2Mat(quick_scratch%hold2,quick_scratch%hold,nbasis)
 
            ! Now place this in the B matrix.
-           if(idiis.le.MAXDIISSCF)then
+           if(idiis.le.quick_method%maxdiisscf)then
               B(IIxiao,I) = BIJ
               B(I,IIxiao) = BIJ
            else
               if(I.gt.1)then
-                 B(MAXDIISSCF,I-1)=BIJ
-                 B(I-1,MAXDIISSCF)=BIJ
+                 B(quick_method%maxdiisscf,I-1)=BIJ
+                 B(I-1,quick_method%maxdiisscf)=BIJ
               else
-                 B(MAXDIISSCF,MAXDIISSCF)=BIJ
+                 B(quick_method%maxdiisscf,quick_method%maxdiisscf)=BIJ
               endif
            endif
         enddo
 
-        if(idiis.gt.MAXDIISSCF)then
-           call CopyDMat(allerror(1,1:nbasis,1:nbasis),HOLD,nbasis)
-           do J=1,MAXDIISSCF-1
+        if(idiis.gt.quick_method%maxdiisscf)then
+           call CopyDMat(allerror(1,1:nbasis,1:nbasis),quick_scratch%hold,nbasis)
+           do J=1,quick_method%maxdiisscf-1
               call CopyDMat(allerror(J+1,1:nbasis,1:nbasis),allerror(J,1:nbasis,1:nbasis),nbasis)
            enddo
-           call CopyDMat(HOLD,allerror(MAXDIISSCF,1:nbasis,1:nbasis),nbasis)
+           call CopyDMat(quick_scratch%hold,allerror(quick_method%maxdiisscf,1:nbasis,1:nbasis),nbasis)
         endif
 
         ! Now that all the BIJ elements are in place, fill in all the column
@@ -346,7 +348,7 @@ subroutine electdiis(jscf,PRMS)
         !
         !-----------------------------------------------
         call CopyDMat(B,BSAVE,IDIISfinal+1)
-        call LSOLVE(IDIISfinal+1,maxdiisscf+1,B,RHS,W,TOL,COEFF,LSOLERR)
+        call LSOLVE(IDIISfinal+1,quick_method%maxdiisscf+1,B,RHS,W,quick_method%DMCutoff,COEFF,LSOLERR)
 
         !-----------------------------------------------
         ! 7) Form a new operator matrix based on O(new) = [Sum over i] c(i)O(i)
@@ -370,7 +372,7 @@ subroutine electdiis(jscf,PRMS)
               RHS(i)=0.0d0
            enddo
            RHS(IDIISfinal+1)=-1.0d0
-           call LSOLVE(IDIISfinal+1,maxdiisscf+1,B,RHS,W,TOL,COEFF,LSOLERR)
+           call LSOLVE(IDIISfinal+1,quick_method%maxdiisscf+1,B,RHS,W,quick_method%DMCutoff,COEFF,LSOLERR)
         enddo
         endif
 
@@ -381,8 +383,8 @@ subroutine electdiis(jscf,PRMS)
                  do I=Istartxiao,Istopxiao
                     OJK = OJK + COEFF(I-Istartxiao+1) * alloperator(I,K,J)
                  enddo
-                 O(J,K) = OJK
-                 HOLD2(J,K)=OJK
+                 quick_qm_struct%o(J,K) = OJK
+                 quick_scratch%hold2(J,K)=OJK
               enddo
            enddo
         endif
@@ -394,29 +396,30 @@ subroutine electdiis(jscf,PRMS)
         !-----------------------------------------------
 !        call DMatMul(nbasis,O,X,HOLD)  ! HOLD=O*X
 !        call DMatMul(nbasis,X,HOLD,O)  ! O=X*HOLD
-        HOLD=MATMUL(O,X)
-        O=MATMUL(X,HOLD)
+        quick_scratch%hold=MATMUL(quick_qm_struct%o,quick_qm_struct%x)
+        quick_qm_struct%o=MATMUL(quick_qm_struct%x,quick_scratch%hold)
 
         ! Now diagonalize the operator matrix.
         call cpu_time(timer_begin%TDiag)
-        call DIAG(nbasis,O,nbasis,TOL,V2,E,IDEGEN,VEC,IERROR)
+        call DIAG(nbasis,quick_qm_struct%o,nbasis,quick_method%DMCutoff,V2,quick_qm_struct%E,& 
+            quick_qm_struct%idegen,quick_qm_struct%vec,IERROR)
         call cpu_time(timer_end%TDiag)
 
         ! Calculate C = XC' and form a new density matrix.
         ! The C' is from the above diagonalization.  Also, save the previous
         ! Density matrix to check for convergence.
 !        call DMatMul(nbasis,X,VEC,CO)    ! C=XC'
-        CO=MATMUL(X,VEC)
-        call CopyDMat(DENSE,HOLD,nbasis) ! Save DENSE to HOLD
+        quick_qm_struct%co=MATMUL(quick_qm_struct%x,quick_qm_struct%vec)
+        call CopyDMat(quick_qm_struct%dense,quick_scratch%hold,nbasis) ! Save DENSE to HOLD
 
         ! PIJ=SIGMA[i=1,nelec/2]2CJK*CIK
         do I=1,nbasis
            do J=1,nbasis
               DENSEJI = 0.d0
-              do K=1,nelec/2
-                 DENSEJI = DENSEJI + (CO(J,K)*CO(I,K))
+              do K=1,quick_molspec%nelec/2
+                 DENSEJI = DENSEJI + (quick_qm_struct%co(J,K)*quick_qm_struct%co(I,K))
               enddo
-              DENSE(J,I) = DENSEJI*2.d0
+              quick_qm_struct%dense(J,I) = DENSEJI*2.d0
            enddo
         enddo
 
@@ -427,25 +430,25 @@ subroutine electdiis(jscf,PRMS)
         PCHANGE=0.d0
         do I=1,nbasis
            do J=1,nbasis
-              PRMS=PRMS+(DENSE(J,I)-HOLD(J,I))**2.d0
-              PCHANGE=max(PCHANGE,abs(DENSE(J,I)-HOLD(J,I)))
+              PRMS=PRMS+(quick_qm_struct%dense(J,I)-quick_scratch%hold(J,I))**2.d0
+              PCHANGE=max(PCHANGE,abs(quick_qm_struct%dense(J,I)-quick_scratch%hold(J,I)))
            enddo
         enddo
         PRMS = (PRMS/nbasis**2.d0)**0.5d0
 
-        Itempxiao=mod(idiis,MAXDIISSCF)
-        if(Itempxiao.eq.0)Itempxiao=MAXDIISSCF
+        Itempxiao=mod(idiis,quick_method%maxdiisscf)
+        if(Itempxiao.eq.0)Itempxiao=quick_method%maxdiisscf
 
 
         write (ioutfile,'(I3,1x)',advance="no") jscf
         if(quick_method%printEnergy)then
-           write (ioutfile,'(F16.9,2x)',advance="no") Eel+Ecore
+           write (ioutfile,'(F16.9,2x)',advance="no") quick_qm_struct%Eel+quick_qm_struct%Ecore
            if (jscf.ne.1) then
-              write(ioutFile,'(E12.6,2x)',advance="no") oldEnergy-Eel-Ecore
+              write(ioutFile,'(E12.6,2x)',advance="no") oldEnergy-quick_qm_struct%Eel-quick_qm_struct%Ecore
            else
               write(ioutFile,'(4x,"------",4x)',advance="no")
            endif
-           oldEnergy=Eel+Ecore
+           oldEnergy=quick_qm_struct%Eel+quick_qm_struct%Ecore
         endif
      endif
      !--------------- MPI/ALL NODES -----------------------------------------
@@ -465,24 +468,24 @@ subroutine electdiis(jscf,PRMS)
         write (ioutfile,'(E10.4,2x,E10.4)')  PRMS,PCHANGE
 
 
-        if(PRMS.le.0.00001d0.and.integralCutoff.gt.1.0d0/(10.0d0**7.5d0))then
-           integralCutoff=min(integralCutoff*100.0d0,1.0d0/(10.0d0**8.0d0))
-           Primlimit=min(integralCutoff*100.0d0,1.0d0/(10.0d0**8.0d0))
+        if(PRMS.le.0.00001d0.and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**7.5d0))then
+           quick_method%integralCutoff=min(quick_method%integralCutoff*100.0d0,1.0d0/(10.0d0**8.0d0))
+           quick_method%primLimit=min(quick_method%integralCutoff*100.0d0,1.0d0/(10.0d0**8.0d0))
         endif
-        if(PRMS.le.0.000001d0.and.integralCutoff.gt.1.0d0/(10.0d0**8.5d0))then
-           integralCutoff=min(integralCutoff*10.0d0,1.0d0/(10.0d0**9.0d0))
-           Primlimit=min(integralCutoff*10.0d0,1.0d0/(10.0d0**9.0d0))
+        if(PRMS.le.0.000001d0.and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**8.5d0))then
+           quick_method%integralCutoff=min(quick_method%integralCutoff*10.0d0,1.0d0/(10.0d0**9.0d0))
+           quick_method%primLimit=min(quick_method%integralCutoff*10.0d0,1.0d0/(10.0d0**9.0d0))
         endif
 
-        if(PRMS.le.0.0000001d0.and.integralCutoff.gt.1.0d0/(10.0d0**9.5d0))then
-           integralCutoff=min(integralCutoff,1.0d0/(10.0d0**10.0d0))
-           Primlimit=min(integralCutoff,1.0d0/(10.0d0**10.0d0))
+        if(PRMS.le.0.0000001d0.and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**9.5d0))then
+           quick_method%integralCutoff=min(quick_method%integralCutoff,1.0d0/(10.0d0**10.0d0))
+           quick_method%primLimit=min(quick_method%integralCutoff,1.0d0/(10.0d0**10.0d0))
         endif
 
         if (lsolerr /= 0) write (ioutfile,'("DIIS FAILED !!", &
              & " PERFORM NORMAL SCF. (NOT FATAL.)")')
 
-        if (PRMS < PMAXRMS .and. pchange < PMAXrms*100.d0 .and. jscf.gt.3)then
+        if (PRMS < quick_method%pmaxrms .and. pchange < quick_method%pmaxrms*100.d0 .and. jscf.gt.3)then
            if (quick_method%printEnergy) then
               write(ioutfile,'(120("-"))')
            else
@@ -493,33 +496,33 @@ subroutine electdiis(jscf,PRMS)
            write (ioutfile,*) '-----------------------------------------------'
            if (quick_method%DFT .or. quick_method%SEDFT) then
               write (ioutfile,'("ALPHA ELECTRON DENSITY    =",F16.10)') &
-                   aelec
+                   quick_qm_struct%aelec
               write (ioutfile,'("BETA ELECTRON DENSITY     =",F16.10)') &
-                   belec
+                   quick_qm_struct%belec
            endif
 
            if (quick_method%prtgap) write (ioutfile,'("HOMO-LUMO GAP (EV) =",11x,F12.6)') &
-                (E((nelec/2)+1) - E(nelec/2))*27.2116d0
+                (quick_qm_struct%E((quick_molspec%nelec/2)+1) - quick_qm_struct%E(quick_molspec%nelec/2))*27.2116d0
 
            diisdone=.true.
         endif
-        if(jscf >= iscf-1) then
+        if(jscf >= quick_method%iscf-1) then
            write (ioutfile,'("RAN OUT OF CYCLES.  NO CONVERGENCE.")')
            write (ioutfile,' &
                 & ("PERFORM FINAL NO INTERPOLATION ITERATION")')
            diisdone=.true.
         endif
-        diisdone = idiis.eq.30*MAXDIISSCF.or.diisdone
+        diisdone = idiis.eq.30*quick_method%maxdiisscf.or.diisdone
      endif
         
      if (bMPI) then
         call MPI_BCAST(diisdone,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
-        call MPI_BCAST(O,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-        call MPI_BCAST(DENSE,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-        call MPI_BCAST(CO,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-        call MPI_BCAST(E,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-        call MPI_BCAST(integralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-        call MPI_BCAST(Primlimit,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!        call MPI_BCAST(O,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!        call MPI_BCAST(DENSE,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!        call MPI_BCAST(CO,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!        call MPI_BCAST(E,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+        call MPI_BCAST(quick_method%integralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+        call MPI_BCAST(quick_method%primLimit,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
         
         call MPI_BARRIER(MPI_COMM_WORLD,mpierror)   
      endif
@@ -542,9 +545,9 @@ end subroutine electdiis
       implicit double precision(a-h,o-z)
 
       logical :: diisdone
-      dimension :: B(MAXDIISSCF+1,MAXDIISSCF+1),BSAVE(MAXDIISSCF+1,MAXDIISSCF+1)
-      dimension :: BCOPY(MAXDIISSCF+1,MAXDIISSCF+1),W(MAXDIISSCF+1)
-      dimension :: COEFF(MAXDIISSCF+1),RHS(MAXDIISSCF+1)
+      dimension :: B(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1),BSAVE(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
+      dimension :: BCOPY(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1),W(quick_method%maxdiisscf+1)
+      dimension :: COEFF(quick_method%maxdiisscf+1),RHS(quick_method%maxdiisscf+1)
       double precision,allocatable :: dcco(:,:)
 
       logical templog1,templog2
@@ -639,19 +642,19 @@ end subroutine electdiis
             ! 10/20/10 YIPU MIAO Rewrite everything, you can't image how mess and urgly it was.
             ! 07/07/07 Xiao HE   Delta density matrix increase is implemented here.
             !--------------------------------------------
-            if(jscf.ge.NCYC)then
+            if(jscf.ge.quick_method%ncyc)then
 
                call cpu_time(timer_begin%TDII)
                !--------------------------------------------        
                ! Before doing everything, we may save Density Matrix and Operator matrix first.
                ! Note try not to modify Osave and DENSAVE unless you know what you are doing
                !--------------------------------------------
-               call CopyDMat(Osave,O,nbasis)            ! recover Operator first
-               call CopyDMat(DENSE,DENSESAVE,nbasis)    ! save density matrix
+               call CopyDMat(quick_qm_struct%oSave,quick_qm_struct%o,nbasis)            ! recover Operator first
+               call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseSave,nbasis)    ! save density matrix
 
                do I=1,nbasis
                   do J=1,nbasis
-                     DENSE(I,J)=DENSE(I,J)-DENSEOLD(I,J)
+                     quick_qm_struct%dense(I,J)=quick_qm_struct%dense(I,J)-quick_qm_struct%denseOld(I,J)
                   enddo
                enddo
 
@@ -665,7 +668,7 @@ end subroutine electdiis
                !--------------------------------------------
                ! recover density matrix         
                !--------------------------------------------
-               call CopyDMat(DENSESAVE,DENSE,nbasis)
+               call CopyDMat(quick_qm_struct%denseSave,quick_qm_struct%dense,nbasis)
                call cpu_time(timer_end%TDII)
             endif
 
@@ -673,8 +676,8 @@ end subroutine electdiis
             ! We have modified O and density matrix. And we need to save
             ! Operator for next cycle
             !--------------------------------------------
-            call CopyDMat(O,Osave,nbasis)
-            call CopyDMat(DENSE,DENSEOLD,nbasis)
+            call CopyDMat(quick_qm_struct%o,quick_qm_struct%oSave,nbasis)
+            call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseOld,nbasis)
 
 
             if(quick_method%debug) call debugElecdii()
@@ -732,12 +735,12 @@ end subroutine electdiis
             ! transform the operator into canonial ones
             do I=1,nbasisdc(itt)
                do J=1,nbasisdc(itt)
-                  HOLD(I,J)=0.0D0
+                  quick_scratch%hold(I,J)=0.0D0
                   HOLDIJ = 0.0D0
                   do K=1,nbasisdc(itt)
                      HOLDIJ = HOLDIJ + Odcsub(itt,I,K)*Xdcsub(itt,K,J)
                   enddo
-                  HOLD(I,J) = HOLDIJ
+                  quick_scratch%hold(I,J) = HOLDIJ
                enddo
             enddo
 
@@ -745,7 +748,7 @@ end subroutine electdiis
                do J=1,nbasisdc(itt)
                   OIJ = 0.0D0
                   do K=1,nbasisdc(itt)
-                     OIJ = OIJ + Xdcsub(itt,K,I)*HOLD(K,J)
+                     OIJ = OIJ + Xdcsub(itt,K,I)*quick_scratch%hold(K,J)
                   enddo
                   Odcsubtemp(I,J)=OIJ
                enddo
@@ -764,7 +767,7 @@ end subroutine electdiis
             !--------------------------------------------
             call cpu_time(timer_begin%TDiag) ! Trigger the dc timer for subsytem
 
-            call DIAG(NtempN,Odcsubtemp,NtempN,TOL,Vtemp,EVAL1temp,IDEGEN1temp,VECtemp,IERROR)
+            call DIAG(NtempN,Odcsubtemp,NtempN,quick_method%DMCutoff,Vtemp,EVAL1temp,IDEGEN1temp,VECtemp,IERROR)
 
             call cpu_time(timer_end%TDiag)  ! Stop the timer
 
@@ -855,7 +858,7 @@ end subroutine electdiis
             write(ioutfile,'("SCF CYCLE=",i5)')jscf
 
             ! save density
-            call CopyDMat(DENSE,HOLD,nbasis)
+            call CopyDMat(quick_qm_struct%dense,quick_scratch%hold,nbasis)
 
             !--------------------------------------------
             ! Next step is to calculate fermi energy and renormalize 
@@ -869,16 +872,16 @@ end subroutine electdiis
             PCHANGE=0.d0
             do I=1,nbasis
                do J=1,nbasis
-                  if(dabs(HOLD(J,I)).ge.0.00000001d0)then
+                  if(dabs(quick_scratch%hold(J,I)).ge.0.00000001d0)then
                      nsubtemp=nsubtemp+1
-                     PRMS=PRMS+(DENSE(J,I)-HOLD(J,I))**2.d0
-                     PCHANGE=max(PCHANGE,abs(DENSE(J,I)-HOLD(J,I)))
+                     PRMS=PRMS+(quick_qm_struct%dense(J,I)-quick_scratch%hold(J,I))**2.d0
+                     PCHANGE=max(PCHANGE,abs(quick_qm_struct%dense(J,I)-quick_scratch%hold(J,I)))
                   endif
                enddo
             enddo
             PRMS = (PRMS/nsubtemp)**0.5d0
-            itemp=mod(idiis,MAXDIISSCF)
-            if(itemp.eq.0) itemp=MAXDIISSCF
+            itemp=mod(idiis,quick_method%maxdiisscf)
+            if(itemp.eq.0) itemp=quick_method%maxdiisscf
          endif
          !------ END MPI/MASTER ----------------------
 
@@ -930,46 +933,49 @@ end subroutine electdiis
             write (ioutfile,'("DIIS CYCLE     = ",I8)') itemp
             write (ioutfile,'("DIIS TIME = ",F12.2)') timer_end%TDII-timer_begin%TDII
             write (ioutfile,'("RMS CHANGE     = ",E12.6, "  MAX CHANGE= ",E12.6)') PRMS,PCHANGE
-            if(quick_method%printEnergy) write (ioutfile,'("TOTAL ENERGY=",F16.9)') Eel+Ecore
+            if(quick_method%printEnergy) write (ioutfile,'("TOTAL ENERGY=",F16.9)') quick_qm_struct%Eel+quick_qm_struct%Ecore
 
-            if(PRMS.le.0.00001d0.and.integralCutoff.gt.1.0d0/(10.0d0**7.5d0))then
-               integralCutoff=1.0d0/(10.0d0**8.0d0)
-               Primlimit=1.0d0/(10.0d0**8.0d0)
+            if(PRMS.le.0.00001d0.and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**7.5d0))then
+               quick_method%integralCutoff=1.0d0/(10.0d0**8.0d0)
+               quick_method%primLimit=1.0d0/(10.0d0**8.0d0)
             endif
-            if(PRMS.le.0.000001d0.and.integralCutoff.gt.1.0d0/(10.0d0**8.5d0))then
-               integralCutoff=1.0d0/(10.0d0**9.0d0)
-               Primlimit=1.0d0/(10.0d0**9.0d0)
+            if(PRMS.le.0.000001d0.and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**8.5d0))then
+               quick_method%integralCutoff=1.0d0/(10.0d0**9.0d0)
+               quick_method%primLimit=1.0d0/(10.0d0**9.0d0)
             endif
-            if(PRMS.le.0.0000001d0.and.integralCutoff.gt.1.0d0/(10.0d0**9.5d0))then
-               integralCutoff=1.0d0/(10.0d0**10.0d0)
-               Primlimit=1.0d0/(10.0d0**10.0d0)
+            if(PRMS.le.0.0000001d0.and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**9.5d0))then
+               quick_method%integralCutoff=1.0d0/(10.0d0**10.0d0)
+               quick_method%primLimit=1.0d0/(10.0d0**10.0d0)
             endif
 
             ! density for dft
             if (quick_method%DFT .or. quick_method%SEDFT) then
-               write (ioutfile,'("ALPHA ELECTRON DENSITY    =",F16.10)')    aelec
-               write (ioutfile,'("BETA ELECTRON DENSITY     =",F16.10)')    belec
+               write (ioutfile,'("ALPHA ELECTRON DENSITY    =",F16.10)')    quick_qm_struct%aelec
+               write (ioutfile,'("BETA ELECTRON DENSITY     =",F16.10)')    quick_qm_struct%belec
             endif
 
             ! lsolerr.ne.0 indicates dii failure
             if (lsolerr /= 0) write (ioutfile,'("DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)")')
 
             ! Print homo-lumo gap
-            if (quick_method%prtgap) write (ioutfile,'("HOMO-LUMO GAP (EV) =",11x,F12.6)') (E((nelec/2)+1) - E(nelec/2))*27.2116d0
+            if (quick_method%prtgap) then
+                write (ioutfile,'("HOMO-LUMO GAP (EV) =",11x,F12.6)')  &
+                  (quick_qm_struct%E((quick_molspec%nelec/2)+1) - quick_qm_struct%E(quick_molspec%nelec/2))*27.2116d0
+            endif
 
             ! check convengency 
-            if (PRMS < PMAXRMS .and. pchange < PMAXrms*100.d0)then
+            if (PRMS < quick_method%pmaxrms .and. pchange < quick_method%pmaxrms*100.d0)then
                write (ioutfile,'("REACH CONVERGENCE AFTER ",i4," CYCLES")') jscf
                diisdone=.true.
             endif
 
-            if(jscf >= iscf-1) then
+            if(jscf >= quick_method%iscf-1) then
                write (ioutfile,'("RAN OUT OF CYCLES.  NO CONVERGENCE.")')
                write (ioutfile,'("PERFORM FINAL NO INTERPOLATION ITERATION")')
                diisdone=.true.
             endif
 
-            diisdone = idiis.eq.30*MAXDIISSCF.or.diisdone
+            diisdone = idiis.eq.30*quick_method%maxdiisscf.or.diisdone
             call flush(ioutfile)
             !-------- MPI/MASTER----------------
          endif
@@ -978,7 +984,7 @@ end subroutine electdiis
          if (bMPI) then
             call MPI_BCAST(diisdone,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(nbasis,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-            call MPI_BCAST(DENSE,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!            call MPI_BCAST(DENSE,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
             call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
          endif
       enddo
@@ -1007,7 +1013,7 @@ end subroutine electdiis
     betah = 1.0d0/(boltz*tempk)
     etoler = 1.0d-8
     maxit = 100
-    elecs=nelec
+    elecs=quick_molspec%nelec
       
       
     ! Determine the observed range of eigenvalues for all subsystems.
@@ -1042,7 +1048,7 @@ end subroutine electdiis
                 
         do ii=1,nbasis
             do jj=1,nbasis
-                DENSE(ii,jj)=0.0d0
+                quick_qm_struct%dense(ii,jj)=0.0d0
             enddo
         enddo
 
@@ -1113,7 +1119,7 @@ end subroutine electdiis
                         Jblockatom=dcsub(itt,jtt2) 
                         if(dclogic(itt,Iblockatom,Jblockatom).eq.0)then
                             do jtemp=ifirst(Jblockatom),ilast(Jblockatom)            
-                                DENSE(itemp,jtemp)= DENSE(itemp,jtemp)+ &
+                                quick_qm_struct%dense(itemp,jtemp)= quick_qm_struct%dense(itemp,jtemp)+ &
                                       invdcoverlap(Iblockatom,Jblockatom)* &
                                       Pdcsub(itt,Kstart1+itemp-ifirst(Iblockatom)+1, &
                                       Kstart2+jtemp-ifirst(Jblockatom)+1)
@@ -1134,7 +1140,7 @@ end subroutine electdiis
         temp=0.0d0
         do i=1,nbasis
             do j=1,nbasis
-                temp=temp+DENSE(j,i)*Smatrix(j,i)
+                temp=temp+quick_qm_struct%dense(j,i)*quick_qm_struct%s(j,i)
             enddo
         enddo
 

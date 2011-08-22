@@ -134,7 +134,7 @@
     implicit double precision(a-h,o-z)
 
 !    pito3half=5.568327996831707845284817982118835702014
-    pito3half = pi**1.5
+!    pito3half = pi**1.5
     g = a+b
 
     ssoverlap = pito3half*1.d0*g**(-3.d0/2.d0)

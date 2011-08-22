@@ -1,16 +1,25 @@
-! Xiao HE deallocate 07/17/2007
-! Ken Ayers 05/26/04
-! Subroutines for allocation of the various matricies in quick
-! These routines are not the ideal way to deal with allocation of
-! variables.  Large sized arrays should only be allocated when
-! they are needed.  Eventually someone will deal with this.
+#include "config.h"
+!
+!	finalize.f90
+!	new_quick
+!
+!	Created by Yipu Miao on 3/4/11.
+!	Copyright 2011 University of Florida. All rights reserved.
+!
+!   subroutine inventory:
+!       deallocate_calculated
+!       deallocateall
+!       finalize
 
-subroutine deallocateall
+
+Subroutine deallocate_calculated
+!   Xiao HE deallocate 07/17/2007
+!   Ken Ayers 05/26/04
+!   Subroutines for allocation of the various matricies in quick
+!   These routines are not the ideal way to deal with allocation of
+!   variables.  Large sized arrays should only be allocated when
+!   they are needed.  Eventually someone will deal with this.
   use allmod
-  implicit double precision(a-h,o-z)
-
-  integer i
-
   deallocate(Yxiao)
   deallocate(Yxiaotemp)
   deallocate(Yxiaoprim)
@@ -18,82 +27,26 @@ subroutine deallocateall
   deallocate(attraxiaoopt)
   deallocate(Ycutoff)
   deallocate(cutmatrix)
-  deallocate(allerror)
-  deallocate(alloperator)
-  !  deallocate(debug1)
-  !  deallocate(debug2)
-  deallocate(kstart)
-  deallocate(katom)
-  deallocate(ktype)
-  deallocate(kprim)
-  ! print*,"problem1"
-  deallocate(Qnumber)
-  ! print*,"here"
-  deallocate(Qstart)
-  deallocate(Qfinal)
-  ! print*,"middle"
-  deallocate(Qsbasis)
-  deallocate(Qfbasis)
-  deallocate(ksumtype)
-  ! print*,"probelm2" 
-  deallocate(KLMN)
-  deallocate(cons)
-  deallocate(gccoeff)
-  deallocate(gcexpo)
-  deallocate(gcexpomin)
-  deallocate(aex)
-  deallocate(gcs)
-  deallocate(gcp)
-  deallocate(gcd)
-  deallocate(gcf)
-  deallocate(gcg)
+  deallocate(sigrad2)
+  
+  call dealloc(quick_scratch)
+  call dealloc(quick_basis)
 
   deallocate(itype)
-  deallocate(ncenter)
   deallocate(ncontract)
-
-  deallocate(sigrad2)
-
-  deallocate(Smatrix)
-  deallocate(X)
-  deallocate(O)
-  deallocate(CO)
-  deallocate(COB)
-  deallocate(VEC)
-  deallocate(DENSE)
-  deallocate(DENSEB)
-  deallocate(DENSEOLD)
-  deallocate(DENSESAVE)
-  deallocate(Osave)
-  deallocate(Osavedft)
-  deallocate(V2)
-  deallocate(E)
-  deallocate(EB)
-  deallocate(idegen)
-  deallocate(Uxiao)
-
-  deallocate(hold)
-  deallocate(hold2)
-
-
   deallocate(aexp)
   deallocate(dcoeff)
   deallocate(gauss)
-  ! do i=1,nbasis
-  !     deallocate(gauss)
-  !     deallocate(gauss)
-  ! enddo
 
-  ! do i=1,nbasis
-  !     deallocate(gauss%aexp(3))
-  !     deallocate(gauss%dcoeff(3))
-  ! enddo
+end subroutine deallocate_calculated
 
-  ! deallocate(Apri)
-  ! deallocate(Kpri)
-  ! deallocate(cutprim)
-  ! deallocate(Ppri)
-  ! deallocate(Xcoeff)
+subroutine deallocateall
+  use allmod
+  implicit double precision(a-h,o-z)
+
+    call  dealloc(quick_molspec)
+    call  dealloc(quick_qm_struct)
+    call  deallocate_calculated
 
 end subroutine deallocateall
 
@@ -123,10 +76,12 @@ subroutine finalize(io,status)
         endif
     endif master_finalize
     !-------------------- End MPI/MASTER ---------------------------------
-    
+
+#ifdef MPI    
     !-------------------- MPI/ALL NODES ----------------------------------
-    call MPI_FINALIZE(mpierror)
+    if (bMPI) call MPI_FINALIZE(mpierror)
     !-------------------- End MPI/ALL NODES-------------------------------
+#endif
 
     close(io)
     
@@ -144,15 +99,19 @@ subroutine quick_exit(io, status)
    integer io           ! close this unit if greater than zero
    integer status       ! exit status; 1-error 0-normal
 
-
+#ifdef MPI
    include 'mpif.h'
+#endif
+
    integer ierr
    
    if (status /= 0) then
       call flush(io)
+#ifdef MPI
       call mpi_abort(MPI_COMM_WORLD, status, ierr)
    else
       call mpi_finalize(ierr)
+#endif
    end if
 
    call finalize(io,1)

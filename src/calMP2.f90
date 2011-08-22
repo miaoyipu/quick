@@ -1,3 +1,4 @@
+#include "config.h"
 ! Ed Brothers. November 27, 2001
 ! Xiao HE. September 14,2008
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
@@ -10,11 +11,15 @@ subroutine calmp2
   double precision cutoffTest,testtmp,testCutoff
   integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
   common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
-
+    integer :: nelec,nelecb
+    
+    nelec = quick_molspec%nelec
+    nelecb = quick_molspec%nelecb
+    
   call PrtAct(ioutfile,"Begin MP2 Calculation")
   cutoffmp2=1.0d-8  ! cutoff criteria
-  primlimit=1.0d-8
-  emp2=0.0d0
+  quick_method%primLimit=1.0d-8
+  quick_qm_struct%EMP2=0.0d0
 
   ! occupied and virtual orbitals number
   iocc=Nelec/2
@@ -54,15 +59,15 @@ subroutine calmp2
   call densityCutoff    
 
   ! first save coeffecient.
-  Do i=1,nbasis
-     Do j=1,nbasis
-        HOLD(i,j)=CO(j,i)
-     ENDDO
-  ENDDO
+  do i=1,nbasis
+     do j=1,nbasis
+        quick_scratch%hold(i,j)=quick_qm_struct%co(j,i)
+     enddo
+  enddo
 
   ttt=MAXVAL(Ycutoff) ! Max Value of Ycutoff
 
-  Do i3new=1,nstepmp2               ! Step counter
+  do i3new=1,nstepmp2               ! Step counter
 
      call cpu_time(timer_begin%TMP2)
      ntemp=0    ! integer counter
@@ -74,7 +79,7 @@ subroutine calmp2
      
      ! Initial orbmp2k331
      call initialOrbmp2k331(orbmp2k331,nstep,nbasis,ivir,iocc,nsteplength)
-     Do II=1,jshell
+     do II=1,jshell
         do JJ=II,jshell
            if(Ycutoff(II,JJ).gt.cutoffmp2/ttt)then
               call initialOrbmp2ij(orbmp2i331,nstep,nsteplength,nbasis,nbasistemp,nbasistemp)
@@ -86,39 +91,39 @@ subroutine calmp2
                     ! Schwarts cutoff is implemented here
                     comax=0.d0
                     testCutoff = Ycutoff(II,JJ)*Ycutoff(KK,LL)
-                    If(testCutoff.gt.cutoffmp2)then
+                    if(testCutoff.gt.cutoffmp2)then
 
-                       NKK1=Qstart(KK)
-                       NKK2=Qfinal(KK)
-                       NLL1=Qstart(LL)
-                       NLL2=Qfinal(LL)
+                       NKK1=quick_basis%Qstart(KK)
+                       NKK2=quick_basis%Qfinal(KK)
+                       NLL1=quick_basis%Qstart(LL)
+                       NLL2=quick_basis%Qfinal(LL)
 
-                       NBK1=Qsbasis(KK,NKK1)
-                       NBK2=Qfbasis(KK,NKK2)
-                       NBL1=Qsbasis(LL,NLL1)
-                       NBL2=Qfbasis(LL,NLL2)
+                       NBK1=quick_basis%Qsbasis(KK,NKK1)
+                       NBK2=quick_basis%Qfbasis(KK,NKK2)
+                       NBL1=quick_basis%Qsbasis(LL,NLL1)
+                       NBL2=quick_basis%Qfbasis(LL,NLL2)
 
-                       KK111=Ksumtype(KK)+NBK1
-                       KK112=Ksumtype(KK)+NBK2
-                       LL111=Ksumtype(LL)+NBL1
-                       LL112=Ksumtype(LL)+NBL2
+                       KK111=quick_basis%ksumtype(KK)+NBK1
+                       KK112=quick_basis%ksumtype(KK)+NBK2
+                       LL111=quick_basis%ksumtype(LL)+NBL1
+                       LL112=quick_basis%ksumtype(LL)+NBL2
 
                        do icycle=1,nsteplength
                             i3=nstepmp2s+icycle-1
-                            Do KKK=KK111,KK112
-                                Do LLL=max(KKK,LL111),LL112
-                                    comax=max(comax,dabs(co(kkk,i3)))
-                                    comax=max(comax,dabs(co(lll,i3)))    
-                                Enddo
-                            Enddo        
+                            do KKK=KK111,KK112
+                                do LLL=max(KKK,LL111),LL112
+                                    comax=max(comax,dabs(quick_qm_struct%co(kkk,i3)))
+                                    comax=max(comax,dabs(quick_qm_struct%co(lll,i3)))    
+                                enddo
+                            enddo        
                        enddo
                        
                        testCutoff=testCutoff*comax
-                       If(testCutoff.gt.cutoffmp2)then
+                       if(testCutoff.gt.cutoffmp2)then
                           dnmax=comax
                           ntemp=ntemp+1
                           call shellmp2(nstepmp2s,nsteplength)
-                       Endif
+                       endif
 
                     endif
 
@@ -127,23 +132,23 @@ subroutine calmp2
 
 
 
-              NII1=Qstart(II)
-              NII2=Qfinal(II)
-              NJJ1=Qstart(JJ)
-              NJJ2=Qfinal(JJ)
+              NII1=quick_basis%Qstart(II)
+              NII2=quick_basis%Qfinal(II)
+              NJJ1=quick_basis%Qstart(JJ)
+              NJJ2=quick_basis%Qfinal(JJ)
 
-              NBI1=Qsbasis(II,NII1)
-              NBI2=Qfbasis(II,NII2)
-              NBJ1=Qsbasis(JJ,NJJ1)
-              NBJ2=Qfbasis(JJ,NJJ2)
+              NBI1=quick_basis%Qsbasis(II,NII1)
+              NBI2=quick_basis%Qfbasis(II,NII2)
+              NBJ1=quick_basis%Qsbasis(JJ,NJJ1)
+              NBJ2=quick_basis%Qfbasis(JJ,NJJ2)
 
-              II111=Ksumtype(II)+NBI1
-              II112=Ksumtype(II)+NBI2
-              JJ111=Ksumtype(JJ)+NBJ1
-              JJ112=Ksumtype(JJ)+NBJ2
+              II111=quick_basis%ksumtype(II)+NBI1
+              II112=quick_basis%ksumtype(II)+NBI2
+              JJ111=quick_basis%ksumtype(JJ)+NBJ1
+              JJ112=quick_basis%ksumtype(JJ)+NBJ2
 
-              Do III=II111,II112
-                 Do JJJ=max(III,JJ111),JJ112
+              do III=II111,II112
+                 do JJJ=max(III,JJ111),JJ112
 
                     IIInew=III-II111+1
                     JJJnew=JJJ-JJ111+1
@@ -151,7 +156,7 @@ subroutine calmp2
                     do LLL=1,nbasis
                        do j33=1,ivir
                           j33new=j33+nelec/2
-                          atemp=CO(LLL,j33new)
+                          atemp=quick_qm_struct%co(LLL,j33new)
                           do icycle=1,nsteplength
                              orbmp2j331(icycle,j33,IIInew,JJJnew,1)=orbmp2j331(icycle,j33,IIInew,JJJnew,1) + &
                                   orbmp2i331(icycle,LLL,IIInew,JJJnew,1)*atemp
@@ -165,8 +170,8 @@ subroutine calmp2
 
                     do j33=1,ivir
                        do k33=1,nelec/2
-                          atemp=HOLD(k33,III)
-                          atemp2=HOLD(k33,JJJ)
+                          atemp=quick_scratch%hold(k33,III)
+                          atemp2=quick_scratch%hold(k33,JJJ)
                           do icycle=1,nsteplength
                              orbmp2k331(icycle,k33,j33,JJJ)=orbmp2k331(icycle,k33,j33,JJJ)+ &
                                   orbmp2j331(icycle,j33,IIInew,JJJnew,1)*atemp
@@ -177,8 +182,8 @@ subroutine calmp2
                           enddo
                        enddo
                     enddo
-                 Enddo
-              Enddo
+                 enddo
+              enddo
            endif
 
         enddo
@@ -192,7 +197,7 @@ subroutine calmp2
             do l3=1,nbasis-nelec/2
             L3new=l3+nelec/2
                 do lll=1,nbasis
-                 write(10,*) k3,j3,LLL,L3new,orbmp2k331(icycle,k3,j3,LLL),co(LLL,L3new)
+                 write(10,*) k3,j3,LLL,L3new,orbmp2k331(icycle,k3,j3,LLL),quick_qm_struct%co(LLL,L3new)
                 enddo
             enddo
             enddo
@@ -201,47 +206,49 @@ subroutine calmp2
 
      do icycle=1,nsteplength
         i3=nstepmp2s+icycle-1
-        Do k3=i3,nelec/2
+        do k3=i3,nelec/2
 
-           Do J3=1,nbasis-nelec/2
-              Do L3=1,nbasis-nelec/2
+           do J3=1,nbasis-nelec/2
+              do L3=1,nbasis-nelec/2
                  orbmp2(L3,J3)=0.0d0
                  L3new=L3+nelec/2
-                 Do LLL=1,nbasis
-                    orbmp2(L3,J3)=orbmp2(L3,J3)+orbmp2k331(icycle,k3,j3,LLL)*CO(LLL,L3new)
-                 Enddo
-              Enddo
-           Enddo
+                 do LLL=1,nbasis
+                    orbmp2(L3,J3)=orbmp2(L3,J3)+orbmp2k331(icycle,k3,j3,LLL)*quick_qm_struct%co(LLL,L3new)
+                 enddo
+              enddo
+           enddo
        
-           Do J3=1,nbasis-nelec/2
-              Do L3=1,nbasis-nelec/2
+           do J3=1,nbasis-nelec/2
+              do L3=1,nbasis-nelec/2
                  if(k3.gt.i3)then
-                    emp2=emp2+2.0d0/(E(i3)+E(k3)-E(j3+nelec/2)-E(l3+nelec/2)) &
+                    quick_qm_struct%EMP2=quick_qm_struct%EMP2+2.0d0/(quick_qm_struct%E(i3)+quick_qm_struct%E(k3) &
+                        -quick_qm_struct%E(j3+nelec/2)-quick_qm_struct%E(l3+nelec/2)) &
                          *orbmp2(j3,l3)*(2.0d0*orbmp2(j3,l3)-orbmp2(l3,j3))
                  endif
                  if(k3.eq.i3)then
-                    emp2=emp2+1.0d0/(E(i3)+E(k3)-E(j3+nelec/2)-E(l3+nelec/2)) &
+                    quick_qm_struct%EMP2=quick_qm_struct%EMP2+1.0d0/(quick_qm_struct%E(i3)+quick_qm_struct%E(k3) &
+                        -quick_qm_struct%E(j3+nelec/2)-quick_qm_struct%E(l3+nelec/2)) &
                          *orbmp2(j3,l3)*(2.0d0*orbmp2(j3,l3)-orbmp2(l3,j3))
                  endif
 
-              Enddo
-           Enddo
+              enddo
+           enddo
         enddo
-     Enddo
+     enddo
         
      call cpu_time(timer_end%TMP2)
      timer_cumer%TMP2=timer_end%TMP2-timer_begin%TMP2+timer_cumer%TMP2
 
-  ENDDO
+  enddo
 
-  write (iOutFile,'("SECOND ORDER ENERGY =",F16.9)') EMP2
-  write (iOutFile,'("EMP2                =",F16.9)') Etot+EMP2
+  write (iOutFile,'("SECOND ORDER ENERGY =",F16.9)') quick_qm_struct%EMP2
+  write (iOutFile,'("EMP2                =",F16.9)') quick_qm_struct%Etot+quick_qm_struct%EMP2
   call PrtAct(ioutfile,"End MP2 Calculation")
   return
 end subroutine calmp2
 
 
-
+#ifdef MPI
 
 ! Ed Brothers. November 27, 2001
 ! Xiao HE. September 14,2008
@@ -259,15 +266,15 @@ subroutine MPI_calmp2
   common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
   if (bMPI) then
-     call MPI_BCAST(DENSE,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-     call MPI_BCAST(CO,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-     call MPI_BCAST(E,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!     call MPI_BCAST(DENSE,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!     call MPI_BCAST(CO,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!     call MPI_BCAST(E,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
   endif
 
 
   cutoffmp2=1.0d-8  ! cutoff criteria
-  primlimit=1.0d-8
-  emp2=0.0d0
+  quick_method%primLimit=1.0d-8
+  quick_qm_struct%EMP2=0.0d0
 
   ! occupied and virtual orbitals number
   iocc=Nelec/2
@@ -310,15 +317,15 @@ subroutine MPI_calmp2
   call densityCutoff    
 
   ! first save coeffecient.
-  Do i=1,nbasis
-     Do j=1,nbasis
-        HOLD(i,j)=CO(j,i)
-     ENDDO
-  ENDDO
+  do i=1,nbasis
+     do j=1,nbasis
+        quick_scratch%hold(i,j)=quick_qm_struct%co(j,i)
+     enddo
+  enddo
 
   ttt=MAXVAL(Ycutoff) ! Max Value of Ycutoff
 
-  Do i3new=1,nstepmp2               ! Step counter
+  do i3new=1,nstepmp2               ! Step counter
      call cpu_time(timer_begin%TMP2)
      ntemp=0    ! integer counter
      nstepmp2s=(i3new-1)*nstep+1    ! Step start n
@@ -333,7 +340,7 @@ subroutine MPI_calmp2
      !---------------- MPI/ ALL NODES -----------------------------
      do i=1,mpi_jshelln(mpirank)
         II=mpi_jshell(mpirank,i)
-        !     Do II=1,jshell
+        !     do II=1,jshell
         do JJ=II,jshell
 
            ! First we do integral and sum them properly
@@ -347,42 +354,42 @@ subroutine MPI_calmp2
                     ! Schwarts cutoff is implemented here
                     comax=0.d0
                     testCutoff = Ycutoff(II,JJ)*Ycutoff(KK,LL)
-                    If(testCutoff.gt.cutoffmp2)then
+                    if(testCutoff.gt.cutoffmp2)then
 
-                       NKK1=Qstart(KK)
-                       NKK2=Qfinal(KK)
-                       NLL1=Qstart(LL)
-                       NLL2=Qfinal(LL)
+                       NKK1=quick_basis%Qstart(KK)
+                       NKK2=quick_basis%Qfinal(KK)
+                       NLL1=quick_basis%Qstart(LL)
+                       NLL2=quick_basis%Qfinal(LL)
 
-                       NBK1=Qsbasis(KK,NKK1)
-                       NBK2=Qfbasis(KK,NKK2)
-                       NBL1=Qsbasis(LL,NLL1)
-                       NBL2=Qfbasis(LL,NLL2)
+                       NBK1=quick_basis%Qsbasis(KK,NKK1)
+                       NBK2=quick_basis%Qfbasis(KK,NKK2)
+                       NBL1=quick_basis%Qsbasis(LL,NLL1)
+                       NBL2=quick_basis%Qfbasis(LL,NLL2)
 
-                       KK111=Ksumtype(KK)+NBK1
-                       KK112=Ksumtype(KK)+NBK2
-                       LL111=Ksumtype(LL)+NBL1
-                       LL112=Ksumtype(LL)+NBL2
+                       KK111=quick_basis%ksumtype(KK)+NBK1
+                       KK112=quick_basis%ksumtype(KK)+NBK2
+                       LL111=quick_basis%ksumtype(LL)+NBL1
+                       LL112=quick_basis%ksumtype(LL)+NBL2
 
                        ! find the co-max value
                        do icycle=1,nsteplength
                             i3=nstepmp2s+icycle-1
-                            Do KKK=KK111,KK112
-                                Do LLL=max(KKK,LL111),LL112
-                                    comax=max(comax,dabs(co(kkk,i3)))
-                                    comax=max(comax,dabs(co(lll,i3)))    
-                                Enddo
-                            Enddo        
+                            do KKK=KK111,KK112
+                                do LLL=max(KKK,LL111),LL112
+                                    comax=max(comax,dabs(quick_qm_struct%co(kkk,i3)))
+                                    comax=max(comax,dabs(quick_qm_struct%co(lll,i3)))    
+                                enddo
+                            enddo        
                        enddo
                        
                        
 
                        testCutoff=testCutoff*comax
-                       If(testCutoff.gt.cutoffmp2)then
+                       if(testCutoff.gt.cutoffmp2)then
                           dnmax=comax
                           ntemp=ntemp+1
                           call shellmp2(nstepmp2s,nsteplength)
-                       Endif
+                       endif
 
                     endif
 
@@ -393,23 +400,23 @@ subroutine MPI_calmp2
               ! Next step is to folding integers. Without folding, the scaling will 
               ! be n^8, and after folding, scaling is reduced to 4n^5
 
-              NII1=Qstart(II)
-              NII2=Qfinal(II)
-              NJJ1=Qstart(JJ)
-              NJJ2=Qfinal(JJ)
+              NII1=quick_basis%Qstart(II)
+              NII2=quick_basis%Qfinal(II)
+              NJJ1=quick_basis%Qstart(JJ)
+              NJJ2=quick_basis%Qfinal(JJ)
 
-              NBI1=Qsbasis(II,NII1)
-              NBI2=Qfbasis(II,NII2)
-              NBJ1=Qsbasis(JJ,NJJ1)
-              NBJ2=Qfbasis(JJ,NJJ2)
+              NBI1=quick_basis%Qsbasis(II,NII1)
+              NBI2=quick_basis%Qfbasis(II,NII2)
+              NBJ1=quick_basis%Qsbasis(JJ,NJJ1)
+              NBJ2=quick_basis%Qfbasis(JJ,NJJ2)
 
-              II111=Ksumtype(II)+NBI1
-              II112=Ksumtype(II)+NBI2
-              JJ111=Ksumtype(JJ)+NBJ1
-              JJ112=Ksumtype(JJ)+NBJ2
+              II111=quick_basis%ksumtype(II)+NBI1
+              II112=quick_basis%ksumtype(II)+NBI2
+              JJ111=quick_basis%ksumtype(JJ)+NBJ1
+              JJ112=quick_basis%ksumtype(JJ)+NBJ2
 
-              Do III=II111,II112
-                 Do JJJ=max(III,JJ111),JJ112
+              do III=II111,II112
+                 do JJJ=max(III,JJ111),JJ112
 
                     IIInew=III-II111+1
                     JJJnew=JJJ-JJ111+1
@@ -418,7 +425,7 @@ subroutine MPI_calmp2
                     do LLL=1,nbasis
                        do j33=1,ivir
                           j33new=j33+nelec/2
-                          atemp=CO(LLL,j33new)
+                          atemp=quick_qm_struct%co(LLL,j33new)
                           do icycle=1,nsteplength
                              orbmp2j331(icycle,j33,IIInew,JJJnew,1)=orbmp2j331(icycle,j33,IIInew,JJJnew,1) + &
                                   orbmp2i331(icycle,LLL,IIInew,JJJnew,1)*atemp
@@ -432,8 +439,8 @@ subroutine MPI_calmp2
 
                     do j33=1,ivir
                        do k33=1,nelec/2
-                          atemp=HOLD(k33,III)
-                          atemp2=HOLD(k33,JJJ)
+                          atemp=quick_scratch%hold(k33,III)
+                          atemp2=quick_scratch%hold(k33,JJJ)
                           do icycle=1,nsteplength
                              orbmp2k331(icycle,k33,j33,JJJ)=orbmp2k331(icycle,k33,j33,JJJ)+ &
                                   orbmp2j331(icycle,j33,IIInew,JJJnew,1)*atemp
@@ -444,8 +451,8 @@ subroutine MPI_calmp2
                           enddo
                        enddo
                     enddo
-                 Enddo
-              Enddo
+                 enddo
+              enddo
            endif
 
         enddo
@@ -459,7 +466,7 @@ subroutine MPI_calmp2
 
      ! slave node will send infos
      if(.not.master) then
-        tempE=emp2
+        tempE=quick_qm_struct%EMP2
         do j1=1,nbasis
            do k1=1,ivir
               do i1=1,iocc
@@ -497,34 +504,36 @@ subroutine MPI_calmp2
 
         do icycle=1,nsteplength
            i3=nstepmp2s+icycle-1
-           Do k3=i3,nelec/2
+           do k3=i3,nelec/2
               ! fold 3 indices integral into 2 indices
-              Do J3=1,nbasis-nelec/2
-                 Do L3=1,nbasis-nelec/2
+              do J3=1,nbasis-nelec/2
+                 do L3=1,nbasis-nelec/2
                     orbmp2(L3,J3)=0.0d0
                     L3new=L3+nelec/2
-                    Do LLL=1,nbasis
-                       orbmp2(L3,J3)=orbmp2(L3,J3)+orbmp2k331(icycle,k3,j3,LLL)*CO(LLL,L3new)
-                    Enddo
-                 Enddo
-              Enddo
+                    do LLL=1,nbasis
+                       orbmp2(L3,J3)=orbmp2(L3,J3)+orbmp2k331(icycle,k3,j3,LLL)*quick_qm_struct%co(LLL,L3new)
+                    enddo
+                 enddo
+              enddo
 
               ! Now we can get energy
-              Do J3=1,nbasis-nelec/2
-                 Do L3=1,nbasis-nelec/2
+              do J3=1,nbasis-nelec/2
+                 do L3=1,nbasis-nelec/2
                     if(k3.gt.i3)then
-                       emp2=emp2+2.0d0/(E(i3)+E(k3)-E(j3+nelec/2)-E(l3+nelec/2)) &
-                            *orbmp2(j3,l3)*(2.0d0*orbmp2(j3,l3)-orbmp2(l3,j3))
+                       quick_qm_struct%EMP2=quick_qm_struct%EMP2+2.0d0/(quick_qm_struct%E(i3)+ &
+                          quick_qm_struct%E(k3)-quick_qm_struct%E(j3+nelec/2)-quick_qm_struct%E(l3+nelec/2)) &
+                          *orbmp2(j3,l3)*(2.0d0*orbmp2(j3,l3)-orbmp2(l3,j3))
                     endif
                     if(k3.eq.i3)then
-                       emp2=emp2+1.0d0/(E(i3)+E(k3)-E(j3+nelec/2)-E(l3+nelec/2)) &
-                            *orbmp2(j3,l3)*(2.0d0*orbmp2(j3,l3)-orbmp2(l3,j3))
+                       quick_qm_struct%EMP2=quick_qm_struct%EMP2+1.0d0/(quick_qm_struct%E(i3)+ &
+                          quick_qm_struct%E(k3)-quick_qm_struct%E(j3+nelec/2)-quick_qm_struct%E(l3+nelec/2)) &
+                          *orbmp2(j3,l3)*(2.0d0*orbmp2(j3,l3)-orbmp2(l3,j3))
                     endif
 
-                 Enddo
-              Enddo
+                 enddo
+              enddo
            enddo
-        Enddo
+        enddo
      endif
      !---------------- ALL MPI/ MASTER ---------------------------
 
@@ -533,13 +542,13 @@ subroutine MPI_calmp2
   enddo
 
   if (master) then
-     write (iOutFile,'("Second order energy=",F16.9)') EMP2
-     write (iOutFile,'("EMP2               =",F16.9)') Etot+EMP2
+     write (iOutFile,'("Second order energy=",F16.9)') quick_qm_struct%EMP2
+     write (iOutFile,'("quick_qm_struct%EMP2               =",F16.9)') quick_qm_struct%Etot+quick_qm_struct%EMP2
      call PrtAct(ioutfile,"End MP2 Calculation")
   endif
   return
 end subroutine mpi_calmp2
-
+#endif
 
 ! Ed Brothers. November 27, 2001
 ! Xiao HE. September 14,2008
@@ -552,42 +561,42 @@ subroutine calmp2divcon
 
   logical locallog1,locallog2
 
-  real*8 Xiaotest,testtmp
+  double precision Xiaotest,testtmp
   integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
   common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
   is = 0
-  ishellfirst(1) = 1
+  quick_basis%first_shell_basis_function(1) = 1
   do ii=1,natom-1
-     is=is+kshell(iattype(ii))
-     ishelllast(ii)=is
-     ishellfirst(ii+1) = is+1
+     is=is+quick_basis%kshell(quick_molspec%iattype(ii))
+     quick_basis%last_shell_basis_function(ii)=is
+     quick_basis%first_shell_basis_function(ii+1) = is+1
   enddo
-  ishelllast(natom) = nshell
+  quick_basis%last_shell_basis_function(natom) = nshell
 
   allocate(wtospoint(np,nbasis))
   call wtoscorr
 
   xiaocutoffmp2=1.0d-7
 
-  emp2=0.0d0
+  quick_qm_struct%EMP2=0.0d0
   emp2temp=0.0d0
   nstep=1
   
 
   do itt=1,np
 
-     Do i=1,nbasisdc(itt)
-        Do j=1,nbasisdc(itt)
-           CO(i,j)=COdcsub(i,j,itt)
-        ENDDO
-     ENDDO
+     do i=1,nbasisdc(itt)
+        do j=1,nbasisdc(itt)
+           quick_qm_struct%co(i,j)=COdcsub(i,j,itt)
+        enddo
+     enddo
 
-     Do i=1,nbasisdc(itt)
-        Do j=1,nbasisdc(itt)
-           HOLD(i,j)=CO(j,i)
-        ENDDO
-     ENDDO
+     do i=1,nbasisdc(itt)
+        do j=1,nbasisdc(itt)
+           quick_scratch%hold(i,j)=quick_qm_struct%co(j,i)
+        enddo
+     enddo
 
 
         do k3=1,2
@@ -595,7 +604,7 @@ subroutine calmp2divcon
             do l3=1,ivir
                 L3new=j3+iocc
                 do lll=1,nbasisdc(itt)
-                 write(10,*) k3,j3,LLL,L3new,orbmp2k331(1,k3,j3,LLL),co(LLL,L3new)
+                 write(10,*) k3,j3,LLL,L3new,orbmp2k331(1,k3,j3,LLL),quick_qm_struct%co(LLL,L3new)
                 enddo
             enddo
             enddo
@@ -605,16 +614,16 @@ subroutine calmp2divcon
 
      do iiat=1,dcsubn(itt)
         iiatom=dcsub(itt,iiat)
-        do II=ishellfirst(iiatom),ishelllast(iiatom)
+        do II=quick_basis%first_shell_basis_function(iiatom),quick_basis%last_shell_basis_function(iiatom)
            do jjat=iiat,dcsubn(itt)
               jjatom=dcsub(itt,jjat)
-              do JJ=max(ishellfirst(jjatom),II),ishelllast(jjatom)
+              do JJ=max(quick_basis%first_shell_basis_function(jjatom),II),quick_basis%last_shell_basis_function(jjatom)
                  Testtmp=Ycutoff(II,JJ)
                  ttt=max(ttt,Testtmp)
               enddo
            enddo
         enddo
-     Enddo
+     enddo
 
 
     ! determine the electrons for subsystem
@@ -649,7 +658,7 @@ write(*,*) iocc,ivir
      ! Schwartz cutoff is implemented here. (ab|cd)**2<=(ab|ab)*(cd|cd)
      ! Reference: Strout DL and Scuseria JCP 102(1995),8448.
 
-     DO i3=1,iocc
+     do i3=1,iocc
         do l1=1,ivir
            do k1=1,ivir
                  orbmp2(j1,k1)=0.0d0
@@ -686,16 +695,16 @@ write(*,*) iocc,ivir
               ! first, we need to figure out which shell should we calclulate
               ! which is IIstart1 and IIstart2 for I and JJ is from JJstart1 to JJstart2
               if(iiatom.le.jjatom)then
-                 IIstart1=ishellfirst(iiatom)
-                 IIstart2=ishelllast(iiatom)
-                 JJstart1=ishellfirst(jjatom)
-                 JJstart2=ishelllast(jjatom)
+                 IIstart1=quick_basis%first_shell_basis_function(iiatom)
+                 IIstart2=quick_basis%last_shell_basis_function(iiatom)
+                 JJstart1=quick_basis%first_shell_basis_function(jjatom)
+                 JJstart2=quick_basis%last_shell_basis_function(jjatom)
               endif
               if(iiatom.gt.jjatom)then
-                 JJstart1=ishellfirst(iiatom)
-                 JJstart2=ishelllast(iiatom)
-                 IIstart1=ishellfirst(jjatom)
-                 IIstart2=ishelllast(jjatom)
+                 JJstart1=quick_basis%first_shell_basis_function(iiatom)
+                 JJstart2=quick_basis%last_shell_basis_function(iiatom)
+                 IIstart1=quick_basis%first_shell_basis_function(jjatom)
+                 IIstart2=quick_basis%last_shell_basis_function(jjatom)
               endif
               
               do II=IIstart1,IIstart2
@@ -713,79 +722,79 @@ write(*,*) iocc,ivir
                           do LLat=kkat,dcsubn(itt)
                              LLatom=dcsub(itt,LLat)
                              if(KKatom.le.LLatom)then
-                                KKstart1=ishellfirst(KKatom)
-                                KKstart2=ishelllast(KKatom)
-                                LLstart1=ishellfirst(LLatom)
-                                LLstart2=ishelllast(LLatom)
+                                KKstart1=quick_basis%first_shell_basis_function(KKatom)
+                                KKstart2=quick_basis%last_shell_basis_function(KKatom)
+                                LLstart1=quick_basis%first_shell_basis_function(LLatom)
+                                LLstart2=quick_basis%last_shell_basis_function(LLatom)
                              endif
                              if(KKatom.gt.LLatom)then
-                                LLstart1=ishellfirst(KKatom)
-                                LLstart2=ishelllast(KKatom)
-                                KKstart1=ishellfirst(LLatom)
-                                KKstart2=ishelllast(LLatom)
+                                LLstart1=quick_basis%first_shell_basis_function(KKatom)
+                                LLstart2=quick_basis%last_shell_basis_function(KKatom)
+                                KKstart1=quick_basis%first_shell_basis_function(LLatom)
+                                KKstart2=quick_basis%last_shell_basis_function(LLatom)
                              endif
                              do KK=KKstart1,KKstart2
                                 do LL=max(LLstart1,KK),LLstart2
                                    comax=0.d0
                                    XiaoTEST1 = Ycutoff(II,JJ)*Ycutoff(KK,LL)
-                                   If(XiaoTEST1.gt.XiaoCUTOFFmp2)then
+                                   if(XiaoTEST1.gt.XiaoCUTOFFmp2)then
 
-                                      NKK1=Qstart(KK)
-                                      NKK2=Qfinal(KK)
-                                      NLL1=Qstart(LL)
-                                      NLL2=Qfinal(LL)
+                                      NKK1=quick_basis%Qstart(KK)
+                                      NKK2=quick_basis%Qfinal(KK)
+                                      NLL1=quick_basis%Qstart(LL)
+                                      NLL2=quick_basis%Qfinal(LL)
 
-                                      NBK1=Qsbasis(KK,NKK1)
-                                      NBK2=Qfbasis(KK,NKK2)
-                                      NBL1=Qsbasis(LL,NLL1)
-                                      NBL2=Qfbasis(LL,NLL2)
+                                      NBK1=quick_basis%Qsbasis(KK,NKK1)
+                                      NBK2=quick_basis%Qfbasis(KK,NKK2)
+                                      NBL1=quick_basis%Qsbasis(LL,NLL1)
+                                      NBL2=quick_basis%Qfbasis(LL,NLL2)
 
-                                      KK111=Ksumtype(KK)+NBK1
-                                      KK112=Ksumtype(KK)+NBK2
-                                      LL111=Ksumtype(LL)+NBL1
-                                      LL112=Ksumtype(LL)+NBL2
+                                      KK111=quick_basis%ksumtype(KK)+NBK1
+                                      KK112=quick_basis%ksumtype(KK)+NBK2
+                                      LL111=quick_basis%ksumtype(LL)+NBL1
+                                      LL112=quick_basis%ksumtype(LL)+NBL2
 
-                                      Do KKK=KK111,KK112
-                                         Do LLL=max(KKK,LL111),LL112
+                                      do KKK=KK111,KK112
+                                         do LLL=max(KKK,LL111),LL112
 
-                                            comax=max(comax,dabs(co(wtospoint(itt,kkk),i3)))
-                                            comax=max(comax,dabs(co(wtospoint(itt,lll),i3)))    
+                                            comax=max(comax,dabs(quick_qm_struct%co(wtospoint(itt,kkk),i3)))
+                                            comax=max(comax,dabs(quick_qm_struct%co(wtospoint(itt,lll),i3)))    
 
-                                         Enddo
-                                      Enddo
+                                         enddo
+                                      enddo
 
                                       Xiaotest=xiaotest1*comax
-                                      If(XiaoTEST.gt.XiaoCUTOFFmp2)then
+                                      if(XiaoTEST.gt.XiaoCUTOFFmp2)then
                                          ntemp=ntemp+1
                                          call shellmp2divcon(i3,itt)
-                                      Endif
+                                      endif
 
                                    endif
 
                                 enddo
                              enddo
 
-                          ENDDO
-                       ENDDO
+                          enddo
+                       enddo
 
 
-                       NII1=Qstart(II)
-                       NII2=Qfinal(II)
-                       NJJ1=Qstart(JJ)
-                       NJJ2=Qfinal(JJ)
+                       NII1=quick_basis%Qstart(II)
+                       NII2=quick_basis%Qfinal(II)
+                       NJJ1=quick_basis%Qstart(JJ)
+                       NJJ2=quick_basis%Qfinal(JJ)
 
-                       NBI1=Qsbasis(II,NII1)
-                       NBI2=Qfbasis(II,NII2)
-                       NBJ1=Qsbasis(JJ,NJJ1)
-                       NBJ2=Qfbasis(JJ,NJJ2)
+                       NBI1=quick_basis%Qsbasis(II,NII1)
+                       NBI2=quick_basis%Qfbasis(II,NII2)
+                       NBJ1=quick_basis%Qsbasis(JJ,NJJ1)
+                       NBJ2=quick_basis%Qfbasis(JJ,NJJ2)
 
-                       II111=Ksumtype(II)+NBI1
-                       II112=Ksumtype(II)+NBI2
-                       JJ111=Ksumtype(JJ)+NBJ1
-                       JJ112=Ksumtype(JJ)+NBJ2
+                       II111=quick_basis%ksumtype(II)+NBI1
+                       II112=quick_basis%ksumtype(II)+NBI2
+                       JJ111=quick_basis%ksumtype(JJ)+NBJ1
+                       JJ112=quick_basis%ksumtype(JJ)+NBJ2
 
-                       Do III=II111,II112
-                          Do JJJ=max(III,JJ111),JJ112
+                       do III=II111,II112
+                          do JJJ=max(III,JJ111),JJ112
 
                              IIInew=III-II111+1
                              JJJnew=JJJ-JJ111+1
@@ -794,7 +803,7 @@ write(*,*) iocc,ivir
                                 do j33=1,ivir
                                    j33new=j33+iocc
                                    if(mod(nelecmp2sub(itt),2).eq.1)j33new=j33+iocc-1
-                                   atemp=CO(LLL,j33new)
+                                   atemp=quick_qm_struct%co(LLL,j33new)
                                    orbmp2j331(nstep,j33,IIInew,JJJnew,1)=orbmp2j331(nstep,j33,IIInew,JJJnew,1) + &
                                         orbmp2i331(nstep,LLL,IIInew,JJJnew,1)*atemp
                                    if(III.ne.JJJ)then
@@ -807,10 +816,10 @@ write(*,*) iocc,ivir
                              do j33=1,ivir
                                 do k33=1,iocc
                                    orbmp2k331(nstep,k33,j33,wtospoint(itt,JJJ))=orbmp2k331(nstep,k33,j33,wtospoint(itt,JJJ))+ &
-                                        orbmp2j331(nstep,j33,IIInew,JJJnew,1)*HOLD(k33,wtospoint(itt,III))
+                                        orbmp2j331(nstep,j33,IIInew,JJJnew,1)*quick_scratch%hold(k33,wtospoint(itt,III))
                                    if(III.ne.JJJ)then
                                       orbmp2k331(nstep,k33,j33,wtospoint(itt,III))=orbmp2k331(nstep,k33,j33,wtospoint(itt,III))+ &
-                                           orbmp2j331(nstep,j33,JJJnew,IIInew,2)*HOLD(k33,wtospoint(itt,JJJ))
+                                           orbmp2j331(nstep,j33,JJJnew,IIInew,2)*quick_scratch%hold(k33,wtospoint(itt,JJJ))
                                    endif
                                 enddo
                              enddo
@@ -820,7 +829,7 @@ write(*,*) iocc,ivir
 
                              do iiatdc=1,dccoren(itt)
                                 iiatomdc=dccore(itt,iiatdc)
-                                do IInbasisdc=ifirst(iiatomdc),ilast(iiatomdc)
+                                do IInbasisdc=quick_basis%first_basis_function(iiatomdc),quick_basis%last_basis_function(iiatomdc)
                                    if(III.eq.IInbasisdc)locallog1=.true.
                                    if(JJJ.eq.IInbasisdc)locallog2=.true.
                                 enddo
@@ -830,7 +839,7 @@ write(*,*) iocc,ivir
                                 do j33=1,ivir
                                    do k33=1,iocc
                                       orbmp2k331dcsub(k33,j33,wtospoint(itt,JJJ))=orbmp2k331dcsub(k33,j33,wtospoint(itt,JJJ))+ &
-                                           orbmp2j331(nstep,j33,IIInew,JJJnew,1)*HOLD(k33,wtospoint(itt,III))
+                                           orbmp2j331(nstep,j33,IIInew,JJJnew,1)*quick_scratch%hold(k33,wtospoint(itt,III))
                                    enddo
                                 enddo
                              endif
@@ -839,21 +848,21 @@ write(*,*) iocc,ivir
                                 do j33=1,ivir
                                    do k33=1,iocc
                                       orbmp2k331dcsub(k33,j33,wtospoint(itt,III))=orbmp2k331dcsub(k33,j33,wtospoint(itt,III))+ &
-                                           orbmp2j331(nstep,j33,JJJnew,IIInew,2)*HOLD(k33,wtospoint(itt,JJJ))
+                                           orbmp2j331(nstep,j33,JJJnew,IIInew,2)*quick_scratch%hold(k33,wtospoint(itt,JJJ))
                                    enddo
                                 enddo
                              endif
 
-                          Enddo
-                       Enddo
+                          enddo
+                       enddo
 
                     endif
 
                  enddo
               enddo
 
-           ENDDO
-        ENDDO
+           enddo
+        enddo
         write (ioutfile,*)"ntemp=",ntemp
         
         do k3=1,2
@@ -861,31 +870,31 @@ write(*,*) iocc,ivir
             do l3=1,ivir
                 L3new=j3+iocc
                 do lll=1,nbasisdc(itt)
-                 write(10,*) k3,j3,LLL,L3new,orbmp2k331(1,k3,j3,LLL),co(LLL,L3new)
+                 write(10,*) k3,j3,LLL,L3new,orbmp2k331(1,k3,j3,LLL),quick_qm_struct%co(LLL,L3new)
                 enddo
             enddo
             enddo
         enddo
         
-        Do LLL=1,nbasisdc(itt)
-           Do J3=1,ivir
-              Do L3=1,ivir
+        do LLL=1,nbasisdc(itt)
+           do J3=1,ivir
+              do L3=1,ivir
                  L3new=L3+iocc
                  orbmp2(L3,j3)=0.0d0
                  if(mod(nelecmp2sub(itt),2).eq.1)L3new=L3+iocc-1
-                 Do k3=1,iocc
-                    orbmp2(l3,j3)=orbmp2(l3,j3)+orbmp2k331(nstep,k3,j3,LLL)*HOLD(L3new,LLL)
-                    orbmp2dcsub(k3,l3,j3)=orbmp2dcsub(k3,l3,j3)+orbmp2k331dcsub(k3,j3,LLL)*HOLD(L3new,LLL)
-                 Enddo
-              Enddo
-           Enddo
-        Enddo
+                 do k3=1,iocc
+                    orbmp2(l3,j3)=orbmp2(l3,j3)+orbmp2k331(nstep,k3,j3,LLL)*quick_scratch%hold(L3new,LLL)
+                    orbmp2dcsub(k3,l3,j3)=orbmp2dcsub(k3,l3,j3)+orbmp2k331dcsub(k3,j3,LLL)*quick_scratch%hold(L3new,LLL)
+                 enddo
+              enddo
+           enddo
+        enddo
 
         if(mod(nelecmp2sub(itt),2).eq.0)then
            do l=1,ivir
               do k=1,iocc
                  do j=1,ivir
-                    emp2=emp2+1.0d0/(Evaldcsub(itt,i3)+Evaldcsub(itt,k) &
+                    quick_qm_struct%EMP2=quick_qm_struct%EMP2+1.0d0/(Evaldcsub(itt,i3)+Evaldcsub(itt,k) &
                          -Evaldcsub(itt,j+nelecmp2sub(itt)/2)-Evaldcsub(itt,l+nelecmp2sub(itt)/2)) &
                          *orbmp2dcsub(k,j,l)*(2.0d0*orbmp2(j,l)-orbmp2(l,j))
                  enddo
@@ -897,17 +906,17 @@ write(*,*) iocc,ivir
            do l=1,ivir
               do k=1,iocc
                  do j=1,ivir
-                    emp2=emp2+1.0d0/(Evaldcsub(itt,i3)+Evaldcsub(itt,k) &
+                    quick_qm_struct%EMP2=quick_qm_struct%EMP2+1.0d0/(Evaldcsub(itt,i3)+Evaldcsub(itt,k) &
                          -Evaldcsub(itt,j+nelecmp2sub(itt)/2)-Evaldcsub(itt,l+nelecmp2sub(itt)/2)) &
                          *orbmp2dcsub(k,j,l)*(2.0d0*orbmp2(j,l)-orbmp2(l,j))
                  enddo
               enddo
            enddo
         endif
-     ENDDO
-     write(ioutfile,*) itt,emp2,emp2-emp2temp
+     enddo
+     write(ioutfile,*) itt,quick_qm_struct%EMP2,quick_qm_struct%EMP2-emp2temp
 
-     emp2temp=emp2
+     emp2temp=quick_qm_struct%EMP2
 
 !     deallocate(mp2shell)
      deallocate(orbmp2)
@@ -956,3 +965,6 @@ subroutine initialOrbmp2ij(orbmp2i331,nstep,nsteplength,nbasis,nbasistemp,nbasis
      enddo
   enddo
 end subroutine initialOrbmp2ij
+
+
+

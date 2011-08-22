@@ -19,45 +19,45 @@
     dphidx=0.d0
     dphidy=0.d0
     dphidz=0.d0
-    if (rsquared > sigrad2(Iphi)) then
+    IF (rsquared > sigrad2(Iphi)) THEN
         continue
-    else
-        if (itype(1,Iphi) == 0) then
+    ELSE
+        IF (itype(1,Iphi) == 0) THEN
             x1imin1=0.d0
             x1i=1.d0
             x1iplus1=x1
-        else
+        ELSE
             x1imin1=x1**(itype(1,Iphi)-1)
             x1i=x1imin1*x1
             x1iplus1=x1i*x1
-        endif
+        ENDIF
 
-        if (itype(2,Iphi) == 0) then
+        IF (itype(2,Iphi) == 0) THEN
             y1imin1=0.d0
             y1i=1.d0
             y1iplus1=y1
-        else
+        ELSE
             y1imin1=y1**(itype(2,Iphi)-1)
             y1i=y1imin1*y1
             y1iplus1=y1i*y1
-        endif
+        ENDIF
 
-        if (itype(3,Iphi) == 0) then
+        IF (itype(3,Iphi) == 0) THEN
             z1imin1=0.d0
             z1i=1.d0
             z1iplus1=z1
-        else
+        ELSE
             z1imin1=z1**(itype(3,Iphi)-1)
             z1i=z1imin1*z1
             z1iplus1=z1i*z1
-        endif
+        ENDIF
 
         xtype=dble(itype(1,Iphi))
         ytype=dble(itype(2,Iphi))
         ztype=dble(itype(3,Iphi))
 
         temp=0.d0
-        do Icon=1,ncontract(IPhi)
+        DO Icon=1,ncontract(IPhi)
             temp = dcoeff(Icon,IPhi)*DExp((-aexp(Icon,IPhi))*rsquared)
             Phi=Phi+temp
             dphidx=dphidx+temp*(-2.d0*(aexp(Icon,IPhi))*x1iplus1 &
@@ -66,14 +66,14 @@
             +ytype*y1imin1)
             dphidz=dphidz+temp*(-2.d0*(aexp(Icon,IPhi))*z1iplus1 &
             +ztype*z1imin1)
-        enddo
+        ENDDO
         Phi=phi*x1i*y1i*z1i
  
 
         dphidx=dphidx*y1i*z1i
         dphidy=dphidy*x1i*z1i
         dphidz=dphidz*x1i*y1i
-    endif
+    ENDIF
 
     return
     end subroutine pteval

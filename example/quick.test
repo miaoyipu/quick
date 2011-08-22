@@ -1,0 +1,28 @@
+echo "QUICK test.in"
+quick test.in
+grep -i "TOTAL ENERGY         =" test.out > test.list
+grep -i "TOTAL ENERGY         =" test.out.saved > test.list.saved
+diff test.list test.list.saved
+rm test.list test.list.saved
+
+echo "QUICK test2.in"
+quick test2.in
+grep -i "TOTAL ENERGY         =" test2.out > test.list
+grep -i "TOTAL ENERGY         =" test2.out.saved > test.list.saved
+diff test.list test.list.saved
+rm test.list test.list.saved
+
+echo "QUICK.cuda test.in"
+quick.cuda test.in
+grep -i "TOTAL ENERGY         =" test.out > test.list
+grep -i "TOTAL ENERGY         =" test.out.saved > test.list.saved
+diff test.list test.list.saved
+rm test.list test.list.saved
+
+echo "QUICK.cuda test2.in"
+quick.cuda test2.in
+grep -i "TOTAL ENERGY         =" test2.out > test.list
+grep -i "TOTAL ENERGY         =" test2.out.saved > test.list.saved
+diff test.list test.list.saved
+rm test.list test.list.saved
+

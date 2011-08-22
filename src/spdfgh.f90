@@ -4,17 +4,17 @@
 !Vertical Recursion subroutines by hand, these parts can be optimized by MAPLE
      subroutine PSSS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3)
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -22,7 +22,7 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=1,3 
+     Do i=1,3 
        Yxiaotemp(i+1,1,mtemp)=Ptemp(i)*Yxiaotemp(1,1,mtemp)+WPtemp(i)*Yxiaotemp(1,1,mtemp+1)
      enddo
 
@@ -32,17 +32,17 @@
 
      subroutine SSPS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3)
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -50,7 +50,7 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=1,3
+     Do i=1,3
        Yxiaotemp(1,i+1,mtemp)=Qtemp(i)*Yxiaotemp(1,1,mtemp)+WQtemp(i)*Yxiaotemp(1,1,mtemp+1)
      enddo
 
@@ -60,17 +60,17 @@
 
      subroutine PSPS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3)
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -79,17 +79,17 @@
      COMMON /COM5/FM
 
 
-!     do i=1,3
+!     Do i=1,3
 !       Yxiaotemp(i+1,1,mtemp)=Ptemp(i)*Yxiaotemp(1,1,mtemp)+WPtemp(i)*Yxiaotemp(1,1,mtemp+1)
 !     enddo
 !
-!     do i=1,3
+!     Do i=1,3
 !       Yxiaotemp(1,i+1,mtemp)=Qtemp(i)*Yxiaotemp(1,1,mtemp)+WQtemp(i)*Yxiaotemp(1,1,mtemp+1)
 !       Yxiaotemp(1,i+1,mtemp+1)=Qtemp(i)*Yxiaotemp(1,1,mtemp+1)+WQtemp(i)*Yxiaotemp(1,1,mtemp+2)
 !     enddo
 
-     do i=2,4
-       do j=2,4
+     Do i=2,4
+       Do j=2,4
          Yxiaotemp(i,j,mtemp)=Ptemp(i-1)*Yxiaotemp(1,j,mtemp)+WPtemp(i-1)*Yxiaotemp(1,j,mtemp+1)
            if(i.eq.j)then
              Yxiaotemp(i,j,mtemp)=Yxiaotemp(i,j,mtemp)+ABCDtemp*Yxiaotemp(1,1,mtemp+1)
@@ -102,17 +102,17 @@
           
      subroutine DSSS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3)
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -120,21 +120,21 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-!     do i=1,3
+!     Do i=1,3
 !       Yxiaotemp(i+1,1,mtemp)=Ptemp(i)*Yxiaotemp(1,1,mtemp)+WPtemp(i)*Yxiaotemp(1,1,mtemp+1)
 !       Yxiaotemp(i+1,1,mtemp+1)=Ptemp(i)*Yxiaotemp(1,1,mtemp+1)+WPtemp(i)*Yxiaotemp(1,1,mtemp+2)
 !     enddo
 
-!     do i=1,3
+!     Do i=1,3
 !       Yxiaotemp(1,i+1,mtemp)=Qtemp(i)*Yxiaotemp(1,1,mtemp)+WQtemp(i)*Yxiaotemp(1,1,mtemp+1)
 !       Yxiaotemp(1,i+1,mtemp+1)=Qtemp(i)*Yxiaotemp(1,1,mtemp+1)+WQtemp(i)*Yxiaotemp(1,1,mtemp+2)
 !     enddo
 
-     do i=5,10
+     Do i=5,10
         B(1)=Mcal(1,i)
         B(2)=Mcal(2,i)
         B(3)=Mcal(3,i)
-        do j=1,3
+        Do j=1,3
          if(Mcal(j,i).ne.0)then 
            B(j)=Mcal(j,i)-1
            itemp=trans(B(1),B(2),B(3))
@@ -154,17 +154,17 @@
 
      subroutine SSDS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3)
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -172,22 +172,22 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-!     do i=1,3
+!     Do i=1,3
 !       Yxiaotemp(1,i+1,mtemp)=Qtemp(i)*Yxiaotemp(1,1,mtemp)+WQtemp(i)*Yxiaotemp(1,1,mtemp+1)
 !       Yxiaotemp(1,i+1,mtemp+1)=Qtemp(i)*Yxiaotemp(1,1,mtemp+1)+WQtemp(i)*Yxiaotemp(1,1,mtemp+2)
 !     enddo
 
-!     do i=1,3
+!     Do i=1,3
 !       Yxiaotemp(1,i+1,mtemp)=Qtemp(i)*Yxiaotemp(1,1,mtemp)+WQtemp(i)*Yxiaotemp(1,1,mtemp+1)
 !       Yxiaotemp(1,i+1,mtemp+1)=Qtemp(i)*Yxiaotemp(1,1,mtemp+1)+WQtemp(i)*Yxiaotemp(1,1,mtemp+2)
 !     enddo
 
 
-     do i=5,10
+     Do i=5,10
         B(1)=Mcal(1,i)
         B(2)=Mcal(2,i)
         B(3)=Mcal(3,i)
-        do j=1,3
+        Do j=1,3
          if(Mcal(j,i).ne.0)then
            B(j)=Mcal(j,i)-1
            itemp=trans(B(1),B(2),B(3))
@@ -208,17 +208,17 @@
 
      subroutine DSPS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -230,18 +230,18 @@
 !     call DSSS(mtemp+1)
 !     call PSSS(mtemp+1)    
 
-     do i=5,10
+     Do i=5,10
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=2,4
+        Do jtemp=2,4
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
 !          Axiao(1)=Mcal(1,jtemp)
 !          Axiao(2)=Mcal(2,jtemp)
 !          Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,jtemp).ne.0)then
              Yxiaotemp(i,jtemp,mtemp)=Qtemp(j)*Yxiaotemp(i,1,mtemp)+WQtemp(j)*Yxiaotemp(i,1,mtemp+1)
              if(B(j).ne.0)then
@@ -269,17 +269,17 @@
 
      subroutine PSDS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -291,18 +291,18 @@
 !     call SSDS(mtemp+1)
 !     call SSPS(mtemp+1)
 
-     do i=5,10
+     Do i=5,10
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=2,4
+        Do jtemp=2,4
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
 !          Axiao(1)=Mcal(1,jtemp)
 !          Axiao(2)=Mcal(2,jtemp)
 !          Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,jtemp).ne.0)then
              Yxiaotemp(jtemp,i,mtemp)=Ptemp(j)*Yxiaotemp(1,i,mtemp)+WPtemp(j)*Yxiaotemp(1,i,mtemp+1)
              if(B(j).ne.0)then
@@ -322,17 +322,17 @@
 
      subroutine DSDS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -346,18 +346,18 @@
 !     call SSPS(mtemp+1)
 !     call SSPS(mtemp+2)
 
-     do i=5,10
+     Do i=5,10
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=5,10
+        Do jtemp=5,10
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -389,17 +389,17 @@
 
      subroutine FSSS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -407,11 +407,11 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=11,20
+     Do i=11,20
         B(1)=Mcal(1,i)
         B(2)=Mcal(2,i)
         B(3)=Mcal(3,i)
-        do j=1,3
+        Do j=1,3
          if(Mcal(j,i).ne.0)then
            B(j)=Mcal(j,i)-1
            itemp=trans(B(1),B(2),B(3))
@@ -432,17 +432,17 @@
 
      subroutine SSFS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -450,11 +450,11 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=11,20
+     Do i=11,20
         B(1)=Mcal(1,i)
         B(2)=Mcal(2,i)
         B(3)=Mcal(3,i)
-        do j=1,3
+        Do j=1,3
          if(Mcal(j,i).ne.0)then
            B(j)=Mcal(j,i)-1
            itemp=trans(B(1),B(2),B(3))
@@ -475,17 +475,17 @@
 
      subroutine GSSS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -493,11 +493,11 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=21,35
+     Do i=21,35
         B(1)=Mcal(1,i)
         B(2)=Mcal(2,i)
         B(3)=Mcal(3,i)
-        do j=1,3
+        Do j=1,3
          if(Mcal(j,i).ne.0)then
            B(j)=Mcal(j,i)-1
            itemp=trans(B(1),B(2),B(3))
@@ -518,17 +518,17 @@
 
      subroutine SSGS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -536,11 +536,11 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=21,35
+     Do i=21,35
         B(1)=Mcal(1,i)
         B(2)=Mcal(2,i)
         B(3)=Mcal(3,i)
-        do j=1,3
+        Do j=1,3
          if(Mcal(j,i).ne.0)then
            B(j)=Mcal(j,i)-1
            itemp=trans(B(1),B(2),B(3))
@@ -562,17 +562,17 @@
 
      subroutine FSPS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
          
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
              
      COMMON /COM1/RA,RB,RC,RD
@@ -580,18 +580,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=11,20
+     Do i=11,20
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=2,4
+        Do jtemp=2,4
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
 !          Axiao(1)=Mcal(1,jtemp)
 !          Axiao(2)=Mcal(2,jtemp)
 !          Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,jtemp).ne.0)then
              Yxiaotemp(i,jtemp,mtemp)=Qtemp(j)*Yxiaotemp(i,1,mtemp)+WQtemp(j)*Yxiaotemp(i,1,mtemp+1)
              if(B(j).ne.0)then
@@ -617,17 +617,17 @@
 
      subroutine PSFS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -635,18 +635,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=11,20
+     Do i=11,20
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=2,4
+        Do jtemp=2,4
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
 !          Axiao(1)=Mcal(1,jtemp)
 !          Axiao(2)=Mcal(2,jtemp)
 !          Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,jtemp).ne.0)then
              Yxiaotemp(jtemp,i,mtemp)=Ptemp(j)*Yxiaotemp(1,i,mtemp)+WPtemp(j)*Yxiaotemp(1,i,mtemp+1)
              if(B(j).ne.0)then
@@ -665,17 +665,17 @@
 
      subroutine GSPS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -683,18 +683,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=21,35
+     Do i=21,35
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=2,4
+        Do jtemp=2,4
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
 !          Axiao(1)=Mcal(1,jtemp)
 !          Axiao(2)=Mcal(2,jtemp)
 !          Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,jtemp).ne.0)then
              Yxiaotemp(i,jtemp,mtemp)=Qtemp(j)*Yxiaotemp(i,1,mtemp)+WQtemp(j)*Yxiaotemp(i,1,mtemp+1)
              if(B(j).ne.0)then
@@ -720,17 +720,17 @@
 
      subroutine PSGS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -738,18 +738,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=21,35
+     Do i=21,35
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=2,4
+        Do jtemp=2,4
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
 !          Axiao(1)=Mcal(1,jtemp)
 !          Axiao(2)=Mcal(2,jtemp)
 !          Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,jtemp).ne.0)then
              Yxiaotemp(jtemp,i,mtemp)=Ptemp(j)*Yxiaotemp(1,i,mtemp)+WPtemp(j)*Yxiaotemp(1,i,mtemp+1)
              if(B(j).ne.0)then
@@ -769,17 +769,17 @@
 
      subroutine FSDS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
              
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
      
      COMMON /COM1/RA,RB,RC,RD
@@ -787,18 +787,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=5,10
+     Do i=5,10
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=11,20
+        Do jtemp=11,20
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -830,17 +830,17 @@
 
      subroutine DSFS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
      
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -848,18 +848,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=5,10
+     Do i=5,10
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=11,20
+        Do jtemp=11,20
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -892,17 +892,17 @@
 
      subroutine GSDS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -910,18 +910,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=5,10
+     Do i=5,10
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=21,35
+        Do jtemp=21,35
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -952,17 +952,17 @@
 
      subroutine DSGS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -970,18 +970,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=5,10
+     Do i=5,10
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=21,35
+        Do jtemp=21,35
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -1012,17 +1012,17 @@
 
      subroutine FSFS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -1030,18 +1030,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=11,20
+     Do i=11,20
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=11,20
+        Do jtemp=11,20
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -1075,17 +1075,17 @@
 
      subroutine GSFS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -1093,18 +1093,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=11,20
+     Do i=11,20
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=21,35
+        Do jtemp=21,35
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -1140,17 +1140,17 @@
 
      subroutine FSGS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -1158,18 +1158,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=11,20
+     Do i=11,20
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=21,35
+        Do jtemp=21,35
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -1207,17 +1207,17 @@
 
      subroutine GSGS(mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -1225,18 +1225,18 @@
      COMMON /COM4/P,Q,W
      COMMON /COM5/FM
 
-     do i=21,35
+     Do i=21,35
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-        do jtemp=21,35
+        Do jtemp=21,35
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -1270,18 +1270,18 @@
 
      subroutine BSLS(IBxiao,ILxiao,mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
      integer IBxiao,ILxiao,mtemp
  
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -1291,20 +1291,20 @@
 
       If(ILxiao.ne.0)then
 ! GSFS situation
-!     do i=11,20
-      do i=Sumindex(ILxiao-1)+1,Sumindex(ILxiao)
+!     Do i=11,20
+      Do i=Sumindex(ILxiao-1)+1,Sumindex(ILxiao)
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-!        do jtemp=21,35
-      do jtemp=Sumindex(IBxiao-1)+1,Sumindex(IBxiao)
+!        Do jtemp=21,35
+      Do jtemp=Sumindex(IBxiao-1)+1,Sumindex(IBxiao)
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -1338,11 +1338,11 @@
   
        else
 
-     do i=Sumindex(IBxiao-1)+1,Sumindex(IBxiao)
+     Do i=Sumindex(IBxiao-1)+1,Sumindex(IBxiao)
         B(1)=Mcal(1,i)
         B(2)=Mcal(2,i)
         B(3)=Mcal(3,i)
-        do j=1,3
+        Do j=1,3
          if(Mcal(j,i).ne.0)then
            B(j)=Mcal(j,i)-1
            itemp=trans(B(1),B(2),B(3))
@@ -1359,24 +1359,24 @@
 111 continue
      enddo
 
-     endif
+     Endif
 
      END
 
      subroutine LSBS(ILxiao,IBxiao,mtemp)
      use allmod
-     Implicit double precision(a-h,o-z)
-     double precision mem(35,35,0:8)
-!     double precision fact
+     Implicit real*8(a-h,o-z)
+     real*8 mem(35,35,0:8)
+!     real*8 fact
      integer CPmem(35,35,0:8)
-! double precision MEM(10,10,0:4)
+! real*8 MEM(10,10,0:4)
 ! Integer CPMEM(10,10,0:4)
      integer IBxiao,ILxiao,mtemp
 
      integer MA(3),MB(3),NA(3),NB(3),LA(3),LB(3),B(3),Axiao(3),firstxiao,secondxiao
-     double precision RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
-     double precision FM(0:13)
- double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+     real*8 RA(3),RB(3),RC(3),RD(3),P(3),Q(3),W(3)
+     real*8 FM(0:13)
+ real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
      COMMON /COM1/RA,RB,RC,RD
@@ -1386,20 +1386,20 @@
 
       If(ILxiao.ne.0)then
 
-      do i=Sumindex(ILxiao-1)+1,Sumindex(ILxiao)
-!     do i=11,20
+      Do i=Sumindex(ILxiao-1)+1,Sumindex(ILxiao)
+!     Do i=11,20
 !        B(1)=Mcal(1,i)
 !        B(2)=Mcal(2,i)
 !        B(3)=Mcal(3,i)
-         do jtemp=Sumindex(IBxiao-1)+1,Sumindex(IBxiao)
-!        do jtemp=21,35
+         Do jtemp=Sumindex(IBxiao-1)+1,Sumindex(IBxiao)
+!        Do jtemp=21,35
           B(1)=Mcal(1,i)
           B(2)=Mcal(2,i)
           B(3)=Mcal(3,i)
           Axiao(1)=Mcal(1,jtemp)
           Axiao(2)=Mcal(2,jtemp)
           Axiao(3)=Mcal(3,jtemp)
-          do j=1,3
+          Do j=1,3
            if(Mcal(j,i).ne.0)then
              B(j)=Mcal(j,i)-1
              ixiao=trans(B(1),B(2),B(3))
@@ -1433,11 +1433,11 @@
 
      else
 
-     do i=Sumindex(IBxiao-1)+1,Sumindex(IBxiao)
+     Do i=Sumindex(IBxiao-1)+1,Sumindex(IBxiao)
         B(1)=Mcal(1,i)
         B(2)=Mcal(2,i)
         B(3)=Mcal(3,i)
-        do j=1,3
+        Do j=1,3
          if(Mcal(j,i).ne.0)then
            B(j)=Mcal(j,i)-1
            itemp=trans(B(1),B(2),B(3))

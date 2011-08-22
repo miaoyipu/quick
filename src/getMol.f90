@@ -1,860 +1,281 @@
-!*******************************************************
-! getAtoms(iAtomType)
-!-------------------------------------------------------
-! Ed Brothers. 11/26/01
-! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
-!-------------------------------------------------------
-! This subroutine is to get molecule information 
+#include "config.h"
+!
+!	getMol.f90
+!	new_quick
+!
+!	Created by Yipu Miao on 3/4/11.
+!	Copyright 2011 University of Florida. All rights reserved.
+!
+
+subroutine getMol()
+! This subroutine is to get molecule information
 ! and assign basis function.
-!
-    subroutine getMol(nAtomSave)
-    use allmod
-    implicit double precision(a-h,o-z)
+   use allmod
+   implicit none
 
-    include 'mpif.h'
-    
-    logical :: present
-    character(len=80) :: keyWD
-    character(len=20) :: tempString
-!----------------------------------------
-! Xiao HE Superposition of Atomic density
-!
-!   1 1   H  1S          0.13943
-!   2        2S          0.26785   0.51455
-!----------------------------------------
-    double precision H321(2,2),C321(9,9),N321(9,9),O321(9,9),tmpxiao(20,20),cl321(13,13)
-! Constants
-!    pi=3.1415926535897932385d0
-    pi32 = pi**(1.5)
-    
-    
-!-----------MPI/MASTER------------------------    
-    masterwork:if (master) then
-!-----------END MPI/MASTER------------------------
+#ifdef MPI
+   include 'mpif.h'
+#endif
 
-!----------------
-! NORMAL QUICK
-!----------------
+   logical :: present
+   integer :: i,j,k,itemp
 
-    iattype=0
-!   natom = 0
-    iiatom = 0
-    nelec = 0
-
-    natom=natomsave   
-
-! Read info from AMBER
-    if (amber_interface_logic) then
-        call read_AMBER_crd
-    else
-
-    open(infile,file=inFileName,status='old')
-    call PrtAct(iOutfile,"Begin to Read Mol Info")
-
-    ! The first line is Keyword
-    ! the second is bland line
-    read (infile,'(A80)') keywd
-    read (infile,'(A80)') keywd
-
-    ! Now it is time to read in the coordinates, and assign basis functions.
-    ! Note this is blank line terminated.
-    istart = 1
-    ifinal = 80
-    read (infile,'(A80)') keywd
-
-    call rdword(keywd,ISTART,ifINAL)
-
-    do WHILE ((istart /=  0) .and. (ifinal /= 0))
-!++++++++++++++++++++++++++++++++++++++++++
-! First, find the atom type.
-!------------------------------------------
-        iiatom = iiatom + 1 
-        iattype(iiatom) = -1
-        I=0
-        do WHILE (iattype(iiatom) .eq. -1)
-          if (keywd(ISTART:ifINAL) == symbol(I)) iattype(iiatom)=I
-            I=I+1
-        enddo
-        chg(iiatom)=iattype(iiatom)
-!
-!++++++++++++++++++++++++++++++++++++++++++
-! Next, find the xyz coordinates of the atom and convert to bohr.
-!------------------------------------------
-
-        do I=1,3
-            istart=ifinal+1
-            ifinal=80
-            call rdword(keywd,ISTART,ifINAL)
-            call rdnum(keywd,istart,temp,ierror)
-            xyz(I,iiatom) = temp/bohr
-        enddo
-
-    ! Keep a running tally of electrons. This is a total not counting the charge.
-    ! We'll continue this after everything else is read in.
-
-!        nelec = nelec+iattype(natom)
-        nelec = nelec+iattype(iiatom)
-
-        read (infile,'(A80)') keywd
-        call upcase(keywd,80)
-        istart=1
-        ifinal = 80
-        call rdword(keywd,ISTART,ifINAL)
-    enddo
-    
-    close(inFile)
-    endif
-! Finish reading molecular cooridate
-!++++++++++++++++++++++++++++++++++++++++++
-
-
-!++++++++++++++++++++++++++++++++++++++++++
-! Check for errors.
-!------------------------------------------
-    if (natom == 1 .AND. quick_method%opt) then
-        write (iOutFile,'(//" ONE ATOM = NO OPTIMIZATION!!!!"//)')
-        quick_method%opt=.false.
-    endif
-!++++++++++++++++++++++++++++++++++++++++++
-! Define the number of optimization cycles if not set. default is 9*natom
-!------------------------------------------
-    if (iopt == 0 .AND. quick_method%opt) then
-        iopt=3*3*natom
-        write (iOutFile,'("MAX OPTIMIZATION CYCLES = ", &
-        & I5,"  (DEFAULT)")') iopt
-    endif
-!
-!++++++++++++++++++++++++++++++++++++++++++
-! At this point a blank line has been read in.  (That is what
-! teminated the geometry read)  Now read in another line
-! to see the specific grid has been requested,assuming this is a
-! DFT job.
-!-------------------------------------------
-    if (quick_method%DFT .OR. quick_method%SEDFT) then
-! Xiao HE 01/09/07 SG1 SG0 grid
-       if (quick_method%ISG.eq.1) then
-       itemp=50
-       do I=1,itemp
-        RGRID(I)=(I**2.d0)/dble((itemp+1-I)*(itemp+1-I))
-        RWT(I)=2.d0*dble(itemp+1)*(dble(I)**5.d0) &
-                           *dble(itemp+1-I)**(-7.d0)
-       enddo
-       else
-       Continue
-       endif
-
-        if (natom > 1) then
-            do Iatom=1,natom
-                distnbor(Iatom)=1.D30
-                do Jatom=1,Iatom-1
-                    DIST=(xyz(1,Iatom)-xyz(1,Jatom))**2.d0
-                    DIST=DIST+(xyz(2,Iatom)-xyz(2,Jatom))**2.d0
-                    DIST=DIST+(xyz(3,Iatom)-xyz(3,Jatom))**2.d0
-                    DIST=DIST**.5d0
-                    distnbor(Iatom)=Min(distnbor(Iatom),DIST)
-                enddo
-                do Jatom=Iatom+1,natom
-                    DIST=(xyz(1,Iatom)-xyz(1,Jatom))**2.d0
-                    DIST=DIST+(xyz(2,Iatom)-xyz(2,Jatom))**2.d0
-                    DIST=DIST+(xyz(3,Iatom)-xyz(3,Jatom))**2.d0
-                    DIST=DIST**.5d0
-                    distnbor(Iatom)=Min(distnbor(Iatom),DIST)
-                enddo
-            enddo
-        endif
-    endif
-!
-! That's all the DFT stuff.  Now back to molecule set up.
-!
-!!++++++++++++++++++++++++++++++++++++++++++
-! If this is a core approximatation calculation, modify the atomic
-! charges and the number of electrons.
-!
-    if (quick_method%core) then
-        do Iatm=1,natom
-            if (iattype(Iatm) >= 3) then
-                chg(Iatm)=chg(Iatm)-2.d0
-                nelec=nelec-2
-            endif
-            if (iattype(Iatm) >= 11) then
-                chg(Iatm)=chg(Iatm)-8.d0
-                nelec=nelec-8
-            endif
-            if (iattype(Iatm) >= 18) &
-            write (iOutFile,'("ATOM OUT OF RANGE FOR CORE")')
-        enddo
-    endif
-    
-    write(iOutFile,'("TOTOAL ATOM NUMBER = ",i4)') natom
-    j=0
-    do i=1,natom
-      if (iattype(I).eq.1) j=j+1
-    enddo
-    nHAtom=j
-    nNonHAtom=natom-j
-    write(iOutFile,'("NUMBER OF HYDROGEN ATOM = ",i4)') nhatom
-    write(iOutFile,'("NUMBER OF NON-HYDROGEN ATOM = ",i4)') nNonHAtom
-    write(iOutFile,'("DEGREE OF FREEdoM = ",i5)') natom*3-6
-
-!++++++++++++++++++++++++++++++++++++++++++
-! Modify the electron numbers based on charge and multiplicity.
-!
-    nelec = nelec - molchg
-    xmulttest = mod(dble(nelec),2.d0)
-
-    if (xmulttest /= 0 .AND. .NOT. quick_method%unrst) then
-        write (iOutFile,'("WARNING: UNPAIRED ELECTRONS REQUIRE", &
-        & " UNRESTRICTED CALCULATIONS.")')
-       quick_method%UNRST=.true.
-    endif
-
-    if (imult /= 1 .AND. .NOT. quick_method%unrst) &
-    write (iOutFile,'("WARNING: HIGHER MULTIPLICITIES REQUIRE", &
-    & " UNRESTRICTED CALCULATIONS.")')
-
-    if (quick_method%unrst) then
-        nelecb = nelec
-        nelec = 0
-
-        do WHILE (nelec.lt.nelecb)
-            nelecb = nelecb-1
-            nelec = nelec +1
-        enddo
-
-        if (imult == 2 .AND. nelec-1 /= nelecb) &
-        write (iOutFile,'("WARNING: INCORRECT NUMBER OF ELECTRONS", &
-        & " FOR A doUBLET.")')
-
-        if (imult == 3) then
-            nelec = nelec+1
-            nelecb = nelecb - 1
-            if (nelec-2 /= nelecb) &
-            write (iOutFile,'("WARNING: INCORRECT NUMBER OF ELECTRONS", &
-            & " FOR A TRIPLET.")')
-
-        endif
-
-        if (imult == 4) then
-            nelec = nelec+1
-            nelecb = nelecb - 1
-            if (nelec-3 /= nelecb) &
-            write (iOutFile,'("WARNING: INCORRECT NUMBER OF ELECTRONS", &
-            & " FOR A QUADRUPLET.")')
-
-        endif
-        write (iOutFile,'("NUMBER OF ALPHA ELECTRONS = ",I4)')nelec
-        write (iOutFile,'("NUMBER OF BETA ELECTRONS  = ",I4)')nelecb
-    else
-        write (iOutFile,'(/"NUMBER OF ELECTRONS = ",I4)')nelec
-    endif
-    
-!-----------MPI/MASTER------------------------
-    endif masterwork
-!-----------END MPI/MASTER------------------------  
-
-
-!-----------MPI/ALL NODES------------------------
-    if (bMPI) then
-      call mpi_setup_mol1()
-      call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
-    endif
-    
-!-----------END MPI/ALL NODES------------------------
-
-
-!++++++++++++++++++++++++++++++++++++++++++
-! Alessandro GENONI 03/05/2007
-! Only for ECP calculations:
-! * Allocate arrays whose dimensions depend on NATOM (allocateatoms_ecp)
-! * Read the Effective Core Potentials (ECPs), modify the atomic charges 
-!   and the total number of electrons (readecp)
-!
-    
-    if (quick_method%ecp) then
-      call allocateatoms_ecp
-      call readecp
-    END if
-!++++++++++++++++++++++++++++++++++++++++++
-! At this point we have the positions and identities of the atoms. We also
-! have the number of electrons. Now we must assign basis functions. This
-! is done in a subroutine.
-!++++++++++++++++++++++++++++++++++++++++++
-
-    call readbasis(natom,0,0,0,0)
-    
-    allocate(Apri(jbasis,jbasis))
-    allocate(Kpri(jbasis,jbasis))
-    allocate(cutprim(jbasis,jbasis))
-    allocate(Ppri(3,jbasis,jbasis))
-    allocate(Xcoeff(jbasis,jbasis,0:3,0:3))
-    If(quick_method%DFT)then
-       allocate(phiXiao(nbasis))
-       allocate(dPhidXXiao(nbasis))
-       allocate(dPhidYXiao(nbasis))
-       allocate(dPhidZXiao(nbasis))
-    endif
-
-!-----------MPI/MASTER------------------------
-    if (master) then
-!-----------END MPI/MASTER------------------------
-
-
-!++++++++++++++++++++++++++++++++++++++++++
-    if (quick_method%debug) then
-        do I=1,nbasis
-            write(iOutFile,'(/"BASIS FUNCTON ",I4," ON ATOM ",I4)') &
-            I,ncenter(I)
-            write(iOutFile,'("THIS IS AN ",I1,I1,I1," FUNCTION")') &
-            itype(1,I),itype(2,I),itype(3,I)
-            write(iOutFile,'("THERE ARE ",I4," CONTRACTED GAUSSIANS")') &
-            ncontract(I)
-            do J=1,ncontract(I)
-                write(iOutFile,'(F10.6,6x,F10.6)') aexp(J,I),dcoeff(J,I)
-            enddo
-        enddo
-    endif
-!++++++++++++++++++++++++++++++++++++++++++
-! Include the normalization constant in the coefficient.
-
-    do Jbas=1,nbasis
-        do Jcon=1,ncontract(jbas)
-            dcoeff(Jcon,Jbas)=dcoeff(Jcon,Jbas) *xnorm(aexp(Jcon,Jbas), &
-            itype(1,Jbas),itype(2,Jbas),itype(3,Jbas))
-        enddo
-    enddo
-    
-    do Ibas=1,nbasis
-        dconew = 0.d0
-        nxponent=-itype(1,Ibas)-itype(2,Ibas)-itype(3,Ibas)
-        xponent=-1.5d0+dble(nxponent)
-        do Icon1 = 1,ncontract(Ibas)
-            do Icon2 = 1,ncontract(Ibas)
-                dconew = dconew + dcoeff(Icon1,Ibas)*dcoeff(Icon2,Ibas) &
-                *(aexp(Icon1,Ibas)+aexp(Icon2,Ibas))**xponent
-            enddo
-        enddo
-        gamma=1.d0
-        do L=1,itype(1,Ibas)
-            gamma = gamma * (dble(itype(1,Ibas) - L) + .5d0)
-        enddo
-        do L=1,itype(2,Ibas)
-            gamma = gamma * (dble(itype(2,Ibas) - L) + .5d0)
-        enddo
-        do L=1,itype(3,Ibas)
-            gamma = gamma * (dble(itype(3,Ibas) - L) + .5d0)
-        enddo
-        dconew = (dconew*gamma*pi32)**(-.5d0)
-        do Icon1 = 1,ncontract(Ibas)
-            dcoeff(Icon1,Ibas) = dconew*dcoeff(Icon1,Ibas)
-        enddo
-    enddo
-
-    write (iOutFile,'("BASIS FUNCTIONS = ",I4)') nbasis
-!    stop
-
-
-!
-! Alessandro GENONI 03/21/2007
-! Store the normalized primitives coefficients for ECP calculations
-!
-    if (quick_method%ecp) then 
-      iicont=0
-      icontb=1
-      do i=1,nshell
-        do j=1,kprim(i)
-          iicont=iicont+1
-          eta(iicont)=dcoeff(j,icontb)
-        end do
-        icontb=icontb+ktype(i)
-      end do
-    end if
-!++++++++++++++++++++++++++++++++++++++++++
-!    do I=1,nbasis
-!        gauss(i)%dcoeff = dcoeff(:,i)
-!    enddo
-
-! Now that the basis functions have been normalized, calculate the radius
-! of the sphere of basis function signifigance. (See Stratmann,Scuseria,
-! and Frisch, Chem. Phys. Lett., 257, 1996, page 213-223 Section 5.)
-! Also, the radius of the sphere comes from the spherical average of
-! the basis function, from Perez-Jorda and Yang, Chem. Phys. Lett., 241,
-! 1995, pg 469-76.
-! The spherical average of a gaussian function is:
-
-! (1 + 2 L)/4  (3 + 2 L)/4  L
-! 2            a            r
-! ave  = ---------------------------------
-! 2
-! a r                      3
-! E     Sqrt[Pi] Sqrt[Gamma[- + L]]
-! 2
-! where a is the most diffuse (smallest) orbital exponent and L is the
-! sum of the angular momentum exponents.  This code finds the r value where
-! the average is the signifigance threshold (signif) and this r value is
-! called the target below. Rearranging gives us:
-
-! -(1 + 2 L)/4   -(3 + 2 L)/4                           3
-!r^L E^-ar^2= 2               a           Sqrt[Pi] signif Sqrt[Gamma[- + L]]
-! 2
-
-!++++++++++++++++++++++++++++++++++++++++++
-! Which is our function to work with.
-    if (quick_method%DFT .OR. quick_method%SEDFT) then
-        write (iOutFile, &
-        & '(/"RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS")')
-
-        do Ibas=1,nbasis
-
-        ! Find the minimum gaussian exponent.
-
-            amin=10.D10
-            do Icon=1,ncontract(Ibas)
-                amin=min(amin,aexp(Icon,Ibas))
-            enddo
-
-        ! calculate L.
-
-            L = itype(1,Ibas)+ itype(2,Ibas)+ itype(3,Ibas)
-
-        ! calculate 2 Pi Gamma[L+3/2]
-        ! Remember that Gamma[i+1/2]=(i-1+1/2) Gamma[i-1+1/2] until you get to
-        ! Gamma[1/2] = Sqrt[Pi]
-
-            gamma=1.d0
-            do i=1,L+1
-                gamma = gamma * (dble(L+1-i) + .5d0)
-            enddo
-            gamma2pi=gamma*11.13665599366341569
-
-        ! Now put it all together to get the target value.
-
-            target = signif* &
-            (((2.d0*amin)**(dble(L)+1.5))/gamma2pi)**(-.5d0)
-
-        ! Now search to find the correct radial value.
-
-            stepsize=1.d0
-            radial=0.d0
-
-            do WHILE (stepsize.gt.1.d-4)
-                radial=radial+stepsize
-                current=Dexp(-amin*radial*radial)*radial**(dble(L))
-                if (current < target) then
-                    radial=radial-stepsize
-                    stepsize=stepsize/10.d0
-                endif
-            enddo
-
-        ! Store the square of the radii of signifigance as this is what the
-        ! denisty calculator works in.
-
-            sigrad2(Ibas)=radial*radial
-            write (iOutFile,'(I4,7x,F12.6)') Ibas,radial
-        enddo
-    endif
-!+++++++++++++++++++++++++++++++++++++++++
-! Read params for semi-emipeircal DFT
-    if (quick_method%SEDFT) then
-        open(17,file='PARAMS',status='old')
-        read (17,'(F12.7)') At2prm(0,0,0,1)
-        read (17,'(F12.7)') At2prm(0,0,0,6)
-        read (17,'(F12.7)') At2prm(1,0,0,6)
-        At2prm(0,1,0,6) = At2prm(1,0,0,6)
-        At2prm(0,0,1,6) = At2prm(1,0,0,6)
-        read (17,'(F12.7)') Bndprm(0,0,0,1)
-        read (17,'(F12.7)') Bndprm(0,0,0,6)
-        read (17,'(F12.7)') Bndprm(1,0,0,6)
-        Bndprm(0,1,0,6) = Bndprm(1,0,0,6)
-        Bndprm(0,0,1,6) = Bndprm(1,0,0,6)
-        close (17)
-        write (iOutFile,'(/"HYDROGEN PARAMS")')
-        write (iOutFile,'(F12.7,F12.7)') At2prm(0,0,0,1), &
-        Bndprm(0,0,0,1)
-        write (iOutFile,'(/"CARBON PARAMS")')
-        write (iOutFile,'(F12.7,F12.7,F12.7,F12.7)') At2prm(0,0,0,6), &
-        At2prm(1,0,0,6),Bndprm(0,0,0,6),Bndprm(1,0,0,6)
-     endif
+   !-----------MPI/MASTER------------------------
+   if (master) then
    
-!++++++++++++++++++++++++++++++++++++++++++
-!  initialize density matrix
+      ! Read info from AMBER
+      if (amber_interface_logic) then
+         call read_AMBER_crd
+      else
+         call quick_open(infile,inFileName,'O','F','W',.true.)
+         call PrtAct(iOutfile,"Begin to Read Mol Info")
 
-    call initialGuess
-    if (quick_method%debug) then
-        write(iOutFile,*) "DENSITY MATRIX AFTER INITIAL GUESS"
-        call PriSym(iOutFile,nbasis,dense,'f14.8')
-    endif
-!++++++++++++++++++++++++++++++++++++++++++
-! Then read external charges
-call flush(6)
-    if(quick_method%extCharges) then
-        if (amber_interface_logic) then
-            call read_Amber_Charge
-        else
-            call readExtCharges   
-        endif
-    endif
-call flush(6)
-!++++++++++++++++++++++++++++++++++++++++++
-! Now it's time to output mol infor
-    Write (iOutFile,'(//,"INPUT GEOMETRY:")')
-    do I=1,natom
-        Write (iOutFile,'(A2,6x,F10.4,3x,F10.4,3x,F10.4)') &
-        symbol(iattype(I)),xyz(1,I)*bohr, &
-        xyz(2,I)*bohr,xyz(3,I)*bohr
-    enddo
-    if(quick_method%extcharges)then
-        write(iOutFile,'(/"EXTERNAL POINT CHARGES: (Q,X,Y,Z)")')
-        do i=1,nextatom
-            write(iOutFile,'(F7.4,3(F10.4,1x))') extchg(i),extxyz(:,i)*bohr
-        enddo
-    endif
-!+++++++++++++++++++++++++++++++++++++++++++
-! Output Distance Matrix    
-    do i=1,natom
-      do j=1,natom
-        atomdistance(i,j)=0d0
-        do k=1,3
-          atomdistance(i,j)=atomdistance(i,j)+(xyz(k,i)-xyz(k,j))**2
-        enddo
-        atomdistance(i,j)=sqrt(atomdistance(i,j))*bohr
+         ! read molecule coordinates
+         call read2(quick_molspec,inFile)
+         quick_molspec%nbasis   => nbasis
+         quick_qm_struct%nbasis => nbasis
+         call set(quick_molspec)
+
+         ! quick forward coordinates stored in namelist to instant variables
+         xyz(1:3,1:natom)=quick_molspec%xyz(1:3,1:natom)
+
+         close(inFile)
+      end if   !amber_interface_logic
+
+      ! Now read in another line
+      ! to see the specific grid has been requested if it is a DFT job
+      if ((quick_method%DFT .OR. quick_method%SEDFT).and.quick_method%isg.eq.1) call gridformSG1()        ! Xiao HE 01/09/07 SG1 SG0 grid
+
+      ! check the correctness between molecular specification and method used
+      call check_quick_method_and_molspec(iOutFile,quick_molspec,quick_method)
+   endif
+   !-----------END MPI/MASTER-----------------------
+   
+
+#ifdef MPI
+   !-----------MPI/ALL NODES------------------------
+   if (bMPI)  call mpi_setup_mol1()
+   !-----------END MPI/ALL NODES--------------------
+#endif
+#ifdef CUDA
+    quick_method%bCUDA = .true.
+#endif
+   
+   ! At this point we have the positions and identities of the atoms. We also
+   ! have the number of electrons. Now we must assign basis functions. This
+   ! is done in a subroutine.
+   call readbasis(natom,0,0,0,0)
+   call allocate_basis(quick_method)
+   call alloc(quick_qm_struct)
+   call init(quick_qm_struct)
+   
+
+
+
+   !-----------MPI/MASTER------------------------
+   if (master) then
+      ! now print molecule specification to output file
+      call print(quick_molspec,iOutFile)
+      call print(quick_basis,iOutFile)
+
+      ! the following some step are setup for basis and for ECP or DFT calculation
+      ! and see comments for details
+      ! Include the normalization constant in the coefficient.
+      call normalize_basis()
+
+      ! Store the normalized primitives coefficients for ECP calculations
+      if (quick_method%ecp) call store_basis_to_ecp()      ! Alessandro GENONI 03/21/2007
+
+      ! calculate the radius of the sphere of basis function signifigance.
+      if (quick_method%DFT .OR. quick_method%SEDFT) call get_sigrad
+
+      ! Read params for semi-emipeircal DFT
+      if (quick_method%SEDFT) call read_sedft_parm
+
+      !  initialize density matrix
+      call initialGuess
+
+      call PrtAct(iOutfile,"End Reading Mol Info ")
+   endif
+   !-----------END MPI/MASTER------------------------
+
+   return
+
+end subroutine getmol
+
+
+!--------------------
+! check mol spec and method
+!--------------------
+subroutine check_quick_method_and_molspec(io,quick_molspec_arg,quick_method_arg)
+   use quick_method_module
+   use quick_molspec_module
+   implicit none
+
+   ! Argument
+   integer io      ! io file to write warning
+   type(quick_molspec_type) quick_molspec_arg  ! molspec type
+   type(quick_method_type) quick_method_arg    ! method type
+
+   ! inner variables
+   integer i
+
+   ! Check for errors.
+   if (natom == 1 .and. quick_method_arg%opt) then
+      call PrtWrn(io," ONLY ONE ATOM, TURN OFF OPTIMIZATION.")
+      quick_method_arg%opt=.false.
+   endif
+
+   ! Define the number of optimization cycles if not set. default is 9*natom
+   if (quick_method_arg%iopt == 0 .and. quick_method_arg%opt) then
+      quick_method_arg%iopt=3*3*quick_molspec_arg%natom
+   endif
+
+   ! if this is a core approximatation calculation, modify the atomic
+   ! charges and the number of electrons.
+   if (quick_method_arg%core) then
+      do i=1,quick_molspec_arg%natom
+         if (quick_molspec_arg%iattype(i) >= 3) then
+            quick_molspec_arg%chg(i)=quick_molspec_arg%chg(i)-2.d0
+            quick_molspec_arg%nelec=quick_molspec_arg%nelec-2
+         endif
+         if (quick_molspec_arg%iattype(i) >= 11) then
+            quick_molspec_arg%chg(i)=quick_molspec_arg%chg(i)-8.d0
+            quick_molspec_arg%nelec=quick_molspec_arg%nelec-8
+         endif
+         if (quick_molspec_arg%iattype(i) >= 18) &
+            call PrtWrn(io,"ATOM OUT OF RANGE FOR CORE")
       enddo
-    enddo
-    
-    ! if no. of atom is less than 30, then output them
-    if (natom.le.30) then
-        write(iOutFile,*)
-        write(iOutFile,'("DISTANCE MATRIX:")')
-        call PriSym(iOutFile,natom,atomdistance,'f10.4')
-    endif
-    call PrtAct(iOutfile,"End Reading Mol Info ")
-!++++++++++++++++++++++++++++++++++++++++++
-
-!-----------MPI/MASTER------------------------
-    endif
-!-----------END MPI/MASTER------------------------  
-    if (bMPI) then
-      call mpi_setup_mol2()
-      call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
-    endif
-    
-    
-    return
-    end subroutine getmol
+   endif
 
 
-!********************************************
-! Read External Charges
-!--------------------------------------------
-!JF 9/2009
-!
-!Reads external MM Point charges to be included in the one electron part of
-!the Hamiltonian.
-!
-!Invoke with EXTCHARGES keyword.
-!Put the charges in the input file after QM atoms and a blank line in this format:
-!CHARGE X Y Z
-!
-!First I will run through the inputfile and count the charges, then I'll allocate
-!the arrays and then fill them. 
-!
+   ! check the correctness between elections, multiplicity and unrestricted calculation
+   ! request. And try to correct possible error
+   i = mod(dble(quick_molspec_arg%nelec),2.d0)
+   if (i.ne.0 .and. .not. quick_method_arg%unrst) then
+      call PrtWrn(io,"UNPAIRED ELECTRONS REQUIRE UNRESTRICTED CALCULATIONS.")
+      quick_method_arg%UNRST=.true.
+   endif
 
-subroutine readextcharges
-    use allmod
-    implicit double precision(a-h,o-z)
+   if (quick_molspec_arg%imult.ne.1 .and. .not. quick_method_arg%unrst) then
+      call PrtWrn(io,"HIGHER MULTIPLICITIES REQUIRE UNRESTRICTED CALCULATIONS.")
+      call quick_exit(6,1)
+   endif
 
-    character(len=80) :: keywd
-     
-    open(infile,file=infilename,status='old')
-!Need to skip keyword lines
-    istart = 1
-    ifinal = 80   
-    do 
-        read(infile,'(A80)') keywd  
-        call rdword(keywd,istart,ifinal)
-        if(istart==0 .or. ifinal==0) exit
-    enddo
-!Need to skip QM atom list
-    istart = 1
-    ifinal = 80
-    do 
-        read(infile,'(A80)') keywd  
-        call rdword(keywd,istart,ifinal)
-        if(istart==0 .or. ifinal==0) exit
-    enddo
-!Ready to count point charges
-    istart = 1
-    ifinal = 80
-    nextatom=0
-    do 
-        read(infile,'(A80)') keywd
-        call rdword(keywd,istart,ifinal)
-        if(istart==0 .or. ifinal==0) exit
-        nextatom=nextatom+1 
-    enddo
-    close(infile)
+   if (quick_method_arg%unrst) then
+      quick_molspec_arg%nelecb = quick_molspec_arg%nelec
+      quick_molspec_arg%nelec = 0
 
-    allocate(extchg(nextatom),extxyz(3,nextatom))
+      do WHILE (quick_molspec_arg%nelec.lt.quick_molspec_arg%nelecb)
+         quick_molspec_arg%nelecb = quick_molspec_arg%nelecb-1
+         quick_molspec_arg%nelec = quick_molspec_arg%nelec +1
+      enddo
 
-    open(infile,file=infilename,status='old')
-!Need to skip keyword lines
-    istart = 1
-    ifinal = 80   
-    do 
-        read(infile,'(A80)') keywd  
-        call rdword(keywd,istart,ifinal)
-        if(istart==0 .or. ifinal==0) exit
-    enddo
-!Need to skip QM atom list
-    istart = 1
-    ifinal = 80
-    do 
-        read(infile,'(A80)') keywd  
-        call rdword(keywd,istart,ifinal)
-        if(istart==0 .or. ifinal==0) exit
-    enddo
-!Ready to read point charges into arrays
-    iextatom=1
-    do 
-        istart = 1
-        ifinal = 80
-        read(infile,'(A80)') keywd
-        call rdword(keywd,istart,ifinal)
-        if(istart==0 .or. ifinal==0) exit
-        call rdnum(keywd,istart,extchg(iextatom),ierr)
-        if(ierr==1)then
-            print *, 'error reading extchg ',iextatom
-            stop
-        endif
-        do i=1,3
-            istart=ifinal+1
-            ifinal=80
-            call rdword(keywd,istart,ifinal)
-            call rdnum(keywd,istart,temp,ierr)
-            if(ierr==1)then
-                print *, 'error reading extxyz',i,iextatom 
-                stop
-            endif
-            extxyz(i,iextatom) = temp/bohr
-        enddo 
-        iextatom=iextatom+1
-    enddo
-    close(infile)
-    
-end subroutine readextcharges
+      if (quick_molspec_arg%imult .eq. 2 .and. quick_molspec_arg%nelec-1 .ne. quick_molspec_arg%nelecb) then
+         call PrtWrn(io,"INCORRECT NUMBER OF ELECTRONS FOR A DOUBLET.")
+         call quick_exit(6,1)
+      endif
+
+      if (quick_molspec_arg%imult .eq. 3) then
+         quick_molspec_arg%nelec = quick_molspec_arg%nelec+1
+         quick_molspec_arg%nelecb = quick_molspec_arg%nelecb - 1
+         if (quick_molspec_arg%nelec-2 .ne. quick_molspec_arg%nelecb) then
+            call PrtWrn(io,"INCORRECT NUMBER OF ELECTRONS FOR A TRIPLET.")
+            call quick_exit(6,1)
+         endif
+      endif
+
+      if (quick_molspec_arg%imult .eq. 4) then
+         quick_molspec_arg%nelec = quick_molspec_arg%nelec+1
+         quick_molspec_arg%nelecb = quick_molspec_arg%nelecb - 1
+         if (quick_molspec_arg%nelec-3 .ne. quick_molspec_arg%nelecb) then
+            call PrtWrn(io,"INCORRECT NUMBER OF ELECTRONS FOR A QUADRUPLET.")
+            call quick_exit(6,1)
+         endif
+      endif
+   endif
+
+end subroutine check_quick_method_and_molspec
 
 
-!********************************************
+!--------------------------------------
 ! Initial Densitry Matrix
-!--------------------------------------------
+!--------------------------------------
 subroutine initialGuess
-    use allmod
-    implicit double precision(a-h,o-z)
-    logical :: present
-    character(len=80) :: keyWD
+   use allmod
+   implicit none
+   logical :: present
+   character(len=80) :: keyWD
+   integer n,sadAtom
+   integer Iatm,i,j
+   double precision temp
 
+   ! Initialize Density arrays. Create initial density matrix guess.
+   call zeroMatrix(quick_qm_struct%dense,nbasis)
+   if (quick_method%unrst) call zeroMatrix(quick_qm_struct%denseb,nbasis)
 
-!++++++++++++++++++++++++++++++++++++++++++
-! Initialize Density arrays. Create initial density matrix guess.
+   present = .false.
 
-    do Ibas=1,nbasis
-        do Jbas=1,nbasis
-            DENSE(Jbas,Ibas)=0.d0
-            DENSEB(Jbas,Ibas)=0.d0
-        enddo
-    enddo
-    present = .false.
-    if (quick_method%readdmx) inquire (file=dmxfilename,exist=present)
-    if (present) then
-        open(idmxfile,file=dmxfilename,status='old')
-        read (idmxfile,'(A80)') keywd
-        do WHILE (index(keywd,'END').eq.0.and.index(keywd,'BETA').eq.0.)
-            read (keywd,'(I4,I4,3x,E15.8)') iread,jread,temp
-            DENSE(iread,jread)=temp
-            DENSE(jread,iread)=temp
+   ! if read matrix is requested, begin to read dmx file
+   if (quick_method%readdmx) inquire (file=dmxfilename,exist=present)
+   if (present) then
+      open(idmxfile,file=dmxfilename,status='old')
+
+      ! read first part, which is restricted or alpha density matrix
+      read (idmxfile,'(A80)') keywd
+      do WHILE (index(keywd,'END').eq.0.and.index(keywd,'BETA').eq.0.)
+         read (keywd,'(I4,I4,3x,E15.8)') i,j,temp
+         quick_qm_struct%dense(i,j)=temp; quick_qm_struct%dense(j,i)=temp
+         read (idmxfile,'(A80)') keywd
+      enddo
+
+      ! read second part, beta matrix
+      if (quick_method%unrst) then
+         if (index(keywd,'BETA') /= 0) read (idmxfile,'(A80)') keywd
+         do WHILE (index(keywd,'END').eq.0)
+            read (keywd,'(I4,I4,3x,E15.8)') i,j,temp
+            quick_qm_struct%denseb(i,j)=temp; quick_qm_struct%denseb(j,i)=temp
             read (idmxfile,'(A80)') keywd
-        enddo
-        if (index(keywd,'BETA') /= 0) read (idmxfile,'(A80)') keywd
-        do WHILE (index(keywd,'END').eq.0)
-            read (keywd,'(I4,I4,3x,E15.8)') iread,jread,temp
-            DENSEB(iread,jread)=temp
-            DENSEB(jread,iread)=temp
-            read (idmxfile,'(A80)') keywd
-        enddo
-        close(idmxfile)
-        if (DENSEB(1,1) == 0.d0 .AND. quick_method%unrst) then
-            write (iOutFile, &
-            & '(/,"CONVERTING RESTRICTED DENSITY TO UNRESTRICTED")')
-            do I=1,nbasis
-                do J =1,nbasis
-                    DENSE(J,I) = DENSE(J,I)/2.d0
-                    DENSEB(J,I) = DENSE(J,I)
-                enddo
+         enddo
+      endif
+      close(idmxfile)
+
+      if (quick_qm_struct%denseb(1,1) == 0.d0 .and. quick_method%unrst) then
+         call PrtWrn(iOutFile,"CONVERTING RESTRICTED DENSITY TO UNRESTRICTED")
+         do I=1,nbasis
+            do J =1,nbasis
+               quick_qm_struct%dense(J,I) = quick_qm_struct%dense(J,I)/2.d0
+               quick_qm_struct%denseb(J,I) = quick_qm_struct%dense(J,I)
             enddo
-        endif
-    else
-!++++++++++++++++++++++++++++++++++++++++++
-! Xiao HE Initial Guess
-!      If(ISAD.eq.1)then
-!        diagelement=dble(nelec)/dble(nbasis)
-!        diagelementb=dble(nelecb)/dble(nbasis)+1.d-8
-!        do I=1,nbasis
-!            DENSE(I,I)=diagelement
-!            DENSEB(I,I)=diagelementb
-!        enddo
-!
-!      else
+         enddo
+      endif
+   else
+      ! MFCC Initial Guess
+      if(quick_method%MFCC)then
+         call MFCC_initial_guess
+      endif
 
-       
-        do ixiao=1,npmfcc
-          print*,mfccbases(ixiao),mfccbasef(ixiao),mfccbasescap(ixiao),mfccbasefcap(ixiao)
-          print*,matombases(ixiao),matombasescap(ixiao)
-        enddo        
-
-        do ixiao=1,kxiaoconnect
-          print*,'check connection',ixiao
-          print*,mfccbasescon(ixiao),mfccbasefcon(ixiao),matombasescon(ixiao)
-          print*,mfccbasescon2(ixiao),mfccbasefcon2(ixiao),matombasescon2(ixiao)
-        enddo
-          
-
-!         print*,'IMFCC=',IMFCC
-!++++++++++++++++++++++++++++++++++++++++++
-! MFCC Initial Guess 
-         if(quick_method%MFCC)then
-
-           do i=1,nbasis
-             do j=1,nbasis
-               DENSE(i,j)=0.0d0
-             enddo
-           enddo
-        
-           do ixiao=1,npmfcc
-            do i=mfccbases(ixiao),mfccbasef(ixiao)
-             do j=mfccbases(ixiao),mfccbasef(ixiao)
-               DENSE(matombases(ixiao)+i-mfccbases(ixiao),matombases(ixiao)+j-mfccbases(ixiao)) &
-                    =DENSE(matombases(ixiao)+i-mfccbases(ixiao),matombases(ixiao)+j-mfccbases(ixiao))+ &
-                     mfccdens(ixiao,i-mfccbases(ixiao)+1,j-mfccbases(ixiao)+1)
-            if(mfccdens(ixiao,i-mfccbases(ixiao)+1,j-mfccbases(ixiao)+1).gt.0.3d0)then
-               print*,'fragment',ixiao,matombases(ixiao)+i-mfccbases(ixiao), &
-                 matombases(ixiao)+j-mfccbases(ixiao),mfccdens(ixiao,i-mfccbases(ixiao)+1, &
-                                    j-mfccbases(ixiao)+1)
-            endif
-             enddo
-            enddo
-           enddo
-
-           do ixiao=1,npmfcc-1
-            do i=mfccbasescap(ixiao),mfccbasefcap(ixiao)
-             do j=mfccbasescap(ixiao),mfccbasefcap(ixiao)
-               DENSE(matombasescap(ixiao)+i-mfccbasescap(ixiao),matombasescap(ixiao)+j-mfccbasescap(ixiao))= &
-               DENSE(matombasescap(ixiao)+i-mfccbasescap(ixiao),matombasescap(ixiao)+j-mfccbasescap(ixiao)) &
-                     -mfccdenscap(ixiao,i-mfccbasescap(ixiao)+1,j-mfccbasescap(ixiao)+1)
-             if(mfccdenscap(ixiao,i-mfccbasescap(ixiao)+1,j-mfccbasescap(ixiao)+1).gt.0.3d0)then
-               print*,'cap',ixiao,matombasescap(ixiao)+i-mfccbasescap(ixiao), &
-                    matombasescap(ixiao)+j-mfccbasescap(ixiao),mfccdenscap(ixiao,i-mfccbasescap(ixiao)+1, &
-                          j-mfccbasescap(ixiao)+1)
-             endif
-             enddo
-            enddo
-           enddo
-
-!    do i=1,nbasis
-!      do j=1,nbasis
-!!        if(DENSE(i,j).gt.0.001d0)then
-!          DENSE(i,j)=0.0d0
-!!        endif
-!      enddo
-!    enddo
-
-           do ixiao=1,kxiaoconnect
-            do i=mfccbasesconi(ixiao),mfccbasefconi(ixiao)
-             do j=mfccbasesconi(ixiao),mfccbasefconi(ixiao)
-          DENSE(matombasesconi(ixiao)+i-mfccbasesconi(ixiao),matombasesconi(ixiao)+j-mfccbasesconi(ixiao))= &
-          DENSE(matombasesconi(ixiao)+i-mfccbasesconi(ixiao),matombasesconi(ixiao)+j-mfccbasesconi(ixiao)) &
-                     -mfccdensconi(ixiao,i-mfccbasesconi(ixiao)+1,j-mfccbasesconi(ixiao)+1)
-             if(mfccdensconi(ixiao,i-mfccbasesconi(ixiao)+1,j-mfccbasesconi(ixiao)+1).gt.0.3d0)then
-               print*,'connect-I',ixiao,matombasesconi(ixiao)+i-mfccbasesconi(ixiao), &
-               matombasesconi(ixiao)+j-mfccbasesconi(ixiao),mfccdensconi(ixiao,i-mfccbasesconi(ixiao)+1, &
-                          j-mfccbasesconi(ixiao)+1)
-             endif
-             enddo
-            enddo
-           enddo
-
-           do ixiao=1,kxiaoconnect
-            do i=mfccbasesconj(ixiao),mfccbasefconj(ixiao)
-             do j=mfccbasesconj(ixiao),mfccbasefconj(ixiao)
-          DENSE(matombasesconj(ixiao)+i-mfccbasesconj(ixiao),matombasesconj(ixiao)+j-mfccbasesconj(ixiao))= &
-          DENSE(matombasesconj(ixiao)+i-mfccbasesconj(ixiao),matombasesconj(ixiao)+j-mfccbasesconj(ixiao)) &
-                     -mfccdensconj(ixiao,i-mfccbasesconj(ixiao)+1,j-mfccbasesconj(ixiao)+1)
-             if(mfccdensconj(ixiao,i-mfccbasesconj(ixiao)+1,j-mfccbasesconj(ixiao)+1).gt.0.3d0)then
-               print*,'connect-J',ixiao,matombasesconj(ixiao)+i-mfccbasesconj(ixiao), &
-               matombasesconj(ixiao)+j-mfccbasesconj(ixiao),mfccdensconj(ixiao,i-mfccbasesconj(ixiao)+1, &
-                          j-mfccbasesconj(ixiao)+1)
-             endif
-             enddo
-            enddo
-           enddo
-
-           do ixiao=1,kxiaoconnect
-            do i=mfccbasesconi(ixiao),mfccbasefconi(ixiao)
-             do j=mfccbasesconi(ixiao),mfccbasefconi(ixiao)
-          DENSE(matombasesconi(ixiao)+i-mfccbasesconi(ixiao),matombasesconi(ixiao)+j-mfccbasesconi(ixiao))= &
-          DENSE(matombasesconi(ixiao)+i-mfccbasesconi(ixiao),matombasesconi(ixiao)+j-mfccbasesconi(ixiao)) &
-                     +mfccdenscon(ixiao,i-mfccbasesconi(ixiao)+1,j-mfccbasesconi(ixiao)+1)
-             if(mfccdenscon(ixiao,i-mfccbasesconi(ixiao)+1,j-mfccbasesconi(ixiao)+1).gt.0.3d0)then
-               print*,'connect-IJ',ixiao,matombasesconi(ixiao)+i-mfccbasesconi(ixiao), &
-               matombasesconi(ixiao)+j-mfccbasesconi(ixiao),mfccdenscon(ixiao,i-mfccbasesconi(ixiao)+1, &
-                          j-mfccbasesconi(ixiao)+1)
-             endif
-             enddo
-            enddo
-           enddo
-
-
-           do ixiao=1,kxiaoconnect
-            do i=mfccbasesconj(ixiao),mfccbasefconj(ixiao)
-             do j=mfccbasesconj(ixiao),mfccbasefconj(ixiao)
-                
-          iixiaotemp=mfccbasefconi(ixiao)-mfccbasesconi(ixiao)+1
-
-          DENSE(matombasesconj(ixiao)+i-mfccbasesconj(ixiao),matombasesconj(ixiao)+j-mfccbasesconj(ixiao))= &
-          DENSE(matombasesconj(ixiao)+i-mfccbasesconj(ixiao),matombasesconj(ixiao)+j-mfccbasesconj(ixiao)) &
-                     +mfccdenscon(ixiao,iixiaotemp+i-mfccbasesconj(ixiao)+1, &
-                      iixiaotemp+j-mfccbasesconj(ixiao)+1)
-             if(mfccdenscon(ixiao,iixiaotemp+i-mfccbasesconj(ixiao)+1, &
-                iixiaotemp+j-mfccbasesconj(ixiao)+1).gt.0.3d0)then
-               print*,'connect-IJ',ixiao,matombasesconj(ixiao)+i-mfccbasesconj(ixiao), &
-!                     iixiaotemp+i-mfccbasesconj(ixiao)+1,iixiaotemp+j-mfccbasesconj(ixiao)+1, &
-               matombasesconj(ixiao)+j-mfccbasesconj(ixiao),mfccdenscon(ixiao,iixiaotemp+ &
-                          i-mfccbasesconj(ixiao)+1, &
-                          iixiaotemp+j-mfccbasesconj(ixiao)+1)
-             endif
-             enddo
-            enddo
-           enddo
-
-
-         else
-!++++++++++++++++++++++++++++++++++++++++++
-!  SAD inital guess
-         nincrease=0
-
+      !  SAD inital guess
+      if (quick_method%SAD) then
+         n=0
          do Iatm=1,natom
-            do ixiaosad=1,10
-             If(symbol(iattype(Iatm)).eq.atomxiao(ixiaosad))then
-!                 print*,'hexiao',iatm,ixiaosad,atomxiao(ixiaosad),atombasis(ixiaosad)
-                 do i=1,atombasis(ixiaosad)
-                   do j=1,atombasis(ixiaosad)
-                     DENSE(i+nincrease,j+nincrease)=atomdens(ixiaosad,i,j)
-!                     print*,i+nincrease,j+nincrease,DENSE(i+nincrease,j+nincrease)
-                   enddo
-                 enddo
-                 nincrease=nincrease+atombasis(ixiaosad)
-             endif
+            do sadAtom=1,10
+               if(symbol(quick_molspec%iattype(Iatm)).eq. &
+                  quick_molspec%atom_type_sym(sadAtom))then
+                  do i=1,atombasis(sadAtom)
+                     do j=1,atombasis(sadAtom)
+                        quick_qm_struct%dense(i+n,j+n)=atomdens(sadAtom,i,j)
+                     enddo
+                  enddo
+                  n=n+atombasis(sadAtom)
+               endif
             enddo
-               
-        enddo
-       endif
-    endif
+         enddo
+      endif
+   endif
+   
+   call deallocate_mol_sad
+
+   ! debug initial guess
+   if (quick_method%debug) call debugInitialGuess
 end subroutine initialGuess

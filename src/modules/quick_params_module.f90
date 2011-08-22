@@ -6,11 +6,11 @@
 !	Copyright 2011 University of Florida. All rights reserved.
 !
 
-!********************************************************
-! Parameter Module
-!--------------------------------------------------------
 !
-    module quick_params_module
+! Parameter Module
+!
+module quick_params_module
+
     implicit none
 
     double precision :: EK1prm(0:2,0:2,0:2,0:83), &
@@ -331,5 +331,4 @@
     DATA Mcal(1:3,119) /0,7,0/
     DATA Mcal(1:3,120) /0,0,7/
 
-    end module quick_params_module
-!********************************************************
+end module quick_params_module

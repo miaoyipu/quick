@@ -1,0 +1,443 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A6AF39A130DD8BF009B360A /* amber_interface.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF363130DD8BF009B360A /* amber_interface.f90 */; };
+		0A6AF39B130DD8BF009B360A /* attraction.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF364130DD8BF009B360A /* attraction.f90 */; };
+		0A6AF39C130DD8BF009B360A /* calMP2.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF365130DD8BF009B360A /* calMP2.f90 */; };
+		0A6AF39D130DD8BF009B360A /* calmp2divcon.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF367130DD8BF009B360A /* calmp2divcon.f90 */; };
+		0A6AF39E130DD8BF009B360A /* CPHF.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF368130DD8BF009B360A /* CPHF.f90 */; };
+		0A6AF39F130DD8BF009B360A /* debug.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF369130DD8BF009B360A /* debug.f90 */; };
+		0A6AF3A0130DD8BF009B360A /* debug_quick.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF36A130DD8BF009B360A /* debug_quick.f90 */; };
+		0A6AF3A1130DD8BF009B360A /* denspt.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF36B130DD8BF009B360A /* denspt.f90 */; };
+		0A6AF3A2130DD8BF009B360A /* dft.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF36C130DD8BF009B360A /* dft.f90 */; };
+		0A6AF3A3130DD8BF009B360A /* dftoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF36D130DD8BF009B360A /* dftoperator.f90 */; };
+		0A6AF3A4130DD8BF009B360A /* dipole.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF36E130DD8BF009B360A /* dipole.f90 */; };
+		0A6AF3A5130DD8BF009B360A /* ecp.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF36F130DD8BF009B360A /* ecp.f90 */; };
+		0A6AF3A6130DD8BF009B360A /* electdii.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF370130DD8BF009B360A /* electdii.f90 */; };
+		0A6AF3A7130DD8BF009B360A /* fake_amber_interface.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF371130DD8BF009B360A /* fake_amber_interface.f90 */; };
+		0A6AF3A8130DD8BF009B360A /* finalize.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF372130DD8BF009B360A /* finalize.f90 */; };
+		0A6AF3A9130DD8BF009B360A /* fmm.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF373130DD8BF009B360A /* fmm.f90 */; };
+		0A6AF3AA130DD8BF009B360A /* frequency.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF374130DD8BF009B360A /* frequency.f90 */; };
+		0A6AF3AB130DD8BF009B360A /* fullx.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF375130DD8BF009B360A /* fullx.f90 */; };
+		0A6AF3AC130DD8BF009B360A /* getEnergy.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF376130DD8BF009B360A /* getEnergy.f90 */; };
+		0A6AF3AD130DD8BF009B360A /* getMol.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF377130DD8BF009B360A /* getMol.f90 */; };
+		0A6AF3AE130DD8BF009B360A /* getMolSad.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF378130DD8BF009B360A /* getMolSad.f90 */; };
+		0A6AF3AF130DD8BF009B360A /* gradient.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF379130DD8BF009B360A /* gradient.f90 */; };
+		0A6AF3B0130DD8BF009B360A /* gridform.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF37A130DD8BF009B360A /* gridform.f90 */; };
+		0A6AF3B1130DD8BF009B360A /* hessian.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF37B130DD8BF009B360A /* hessian.f90 */; };
+		0A6AF3B2130DD8BF009B360A /* hfoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF37C130DD8BF009B360A /* hfoperator.f90 */; };
+		0A6AF3B3130DD8BF009B360A /* hrr.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF37D130DD8BF009B360A /* hrr.f90 */; };
+		0A6AF3B4130DD8BF009B360A /* inidivcon.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF37E130DD8BF009B360A /* inidivcon.f90 */; };
+		0A6AF3B5130DD8BF009B360A /* initialize.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF37F130DD8BF009B360A /* initialize.f90 */; };
+		0A6AF3B6130DD8BF009B360A /* kinetic.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF380130DD8BF009B360A /* kinetic.f90 */; };
+		0A6AF3B7130DD8BF009B360A /* lbfgs.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF381130DD8BF009B360A /* lbfgs.f90 */; };
+		0A6AF3B8130DD8BF009B360A /* main.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF382130DD8BF009B360A /* main.f90 */; };
+		0A6AF3B9130DD8BF009B360A /* modules.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF383130DD8BF009B360A /* modules.f90 */; };
+		0A6AF3BA130DD8BF009B360A /* mpi_fake.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF384130DD8BF009B360A /* mpi_fake.f90 */; };
+		0A6AF3BB130DD8BF009B360A /* mpi_setup.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF385130DD8BF009B360A /* mpi_setup.f90 */; };
+		0A6AF3BC130DD8BF009B360A /* nuclear.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF386130DD8BF009B360A /* nuclear.f90 */; };
+		0A6AF3BD130DD8BF009B360A /* optimize.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF387130DD8BF009B360A /* optimize.f90 */; };
+		0A6AF3BE130DD8BF009B360A /* overlap.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF388130DD8BF009B360A /* overlap.f90 */; };
+		0A6AF3BF130DD8BF009B360A /* pteval.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF389130DD8BF009B360A /* pteval.f90 */; };
+		0A6AF3C0130DD8BF009B360A /* quick_modules.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF38A130DD8BF009B360A /* quick_modules.f90 */; };
+		0A6AF3C1130DD8BF009B360A /* readInput.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF38B130DD8BF009B360A /* readInput.f90 */; };
+		0A6AF3C2130DD8BF009B360A /* repulsion.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF38C130DD8BF009B360A /* repulsion.f90 */; };
+		0A6AF3C3130DD8BF009B360A /* scf.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF38D130DD8BF009B360A /* scf.f90 */; };
+		0A6AF3C4130DD8BF009B360A /* schwarz.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF38E130DD8BF009B360A /* schwarz.f90 */; };
+		0A6AF3C5130DD8BF009B360A /* sedftoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF38F130DD8BF009B360A /* sedftoperator.f90 */; };
+		0A6AF3C6130DD8BF009B360A /* shell.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF390130DD8BF009B360A /* shell.f90 */; };
+		0A6AF3C7130DD8BF009B360A /* shelldft.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF391130DD8BF009B360A /* shelldft.f90 */; };
+		0A6AF3C8130DD8BF009B360A /* spdfgh.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF392130DD8BF009B360A /* spdfgh.f90 */; };
+		0A6AF3C9130DD8BF009B360A /* subs.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF393130DD8BF009B360A /* subs.f90 */; };
+		0A6AF3CA130DD8BF009B360A /* udftoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF394130DD8BF009B360A /* udftoperator.f90 */; };
+		0A6AF3CB130DD8BF009B360A /* uelectdii.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF395130DD8BF009B360A /* uelectdii.f90 */; };
+		0A6AF3CC130DD8BF009B360A /* uhfoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF396130DD8BF009B360A /* uhfoperator.f90 */; };
+		0A6AF3CD130DD8BF009B360A /* uscf.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF397130DD8BF009B360A /* uscf.f90 */; };
+		0A6AF3CE130DD8BF009B360A /* usedftoperator.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF398130DD8BF009B360A /* usedftoperator.f90 */; };
+		0A6AF3CF130DD8BF009B360A /* zmake.f90 in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AF399130DD8BF009B360A /* zmake.f90 */; };
+		8DD76FB00486AB0100D96B5E /* new_quick.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6A0FF2C0290799A04C91782 /* new_quick.1 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0A6AF3DE130DD930009B360A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8DD76FAF0486AB0100D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				8DD76FB00486AB0100D96B5E /* new_quick.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0A6AF363130DD8BF009B360A /* amber_interface.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = amber_interface.f90; sourceTree = "<group>"; };
+		0A6AF364130DD8BF009B360A /* attraction.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = attraction.f90; sourceTree = "<group>"; };
+		0A6AF365130DD8BF009B360A /* calMP2.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = calMP2.f90; sourceTree = "<group>"; };
+		0A6AF366130DD8BF009B360A /* calMP2.f90.backup */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = calMP2.f90.backup; sourceTree = "<group>"; };
+		0A6AF367130DD8BF009B360A /* calmp2divcon.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = calmp2divcon.f90; sourceTree = "<group>"; };
+		0A6AF368130DD8BF009B360A /* CPHF.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = CPHF.f90; sourceTree = "<group>"; };
+		0A6AF369130DD8BF009B360A /* debug.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = debug.f90; sourceTree = "<group>"; };
+		0A6AF36A130DD8BF009B360A /* debug_quick.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = debug_quick.f90; sourceTree = "<group>"; };
+		0A6AF36B130DD8BF009B360A /* denspt.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = denspt.f90; sourceTree = "<group>"; };
+		0A6AF36C130DD8BF009B360A /* dft.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = dft.f90; sourceTree = "<group>"; };
+		0A6AF36D130DD8BF009B360A /* dftoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = dftoperator.f90; sourceTree = "<group>"; };
+		0A6AF36E130DD8BF009B360A /* dipole.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = dipole.f90; sourceTree = "<group>"; };
+		0A6AF36F130DD8BF009B360A /* ecp.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = ecp.f90; sourceTree = "<group>"; };
+		0A6AF370130DD8BF009B360A /* electdii.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = electdii.f90; sourceTree = "<group>"; };
+		0A6AF371130DD8BF009B360A /* fake_amber_interface.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = fake_amber_interface.f90; sourceTree = "<group>"; };
+		0A6AF372130DD8BF009B360A /* finalize.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = finalize.f90; sourceTree = "<group>"; };
+		0A6AF373130DD8BF009B360A /* fmm.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = fmm.f90; sourceTree = "<group>"; };
+		0A6AF374130DD8BF009B360A /* frequency.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = frequency.f90; sourceTree = "<group>"; };
+		0A6AF375130DD8BF009B360A /* fullx.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = fullx.f90; sourceTree = "<group>"; };
+		0A6AF376130DD8BF009B360A /* getEnergy.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = getEnergy.f90; sourceTree = "<group>"; };
+		0A6AF377130DD8BF009B360A /* getMol.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = getMol.f90; sourceTree = "<group>"; };
+		0A6AF378130DD8BF009B360A /* getMolSad.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = getMolSad.f90; sourceTree = "<group>"; };
+		0A6AF379130DD8BF009B360A /* gradient.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = gradient.f90; sourceTree = "<group>"; };
+		0A6AF37A130DD8BF009B360A /* gridform.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = gridform.f90; sourceTree = "<group>"; };
+		0A6AF37B130DD8BF009B360A /* hessian.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = hessian.f90; sourceTree = "<group>"; };
+		0A6AF37C130DD8BF009B360A /* hfoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = hfoperator.f90; sourceTree = "<group>"; };
+		0A6AF37D130DD8BF009B360A /* hrr.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = hrr.f90; sourceTree = "<group>"; };
+		0A6AF37E130DD8BF009B360A /* inidivcon.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = inidivcon.f90; sourceTree = "<group>"; };
+		0A6AF37F130DD8BF009B360A /* initialize.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = initialize.f90; sourceTree = "<group>"; };
+		0A6AF380130DD8BF009B360A /* kinetic.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = kinetic.f90; sourceTree = "<group>"; };
+		0A6AF381130DD8BF009B360A /* lbfgs.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = lbfgs.f90; sourceTree = "<group>"; };
+		0A6AF382130DD8BF009B360A /* main.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = main.f90; sourceTree = "<group>"; };
+		0A6AF383130DD8BF009B360A /* modules.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = modules.f90; sourceTree = "<group>"; };
+		0A6AF384130DD8BF009B360A /* mpi_fake.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = mpi_fake.f90; sourceTree = "<group>"; };
+		0A6AF385130DD8BF009B360A /* mpi_setup.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = mpi_setup.f90; sourceTree = "<group>"; };
+		0A6AF386130DD8BF009B360A /* nuclear.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = nuclear.f90; sourceTree = "<group>"; };
+		0A6AF387130DD8BF009B360A /* optimize.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = optimize.f90; sourceTree = "<group>"; };
+		0A6AF388130DD8BF009B360A /* overlap.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = overlap.f90; sourceTree = "<group>"; };
+		0A6AF389130DD8BF009B360A /* pteval.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = pteval.f90; sourceTree = "<group>"; };
+		0A6AF38A130DD8BF009B360A /* quick_modules.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = quick_modules.f90; sourceTree = "<group>"; };
+		0A6AF38B130DD8BF009B360A /* readInput.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = readInput.f90; sourceTree = "<group>"; };
+		0A6AF38C130DD8BF009B360A /* repulsion.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = repulsion.f90; sourceTree = "<group>"; };
+		0A6AF38D130DD8BF009B360A /* scf.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = scf.f90; sourceTree = "<group>"; };
+		0A6AF38E130DD8BF009B360A /* schwarz.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = schwarz.f90; sourceTree = "<group>"; };
+		0A6AF38F130DD8BF009B360A /* sedftoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = sedftoperator.f90; sourceTree = "<group>"; };
+		0A6AF390130DD8BF009B360A /* shell.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = shell.f90; sourceTree = "<group>"; };
+		0A6AF391130DD8BF009B360A /* shelldft.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = shelldft.f90; sourceTree = "<group>"; };
+		0A6AF392130DD8BF009B360A /* spdfgh.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = spdfgh.f90; sourceTree = "<group>"; };
+		0A6AF393130DD8BF009B360A /* subs.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = subs.f90; sourceTree = "<group>"; };
+		0A6AF394130DD8BF009B360A /* udftoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = udftoperator.f90; sourceTree = "<group>"; };
+		0A6AF395130DD8BF009B360A /* uelectdii.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = uelectdii.f90; sourceTree = "<group>"; };
+		0A6AF396130DD8BF009B360A /* uhfoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = uhfoperator.f90; sourceTree = "<group>"; };
+		0A6AF397130DD8BF009B360A /* uscf.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = uscf.f90; sourceTree = "<group>"; };
+		0A6AF398130DD8BF009B360A /* usedftoperator.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = usedftoperator.f90; sourceTree = "<group>"; };
+		0A6AF399130DD8BF009B360A /* zmake.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = zmake.f90; sourceTree = "<group>"; };
+		8DD76FB20486AB0100D96B5E /* new_quick */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = new_quick; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6A0FF2C0290799A04C91782 /* new_quick.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = new_quick.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76FAD0486AB0100D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* new_quick */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Source */,
+				C6A0FF2B0290797F04C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = new_quick;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				0A6AF362130DD8BF009B360A /* src */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		0A6AF362130DD8BF009B360A /* src */ = {
+			isa = PBXGroup;
+			children = (
+				0A6AF363130DD8BF009B360A /* amber_interface.f90 */,
+				0A6AF364130DD8BF009B360A /* attraction.f90 */,
+				0A6AF365130DD8BF009B360A /* calMP2.f90 */,
+				0A6AF366130DD8BF009B360A /* calMP2.f90.backup */,
+				0A6AF367130DD8BF009B360A /* calmp2divcon.f90 */,
+				0A6AF368130DD8BF009B360A /* CPHF.f90 */,
+				0A6AF369130DD8BF009B360A /* debug.f90 */,
+				0A6AF36A130DD8BF009B360A /* debug_quick.f90 */,
+				0A6AF36B130DD8BF009B360A /* denspt.f90 */,
+				0A6AF36C130DD8BF009B360A /* dft.f90 */,
+				0A6AF36D130DD8BF009B360A /* dftoperator.f90 */,
+				0A6AF36E130DD8BF009B360A /* dipole.f90 */,
+				0A6AF36F130DD8BF009B360A /* ecp.f90 */,
+				0A6AF370130DD8BF009B360A /* electdii.f90 */,
+				0A6AF371130DD8BF009B360A /* fake_amber_interface.f90 */,
+				0A6AF372130DD8BF009B360A /* finalize.f90 */,
+				0A6AF373130DD8BF009B360A /* fmm.f90 */,
+				0A6AF374130DD8BF009B360A /* frequency.f90 */,
+				0A6AF375130DD8BF009B360A /* fullx.f90 */,
+				0A6AF376130DD8BF009B360A /* getEnergy.f90 */,
+				0A6AF377130DD8BF009B360A /* getMol.f90 */,
+				0A6AF378130DD8BF009B360A /* getMolSad.f90 */,
+				0A6AF379130DD8BF009B360A /* gradient.f90 */,
+				0A6AF37A130DD8BF009B360A /* gridform.f90 */,
+				0A6AF37B130DD8BF009B360A /* hessian.f90 */,
+				0A6AF37C130DD8BF009B360A /* hfoperator.f90 */,
+				0A6AF37D130DD8BF009B360A /* hrr.f90 */,
+				0A6AF37E130DD8BF009B360A /* inidivcon.f90 */,
+				0A6AF37F130DD8BF009B360A /* initialize.f90 */,
+				0A6AF380130DD8BF009B360A /* kinetic.f90 */,
+				0A6AF381130DD8BF009B360A /* lbfgs.f90 */,
+				0A6AF382130DD8BF009B360A /* main.f90 */,
+				0A6AF383130DD8BF009B360A /* modules.f90 */,
+				0A6AF384130DD8BF009B360A /* mpi_fake.f90 */,
+				0A6AF385130DD8BF009B360A /* mpi_setup.f90 */,
+				0A6AF386130DD8BF009B360A /* nuclear.f90 */,
+				0A6AF387130DD8BF009B360A /* optimize.f90 */,
+				0A6AF388130DD8BF009B360A /* overlap.f90 */,
+				0A6AF389130DD8BF009B360A /* pteval.f90 */,
+				0A6AF38A130DD8BF009B360A /* quick_modules.f90 */,
+				0A6AF38B130DD8BF009B360A /* readInput.f90 */,
+				0A6AF38C130DD8BF009B360A /* repulsion.f90 */,
+				0A6AF38D130DD8BF009B360A /* scf.f90 */,
+				0A6AF38E130DD8BF009B360A /* schwarz.f90 */,
+				0A6AF38F130DD8BF009B360A /* sedftoperator.f90 */,
+				0A6AF390130DD8BF009B360A /* shell.f90 */,
+				0A6AF391130DD8BF009B360A /* shelldft.f90 */,
+				0A6AF392130DD8BF009B360A /* spdfgh.f90 */,
+				0A6AF393130DD8BF009B360A /* subs.f90 */,
+				0A6AF394130DD8BF009B360A /* udftoperator.f90 */,
+				0A6AF395130DD8BF009B360A /* uelectdii.f90 */,
+				0A6AF396130DD8BF009B360A /* uhfoperator.f90 */,
+				0A6AF397130DD8BF009B360A /* uscf.f90 */,
+				0A6AF398130DD8BF009B360A /* usedftoperator.f90 */,
+				0A6AF399130DD8BF009B360A /* zmake.f90 */,
+			);
+			name = src;
+			path = ../src;
+			sourceTree = SOURCE_ROOT;
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76FB20486AB0100D96B5E /* new_quick */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C6A0FF2B0290797F04C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				C6A0FF2C0290799A04C91782 /* new_quick.1 */,
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8DD76FA90486AB0100D96B5E /* new_quick */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "new_quick" */;
+			buildPhases = (
+				8DD76FAB0486AB0100D96B5E /* Sources */,
+				8DD76FAD0486AB0100D96B5E /* Frameworks */,
+				8DD76FAF0486AB0100D96B5E /* CopyFiles */,
+				0A6AF3DE130DD930009B360A /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = new_quick;
+			productInstallPath = "$(HOME)/bin";
+			productName = new_quick;
+			productReference = 8DD76FB20486AB0100D96B5E /* new_quick */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "new_quick" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* new_quick */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DD76FA90486AB0100D96B5E /* new_quick */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76FAB0486AB0100D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A6AF39A130DD8BF009B360A /* amber_interface.f90 in Sources */,
+				0A6AF39B130DD8BF009B360A /* attraction.f90 in Sources */,
+				0A6AF39C130DD8BF009B360A /* calMP2.f90 in Sources */,
+				0A6AF39D130DD8BF009B360A /* calmp2divcon.f90 in Sources */,
+				0A6AF39E130DD8BF009B360A /* CPHF.f90 in Sources */,
+				0A6AF39F130DD8BF009B360A /* debug.f90 in Sources */,
+				0A6AF3A0130DD8BF009B360A /* debug_quick.f90 in Sources */,
+				0A6AF3A1130DD8BF009B360A /* denspt.f90 in Sources */,
+				0A6AF3A2130DD8BF009B360A /* dft.f90 in Sources */,
+				0A6AF3A3130DD8BF009B360A /* dftoperator.f90 in Sources */,
+				0A6AF3A4130DD8BF009B360A /* dipole.f90 in Sources */,
+				0A6AF3A5130DD8BF009B360A /* ecp.f90 in Sources */,
+				0A6AF3A6130DD8BF009B360A /* electdii.f90 in Sources */,
+				0A6AF3A7130DD8BF009B360A /* fake_amber_interface.f90 in Sources */,
+				0A6AF3A8130DD8BF009B360A /* finalize.f90 in Sources */,
+				0A6AF3A9130DD8BF009B360A /* fmm.f90 in Sources */,
+				0A6AF3AA130DD8BF009B360A /* frequency.f90 in Sources */,
+				0A6AF3AB130DD8BF009B360A /* fullx.f90 in Sources */,
+				0A6AF3AC130DD8BF009B360A /* getEnergy.f90 in Sources */,
+				0A6AF3AD130DD8BF009B360A /* getMol.f90 in Sources */,
+				0A6AF3AE130DD8BF009B360A /* getMolSad.f90 in Sources */,
+				0A6AF3AF130DD8BF009B360A /* gradient.f90 in Sources */,
+				0A6AF3B0130DD8BF009B360A /* gridform.f90 in Sources */,
+				0A6AF3B1130DD8BF009B360A /* hessian.f90 in Sources */,
+				0A6AF3B2130DD8BF009B360A /* hfoperator.f90 in Sources */,
+				0A6AF3B3130DD8BF009B360A /* hrr.f90 in Sources */,
+				0A6AF3B4130DD8BF009B360A /* inidivcon.f90 in Sources */,
+				0A6AF3B5130DD8BF009B360A /* initialize.f90 in Sources */,
+				0A6AF3B6130DD8BF009B360A /* kinetic.f90 in Sources */,
+				0A6AF3B7130DD8BF009B360A /* lbfgs.f90 in Sources */,
+				0A6AF3B8130DD8BF009B360A /* main.f90 in Sources */,
+				0A6AF3B9130DD8BF009B360A /* modules.f90 in Sources */,
+				0A6AF3BA130DD8BF009B360A /* mpi_fake.f90 in Sources */,
+				0A6AF3BB130DD8BF009B360A /* mpi_setup.f90 in Sources */,
+				0A6AF3BC130DD8BF009B360A /* nuclear.f90 in Sources */,
+				0A6AF3BD130DD8BF009B360A /* optimize.f90 in Sources */,
+				0A6AF3BE130DD8BF009B360A /* overlap.f90 in Sources */,
+				0A6AF3BF130DD8BF009B360A /* pteval.f90 in Sources */,
+				0A6AF3C0130DD8BF009B360A /* quick_modules.f90 in Sources */,
+				0A6AF3C1130DD8BF009B360A /* readInput.f90 in Sources */,
+				0A6AF3C2130DD8BF009B360A /* repulsion.f90 in Sources */,
+				0A6AF3C3130DD8BF009B360A /* scf.f90 in Sources */,
+				0A6AF3C4130DD8BF009B360A /* schwarz.f90 in Sources */,
+				0A6AF3C5130DD8BF009B360A /* sedftoperator.f90 in Sources */,
+				0A6AF3C6130DD8BF009B360A /* shell.f90 in Sources */,
+				0A6AF3C7130DD8BF009B360A /* shelldft.f90 in Sources */,
+				0A6AF3C8130DD8BF009B360A /* spdfgh.f90 in Sources */,
+				0A6AF3C9130DD8BF009B360A /* subs.f90 in Sources */,
+				0A6AF3CA130DD8BF009B360A /* udftoperator.f90 in Sources */,
+				0A6AF3CB130DD8BF009B360A /* uelectdii.f90 in Sources */,
+				0A6AF3CC130DD8BF009B360A /* uhfoperator.f90 in Sources */,
+				0A6AF3CD130DD8BF009B360A /* uscf.f90 in Sources */,
+				0A6AF3CE130DD8BF009B360A /* usedftoperator.f90 in Sources */,
+				0A6AF3CF130DD8BF009B360A /* zmake.f90 in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB928608733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				PRODUCT_NAME = new_quick;
+			};
+			name = Debug;
+		};
+		1DEB928708733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				PRODUCT_NAME = new_quick;
+			};
+			name = Release;
+		};
+		1DEB928A08733DD80010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		1DEB928B08733DD80010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB928508733DD80010E9CD /* Build configuration list for PBXNativeTarget "new_quick" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928608733DD80010E9CD /* Debug */,
+				1DEB928708733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "new_quick" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB928A08733DD80010E9CD /* Debug */,
+				1DEB928B08733DD80010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

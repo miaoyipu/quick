@@ -6,18 +6,15 @@
 !	Copyright 2011 University of Florida. All rights reserved.
 !
 
-!********************************************************
-! D&C module
-!--------------------------------------------------------
-!
-    module quick_divcon_module
+!  D&C module,  Div & Con varibles
+module quick_divcon_module
+
     implicit none
 
     integer, dimension(:,:), allocatable :: DCCore,DCBuffer1,DCBuffer2,DCSub,wtospoint
     integer, dimension(:), allocatable :: DCCoren,DCBuffer1n,DCBuffer2n,DCSubn,nBasisDC, &
                                           nElecDCSub,selectNN,nElecMP2Sub
     integer, dimension(:,:), allocatable :: DCOverlap,DCConnect
-    integer, dimension(0:92)  :: kShell
     integer, dimension(:), allocatable :: kShellS,kShellF
     integer, dimension(:,:,:), allocatable :: DCLogic
     double precision, dimension(:,:), allocatable :: invDCOverlap
@@ -40,5 +37,4 @@
     integer,allocatable:: mpi_dc_nbasis(:)  ! basis set this node has
     
     
-    end module quick_divcon_module
-!********************************************************
+end module quick_divcon_module

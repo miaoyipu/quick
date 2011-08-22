@@ -10,6 +10,7 @@
     subroutine fullx
     use allmod
     implicit double precision(a-h,o-z)
+    
 
     dimension Sminhalf(nbasis),V(3,nbasis),IDEGEN1(nbasis)
 
@@ -47,7 +48,7 @@
 
 ! Now diagonalize HOLD to generate the eigenvectors and eigenvalues.
   
-    call DIAG(NBASIS,HOLD,NBASIS,TOL,V,Sminhalf,IDEGEN1,Uxiao,IERROR)
+    call DIAG(NBASIS,HOLD,NBASIS,quick_method%DMCutoff,V,Sminhalf,IDEGEN1,Uxiao,IERROR)
 
 ! Consider the following:
 

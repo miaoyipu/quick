@@ -1,3 +1,4 @@
+#   include "./config.h"
 ! 
 !************************************************************************
 !                              QUICK                                   **
@@ -22,153 +23,79 @@
 !  University of Florida, Gainesville, FL, 2010
 !************************************************************************
 !
-! Update Log:
-! -2011-2-16  YIPU MIAO Add method module and try to convert the progs into OO.
-! -2010-12-1  YIPU MIAO Add freq and hessian matrix calculation. But is broken from last author.
-!                       not support MPI
-! -2010-11-10 YIPU MIAO Complete MPI for MP2, only valid for HF MP2,not valid for Divcon MP2.
-!                       Optimize code
-! -2010-11-14 YIPU MIAO Add paralle option for HF and Divcon, valid for 1e,2e and 
-!                       diag(divcon only) part
-! -2010-7-27  YIPU MIAO add elimination step, improve accuracy. kill some bugs.
-! -2010-7-23  YIPU MIAO first final version. Divcon works. Some tests are done. 
-!                       But still buggy, especially the convergence problem.
-! -2010-7-14  YIPU MIAO add HF SCF calculation. Divcon is partly work, but under test.
-! -2010-5-24  YIPU MIAO add keyword "atombasis“ and "residuebasis" to specify fragment method. 
-!                       if it's residue based, pdb file is needed, while atom based, no pdb file is needed
-! -2010-5-21  YIPU MIAO new quick can now read pdb file as input. But hasn't reach the calculation part.
-! -2010.5.15  YIPU MIAO Reorganize quick program. Ready to eliminate Xiao's personal variables.
-! 
-! -           XIOA HE   FOR + function , tighten cutoff
-!                       MULTIPOLE one-electron only upto P orbital
-!                       ifMM should be earlier than MFCC
-! -           XIAO HE   Clean up main.f90 and right order to call scf.f90 and electdiisdc.f90 and 
-!                       xdivided.f90, weird thing when I comment the read(9999)
-! -           XIAO HE   be careful of HF=.true. and DFT=.true.
-! -           Xiao HE   change these 3 subroutines for high efficiency of gradient
-!                       ifort   -g -O3 -pg -traceback -c        hfgrad.f90
-!                       ifort   -g -O3 -pg -traceback -c       2eshellopt.f90
-!                       ifort   -g -O3 -pg -traceback -c       hrrsubopt.f90
-! -           Xiao HE   change allocate(Xcoeff(jbasis,jbasis,0:3,0:3))
-!**************************************************************************
-!
-!++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!   --- QUICK ---
-!++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-! Main program of QUICK
-! 
     program quick
     
     use allMod
     use divPB_Private, only: initialize_DivPBVars
+
     implicit none
-    
+
+#ifdef MPI
     include 'mpif.h'
-    
+#endif
+
     logical :: failed = .false.         ! flag to indicates SCF fail or OPT fail 
     integer :: ierr                     ! return error info
-    integer :: natomSave                ! save atom for globle use
-    double precision, allocatable:: xyzSave(:,:)
-                                        ! save cooridnates
-                                        
-    integer :: i                        ! integer temp varible
+    integer :: i,j,k
+    double precision t1_t, t2_t
+    common /timer/ t1_t, t2_t
+    !------------------------------------------------------------------
+    ! 1. The first thing that must be done is to initialize and prepare files
+    !------------------------------------------------------------------
 
-
-!*****************************************************************
-! 1. The first thing that must be done is to initialize and prepare files
-!------------------------------------------------------------------!
-!
-    ! Initial neccessary variables 
-    call initialize1(ierr)
-    
-    !--------------------MPI/MASTER----------------------------------
-    masterwork_initial: if (master) then ! Master Work: to initial the work
-    !----------------End MPI/MASTER----------------------------------
-
-      ! Read enviromental variables: QUICK_BASIS and ECPs
-      ! those can be defined in ~/.bashrc
-      call getenv("QUICK_BASIS",basisdir)
-      call getenv("ECPs",ecpdir)
-
-    !--------------------MPI/MASTER-----------------------------------
-    endif masterwork_initial ! if (master)
-    !--------------- End MPI/MASTER-----------------------------------
-
-
+    ! Initial neccessary variables
+    call initialize1(ierr)    
     !-------------------MPI/MASTER---------------------------------------
     masterwork_readInput: if (master) then
 
-      ! Read argument, which is input file, usually ".in" file and prepare files:
-      ! .out: output file
-      ! .dmx: density matrix file
-      ! .rst: coordinates file
-      ! .pdb: PDB file (can be input if use PDB keyword)
-      ! .cphf: CPHF file
-      
-      call getarg(1,inFileName)
-      i = index(inFileName,'.')
-      if(i .eq. 0) i = index(inFileName,' ')
-      
-      outFileName=inFileName(1:i-1)//'.out'
-      dmxFileName=inFileName(1:i-1)//'.dmx'
-      rstFileName=inFileName(1:i-1)//'.rst'
-      CPHFFileName=inFileName(1:i-1)//'.cphf'
-      pdbFileName=inFileName(1:i-1)//'.pdb'
+      ! read input argument
+      call set_quick_files(ierr)    ! from quick_file_module
 
-      open(iOutFile,file=outFileName,status='unknown')
+
+      ! open output file
+      call quick_open(iOutFile,outFileName,'U','F','R',.false.)
       
       ! At the beginning of output file, copyright information will be output first 
-      call outputCopyright(ierr)
+      call outputCopyright(iOutFile,ierr)
       
       ! Then output file information
-      call PrtDate(iOutFile,'Task starts on:')
-      write (iOutFile,'(" INPUT FILE:   ",A30)') inFileName
-      write (iOutFile,'(" OUTPUT FILE:  ",A30)') outFileName
+      call PrtDate(iOutFile,'TASK STARTS ON:')
+      call print_quick_io_file(iOutFile,ierr) ! from quick_file_module
 
-      ! Output MPI Information  
-      if (bMPI .and. mpisize.eq.1) then
-        bMPI=.false.
-        write(iOutFile,'("WARNING: NODE=1, TURN OFF MPI")')
-      endif
+      ! check MPI setup and output info
+      call check_quick_mpi(iOutFile,ierr)   ! from quick_mpi_module
       
-      if (bMPI) then
-        write (iOutFile,*)
-        write (iOutFile,'(" - MPI Enabled -")')
-        write (iOutFile,'(" TOTAL PROCESSOR = ",i5)') mpisize
-        write (iOutFile,'(" MASTER NAME     = ",A30)') pname
-      endif
+#ifdef MPI      
+      if (bMPI) call print_quick_mpi(iOutFile,ierr)   ! from quick_mpi_module
+#endif
     
-    endif masterwork_readInput ! master
+    endif masterwork_readInput
     !--------------------End MPI/MASTER----------------------------------
 
-
-!*****************************************************************
-! 2. Next step is to read job and initial guess
-!------------------------------------------------------------------
-!
-    !read job spec
-    call readJob
+#ifdef CUDA
+    !------------------- CUDA -------------------------------------------
+    ! startup cuda device
+    call gpu_startup()
+    call gpu_set_device(0)
+    call gpu_init()
     
-    if (master) then
-      ! Obtain Atom information
-      if (quick_method%PDB) call readPDB(infile)
-      
-      call getAtoms()
-      
-      nAtomSave=natom
-    endif
+    ! write cuda information
+    if(master) call gpu_write_info(iOutFile)
+    !------------------- END CUDA ---------------------------------------
+#endif
 
-    !-------------------MPI/ALL NODES------------------------------------    
-    if (bMPI) then
-      call MPI_BCAST(natomsave,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-      call MPI_BCAST(iatomtype,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-      call MPI_BCAST(natom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-      call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
-    endif
-    !------------------END MPI/ALL NODES---------------------------------    
+
+
+    !------------------------------------------------------------------
+    ! 2. Next step is to read job and initial guess
+    !------------------------------------------------------------------
+
+    !read job spec and mol spec
+    call read_Job_and_Atom()
 
     !allocate essential variables
-    call allocateAtoms()
+    call alloc(quick_molspec)
+    if (quick_method%MFCC) call allocate_MFCC()
     
     ! Then do inital guess
     call cpu_time(timer_begin%TIniGuess)
@@ -182,24 +109,26 @@
 !       call getmolmfcc
     endif
     
-    call cpu_time(timer_end%TIniGuess)
+    
+    !------------------------------------------------------------------
+    ! 3. Read Molecule Structure
+    !-----------------------------------------------------------------
+    call getMol()
+#ifdef CUDA
+    call gpu_setup(natom,nbasis, quick_molspec%nElec, quick_molspec%imult, &
+                   quick_molspec%molchg, quick_molspec%iAtomType)
+    call gpu_upload_xyz(xyz)
+    call gpu_upload_atom_and_chg(quick_molspec%iattype, quick_molspec%chg)
+#endif
 
-!*****************************************************************
-! 3. Read Molecule Structure
-!-----------------------------------------------------------------
-!
-    call getMol(nAtomSave)
-
-!*****************************************************************
-! 4. SCF single point calculation. DFT if wanted. If it is OPT job
-!    ignore this part and go to opt part. We will get variationally determined Energy.
-!-----------------------------------------------------------------
-!
+    !------------------------------------------------------------------
+    ! 4. SCF single point calculation. DFT if wanted. If it is OPT job
+    !    ignore this part and go to opt part. We will get variationally determined Energy.
+    !-----------------------------------------------------------------
 
     ! if it is div&con method, begin fragmetation step, initial and setup
     ! div&con varibles
-    if (quick_method%DIVCON) call inidivcon(nAtomSave)
-    
+    if (quick_method%DIVCON) call inidivcon(quick_molspec%natom)
 
     ! if it is not opt job, begin single point calculation
     if(.not.quick_method%opt)then
@@ -211,17 +140,32 @@
 !        call getEnergy(failed)
 !      endif
 !   else
-        call g2eshell
-        call schwarzoff
+        call g2eshell   ! pre-calculate 2 indices coeffecient to save time
+        call schwarzoff ! pre-calculate schwarz cutoff criteria
+    endif
+
+#ifdef CUDA    
+    call gpu_upload_basis(nshell, nprim, jshell, jbasis, maxcontract, &
+    ncontract, itype, aexp, dcoeff, &
+    quick_basis%first_basis_function, quick_basis%last_basis_function, & 
+    quick_basis%first_shell_basis_function, quick_basis%last_shell_basis_function, &
+    quick_basis%ncenter, quick_basis%kstart, quick_basis%katom, &
+    quick_basis%ktype, quick_basis%kprim, quick_basis%kshell,quick_basis%Ksumtype, &
+    quick_basis%Qnumber, quick_basis%Qstart, quick_basis%Qfinal, quick_basis%Qsbasis, quick_basis%Qfbasis, &
+    quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
+#endif
+
+call cpu_time(timer_end%TIniGuess)
+    if (.not.quick_method%opt) then
         call getEnergy(failed)
     endif
 
     if (failed) call quick_exit(iOutFile,1)
 
 
-!*****************************************************************
-! 5. OPT Geometry if wanted
-!-----------------------------------------------------------------
+    !------------------------------------------------------------------
+    ! 5. OPT Geometry if wanted
+    !-----------------------------------------------------------------
 
     ! Geometry optimization. Currently, only cartesian version is 
     ! available. A improvement is in optimzenew, which is based on 
@@ -233,9 +177,9 @@
     ! an optimization job, we now have the optimized geometry.
 
 
-!*****************************************************************
-! 6. Other job option
-!-----------------------------------------------------------------
+    !------------------------------------------------------------------
+    ! 6. Other job option
+    !-----------------------------------------------------------------
     
     ! 6.a PB Solvant Model
     ! 11/03/2010 Blocked by Yiao Miao
@@ -247,11 +191,15 @@
     ! 6.b MP2,2nd order Møller–Plesset perturbation theory
     if(quick_method%MP2) then
         if(.not. quick_method%DIVCON) then
+#ifdef MPI
            if (bMPI) then
              call mpi_calmp2    ! MPI-MP2
            else
+#endif
              call calmp2()      ! none-MPI MP2
+#ifdef MPI
            endif
+#endif
         else
             call calmp2divcon   ! DIV&CON MP2
         endif
@@ -259,21 +207,21 @@
 
     ! 6.c Freqency calculation and mode analysis
     ! note the analytical calculation is broken and needs to be fixed
-    IF (quick_method%freq) THEN
+    if (quick_method%freq) then
         call calcHessian(failed)
-        IF (failed) call quick_exit(iOutFile,1)     ! If Hessian matrix fails
+        if (failed) call quick_exit(iOutFile,1)     ! If Hessian matrix fails
         call frequency
-    ENDIF
+    endif
 
     ! 6.d clean spin for unrestricted calculation
     ! If this is an unrestricted calculation, check out the S^2 value to
     ! see if this is a reasonable wave function.  If not, modify it.
     
-!    IF (quick_method%unrst) THEN
-!        IF (quick_method%debug) call debugCleanSpin
-!        IF (quick_method%unrst) call spinclean
-!        IF (quick_method%debug) call debugCleanSpin
-!    ENDIF
+!    if (quick_method%unrst) then
+!        if (quick_method%debug) call debugCleanSpin
+!        if (quick_method%unrst) call spinclean
+!        if (quick_method%debug) call debugCleanSpin
+!    endif
 
     if (master) then
         
@@ -288,10 +236,12 @@
     ! Now at this point we have an energy and a geometry.  If this is
     ! an optimization job, we now have the optimized geometry.
 
-!*****************************************************************
-! 8.The final job is to output energy and many other infos
-!-----------------------------------------------------------------
-!
+    !-----------------------------------------------------------------
+    ! 7.The final job is to output energy and many other infos
+    !-----------------------------------------------------------------
+#ifdef CUDA
+    call gpu_shutdown()
+#endif
     call finalize(iOutFile,0)
     
 

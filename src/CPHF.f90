@@ -15,15 +15,15 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
 
   ! First, calculate the integral.
 
-  iA = ncenter(Ibas)
-  iB = ncenter(Jbas)
-  iC = ncenter(IIbas)
-  iD = ncenter(JJbas)
+  iA = quick_basis%ncenter(Ibas)
+  iB = quick_basis%ncenter(Jbas)
+  iC = quick_basis%ncenter(IIbas)
+  iD = quick_basis%ncenter(JJbas)
   AOint=0.d0
-  DO Icon=1,ncontract(Ibas)
-     DO Jcon=1,ncontract(Jbas)
-        DO IIcon=1,ncontract(IIbas)
-           DO JJcon=1,ncontract(JJbas)
+  do Icon=1,ncontract(Ibas)
+     do Jcon=1,ncontract(Jbas)
+        do IIcon=1,ncontract(IIbas)
+           do JJcon=1,ncontract(JJbas)
               AOint = AOint + &
                    dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                    *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -38,10 +38,10 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
                    xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                    xyz(1,iD), xyz(2,iD),xyz(3,iD))
 
-           ENDDO
-        ENDDO
-     ENDDO
-  ENDDO
+           enddo
+        enddo
+     enddo
+  enddo
   
   ! Now we need to find how many times the AO integral appears by examining
   ! it's symmetry.  For an integral (ij|kl):
@@ -90,41 +90,41 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
 
   ! Now we check for redundancy.
 
-  DO Icheck=1,8
-     IF (isame(1,Icheck) /= 0) THEN
-        DO Jcheck=Icheck+1,8
-           IF (isame(1,Jcheck) /= 0) THEN
+  do Icheck=1,8
+     if (isame(1,Icheck) /= 0) then
+        do Jcheck=Icheck+1,8
+           if (isame(1,Jcheck) /= 0) then
               same = isame(1,Icheck).eq.isame(1,Jcheck)
               same = same.and.isame(2,Icheck).eq.isame(2,Jcheck)
               same = same.and.isame(3,Icheck).eq.isame(3,Jcheck)
               same = same.and.isame(4,Icheck).eq.isame(4,Jcheck)
-              IF (same) THEN
-                 DO Iblank=1,4
+              if (same) then
+                 do Iblank=1,4
                     isame(Iblank,Jcheck)=0
-                 ENDDO
-              ENDIF
-           ENDIF
-        ENDDO
-     ENDIF
-  ENDDO
+                 enddo
+              endif
+           endif
+        enddo
+     endif
+  enddo
 
   ! Now we need to find out where the alpha and beta occupied/virtual
   ! lines are.
 
-  IF (quick_method%unrst) THEN
-     lastAocc = nelec
-     lastBocc = nelecb
-  ELSE
-     lastAocc = nelec/2
+  if (quick_method%unrst) then
+     lastAocc = quick_molspec%nelec
+     lastBocc = quick_molspec%nelecb
+  else
+     lastAocc = quick_molspec%nelec/2
      lastBocc = lastAocc
-  ENDIF
+  endif
   iBetastart = lastAocc*(nbasis-lastAocc)
 
   ! Now we can start filling up the CPHFA array.
 
 
-  DO Iunique=1,8
-     IF (isame(1,Iunique) /= 0) THEN
+  do Iunique=1,8
+     if (isame(1,Iunique) /= 0) then
 
         ! Set up some dummy variables.
 
@@ -135,8 +135,8 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
 
         ! Loop over alpha pairs.
 
-        DO iAvirt = lastAocc+1,nbasis
-           DO iAocc = 1,lastAocc
+        do iAvirt = lastAocc+1,nbasis
+           do iAocc = 1,lastAocc
 
               ! iAvirt and iAocc form an ai pair.  Find it's location.
 
@@ -145,8 +145,8 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
               ! Loop over alpha again.  This means we are filling the alpha-alpha
               ! portion of the matrix.
 
-              DO iAvirt2 = lastAocc+1,nbasis
-                 DO iAocc2 = 1,lastAocc
+              do iAvirt2 = lastAocc+1,nbasis
+                 do iAocc2 = 1,lastAocc
 
                     ! iAvirt2 and iAocc2 form an bj pair.  Find it's location.
 
@@ -156,21 +156,21 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
                     ! Since all these are alpha, no elements drop out.
                     ! Calculate the value of the AO repulsions contribution to the MO repulsion.
 
-                    CPHFA(iaCPHFA,jbCPHFA) = CPHFA(iaCPHFA,jbCPHFA) + &
-                         2.d0*CO(Ival,IAvirt)*CO(Jval,IAocc)* &
-                         CO(IIval,IAvirt2)*CO(JJval,iAocc2)*AOint &
-                         -CO(Ival,IAvirt)*CO(Jval,iAocc2)* &
-                         CO(IIval,IAvirt2)*CO(JJval,iAocc)*AOint &
-                         -CO(Ival,IAvirt)*CO(Jval,iAvirt2)* &
-                         CO(IIval,IAocc2)*CO(JJval,iAocc)*AOint
+                    quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) = quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) + &
+                         2.d0*quick_qm_struct%co(Ival,IAvirt)*quick_qm_struct%co(Jval,IAocc)* &
+                         quick_qm_struct%co(IIval,IAvirt2)*quick_qm_struct%co(JJval,iAocc2)*AOint &
+                         -quick_qm_struct%co(Ival,IAvirt)*quick_qm_struct%co(Jval,iAocc2)* &
+                         quick_qm_struct%co(IIval,IAvirt2)*quick_qm_struct%co(JJval,iAocc)*AOint &
+                         -quick_qm_struct%co(Ival,IAvirt)*quick_qm_struct%co(Jval,iAvirt2)* &
+                         quick_qm_struct%co(IIval,IAocc2)*quick_qm_struct%co(JJval,iAocc)*AOint
 
-                 ENDDO
-              ENDDO
+                 enddo
+              enddo
 
               ! Now loop over beta for the bj pairs.
 
-              DO iBvirt2 = lastBocc+1,nbasis
-                 DO iBocc2 = 1,lastBocc
+              do iBvirt2 = lastBocc+1,nbasis
+                 do iBocc2 = 1,lastBocc
 
                     ! iBvirt2 and iBocc2 form an bj pair.  Find it's location.
 
@@ -181,19 +181,19 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
                     ! CPHFA(ai,jb) = 2(ai|jb)
                     ! Calculate the value of the AO repulsions contribution to the MO repulsion.
 
-                    CPHFA(iaCPHFA,jbCPHFA) = CPHFA(iaCPHFA,jbCPHFA) + &
-                         2.d0*CO(Ival,IAvirt)*CO(Jval,IAocc)* &
-                         COB(IIval,IBvirt2)*COB(JJval,iBocc2)*AOint
+                    quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) = quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) + &
+                         2.d0*quick_qm_struct%co(Ival,IAvirt)*quick_qm_struct%co(Jval,IAocc)* &
+                         quick_qm_struct%cob(IIval,IBvirt2)*quick_qm_struct%cob(JJval,iBocc2)*AOint
 
-                 ENDDO
-              ENDDO
-           ENDDO
-        ENDDO
+                 enddo
+              enddo
+           enddo
+        enddo
 
         ! Loop over beta pairs.
 
-        DO iBvirt = lastBocc+1,nbasis
-           DO iBocc = 1,lastBocc
+        do iBvirt = lastBocc+1,nbasis
+           do iBocc = 1,lastBocc
 
               ! iBvirt and iBocc form an ai pair.  Find it's location.
 
@@ -202,8 +202,8 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
               ! Loop over beta again.  This means we are filling the beta-beta
               ! portion of the matrix.
 
-              DO iBvirt2 = lastBocc+1,nbasis
-                 DO iBocc2 = 1,lastBocc
+              do iBvirt2 = lastBocc+1,nbasis
+                 do iBocc2 = 1,lastBocc
 
                     ! iBvirt2 and iBocc2 form an bj pair.  Find it's location.
 
@@ -213,21 +213,21 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
                     ! Since all these are beta, no elements drop out.
                     ! Calculate the value of the AO repulsions contribution to the MO repulsion.
 
-                    CPHFA(iaCPHFA,jbCPHFA) = CPHFA(iaCPHFA,jbCPHFA) + &
-                         2.d0*COB(Ival,IBvirt)*COB(Jval,IBocc)* &
-                         COB(IIval,IBvirt2)*COB(JJval,iBocc2)*AOint &
-                         -COB(Ival,IBvirt)*COB(Jval,iBocc2)* &
-                         COB(IIval,IBvirt2)*COB(JJval,iBocc)*AOint &
-                         -COB(Ival,IBvirt)*COB(Jval,iBvirt2)* &
-                         COB(IIval,IBocc2)*COB(JJval,iBocc)*AOint
+                    quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) = quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) + &
+                         2.d0*quick_qm_struct%cob(Ival,IBvirt)*quick_qm_struct%cob(Jval,IBocc)* &
+                         quick_qm_struct%cob(IIval,IBvirt2)*quick_qm_struct%cob(JJval,iBocc2)*AOint &
+                         -quick_qm_struct%cob(Ival,IBvirt)*quick_qm_struct%cob(Jval,iBocc2)* &
+                         quick_qm_struct%cob(IIval,IBvirt2)*quick_qm_struct%cob(JJval,iBocc)*AOint &
+                         -quick_qm_struct%cob(Ival,IBvirt)*quick_qm_struct%cob(Jval,iBvirt2)* &
+                         quick_qm_struct%cob(IIval,IBocc2)*quick_qm_struct%cob(JJval,iBocc)*AOint
 
-                 ENDDO
-              ENDDO
+                 enddo
+              enddo
 
               ! Now loop over alpha for the bj pairs.
 
-              DO iAvirt2 = lastAocc+1,nbasis
-                 DO iAocc2 = 1,lastAocc
+              do iAvirt2 = lastAocc+1,nbasis
+                 do iAocc2 = 1,lastAocc
 
                     ! iAvirt2 and iAocc2 form an bj pair.  Find it's location.
 
@@ -238,17 +238,17 @@ subroutine formCPHFA(Ibas,Jbas,IIbas,JJbas)
                     ! CPHFA(ai,jb) = 2(ai|jb)
                     ! Calculate the value of the AO repulsions contribution to the MO repulsion.
 
-                    CPHFA(iaCPHFA,jbCPHFA) = CPHFA(iaCPHFA,jbCPHFA) + &
-                         2.d0*COB(Ival,IBvirt)*COB(Jval,IBocc)* &
-                         CO(IIval,IAvirt2)*CO(JJval,iAocc2)*AOint
+                    quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) = quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) + &
+                         2.d0*quick_qm_struct%cob(Ival,IBvirt)*quick_qm_struct%cob(Jval,IBocc)* &
+                         quick_qm_struct%co(IIval,IAvirt2)*quick_qm_struct%co(JJval,iAocc2)*AOint
 
-                 ENDDO
-              ENDDO
-           ENDDO
-        ENDDO
+                 enddo
+              enddo
+           enddo
+        enddo
 
-     ENDIF
-  ENDDO
+     endif
+  enddo
 
 
 
@@ -266,13 +266,13 @@ subroutine formCPHFB
 
   ! First some quick setup.
 
-  IF (quick_method%unrst) THEN
-     lastAocc = nelec
-     lastBocc = nelecb
-  ELSE
-     lastAocc = nelec/2
+  if (quick_method%unrst) then
+     lastAocc = quick_molspec%nelec
+     lastBocc = quick_molspec%nelecb
+  else
+     lastAocc = quick_molspec%nelec/2
      lastBocc = lastAocc
-  ENDIF
+  endif
   iBetastart = lastAocc*(nbasis-lastAocc)
 
   ! The purpose of this subroutine is to form B0 for the CPHF. There is
@@ -294,181 +294,181 @@ subroutine formCPHFB
 
   ! We are going to calculate the first two terms: Hai(1) - Sai(1) E(i)
 
-  DO Ibas=1,nbasis
-     ISTART = (ncenter(Ibas)-1) *3
-     DO Jbas=ilast(ncenter(IBAS))+1,nbasis
-        JSTART = (ncenter(Jbas)-1) *3
+  do Ibas=1,nbasis
+     ISTART = (quick_basis%ncenter(Ibas)-1) *3
+     do Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
+        JSTART = (quick_basis%ncenter(Jbas)-1) *3
 
         ! We have selected our two basis functions, now loop over angular momentum.
 
-        DO Imomentum=1,3
+        do Imomentum=1,3
            dSI = 0.d0
            dSJ =0.d0
            dKEI = 0.d0
            dKEJ = 0.d0
 
-           ! Do the Ibas derivatives first.
+           ! do the Ibas derivatives first.
 
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           DO Icon=1,ncontract(Ibas)
-              DO Jcon=1,ncontract(Jbas)
+           do Icon=1,ncontract(Ibas)
+              do Jcon=1,ncontract(Jbas)
                  dSI = dSI + 2.d0*aexp(Icon,Ibas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                       itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                       itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                      xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                      xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                      xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
+                      xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                      xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                      xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                  dKEI = dKEI + 2.d0*aexp(Icon,Ibas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                       itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                       itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                      xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                      xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                      xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
-              ENDDO
-           ENDDO
+                      xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                      xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                      xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
+              enddo
+           enddo
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-           IF (itype(Imomentum,Ibas) /= 0) THEN
+           if (itype(Imomentum,Ibas) /= 0) then
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-              DO Icon=1,ncontract(Ibas)
-                 DO Jcon=1,ncontract(Jbas)
+              do Icon=1,ncontract(Ibas)
+                 do Jcon=1,ncontract(Jbas)
                     dSI = dSI - dble(itype(Imomentum,Ibas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                          itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                          itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                         xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                         xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                         xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
+                         xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                         xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                         xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                     dKEI = dKEI - dble(itype(Imomentum,Ibas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                          itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                          itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                         xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                         xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                         xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
-                 ENDDO
-              ENDDO
+                         xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                         xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                         xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
+                 enddo
+              enddo
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           ENDIF
+           endif
 
            ! Now do the Jbas derivatives.
 
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           DO Icon=1,ncontract(Ibas)
-              DO Jcon=1,ncontract(Jbas)
+           do Icon=1,ncontract(Ibas)
+              do Jcon=1,ncontract(Jbas)
                  dSJ = dSJ + 2.d0*aexp(Jcon,Jbas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                       itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                       itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                      xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                      xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                      xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
+                      xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                      xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                      xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                  dKEJ = dKEJ + 2.d0*aexp(Jcon,Jbas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                       itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                       itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                      xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                      xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                      xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
-              ENDDO
-           ENDDO
+                      xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                      xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                      xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
+              enddo
+           enddo
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-           IF (itype(Imomentum,Jbas) /= 0) THEN
+           if (itype(Imomentum,Jbas) /= 0) then
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-              DO Icon=1,ncontract(Ibas)
-                 DO Jcon=1,ncontract(Jbas)
+              do Icon=1,ncontract(Ibas)
+                 do Jcon=1,ncontract(Jbas)
                     dSJ = dSJ - dble(itype(Imomentum,Jbas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                          itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                          itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                         xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                         xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                         xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
+                         xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                         xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                         xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                     dKEJ = dKEJ - dble(itype(Imomentum,Jbas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                          itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
                          itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
-                         xyz(1,ncenter(Jbas)),xyz(2,ncenter(Jbas)), &
-                         xyz(3,ncenter(Jbas)),xyz(1,ncenter(Ibas)), &
-                         xyz(2,ncenter(Ibas)),xyz(3,ncenter(Ibas)))
-                 ENDDO
-              ENDDO
+                         xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                         xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                         xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
+                 enddo
+              enddo
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           ENDIF
+           endif
 
            ! At this point we have the derivatives.  Now we need to put them in
            ! the CPHFB array.
            ! ALPHA first.
 
-           DO iAvirt = lastAocc+1,nbasis
-              DO iAocc = 1,lastAocc
+           do iAvirt = lastAocc+1,nbasis
+              do iAocc = 1,lastAocc
                  iaCPHF = (iAvirt-lastAocc-1)*lastAocc + iAocc
-                 CPHFB(iaCPHF,ISTART+Imomentum) = &
-                      CPHFB(iaCPHF,ISTART+Imomentum) &
-                      +dKEI*(CO(Ibas,iAvirt)*CO(Jbas,iAocc) &
-                      +CO(Ibas,iAocc)*CO(Jbas,iAvirt)) &
-                      -dSI* (CO(Ibas,iAvirt)*CO(Jbas,iAocc) &
-                      +CO(Ibas,iAocc)*CO(Jbas,iAvirt))*E(iAocc)
-                 CPHFB(iaCPHF,JSTART+Imomentum) = &
-                      CPHFB(iaCPHF,JSTART+Imomentum) &
-                      +dKEJ*(CO(Jbas,iAvirt)*CO(Ibas,iAocc) &
-                      +CO(Jbas,iAocc)*CO(Ibas,iAvirt)) &
-                      -dSJ* (CO(Jbas,iAvirt)*CO(Ibas,iAocc) &
-                      +CO(Jbas,iAocc)*CO(Ibas,iAvirt))*E(iAocc)
-              ENDDO
-           ENDDO
+                 quick_qm_struct%cphfb(iaCPHF,ISTART+Imomentum) = &
+                      quick_qm_struct%cphfb(iaCPHF,ISTART+Imomentum) &
+                      +dKEI*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc) &
+                      +quick_qm_struct%co(Ibas,iAocc)*quick_qm_struct%co(Jbas,iAvirt)) &
+                      -dSI* (quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc) &
+                      +quick_qm_struct%co(Ibas,iAocc)*quick_qm_struct%co(Jbas,iAvirt))*quick_qm_struct%E(iAocc)
+                 quick_qm_struct%cphfb(iaCPHF,JSTART+Imomentum) = &
+                      quick_qm_struct%cphfb(iaCPHF,JSTART+Imomentum) &
+                      +dKEJ*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc) &
+                      +quick_qm_struct%co(Jbas,iAocc)*quick_qm_struct%co(Ibas,iAvirt)) &
+                      -dSJ* (quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc) &
+                      +quick_qm_struct%co(Jbas,iAocc)*quick_qm_struct%co(Ibas,iAvirt))*quick_qm_struct%E(iAocc)
+              enddo
+           enddo
            ! BETA
-           DO iBvirt = lastBocc+1,nbasis
-              DO iBocc = 1,lastBocc
+           do iBvirt = lastBocc+1,nbasis
+              do iBocc = 1,lastBocc
                  iaCPHF = (iBvirt-lastBocc-1)*lastBocc + iBocc +iBetaStart
-                 CPHFB(iaCPHF,ISTART+Imomentum) = &
-                      CPHFB(iaCPHF,ISTART+Imomentum) &
-                      +dKEI*(COB(Ibas,iBvirt)*COB(Jbas,iBocc) &
-                      +COB(Ibas,iBocc)*COB(Jbas,iBvirt)) &
-                      -dSI* (COB(Ibas,iBvirt)*COB(Jbas,iBocc) &
-                      +COB(Ibas,iBocc)*COB(Jbas,iBvirt))*EB(iBocc)
-                 CPHFB(iaCPHF,JSTART+Imomentum) = &
-                      CPHFB(iaCPHF,JSTART+Imomentum) &
-                      +dKEJ*(COB(Jbas,iBvirt)*COB(Ibas,iBocc) &
-                      +COB(Jbas,iBocc)*COB(Ibas,iBvirt)) &
-                      -dSJ* (COB(Jbas,iBvirt)*COB(Ibas,iBocc) &
-                      +COB(Jbas,iBocc)*COB(Ibas,iBvirt))*EB(iBocc)
-              ENDDO
-           ENDDO
-        ENDDO
-     ENDDO
-  ENDDO
+                 quick_qm_struct%cphfb(iaCPHF,ISTART+Imomentum) = &
+                      quick_qm_struct%cphfb(iaCPHF,ISTART+Imomentum) &
+                      +dKEI*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc) &
+                      +quick_qm_struct%cob(Ibas,iBocc)*quick_qm_struct%cob(Jbas,iBvirt)) &
+                      -dSI* (quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc) &
+                      +quick_qm_struct%cob(Ibas,iBocc)*quick_qm_struct%cob(Jbas,iBvirt))*quick_qm_struct%EB(iBocc)
+                 quick_qm_struct%cphfb(iaCPHF,JSTART+Imomentum) = &
+                      quick_qm_struct%cphfb(iaCPHF,JSTART+Imomentum) &
+                      +dKEJ*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc) &
+                      +quick_qm_struct%cob(Jbas,iBocc)*quick_qm_struct%cob(Ibas,iBvirt)) &
+                      -dSJ* (quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc) &
+                      +quick_qm_struct%cob(Jbas,iBocc)*quick_qm_struct%cob(Ibas,iBvirt))*quick_qm_struct%EB(iBocc)
+              enddo
+           enddo
+        enddo
+     enddo
+  enddo
 
 
   ! We still have to calculate the three center term that arises in the
   ! core Hamiltonian.
 
-  DO Ibas=1,nbasis
-     iA=ncenter(Ibas)
+  do Ibas=1,nbasis
+     iA=quick_basis%ncenter(Ibas)
      ISTART = (iA-1)*3
 
-     DO Jbas=Ibas,nbasis
-        iB = ncenter(Jbas)
+     do Jbas=Ibas,nbasis
+        iB = quick_basis%ncenter(Jbas)
         JSTART = (iB-1)*3
 
-        DO iC = 1,natom
+        do iC = 1,natom
            iCSTART = (iC-1)*3
 
            ! As before, if all terms are on the same atom, they move with the
            ! atom and the derivative is zero.
 
-           IF (iA == iC .AND. iB == iC) THEN
+           if (iA == iC .and. iB == iC) then
               continue
-           ELSE
+           else
 
 
               ! If Ibas=Jbas, the term only shows up once in the energy, otherwise
@@ -485,10 +485,10 @@ subroutine formCPHFB
               dNACY = 0.d0
               dNACZ = 0.d0
 
-              ! Do the Ibas derivatives.
+              ! do the Ibas derivatives.
 
-              DO Icon=1,ncontract(Ibas)
-                 DO Jcon=1,ncontract(Jbas)
+              do Icon=1,ncontract(Ibas)
+                 do Jcon=1,ncontract(Jbas)
                     dNAIX = dNAIX + 2.d0*aexp(Icon,Ibas)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -496,7 +496,7 @@ subroutine formCPHFB
                          itype(1,Ibas)+1,itype(2,Ibas),itype(3,Ibas), &
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                         xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
+                         xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
                     dNAIY = dNAIY + 2.d0*aexp(Icon,Ibas)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -504,7 +504,7 @@ subroutine formCPHFB
                          itype(1,Ibas),itype(2,Ibas)+1,itype(3,Ibas), &
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                         xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
+                         xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
                     dNAIZ = dNAIZ + 2.d0*aexp(Icon,Ibas)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -512,15 +512,15 @@ subroutine formCPHFB
                          itype(1,Ibas),itype(2,Ibas),itype(3,Ibas)+1, &
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                         xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
+                         xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
 
-                 ENDDO
-              ENDDO
+                 enddo
+              enddo
 
 
-              IF (itype(1,Ibas) /= 0) THEN
-                 DO Icon=1,ncontract(Ibas)
-                    DO Jcon=1,ncontract(Jbas)
+              if (itype(1,Ibas) /= 0) then
+                 do Icon=1,ncontract(Ibas)
+                    do Jcon=1,ncontract(Jbas)
                        dNAIX= dNAIX - dble(itype(1,Ibas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -528,13 +528,13 @@ subroutine formCPHFB
                             itype(1,Ibas)-1,itype(2,Ibas),itype(3,Ibas), &
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                            xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
-                    ENDDO
-                 ENDDO
-              ENDIF
-              IF (itype(2,Ibas) /= 0) THEN
-                 DO Icon=1,ncontract(Ibas)
-                    DO Jcon=1,ncontract(Jbas)
+                            xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
+                    enddo
+                 enddo
+              endif
+              if (itype(2,Ibas) /= 0) then
+                 do Icon=1,ncontract(Ibas)
+                    do Jcon=1,ncontract(Jbas)
                        dNAIY= dNAIY - dble(itype(2,Ibas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -542,13 +542,13 @@ subroutine formCPHFB
                             itype(1,Ibas),itype(2,Ibas)-1,itype(3,Ibas), &
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                            xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
-                    ENDDO
-                 ENDDO
-              ENDIF
-              IF (itype(3,Ibas) /= 0) THEN
-                 DO Icon=1,ncontract(Ibas)
-                    DO Jcon=1,ncontract(Jbas)
+                            xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
+                    enddo
+                 enddo
+              endif
+              if (itype(3,Ibas) /= 0) then
+                 do Icon=1,ncontract(Ibas)
+                    do Jcon=1,ncontract(Jbas)
                        dNAIZ= dNAIZ - dble(itype(3,Ibas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -556,15 +556,15 @@ subroutine formCPHFB
                             itype(1,Ibas),itype(2,Ibas),itype(3,Ibas)-1, &
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                            xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
-                    ENDDO
-                 ENDDO
-              ENDIF
+                            xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
+                    enddo
+                 enddo
+              endif
 
-              ! Do the Jbas derivatives.
+              ! do the Jbas derivatives.
 
-              DO Icon=1,ncontract(Ibas)
-                 DO Jcon=1,ncontract(Jbas)
+              do Icon=1,ncontract(Ibas)
+                 do Jcon=1,ncontract(Jbas)
                     dNAJX = dNAJX + 2.d0*aexp(Jcon,Jbas)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -572,7 +572,7 @@ subroutine formCPHFB
                          itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                         xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
+                         xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
                     dNAJY = dNAJY + 2.d0*aexp(Jcon,Jbas)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -580,7 +580,7 @@ subroutine formCPHFB
                          itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                         xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
+                         xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
                     dNAJZ = dNAJZ + 2.d0*aexp(Jcon,Jbas)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -588,13 +588,13 @@ subroutine formCPHFB
                          itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                         xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
-                 ENDDO
-              ENDDO
+                         xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
+                 enddo
+              enddo
 
-              IF (itype(1,Jbas) /= 0) THEN
-                 DO Icon=1,ncontract(Ibas)
-                    DO Jcon=1,ncontract(Jbas)
+              if (itype(1,Jbas) /= 0) then
+                 do Icon=1,ncontract(Ibas)
+                    do Jcon=1,ncontract(Jbas)
                        dNAJX= dNAJX - dble(itype(1,Jbas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -602,13 +602,13 @@ subroutine formCPHFB
                             itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                            xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
-                    ENDDO
-                 ENDDO
-              ENDIF
-              IF (itype(2,Jbas) /= 0) THEN
-                 DO Icon=1,ncontract(Ibas)
-                    DO Jcon=1,ncontract(Jbas)
+                            xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
+                    enddo
+                 enddo
+              endif
+              if (itype(2,Jbas) /= 0) then
+                 do Icon=1,ncontract(Ibas)
+                    do Jcon=1,ncontract(Jbas)
                        dNAJY= dNAJY - dble(itype(2,Jbas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -616,13 +616,13 @@ subroutine formCPHFB
                             itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                            xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
-                    ENDDO
-                 ENDDO
-              ENDIF
-              IF (itype(3,Jbas) /= 0) THEN
-                 DO Icon=1,ncontract(Ibas)
-                    DO Jcon=1,ncontract(Jbas)
+                            xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
+                    enddo
+                 enddo
+              endif
+              if (itype(3,Jbas) /= 0) then
+                 do Icon=1,ncontract(Ibas)
+                    do Jcon=1,ncontract(Jbas)
                        dNAJZ= dNAJZ - dble(itype(3,Jbas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -630,16 +630,16 @@ subroutine formCPHFB
                             itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                            xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
-                    ENDDO
-                 ENDDO
-              ENDIF
+                            xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
+                    enddo
+                 enddo
+              endif
 
               ! Now do the derivative with respect to the atom the basis functions
               ! are attracted to.
 
-              DO Icon=1,ncontract(Ibas)
-                 DO Jcon=1,ncontract(Jbas)
+              do Icon=1,ncontract(Ibas)
+                 do Jcon=1,ncontract(Jbas)
                     dNACX= dNACX + dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                          itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
@@ -647,7 +647,7 @@ subroutine formCPHFB
                          1,0,0, &
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                         xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
+                         xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
                     dNACY= dNACY + dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                          itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
@@ -655,7 +655,7 @@ subroutine formCPHFB
                          0,1,0, &
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                         xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
+                         xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
                     dNACZ= dNACZ + dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                          itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
@@ -663,104 +663,104 @@ subroutine formCPHFB
                          0,0,1, &
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
-                         xyz(1,iC),xyz(2,iC),xyz(3,iC), chg(iC))
-                 ENDDO
-              ENDDO
+                         xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
+                 enddo
+              enddo
 
               ! Now add these into the CPHFB array.
 
-              DO iAvirt = lastAocc+1,nbasis
-                 DO iAocc = 1,lastAocc
+              do iAvirt = lastAocc+1,nbasis
+                 do iAocc = 1,lastAocc
                     iaCPHF = (iAvirt-lastAocc-1)*lastAocc + iAocc
-                    CPHFB(iaCPHF,ISTART+1) = CPHFB(iaCPHF,ISTART+1) &
-                         +dNAIX*(CO(Ibas,iAvirt)*CO(Jbas,iAocc))
-                    CPHFB(iaCPHF,ISTART+2) = CPHFB(iaCPHF,ISTART+2) &
-                         +dNAIY*(CO(Ibas,iAvirt)*CO(Jbas,iAocc))
-                    CPHFB(iaCPHF,ISTART+3) = CPHFB(iaCPHF,ISTART+3) &
-                         +dNAIZ*(CO(Ibas,iAvirt)*CO(Jbas,iAocc))
-                    CPHFB(iaCPHF,JSTART+1) = CPHFB(iaCPHF,JSTART+1) &
-                         +dNAJX*(CO(Ibas,iAvirt)*CO(Jbas,iAocc))
-                    CPHFB(iaCPHF,JSTART+2) = CPHFB(iaCPHF,JSTART+2) &
-                         +dNAJY*(CO(Ibas,iAvirt)*CO(Jbas,iAocc))
-                    CPHFB(iaCPHF,JSTART+3) = CPHFB(iaCPHF,JSTART+3) &
-                         +dNAJZ*(CO(Ibas,iAvirt)*CO(Jbas,iAocc))
-                    CPHFB(iaCPHF,ICSTART+1) = CPHFB(iaCPHF,ICSTART+1) &
-                         +dNACX*(CO(Ibas,iAvirt)*CO(Jbas,iAocc))
-                    CPHFB(iaCPHF,ICSTART+2) = CPHFB(iaCPHF,ICSTART+2) &
-                         +dNACY*(CO(Ibas,iAvirt)*CO(Jbas,iAocc))
-                    CPHFB(iaCPHF,ICSTART+3) = CPHFB(iaCPHF,ICSTART+3) &
-                         +dNACZ*(CO(Ibas,iAvirt)*CO(Jbas,iAocc))
-                    IF (Ibas /= Jbas) THEN
-                       CPHFB(iaCPHF,ISTART+1) = CPHFB(iaCPHF,ISTART+1) &
-                            +dNAIX*(CO(Jbas,iAvirt)*CO(Ibas,iAocc))
-                       CPHFB(iaCPHF,ISTART+2) = CPHFB(iaCPHF,ISTART+2) &
-                            +dNAIY*(CO(Jbas,iAvirt)*CO(Ibas,iAocc))
-                       CPHFB(iaCPHF,ISTART+3) = CPHFB(iaCPHF,ISTART+3) &
-                            +dNAIZ*(CO(Jbas,iAvirt)*CO(Ibas,iAocc))
-                       CPHFB(iaCPHF,JSTART+1) = CPHFB(iaCPHF,JSTART+1) &
-                            +dNAJX*(CO(Jbas,iAvirt)*CO(Ibas,iAocc))
-                       CPHFB(iaCPHF,JSTART+2) = CPHFB(iaCPHF,JSTART+2) &
-                            +dNAJY*(CO(Jbas,iAvirt)*CO(Ibas,iAocc))
-                       CPHFB(iaCPHF,JSTART+3) = CPHFB(iaCPHF,JSTART+3) &
-                            +dNAJZ*(CO(Jbas,iAvirt)*CO(Ibas,iAocc))
-                       CPHFB(iaCPHF,ICSTART+1) = CPHFB(iaCPHF,ICSTART+1) &
-                            +dNACX*(CO(Jbas,iAvirt)*CO(Ibas,iAocc))
-                       CPHFB(iaCPHF,ICSTART+2) = CPHFB(iaCPHF,ICSTART+2) &
-                            +dNACY*(CO(Jbas,iAvirt)*CO(Ibas,iAocc))
-                       CPHFB(iaCPHF,ICSTART+3) = CPHFB(iaCPHF,ICSTART+3) &
-                            +dNACZ*(CO(Jbas,iAvirt)*CO(Ibas,iAocc))
-                    ENDIF
-                 ENDDO
-              ENDDO
+                    quick_qm_struct%cphfb(iaCPHF,ISTART+1) = quick_qm_struct%cphfb(iaCPHF,ISTART+1) &
+                         +dNAIX*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
+                    quick_qm_struct%cphfb(iaCPHF,ISTART+2) = quick_qm_struct%cphfb(iaCPHF,ISTART+2) &
+                         +dNAIY*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
+                    quick_qm_struct%cphfb(iaCPHF,ISTART+3) = quick_qm_struct%cphfb(iaCPHF,ISTART+3) &
+                         +dNAIZ*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
+                    quick_qm_struct%cphfb(iaCPHF,JSTART+1) = quick_qm_struct%cphfb(iaCPHF,JSTART+1) &
+                         +dNAJX*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
+                    quick_qm_struct%cphfb(iaCPHF,JSTART+2) = quick_qm_struct%cphfb(iaCPHF,JSTART+2) &
+                         +dNAJY*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
+                    quick_qm_struct%cphfb(iaCPHF,JSTART+3) = quick_qm_struct%cphfb(iaCPHF,JSTART+3) &
+                         +dNAJZ*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
+                    quick_qm_struct%cphfb(iaCPHF,ICSTART+1) = quick_qm_struct%cphfb(iaCPHF,ICSTART+1) &
+                         +dNACX*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
+                    quick_qm_struct%cphfb(iaCPHF,ICSTART+2) = quick_qm_struct%cphfb(iaCPHF,ICSTART+2) &
+                         +dNACY*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
+                    quick_qm_struct%cphfb(iaCPHF,ICSTART+3) = quick_qm_struct%cphfb(iaCPHF,ICSTART+3) &
+                         +dNACZ*(quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
+                    if (Ibas /= Jbas) then
+                       quick_qm_struct%cphfb(iaCPHF,ISTART+1) = quick_qm_struct%cphfb(iaCPHF,ISTART+1) &
+                            +dNAIX*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc))
+                       quick_qm_struct%cphfb(iaCPHF,ISTART+2) = quick_qm_struct%cphfb(iaCPHF,ISTART+2) &
+                            +dNAIY*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc))
+                       quick_qm_struct%cphfb(iaCPHF,ISTART+3) = quick_qm_struct%cphfb(iaCPHF,ISTART+3) &
+                            +dNAIZ*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc))
+                       quick_qm_struct%cphfb(iaCPHF,JSTART+1) = quick_qm_struct%cphfb(iaCPHF,JSTART+1) &
+                            +dNAJX*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc))
+                       quick_qm_struct%cphfb(iaCPHF,JSTART+2) = quick_qm_struct%cphfb(iaCPHF,JSTART+2) &
+                            +dNAJY*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc))
+                       quick_qm_struct%cphfb(iaCPHF,JSTART+3) = quick_qm_struct%cphfb(iaCPHF,JSTART+3) &
+                            +dNAJZ*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc))
+                       quick_qm_struct%cphfb(iaCPHF,ICSTART+1) = quick_qm_struct%cphfb(iaCPHF,ICSTART+1) &
+                            +dNACX*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc))
+                       quick_qm_struct%cphfb(iaCPHF,ICSTART+2) = quick_qm_struct%cphfb(iaCPHF,ICSTART+2) &
+                            +dNACY*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc))
+                       quick_qm_struct%cphfb(iaCPHF,ICSTART+3) = quick_qm_struct%cphfb(iaCPHF,ICSTART+3) &
+                            +dNACZ*(quick_qm_struct%co(Jbas,iAvirt)*quick_qm_struct%co(Ibas,iAocc))
+                    endif
+                 enddo
+              enddo
               ! BETA
-              DO iBvirt = lastBocc+1,nbasis
-                 DO iBocc = 1,lastBocc
+              do iBvirt = lastBocc+1,nbasis
+                 do iBocc = 1,lastBocc
                     iaCPHF = (iBvirt-lastBocc-1)*lastBocc + iBocc + IbetaSTART
-                    CPHFB(iaCPHF,ISTART+1) = CPHFB(iaCPHF,ISTART+1) &
-                         +dNAIX*(COB(Ibas,iBvirt)*COB(Jbas,iBocc))
-                    CPHFB(iaCPHF,ISTART+2) = CPHFB(iaCPHF,ISTART+2) &
-                         +dNAIY*(COB(Ibas,iBvirt)*COB(Jbas,iBocc))
-                    CPHFB(iaCPHF,ISTART+3) = CPHFB(iaCPHF,ISTART+3) &
-                         +dNAIZ*(COB(Ibas,iBvirt)*COB(Jbas,iBocc))
-                    CPHFB(iaCPHF,JSTART+1) = CPHFB(iaCPHF,JSTART+1) &
-                         +dNAJX*(COB(Ibas,iBvirt)*COB(Jbas,iBocc))
-                    CPHFB(iaCPHF,JSTART+2) = CPHFB(iaCPHF,JSTART+2) &
-                         +dNAJY*(COB(Ibas,iBvirt)*COB(Jbas,iBocc))
-                    CPHFB(iaCPHF,JSTART+3) = CPHFB(iaCPHF,JSTART+3) &
-                         +dNAJZ*(COB(Ibas,iBvirt)*COB(Jbas,iBocc))
-                    CPHFB(iaCPHF,ICSTART+1) = CPHFB(iaCPHF,ICSTART+1) &
-                         +dNACX*(COB(Ibas,iBvirt)*COB(Jbas,iBocc))
-                    CPHFB(iaCPHF,ICSTART+2) = CPHFB(iaCPHF,ICSTART+2) &
-                         +dNACY*(COB(Ibas,iBvirt)*COB(Jbas,iBocc))
-                    CPHFB(iaCPHF,ICSTART+3) = CPHFB(iaCPHF,ICSTART+3) &
-                         +dNACZ*(COB(Ibas,iBvirt)*COB(Jbas,iBocc))
-                    IF (Ibas /= Jbas) THEN
-                       CPHFB(iaCPHF,ISTART+1) = CPHFB(iaCPHF,ISTART+1) &
-                            +dNAIX*(COB(Jbas,iBvirt)*COB(Ibas,iBocc))
-                       CPHFB(iaCPHF,ISTART+2) = CPHFB(iaCPHF,ISTART+2) &
-                            +dNAIY*(COB(Jbas,iBvirt)*COB(Ibas,iBocc))
-                       CPHFB(iaCPHF,ISTART+3) = CPHFB(iaCPHF,ISTART+3) &
-                            +dNAIZ*(COB(Jbas,iBvirt)*COB(Ibas,iBocc))
-                       CPHFB(iaCPHF,JSTART+1) = CPHFB(iaCPHF,JSTART+1) &
-                            +dNAJX*(COB(Jbas,iBvirt)*COB(Ibas,iBocc))
-                       CPHFB(iaCPHF,JSTART+2) = CPHFB(iaCPHF,JSTART+2) &
-                            +dNAJY*(COB(Jbas,iBvirt)*COB(Ibas,iBocc))
-                       CPHFB(iaCPHF,JSTART+3) = CPHFB(iaCPHF,JSTART+3) &
-                            +dNAJZ*(COB(Jbas,iBvirt)*COB(Ibas,iBocc))
-                       CPHFB(iaCPHF,ICSTART+1) = CPHFB(iaCPHF,ICSTART+1) &
-                            +dNACX*(COB(Jbas,iBvirt)*COB(Ibas,iBocc))
-                       CPHFB(iaCPHF,ICSTART+2) = CPHFB(iaCPHF,ICSTART+2) &
-                            +dNACY*(COB(Jbas,iBvirt)*COB(Ibas,iBocc))
-                       CPHFB(iaCPHF,ICSTART+3) = CPHFB(iaCPHF,ICSTART+3) &
-                            +dNACZ*(COB(Jbas,iBvirt)*COB(Ibas,iBocc))
-                    ENDIF
-                 ENDDO
-              ENDDO
+                    quick_qm_struct%cphfb(iaCPHF,ISTART+1) = quick_qm_struct%cphfb(iaCPHF,ISTART+1) &
+                         +dNAIX*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
+                    quick_qm_struct%cphfb(iaCPHF,ISTART+2) = quick_qm_struct%cphfb(iaCPHF,ISTART+2) &
+                         +dNAIY*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
+                    quick_qm_struct%cphfb(iaCPHF,ISTART+3) = quick_qm_struct%cphfb(iaCPHF,ISTART+3) &
+                         +dNAIZ*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
+                    quick_qm_struct%cphfb(iaCPHF,JSTART+1) = quick_qm_struct%cphfb(iaCPHF,JSTART+1) &
+                         +dNAJX*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
+                    quick_qm_struct%cphfb(iaCPHF,JSTART+2) = quick_qm_struct%cphfb(iaCPHF,JSTART+2) &
+                         +dNAJY*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
+                    quick_qm_struct%cphfb(iaCPHF,JSTART+3) = quick_qm_struct%cphfb(iaCPHF,JSTART+3) &
+                         +dNAJZ*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
+                    quick_qm_struct%cphfb(iaCPHF,ICSTART+1) = quick_qm_struct%cphfb(iaCPHF,ICSTART+1) &
+                         +dNACX*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
+                    quick_qm_struct%cphfb(iaCPHF,ICSTART+2) = quick_qm_struct%cphfb(iaCPHF,ICSTART+2) &
+                         +dNACY*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
+                    quick_qm_struct%cphfb(iaCPHF,ICSTART+3) = quick_qm_struct%cphfb(iaCPHF,ICSTART+3) &
+                         +dNACZ*(quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
+                    if (Ibas /= Jbas) then
+                       quick_qm_struct%cphfb(iaCPHF,ISTART+1) = quick_qm_struct%cphfb(iaCPHF,ISTART+1) &
+                            +dNAIX*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc))
+                       quick_qm_struct%cphfb(iaCPHF,ISTART+2) = quick_qm_struct%cphfb(iaCPHF,ISTART+2) &
+                            +dNAIY*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc))
+                       quick_qm_struct%cphfb(iaCPHF,ISTART+3) = quick_qm_struct%cphfb(iaCPHF,ISTART+3) &
+                            +dNAIZ*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc))
+                       quick_qm_struct%cphfb(iaCPHF,JSTART+1) = quick_qm_struct%cphfb(iaCPHF,JSTART+1) &
+                            +dNAJX*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc))
+                       quick_qm_struct%cphfb(iaCPHF,JSTART+2) = quick_qm_struct%cphfb(iaCPHF,JSTART+2) &
+                            +dNAJY*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc))
+                       quick_qm_struct%cphfb(iaCPHF,JSTART+3) = quick_qm_struct%cphfb(iaCPHF,JSTART+3) &
+                            +dNAJZ*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc))
+                       quick_qm_struct%cphfb(iaCPHF,ICSTART+1) = quick_qm_struct%cphfb(iaCPHF,ICSTART+1) &
+                            +dNACX*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc))
+                       quick_qm_struct%cphfb(iaCPHF,ICSTART+2) = quick_qm_struct%cphfb(iaCPHF,ICSTART+2) &
+                            +dNACY*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc))
+                       quick_qm_struct%cphfb(iaCPHF,ICSTART+3) = quick_qm_struct%cphfb(iaCPHF,ICSTART+3) &
+                            +dNACZ*(quick_qm_struct%cob(Jbas,iBvirt)*quick_qm_struct%cob(Ibas,iBocc))
+                    endif
+                 enddo
+              enddo
 
-           ENDIF
-        ENDDO
-     ENDDO
-  ENDDO
+           endif
+        enddo
+     enddo
+  enddo
 
 
   ! We've now done all the two and three center terms.  Now we need to
@@ -771,53 +771,53 @@ subroutine formCPHFB
   ! We'll do this in a subprogram which is called for each unique integral.
 
 
-  DO I=1,nbasis
+  do I=1,nbasis
      call CPHFB4cnt(I,I,I,I)
-     DO J=I+1,nbasis
+     do J=I+1,nbasis
         call CPHFB4cnt(I,I,J,J)
         call CPHFB4cnt(I,J,J,J)
         call CPHFB4cnt(I,I,I,J)
         call CPHFB4cnt(I,J,I,J)
-        DO K=J+1,nbasis
+        do K=J+1,nbasis
            call CPHFB4cnt(I,J,I,K)
            call CPHFB4cnt(I,J,K,K)
            call CPHFB4cnt(I,K,J,J)
            call CPHFB4cnt(I,I,J,K)
-        ENDDO
-        DO K=I+1,nbasis-1
-           DO L=K+1,nbasis
+        enddo
+        do K=I+1,nbasis-1
+           do L=K+1,nbasis
               call CPHFB4cnt(I,J,K,L)
-           ENDDO
-        ENDDO
-     ENDDO
-  ENDDO
+           enddo
+        enddo
+     enddo
+  enddo
 
   ! Now we need to go through and divide by (Ei-Ea).
 
 
-  DO iAvirt = lastAocc+1,nbasis
-     DO iAocc = 1,lastAocc
+  do iAvirt = lastAocc+1,nbasis
+     do iAocc = 1,lastAocc
         iaCPHF = (iAvirt-lastAocc-1)*lastAocc + iAocc
-        denom = E(iAocc)-E(iAvirt)
-        DO IDX = 1,natom*3
-           CPHFB(iaCPHF,IDX) = CPHFB(iaCPHF,idX)/denom
-        ENDDO
-     ENDDO
-  ENDDO
+        denom = quick_qm_struct%E(iAocc)-quick_qm_struct%E(iAvirt)
+        do IDX = 1,natom*3
+           quick_qm_struct%cphfb(iaCPHF,IDX) = quick_qm_struct%cphfb(iaCPHF,idX)/denom
+        enddo
+     enddo
+  enddo
 
-  DO iBvirt = lastBocc+1,nbasis
-     DO iBocc = 1,lastBocc
+  do iBvirt = lastBocc+1,nbasis
+     do iBocc = 1,lastBocc
         iaCPHF = (iBvirt-lastBocc-1)*lastBocc + iBocc+iBetastart
-        denom = EB(iBocc)-EB(iBvirt)
-        DO IDX = 1,natom*3
-           CPHFB(iaCPHF,IDX) = CPHFB(iaCPHF,IDX)/denom
-        ENDDO
-     ENDDO
-  ENDDO
+        denom = quick_qm_struct%EB(iBocc)-quick_qm_struct%EB(iBvirt)
+        do IDX = 1,natom*3
+           quick_qm_struct%cphfb(iaCPHF,IDX) = quick_qm_struct%cphfb(iaCPHF,IDX)/denom
+        enddo
+     enddo
+  enddo
 
   ! Now the B0 array is complete.
 
-END subroutine formcphfb
+end subroutine formcphfb
 
 ! Ed Brothers. November 18, 2002.
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
@@ -836,20 +836,20 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
 
   ! First, calculate the integral.
 
-  iA = ncenter(Ibas)
-  iB = ncenter(Jbas)
-  iC = ncenter(IIbas)
-  iD = ncenter(JJbas)
+  iA = quick_basis%ncenter(Ibas)
+  iB = quick_basis%ncenter(Jbas)
+  iC = quick_basis%ncenter(IIbas)
+  iD = quick_basis%ncenter(JJbas)
   icenter(1)=iA
   icenter(2)=iB
   icenter(3)=iC
   icenter(4)=iD
 
   AOint=0.d0
-  DO Icon=1,ncontract(Ibas)
-     DO Jcon=1,ncontract(Jbas)
-        DO IIcon=1,ncontract(IIbas)
-           DO JJcon=1,ncontract(JJbas)
+  do Icon=1,ncontract(Ibas)
+     do Jcon=1,ncontract(Jbas)
+        do IIcon=1,ncontract(IIbas)
+           do JJcon=1,ncontract(JJbas)
               AOint = AOint + &
                    dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                    *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -863,10 +863,10 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
                    xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                    xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                    xyz(1,iD), xyz(2,iD),xyz(3,iD))
-           ENDDO
-        ENDDO
-     ENDDO
-  ENDDO
+           enddo
+        enddo
+     enddo
+  enddo
 
   ! Now we need to find how many times the AO integral appears by examining
   ! it's symmetry.  For an integral (ij|kl):
@@ -915,34 +915,34 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
 
   ! Now we check for redundancy.
 
-  DO Icheck=1,8
-     IF (isame(1,Icheck) /= 0) THEN
-        DO Jcheck=Icheck+1,8
-           IF (isame(1,Jcheck) /= 0) THEN
+  do Icheck=1,8
+     if (isame(1,Icheck) /= 0) then
+        do Jcheck=Icheck+1,8
+           if (isame(1,Jcheck) /= 0) then
               same = isame(1,Icheck).eq.isame(1,Jcheck)
               same = same.and.isame(2,Icheck).eq.isame(2,Jcheck)
               same = same.and.isame(3,Icheck).eq.isame(3,Jcheck)
               same = same.and.isame(4,Icheck).eq.isame(4,Jcheck)
-              IF (same) THEN
-                 DO Iblank=1,4
+              if (same) then
+                 do Iblank=1,4
                     isame(Iblank,Jcheck)=0
-                 ENDDO
-              ENDIF
-           ENDIF
-        ENDDO
-     ENDIF
-  ENDDO
+                 enddo
+              endif
+           endif
+        enddo
+     endif
+  enddo
 
   ! Now we need to find out where the alpha and beta occupied/virtual
   ! lines are.
 
-  IF (quick_method%unrst) THEN
-     lastAocc = nelec
-     lastBocc = nelecb
-  ELSE
-     lastAocc = nelec/2
+  if (quick_method%unrst) then
+     lastAocc = quick_molspec%nelec
+     lastBocc = quick_molspec%nelecb
+  else
+     lastAocc = quick_molspec%nelec/2
      lastBocc = lastAocc
-  ENDIF
+  endif
   iBetastart = lastAocc*(nbasis-lastAocc)
 
   ! Now we can start filling up the CPHFB array.
@@ -951,61 +951,61 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
 
   ! Note k and l are both occupied occupied molecular orbitals.
 
-  ! Do the alpha first.
+  ! do the alpha first.
 
-  DO iAocc = 1,lastAocc
-     DO iAocc2 = 1,lastAocc
+  do iAocc = 1,lastAocc
+     do iAocc2 = 1,lastAocc
 
         ! K and L are selected.  Find atom and direction of perturbation.
 
 
-        DO Iatom = 1,natom
-           DO Imomentum=1,3
+        do Iatom = 1,natom
+           do Imomentum=1,3
 
               ! Now we loop over basis functions.  Note that Kbas functions are always
               ! on center Katom, and the Lbas functions are always not on that center.
               ! This actually calculates the Skl
 
               Skl  = 0.d0
-              DO Kbas = ifirst(Iatom),ilast(Iatom)
-                 DO Lbas = 1,nbasis
-                    IF (Lbas < ifirst(Iatom) .OR. Lbas > ilast(Iatom)) THEN
+              do Kbas = quick_basis%first_basis_function(Iatom),quick_basis%last_basis_function(Iatom)
+                 do Lbas = 1,nbasis
+                    if (Lbas < quick_basis%first_basis_function(Iatom) .OR. Lbas > quick_basis%last_basis_function(Iatom)) then
                        dSK=0.d0
                        itype(Imomentum,Kbas) = itype(Imomentum,Kbas)+1
-                       DO Kcon=1,ncontract(Kbas)
-                          DO Lcon=1,ncontract(Lbas)
+                       do Kcon=1,ncontract(Kbas)
+                          do Lcon=1,ncontract(Lbas)
                              dSK = dSK + 2.d0*aexp(Kcon,Kbas)* &
                                   dcoeff(Lcon,Lbas)*dcoeff(Kcon,Kbas) &
                                   *overlap(aexp(Lcon,Lbas),aexp(Kcon,Kbas), &
                                   itype(1,Lbas),itype(2,Lbas),itype(3,Lbas), &
                                   itype(1,Kbas),itype(2,Kbas),itype(3,Kbas), &
-                                  xyz(1,ncenter(Lbas)),xyz(2,ncenter(Lbas)), &
-                                  xyz(3,ncenter(Lbas)),xyz(1,ncenter(Kbas)), &
-                                  xyz(2,ncenter(Kbas)),xyz(3,ncenter(Kbas)))
-                          ENDDO
-                       ENDDO
+                                  xyz(1,quick_basis%ncenter(Lbas)),xyz(2,quick_basis%ncenter(Lbas)), &
+                                  xyz(3,quick_basis%ncenter(Lbas)),xyz(1,quick_basis%ncenter(Kbas)), &
+                                  xyz(2,quick_basis%ncenter(Kbas)),xyz(3,quick_basis%ncenter(Kbas)))
+                          enddo
+                       enddo
                        itype(Imomentum,Kbas) = itype(Imomentum,Kbas)-1
-                       IF (itype(Imomentum,Kbas) /= 0) THEN
+                       if (itype(Imomentum,Kbas) /= 0) then
                           itype(Imomentum,Kbas) = itype(Imomentum,Kbas)-1
-                          DO Kcon=1,ncontract(Kbas)
-                             DO Lcon=1,ncontract(Lbas)
+                          do Kcon=1,ncontract(Kbas)
+                             do Lcon=1,ncontract(Lbas)
                                 dSK = dSK - dble(itype(Imomentum,Kbas)+1)* &
                                      dcoeff(Lcon,Lbas)*dcoeff(Kcon,Kbas) &
                                      *overlap(aexp(Lcon,Lbas),aexp(Kcon,Kbas), &
                                      itype(1,Lbas),itype(2,Lbas),itype(3,Lbas), &
                                      itype(1,Kbas),itype(2,Kbas),itype(3,Kbas), &
-                                     xyz(1,ncenter(Lbas)),xyz(2,ncenter(Lbas)), &
-                                     xyz(3,ncenter(Lbas)),xyz(1,ncenter(Kbas)), &
-                                     xyz(2,ncenter(Kbas)),xyz(3,ncenter(Kbas)))
-                             ENDDO
-                          ENDDO
+                                     xyz(1,quick_basis%ncenter(Lbas)),xyz(2,quick_basis%ncenter(Lbas)), &
+                                     xyz(3,quick_basis%ncenter(Lbas)),xyz(1,quick_basis%ncenter(Kbas)), &
+                                     xyz(2,quick_basis%ncenter(Kbas)),xyz(3,quick_basis%ncenter(Kbas)))
+                             enddo
+                          enddo
                           itype(Imomentum,Kbas) = itype(Imomentum,Kbas)+1
-                       ENDIF
-                       Skl=Skl+dSK*(CO(Kbas,iAocc)*CO(Lbas,iAocc2) + &
-                            CO(Lbas,iAocc)*CO(Kbas,iAocc2))
-                    ENDIF
-                 ENDDO
-              ENDDO
+                       endif
+                       Skl=Skl+dSK*(quick_qm_struct%co(Kbas,iAocc)*quick_qm_struct%co(Lbas,iAocc2) + &
+                            quick_qm_struct%co(Lbas,iAocc)*quick_qm_struct%co(Kbas,iAocc2))
+                    endif
+                 enddo
+              enddo
 
               ! At this point we have the SKl value.  Now we need to loop over
               ! unique AO repulsions and and add the values into the array.
@@ -1013,8 +1013,8 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
               ! Imomentum pair.
 
               ISTART=(Iatom-1)*3+Imomentum
-              DO Iunique=1,8
-                 IF (isame(1,Iunique) /= 0) THEN
+              do Iunique=1,8
+                 if (isame(1,Iunique) /= 0) then
                     ! Set up some dummy variables.
 
                     Ival = isame(1,Iunique)
@@ -1024,92 +1024,92 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
 
                     ! Loop over alpha pairs.
 
-                    DO iAvirt = lastAocc+1,nbasis
-                       DO iAocc3 = 1,lastAocc
+                    do iAvirt = lastAocc+1,nbasis
+                       do iAocc3 = 1,lastAocc
                           iaCPHF = (iAvirt-lastAocc-1)*lastAocc + iAocc3
-                          CPHFB(iaCPHF,Istart) = CPHFB(iaCPHF,Istart) &
-                               -Skl*AOint*(CO(Ival,iAvirt)*CO(Jval,iAocc3)* &
-                               CO(IIval,iAocc2)*CO(JJval,iAocc)-CO(Ival,iAvirt)* &
-                               CO(Jval,iAocc)*CO(IIval,iAocc2)*CO(JJval,iAocc3))
+                          quick_qm_struct%cphfb(iaCPHF,Istart) = quick_qm_struct%cphfb(iaCPHF,Istart) &
+                               -Skl*AOint*(quick_qm_struct%co(Ival,iAvirt)*quick_qm_struct%co(Jval,iAocc3)* &
+                               quick_qm_struct%co(IIval,iAocc2)*quick_qm_struct%co(JJval,iAocc)-quick_qm_struct%co(Ival,iAvirt)* &
+                               quick_qm_struct%co(Jval,iAocc)*quick_qm_struct%co(IIval,iAocc2)*quick_qm_struct%co(JJval,iAocc3))
 
-                       ENDDO
-                    ENDDO
+                       enddo
+                    enddo
 
                     ! Loop over beta pairs.
 
-                    DO iBvirt = lastBocc+1,nbasis
-                       DO iBocc3 = 1,lastBocc
+                    do iBvirt = lastBocc+1,nbasis
+                       do iBocc3 = 1,lastBocc
                           iaCPHF=(iBvirt-lastBocc-1)*lastBocc + iBocc3+iBetastart
-                          CPHFB(iaCPHF,Istart) = CPHFB(iaCPHF,Istart) &
-                               -Skl*AOint*(COB(Ival,iBvirt)*COB(Jval,iBocc3)* &
-                               CO(IIval,iAocc2)*CO(JJval,iAocc))
-                       ENDDO
-                    ENDDO
-                 ENDIF
-              ENDDO
-           ENDDO
-        ENDDO
-     ENDDO
-  ENDDO
+                          quick_qm_struct%cphfb(iaCPHF,Istart) = quick_qm_struct%cphfb(iaCPHF,Istart) &
+                               -Skl*AOint*(quick_qm_struct%cob(Ival,iBvirt)*quick_qm_struct%cob(Jval,iBocc3)* &
+                               quick_qm_struct%co(IIval,iAocc2)*quick_qm_struct%co(JJval,iAocc))
+                       enddo
+                    enddo
+                 endif
+              enddo
+           enddo
+        enddo
+     enddo
+  enddo
 
   ! Thats a lot of loop closures.  From top to bottow we are closing
   ! iBocc3,iBvirt,The iunique if, iunique, Imomentum,Iatom,IAocc2,IAocc.
 
   ! Now we need to repeat the whole process for the beta kl pairs.
 
-  DO iBocc = 1,lastBocc
-     DO iBocc2 = 1,lastBocc
+  do iBocc = 1,lastBocc
+     do iBocc2 = 1,lastBocc
 
         ! K and L are selected.  Find atom and direction of perturbation.
 
 
-        DO Iatom = 1,natom
-           DO Imomentum=1,3
+        do Iatom = 1,natom
+           do Imomentum=1,3
 
               ! Now we loop over basis functions.  Note that Ibas functions are always
               ! on center Iatom, and the Jbas functions are always not on that center.
               ! This actually calculates the Skl
 
               Skl  = 0.d0
-              DO Kbas = ifirst(Iatom),ilast(Iatom)
-                 DO Lbas = 1,nbasis
-                    IF (Lbas < ifirst(Iatom) .OR. Lbas > ilast(Iatom)) THEN
+              do Kbas = quick_basis%first_basis_function(Iatom),quick_basis%last_basis_function(Iatom)
+                 do Lbas = 1,nbasis
+                    if (Lbas < quick_basis%first_basis_function(Iatom) .OR. Lbas > quick_basis%last_basis_function(Iatom)) then
                        dSK=0.d0
                        itype(Imomentum,Kbas) = itype(Imomentum,Kbas)+1
-                       DO Kcon=1,ncontract(Kbas)
-                          DO Lcon=1,ncontract(Lbas)
+                       do Kcon=1,ncontract(Kbas)
+                          do Lcon=1,ncontract(Lbas)
                              dSK = dSK + 2.d0*aexp(Kcon,Kbas)* &
                                   dcoeff(Lcon,Lbas)*dcoeff(Kcon,Kbas) &
                                   *overlap(aexp(Lcon,Lbas),aexp(Kcon,Kbas), &
                                   itype(1,Lbas),itype(2,Lbas),itype(3,Lbas), &
                                   itype(1,Kbas),itype(2,Kbas),itype(3,Kbas), &
-                                  xyz(1,ncenter(Lbas)),xyz(2,ncenter(Lbas)), &
-                                  xyz(3,ncenter(Lbas)),xyz(1,ncenter(Kbas)), &
-                                  xyz(2,ncenter(Kbas)),xyz(3,ncenter(Kbas)))
-                          ENDDO
-                       ENDDO
+                                  xyz(1,quick_basis%ncenter(Lbas)),xyz(2,quick_basis%ncenter(Lbas)), &
+                                  xyz(3,quick_basis%ncenter(Lbas)),xyz(1,quick_basis%ncenter(Kbas)), &
+                                  xyz(2,quick_basis%ncenter(Kbas)),xyz(3,quick_basis%ncenter(Kbas)))
+                          enddo
+                       enddo
                        itype(Imomentum,Kbas) = itype(Imomentum,Kbas)-1
-                       IF (itype(Imomentum,Kbas) /= 0) THEN
+                       if (itype(Imomentum,Kbas) /= 0) then
                           itype(Imomentum,Kbas) = itype(Imomentum,Kbas)-1
-                          DO Kcon=1,ncontract(Kbas)
-                             DO Lcon=1,ncontract(Lbas)
+                          do Kcon=1,ncontract(Kbas)
+                             do Lcon=1,ncontract(Lbas)
                                 dSK = dSK - dble(itype(Imomentum,Kbas)+1)* &
                                      dcoeff(Lcon,Lbas)*dcoeff(Kcon,Kbas) &
                                      *overlap(aexp(Lcon,Lbas),aexp(Kcon,Kbas), &
                                      itype(1,Lbas),itype(2,Lbas),itype(3,Lbas), &
                                      itype(1,Kbas),itype(2,Kbas),itype(3,Kbas), &
-                                     xyz(1,ncenter(Lbas)),xyz(2,ncenter(Lbas)), &
-                                     xyz(3,ncenter(Lbas)),xyz(1,ncenter(Kbas)), &
-                                     xyz(2,ncenter(Kbas)),xyz(3,ncenter(Kbas)))
-                             ENDDO
-                          ENDDO
+                                     xyz(1,quick_basis%ncenter(Lbas)),xyz(2,quick_basis%ncenter(Lbas)), &
+                                     xyz(3,quick_basis%ncenter(Lbas)),xyz(1,quick_basis%ncenter(Kbas)), &
+                                     xyz(2,quick_basis%ncenter(Kbas)),xyz(3,quick_basis%ncenter(Kbas)))
+                             enddo
+                          enddo
                           itype(Imomentum,Kbas) = itype(Imomentum,Kbas)+1
-                       ENDIF
-                       Skl=Skl+dSK*(COB(Kbas,iBocc)*COB(Lbas,iBocc2) + &
-                            COB(Lbas,iBocc)*COB(Kbas,iBocc2))
-                    ENDIF
-                 ENDDO
-              ENDDO
+                       endif
+                       Skl=Skl+dSK*(quick_qm_struct%cob(Kbas,iBocc)*quick_qm_struct%cob(Lbas,iBocc2) + &
+                            quick_qm_struct%cob(Lbas,iBocc)*quick_qm_struct%cob(Kbas,iBocc2))
+                    endif
+                 enddo
+              enddo
 
               ! At this point we have the SKl value.  Now we need to loop over
               ! unique AO repulsions and and add the values into the array.
@@ -1117,8 +1117,8 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
               ! Imomentum pair.
 
               ISTART=(Iatom-1)*3+Imomentum
-              DO Iunique=1,8
-                 IF (isame(1,Iunique) /= 0) THEN
+              do Iunique=1,8
+                 if (isame(1,Iunique) /= 0) then
                     ! Set up some dummy variables.
 
                     Ival = isame(1,Iunique)
@@ -1128,40 +1128,41 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
 
                     ! Loop over beta pairs.
 
-                    DO iBvirt = lastBocc+1,nbasis
-                       DO iBocc3 = 1,lastBocc
+                    do iBvirt = lastBocc+1,nbasis
+                       do iBocc3 = 1,lastBocc
                           iaCPHF =(iBvirt-lastBocc-1)*lastBocc + iBocc3+ibetastart
-                          CPHFB(iaCPHF,Istart) = CPHFB(iaCPHF,Istart) &
-                               -Skl*AOint*(COB(Ival,iBvirt)*COB(Jval,iBocc3)* &
-                               COB(IIval,iBocc2)*COB(JJval,iBocc)-COB(Ival,iBvirt)* &
-                               COB(Jval,iBocc)*COB(IIval,iBocc2)*COB(Jval,iBocc3))
-                       ENDDO
-                    ENDDO
+                          quick_qm_struct%cphfb(iaCPHF,Istart) = quick_qm_struct%cphfb(iaCPHF,Istart) &
+                               -Skl*AOint*(quick_qm_struct%cob(Ival,iBvirt)*quick_qm_struct%cob(Jval,iBocc3)* &
+                               quick_qm_struct%cob(IIval,iBocc2)*quick_qm_struct%cob(JJval,iBocc)- &
+                               quick_qm_struct%cob(Ival,iBvirt)*quick_qm_struct%cob(Jval,iBocc)* &
+                               quick_qm_struct%cob(IIval,iBocc2)*quick_qm_struct%cob(Jval,iBocc3))
+                       enddo
+                    enddo
 
                     ! Loop over alpha pairs.
 
-                    DO iAvirt = lastAocc+1,nbasis
-                       DO iAocc3 = 1,lastAocc
+                    do iAvirt = lastAocc+1,nbasis
+                       do iAocc3 = 1,lastAocc
                           iaCPHF = (iAvirt-lastAocc-1)*lastAocc + iAocc3
-                          CPHFB(iaCPHF,Istart) = CPHFB(iaCPHF,Istart) &
-                               -Skl*AOint*(CO(Ival,iAvirt)*CO(Jval,iAocc3)* &
-                               COB(IIval,iBocc2)*COB(JJval,iBocc))
-                       ENDDO
-                    ENDDO
-                 ENDIF
-              ENDDO
-           ENDDO
-        ENDDO
-     ENDDO
-  ENDDO
+                          quick_qm_struct%cphfb(iaCPHF,Istart) = quick_qm_struct%cphfb(iaCPHF,Istart) &
+                               -Skl*AOint*(quick_qm_struct%co(Ival,iAvirt)*quick_qm_struct%co(Jval,iAocc3)* &
+                               quick_qm_struct%cob(IIval,iBocc2)*quick_qm_struct%cob(JJval,iBocc))
+                       enddo
+                    enddo
+                 endif
+              enddo
+           enddo
+        enddo
+     enddo
+  enddo
 
   ! Thats a lot of loop closures.  From top to bottow we are closing
   ! iAocc3,iAvirt,The iunique if, iunique, Imomentum,Iatom,IBocc2,IBocc.
 
   ! Now we calculate the final term:  (For the case where a and i are alpha)
 
-  ! CO(Ibas,A)*CO(Jbas,I)*DENSE(TOTAL)(IIbas,JJbas)*d/dy(IbasJbas|IIbasJJbas)
-  ! - CO(Ibas,A)*CO(JJbas,I)*DENSE(A)(IIbas,Jbas)*d/dy(IbasJbas|IIbasJJbas)
+  ! quick_qm_struct%co(Ibas,A)*quick_qm_struct%co(Jbas,I)*DENSE(TOTAL)(IIbas,JJbas)*d/dy(IbasJbas|IIbasJJbas)
+  ! - quick_qm_struct%co(Ibas,A)*quick_qm_struct%co(JJbas,I)*DENSE(A)(IIbas,Jbas)*d/dy(IbasJbas|IIbasJJbas)
 
   ! Now, if all the gaussians are on the same center, ther derivative is zero.
   ! Check this.
@@ -1169,7 +1170,7 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
   same=icenter(1).eq.icenter(2)
   same=same.and.icenter(1).eq.icenter(3)
   same=same.and.icenter(1).eq.icenter(4)
-  IF (same) return
+  if (same) return
 
   ! Otherwise, calculate the derivative.  This returns two arrays, one filled
   ! with derivatives and one filled with the center identities.  Note that
@@ -1181,13 +1182,13 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
   ! Now loop over atoms in icenter and momentums.  This will give us our
   ! Istart for the array.
 
-  DO Iatom = 1,4
-     IF (Icenter(Iatom) /= 0) THEN
-        DO Imomentum=1,3
+  do Iatom = 1,4
+     if (Icenter(Iatom) /= 0) then
+        do Imomentum=1,3
            currderiv=deriv(Iatom,Imomentum)
            Istart = (Icenter(Iatom)-1)*3 + Imomentum
-           DO Iunique=1,8
-              IF (isame(1,Iunique) /= 0) THEN
+           do Iunique=1,8
+              if (isame(1,Iunique) /= 0) then
 
                  ! Set up some dummy variables.
 
@@ -1206,43 +1207,43 @@ subroutine CPHFB4cnt(Ibas,Jbas,IIbas,JJbas)
                  ! coulombic integral (il|kj), and the indices on the exchange elements
                  ! density matrix are always the last two of the coloumbic matrix.
 
-                 IF (quick_method%unrst) THEN
-                    DENSEKL = DENSE(IIval,JJval)+DENSEB(IIval,JJval)
-                    DENSEAKJ = DENSE(IIval,Jval)
-                    DENSEBKJ = DENSEB(IIval,Jval)
-                 ELSE
-                    DENSEKL = DENSE(IIval,JJval)
-                    DENSEAKJ = DENSE(IIval,Jval)*.5d0
-                    DENSEBKJ = DENSE(IIval,Jval)*.5d0
-                 ENDIF
+                 if (quick_method%unrst) then
+                    DENSEKL = quick_qm_struct%dense(IIval,JJval)+quick_qm_struct%denseb(IIval,JJval)
+                    DENSEAKJ = quick_qm_struct%dense(IIval,Jval)
+                    DENSEBKJ = quick_qm_struct%denseb(IIval,Jval)
+                 else
+                    DENSEKL = quick_qm_struct%dense(IIval,JJval)
+                    DENSEAKJ = quick_qm_struct%dense(IIval,Jval)*.5d0
+                    DENSEBKJ = quick_qm_struct%dense(IIval,Jval)*.5d0
+                 endif
 
                  ! Loop over alpha pairs.
 
-                 DO iAvirt = lastAocc+1,nbasis
-                    DO iAocc = 1,lastAocc
+                 do iAvirt = lastAocc+1,nbasis
+                    do iAocc = 1,lastAocc
                        iaCPHF =(iAvirt-lastAocc-1)*lastAocc + iAocc
-                       CPHFB(iaCPHF,Istart) = CPHFB(iaCPHF,Istart) &
-                            +currderiv*CO(Ival,iAvirt)* &
-                            (CO(Jval,iAocc)*DENSEKL-CO(JJval,iAocc)*DENSEAKJ)
-                    ENDDO
-                 ENDDO
+                       quick_qm_struct%cphfb(iaCPHF,Istart) = quick_qm_struct%cphfb(iaCPHF,Istart) &
+                            +currderiv*quick_qm_struct%co(Ival,iAvirt)* &
+                            (quick_qm_struct%co(Jval,iAocc)*DENSEKL-quick_qm_struct%co(JJval,iAocc)*DENSEAKJ)
+                    enddo
+                 enddo
 
                  ! Loop over beta pairs.
 
-                 DO iBvirt = lastBocc+1,nbasis
-                    DO iBocc = 1,lastBocc
+                 do iBvirt = lastBocc+1,nbasis
+                    do iBocc = 1,lastBocc
                        iaCPHF =(iBvirt-lastBocc-1)*lastBocc + iBocc+Ibetastart
-                       CPHFB(iaCPHF,Istart) = CPHFB(iaCPHF,Istart) &
-                            +currderiv*COB(Ival,iBvirt)* &
-                            (COB(Jval,iBocc)*DENSEKL-COB(JJval,iBocc)*DENSEBKJ)
-                    ENDDO
-                 ENDDO
+                       quick_qm_struct%cphfb(iaCPHF,Istart) = quick_qm_struct%cphfb(iaCPHF,Istart) &
+                            +currderiv*quick_qm_struct%cob(Ival,iBvirt)* &
+                            (quick_qm_struct%cob(Jval,iBocc)*DENSEKL-quick_qm_struct%cob(JJval,iBocc)*DENSEBKJ)
+                    enddo
+                 enddo
 
-              ENDIF
-           ENDDO
-        ENDDO
-     ENDIF
-  ENDDO
+              endif
+           enddo
+        enddo
+     endif
+  enddo
 
   return
 end subroutine CPHFB4cnt
@@ -1266,10 +1267,10 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
   ! Note that this is basically grad2elec, and could be used to replace
   ! it at a later time.
 
-  iA = ncenter(Ibas)
-  iB = ncenter(Jbas)
-  iC = ncenter(IIbas)
-  iD = ncenter(JJbas)
+  iA = quick_basis%ncenter(Ibas)
+  iB = quick_basis%ncenter(Jbas)
+  iC = quick_basis%ncenter(IIbas)
+  iD = quick_basis%ncenter(JJbas)
   icenter(1)=iA
   icenter(2)=iB
   icenter(3)=iC
@@ -1278,26 +1279,26 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
   ! The itype2 array was added because if Ibas=Jbas, the code raises two
   ! angular momentums instead of one.
 
-  DO Imomentum=1,3
+  do Imomentum=1,3
      itype2(Imomentum,1) = itype(Imomentum,Ibas)
      itype2(Imomentum,2) = itype(Imomentum,Jbas)
      itype2(Imomentum,3) = itype(Imomentum,IIbas)
      itype2(Imomentum,4) = itype(Imomentum,JJbas)
-  ENDDO
+  enddo
 
   ! We have to calculate 12 quantities in this subprogram: the gradient in the
   ! X,Y, and Z directions for the 4 atom A,B,C,D.
 
-  DO Imomentum=1,3
+  do Imomentum=1,3
      Agrad=0.d0
      Bgrad=0.d0
      Cgrad=0.d0
      Dgrad=0.d0
 
-     DO Icon = 1, ncontract(Ibas)
-        DO Jcon = 1, ncontract(Jbas)
-           DO IIcon = 1, ncontract(IIbas)
-              DO JJcon = 1, ncontract(JJbas)
+     do Icon = 1, ncontract(Ibas)
+        do Jcon = 1, ncontract(Jbas)
+           do IIcon = 1, ncontract(IIbas)
+              do JJcon = 1, ncontract(JJbas)
                  cntrctcoeff = dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)
 
@@ -1315,7 +1316,7 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,1) = itype2(Imomentum,1)-1
 
-                 IF (itype2(Imomentum,1) /= 0) THEN
+                 if (itype2(Imomentum,1) /= 0) then
                     itype2(Imomentum,1) = itype2(Imomentum,1)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -1330,7 +1331,7 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,1) = itype2(Imomentum,1)+1
                     Agrad = Agrad-dble(itype2(Imomentum,1))*temp
-                 ENDIF
+                 endif
 
                  itype2(Imomentum,2) = itype2(Imomentum,2)+1
                  Bgrad = Bgrad+2.d0*aexp(Jcon,Jbas)*cntrctcoeff* &
@@ -1345,7 +1346,7 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,2) = itype2(Imomentum,2)-1
-                 IF (itype2(Imomentum,2) /= 0) THEN
+                 if (itype2(Imomentum,2) /= 0) then
                     itype2(Imomentum,2) = itype2(Imomentum,2)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -1360,7 +1361,7 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,2) = itype2(Imomentum,2)+1
                     Bgrad = Bgrad-dble(itype2(Imomentum,2))*temp
-                 ENDIF
+                 endif
 
 
                  itype2(Imomentum,3) = itype2(Imomentum,3)+1
@@ -1376,7 +1377,7 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,3) = itype2(Imomentum,3)-1
-                 IF (itype2(Imomentum,3) /= 0) THEN
+                 if (itype2(Imomentum,3) /= 0) then
                     itype2(Imomentum,3) = itype2(Imomentum,3)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -1391,7 +1392,7 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,3) = itype2(Imomentum,3)+1
                     Cgrad = Cgrad-dble(itype2(Imomentum,3))*temp
-                 ENDIF
+                 endif
 
                  itype2(Imomentum,4) = itype2(Imomentum,4)+1
                  Dgrad = Dgrad+2.d0*aexp(JJcon,JJbas)*cntrctcoeff* &
@@ -1406,7 +1407,7 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,4) = itype2(Imomentum,4)-1
-                 IF (itype2(Imomentum,4) /= 0) THEN
+                 if (itype2(Imomentum,4) /= 0) then
                     itype2(Imomentum,4) = itype2(Imomentum,4)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -1421,11 +1422,11 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,4) = itype2(Imomentum,4)+1
                     Dgrad = Dgrad-dble(itype2(Imomentum,4))*temp
-                 ENDIF
-              ENDDO
-           ENDDO
-        ENDDO
-     ENDDO
+                 endif
+              enddo
+           enddo
+        enddo
+     enddo
 
      ! Now we have the 4 gradients in a direction, e.g. the X gradient for
      ! atom A,B,C, and D.  Now add it into the gradient time the passed
@@ -1435,21 +1436,21 @@ subroutine CPHFB2Egrad(Ibas,Jbas,IIbas,JJbas,deriv,icenter)
      deriv(2,imomentum) = Bgrad
      deriv(3,imomentum) = Cgrad
      deriv(4,imomentum) = Dgrad
-  ENDDO
+  enddo
 
   ! Now check to see if any of the centers are redundant, starting from
   ! the end of the array.
 
-  DO J=4,2,-1
-     DO I=J-1,1,-1
-        IF (icenter(I) == icenter(J) .AND. icenter(J) > 0) THEN
-           DO K=1,3
+  do J=4,2,-1
+     do I=J-1,1,-1
+        if (icenter(I) == icenter(J) .and. icenter(J) > 0) then
+           do K=1,3
               deriv(I,K) = deriv(J,K) + deriv(I,K)
-           ENDDO
+           enddo
            icenter(J) = 0
-        ENDIF
-     ENDDO
-  ENDDO
+        endif
+     enddo
+  enddo
 
-END subroutine CPHFB2Egrad
+end subroutine CPHFB2Egrad
 

@@ -1,3 +1,5 @@
+#include "config.h"
+#ifdef MPI
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! Setup MPI environment
 ! Yipu Miao 08/03/2010
@@ -12,15 +14,13 @@
 
     ! Initinalize MPI evironment, and determind master node
     if (bMPI) then
-!      call MPI_INITIALIZED(mpi_initialized_flag)
-!      if (.not.mpi_initialized_flag)
       call MPI_INIT(mpierror)
       call MPI_COMM_RANK(MPI_COMM_WORLD,mpirank,mpierror)
       call MPI_COMM_SIZE(MPI_COMM_WORLD,mpisize,mpierror)
       call MPI_GET_PROCESSOR_NAME(pname,namelen,mpierror)
       call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
     
-    allocate(MPI_STATUS(MPI_STATUS_SIZE))
+      allocate(MPI_STATUS(MPI_STATUS_SIZE))
     
       if (mpirank.eq.0) then
         master=.true.
@@ -46,25 +46,11 @@
     
     include "mpif.h"
     
-    call Broadcast_quick_method(quick_method)
-    
-! Broadcast calculation parameters specs
-    call MPI_BCAST(iscf,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(maxdiisscf,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(ncyc,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(gsolexp,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(pmaxrms,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(acutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(integralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(gradcutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(primlimit,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(tol,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(signif,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(tolecp,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(thrshecp,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    
-    call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
-    
+    call Broadcast(quick_method)
+    if (quick_method%ecp) then
+        call MPI_BCAST(tolecp,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+        call MPI_BCAST(thrshecp,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+    endif
     end
 
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -81,26 +67,13 @@
     call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
    
 ! mols specs
-
-    call MPI_BCAST(iatomtype,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(iopt,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call Broadcast(quick_molspec)
     call MPI_BCAST(natom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(molchg,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(iattype,natom,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(nelec,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(nelecb,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(nextatom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-
-    call MPI_BCAST(imult,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(nNonHAtom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(nHAtom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(chg,natom,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(xyz,natom*3,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 
 ! DFT and SEDFT specs
     call MPI_BCAST(RGRID,MAXRADGRID,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(RWT,MAXRADGRID,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(distnbor,natom,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
     
     call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
     end
@@ -117,7 +90,7 @@
     
     include 'mpif.h'
 
-
+    call Broadcast(quick_molspec)
     call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
 
     call MPI_BCAST(dcoeff,nbasis*maxcontract,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
@@ -135,19 +108,8 @@
       call MPI_BCAST(At1prm,3*3*3*84,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(bndprm,3*3*3*84,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
     endif
-
-! Density after Intial Guess
-    call MPI_BCAST(DENSE,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(DENSEB,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-
-! External Charges
-    if (quick_method%extCharges) then
-      call MPI_BCAST(nextatom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-      call MPI_BCAST(extchg,nextatom,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-      call MPI_BCAST(extxyz,3*nextatom,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    endif
     
-201 call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
+    call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
 
     end
 
@@ -155,7 +117,6 @@
 ! Setup Mol Basis
 ! Yipu Miao 08/03/2010
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!
     subroutine mpi_setup_basis
     use allmod
     implicit none
@@ -170,19 +131,19 @@
     call MPI_BCAST(nprim,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(nbasis,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     
-    call MPI_BCAST(kshell,93,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(ktype,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(katom,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(kstart,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(kprim,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%kshell,93,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%ktype,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%katom,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%kstart,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%kprim,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     
-    call MPI_BCAST(Qnumber,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(Qstart,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(Qfinal,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(Qsbasis,nshell*4,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(Qfbasis,nshell*4,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(ksumtype,nshell+1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(cons,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%Qnumber,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%Qstart,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%Qfinal,nshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%Qsbasis,nshell*4,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%Qfbasis,nshell*4,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%ksumtype,nshell+1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%cons,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
     
     
     if (quick_method%ecp) then
@@ -194,22 +155,22 @@
     
     
     call MPI_BCAST(aex,nprim,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(gcs,nprim,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(gccoeff,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(gcexpo,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(gcexpomin,nshell,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!    call MPI_BCAST(gcs,nprim,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!    call MPI_BCAST(quick_basis%gccoeff,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!    call MPI_BCAST(gcexpo,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!    call MPI_BCAST(quick_basis%gcexpomin,nshell,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 
-    call MPI_BCAST(KLMN,3*nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+!    call MPI_BCAST(KLMN,3*nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(itype,3*nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(ncenter,nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%ncenter,nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(ncontract,nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     
-    call MPI_BCAST(maxcontract,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+!    call MPI_BCAST(maxcontract,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(aexp,maxcontract*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(dcoeff,maxcontract*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
     
-    call MPI_BCAST(ifirst,natom,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-    call MPI_BCAST(ilast,natom,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%first_basis_function,natom,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%last_basis_function,natom,mpi_integer,0,MPI_COMM_WORLD,mpierror)
 
     call MPI_BARRIER(MPI_COMM_WORLD,mpierror)   
     end
@@ -308,7 +269,6 @@
 ! Setup operator duties
 ! Yipu Miao 08/03/2010
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!
     subroutine MPI_setup_hfoperator()
     use allmod
     implicit none
@@ -357,14 +317,6 @@
         
     endif
     
-!   if (master) then
-!   do i=0,mpisize-1
-!       write(*,*) "N=",i,mpi_nbasisn(i)
-!       do j=1,mpi_nbasisn(i)
-!           write(*,*) mpi_nbasis(i,j)
-!       enddo
-!   enddo
-!   endif
     if (bMPI) then
         call MPI_BCAST(mpi_jshelln,mpisize,mpi_integer,0,MPI_COMM_WORLD,mpierror)
         call MPI_BCAST(mpi_jshell,mpisize*jshell,mpi_integer,0,MPI_COMM_WORLD,mpierror)
@@ -377,3 +329,5 @@
 
     
     end subroutine MPI_setup_hfoperator
+
+#endif

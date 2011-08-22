@@ -1,3 +1,4 @@
+#include "config.h"
 !*******************************************************
 ! inidivcon
 !------------------------------------------------------
@@ -54,7 +55,9 @@ subroutine inidivcon(natomsaved)
   integer natomt,natomsaved
   logical bEliminate  ! if elimination step needed(test only)
 
+#ifdef MPI
   include 'mpif.h'
+#endif
 
   natomt=natomsaved ! avoid modification of important variable natomsaved
   bEliminate=.true.
@@ -110,7 +113,7 @@ subroutine inidivcon(natomsaved)
      case (3)
         rbuffer1=6.0d0
         rbuffer2=0.0d0
-        np=nNonHAtom            ! Non-H Atom basis
+        np=quick_molspec%nNonHAtom            ! Non-H Atom basis
      end select
 
      npsaved=np
@@ -124,6 +127,7 @@ subroutine inidivcon(natomsaved)
   endif masterwork_inidivcon_readmol
   !--------------------End MPI/MASTER----------------------------------
 
+#ifdef MPI
   !-------------------MPI/ALL NODES------------------------------------
   if (bMPI) then
      call MPI_BCAST(np,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
@@ -132,6 +136,7 @@ subroutine inidivcon(natomsaved)
      call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
   endif
   !-------------------END MPI/ALL NODES--------------------------------
+#endif
 
   ! Allocate Varibles
 
@@ -180,7 +185,7 @@ subroutine inidivcon(natomsaved)
 
      ! kshell : show shell type for atoms
      do i=1,natom
-        j=j+kshell(iattype(i))
+        j=j+quick_basis%kshell(quick_molspec%iattype(i))
         kshellf(i)=j
         if(i.ne.natom)then
            kshells(i+1)=j+1
@@ -221,7 +226,7 @@ subroutine inidivcon(natomsaved)
               selectN(j2)=i
            endif
         else if(quick_method%ifragbasis.eq.3) then       
-           if(iattype(i).ne.1) then     ! Atom-based method
+           if(quick_molspec%iattype(i).ne.1) then     ! Atom-based method
               j2=j2+1
               selectN(j2)=i
            endif
@@ -560,8 +565,8 @@ subroutine inidivcon(natomsaved)
         nbasisdc(i)=0
         nelecdcsub(i)=0
         do j=1,dcsubn(i)
-           nbasisdc(i)=nbasisdc(i)+ilast(dcsub(i,j))-ifirst(dcsub(i,j))+1
-           nelecdcsub(i)=nelecdcsub(i)+iattype(dcsub(i,j))
+           nbasisdc(i)=nbasisdc(i)+quick_basis%last_basis_function(dcsub(i,j))-quick_basis%first_basis_function(dcsub(i,j))+1
+           nelecdcsub(i)=nelecdcsub(i)+quick_molspec%iattype(dcsub(i,j))
         enddo
      enddo
 
@@ -608,6 +613,7 @@ subroutine inidivcon(natomsaved)
   endif masterwork_inidivcon_buildsystem
   !--------------------End MPI/MASTER----------------------------------
 
+#ifdef MPI
   !-------------------MPI/ALL NODES------------------------------------
   if (bMPI) then
      call MPI_BCAST(np,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
@@ -615,6 +621,7 @@ subroutine inidivcon(natomsaved)
      call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
   endif
   !-------------------END MPI/ALL NODES--------------------------------
+#endif
 
   allocate(Odcsub(np,NNmax,NNmax))
   allocate(Pdcsub(np,NNmax,NNmax))
@@ -729,12 +736,14 @@ subroutine inidivcon(natomsaved)
      mpi_dc_frag(0,i)=i
   enddo
 
+#ifdef MPI
   !-------------------MPI/ALL NODES------------------------------------
   if (bMPI) then
      call mpi_setup_inidivcon(natomt)
      call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
   endif
   !-------------------END MPI/ALL NODES--------------------------------
+#endif
 
   if (master) then
      call PrtAct(iOutfile,"Now End Div & Con Fragment")
@@ -767,18 +776,19 @@ subroutine Xdivided
      kstart1=0
      do jxiao=1,dcsubn(i)
         j=dcsub(i,jxiao)
-        do itemp=ifirst(j),ilast(j)
+        do itemp=quick_basis%first_basis_function(j),quick_basis%last_basis_function(j)
            kstart2=0
            do jxiao2=1,dcsubn(i)
               j2=dcsub(i,jxiao2)
-              do jtemp=ifirst(j2),ilast(j2)
-                 Xdcsub(i,Kstart1+itemp-ifirst(j)+1,kstart2+jtemp-ifirst(j2)+1) &
-                      =X(itemp,jtemp)
+              do jtemp=quick_basis%first_basis_function(j2),quick_basis%last_basis_function(j2)
+                 Xdcsub(i,Kstart1+itemp-quick_basis%first_basis_function(j)+1, &
+                        kstart2+jtemp-quick_basis%first_basis_function(j2)+1) &
+                      =quick_qm_struct%x(itemp,jtemp)
               enddo
-              Kstart2=Kstart2+ilast(j2)-ifirst(j2)+1
+              Kstart2=Kstart2+quick_basis%last_basis_function(j2)-quick_basis%first_basis_function(j2)+1
            enddo
         enddo
-        Kstart1=Kstart1+ilast(j)-ifirst(j)+1
+        Kstart1=Kstart1+quick_basis%last_basis_function(j)-quick_basis%first_basis_function(j)+1
      enddo
   enddo
 end subroutine Xdivided
@@ -797,18 +807,19 @@ subroutine Odivided
      kstart1=0
      do jxiao=1,dcsubn(i)
         j=dcsub(i,jxiao)
-        do itemp=ifirst(j),ilast(j)
+        do itemp=quick_basis%first_basis_function(j),quick_basis%last_basis_function(j)
            kstart2=0
            do jxiao2=1,dcsubn(i)
               j2=dcsub(i,jxiao2)
-              do jtemp=ifirst(j2),ilast(j2)
-                 Odcsub(i,Kstart1+itemp-ifirst(j)+1,kstart2+jtemp-ifirst(j2)+1) &
-                      =O(itemp,jtemp)
+              do jtemp=quick_basis%first_basis_function(j2),quick_basis%last_basis_function(j2)
+                 Odcsub(i,Kstart1+itemp-quick_basis%first_basis_function(j)+1,& 
+                        kstart2+jtemp-quick_basis%first_basis_function(j2)+1) &
+                      =quick_qm_struct%o(itemp,jtemp)
               enddo
-              Kstart2=Kstart2+ilast(j2)-ifirst(j2)+1
+              Kstart2=Kstart2+quick_basis%last_basis_function(j2)-quick_basis%first_basis_function(j2)+1
            enddo
         enddo
-        Kstart1=Kstart1+ilast(j)-ifirst(j)+1
+        Kstart1=Kstart1+quick_basis%last_basis_function(j)-quick_basis%first_basis_function(j)+1
      enddo
   enddo
 
@@ -827,18 +838,19 @@ subroutine Pdcdivided
      kstart1=0
      do jxiao=1,dcsubn(i)
         j=dcsub(i,jxiao)
-        do itemp=ifirst(j),ilast(j)
+        do itemp=quick_basis%first_basis_function(j),quick_basis%last_basis_function(j)
            kstart2=0
            do jxiao2=1,dcsubn(i)
               j2=dcsub(i,jxiao2)
-              do jtemp=ifirst(j2),ilast(j2)
-                 Pdcsub(i,Kstart1+itemp-ifirst(j)+1,kstart2+jtemp-ifirst(j2)+1) &
-                      =DENSE(itemp,jtemp)
+              do jtemp=quick_basis%first_basis_function(j2),quick_basis%last_basis_function(j2)
+                 Pdcsub(i,Kstart1+itemp-quick_basis%first_basis_function(j)+1, &
+                      kstart2+jtemp-quick_basis%first_basis_function(j2)+1) &
+                      =quick_qm_struct%dense(itemp,jtemp)
               enddo
-              Kstart2=Kstart2+ilast(j2)-ifirst(j2)+1
+              Kstart2=Kstart2+quick_basis%last_basis_function(j2)-quick_basis%first_basis_function(j2)+1
            enddo
         enddo
-        Kstart1=Kstart1+ilast(j)-ifirst(j)+1
+        Kstart1=Kstart1+quick_basis%last_basis_function(j)-quick_basis%first_basis_function(j)+1
      enddo
   enddo
 
@@ -858,17 +870,18 @@ subroutine divideS
      kstart1=0
      do jxiao=1,dcsubn(i)
         j=dcsub(i,jxiao)
-        do itemp=ifirst(j),ilast(j)
+        do itemp=quick_basis%first_basis_function(j),quick_basis%last_basis_function(j)
            kstart2=0
            do jxiao2=1,dcsubn(i)
               j2=dcsub(i,jxiao2)
-              do jtemp=ifirst(j2),ilast(j2)
-                 Smatrixdcsub(i,Kstart1+itemp-ifirst(j)+1,kstart2+jtemp-ifirst(j2)+1)=Smatrix(itemp,jtemp)
+              do jtemp=quick_basis%first_basis_function(j2),quick_basis%last_basis_function(j2)
+                 Smatrixdcsub(i,Kstart1+itemp-quick_basis%first_basis_function(j)+1, & 
+                    kstart2+jtemp-quick_basis%first_basis_function(j2)+1)=quick_qm_struct%s(itemp,jtemp)
               enddo
-              Kstart2=Kstart2+ilast(j2)-ifirst(j2)+1
+              Kstart2=Kstart2+quick_basis%last_basis_function(j2)-quick_basis%first_basis_function(j2)+1
            enddo
         enddo
-        Kstart1=Kstart1+ilast(j)-ifirst(j)+1
+        Kstart1=Kstart1+quick_basis%last_basis_function(j)-quick_basis%first_basis_function(j)+1
      enddo
   enddo
 end subroutine divideS
@@ -958,12 +971,12 @@ subroutine divideX
 
      do I = 1,nbasis
         do J = 1,nbasis
-           HOLD(I,J) = VECtemp(J,I)
+           quick_scratch%hold(I,J) = VECtemp(J,I)
         enddo
      enddo
      do I = 1,nbasis
         do J = 1,nbasis
-           VECtemp(J,I) = HOLD(J,I)
+           VECtemp(J,I) = quick_scratch%hold(J,I)
         enddo
      enddo
 
@@ -1002,16 +1015,16 @@ end subroutine dividex
 
 subroutine wtoscorr
   use allmod
-  implicit real*8 (a-h,o-z)
+  implicit double precision (a-h,o-z)
 
   do itt=1,np
      itempcount=0
      do jtt=1,dcsubn(itt)
         k=dcsub(itt,jtt)
-        do iii=ifirst(k),ilast(k)
-           wtospoint(itt,iii)=itempcount+iii-ifirst(k)+1
+        do iii=quick_basis%first_basis_function(k),quick_basis%last_basis_function(k)
+           wtospoint(itt,iii)=itempcount+iii-quick_basis%first_basis_function(k)+1
         enddo
-        itempcount=itempcount+ilast(k)-ifirst(k)+1
+        itempcount=itempcount+quick_basis%last_basis_function(k)-quick_basis%first_basis_function(k)+1
      enddo
   enddo
 

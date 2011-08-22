@@ -35,51 +35,51 @@
 ! First, mass weight the hessian.
 
     write (ioutfile,'(/" MASS WEIGHT THE HESSIAN. ")')
-    DO I=1,natom
-        DO J=1,natom
-            denom = (emass(iattype(I))*emass(iattype(J)))**(-.5d0)
+    do I=1,natom
+        do J=1,natom
+            denom = (emass(quick_molspec%iattype(I))*emass(quick_molspec%iattype(J)))**(-.5d0)
             ISTART = (I-1)*3
             JSTART = (J-1)*3
-            DO K=1,3
-                DO L=1,3
-                    HESSIAN(JSTART+L,ISTART+K)=HESSIAN(JSTART+L,ISTART+K)*denom
-                ENDDO
-            ENDDO
-        ENDDO
-    ENDDO
+            do K=1,3
+                do L=1,3
+                    quick_qm_struct%hessian(JSTART+L,ISTART+K)=quick_qm_struct%hessian(JSTART+L,ISTART+K)*denom
+                enddo
+            enddo
+        enddo
+    enddo
 
-    call PriHessian(ioutfile,3*natom,HESSIAN,'f12.6')
+    call PriHessian(ioutfile,3*natom,quick_qm_struct%hessian,'f12.6')
 
 ! Diagonalize the Hessian. Also write out the frequencies.
     non=0
-    call hessDIAG(natom*3,HESSIAN,non,TOL,V,HARMONIC,IDEGEN,EV,IERROR)
+    call hessDIAG(natom*3,quick_qm_struct%hessian,non,quick_method%DMCutoff,V,HARMONIC,quick_qm_struct%idegen,EV,IERROR)
     write (ioutfile,'(/" THE HARMONIC FREQUENCIES (1/cm): ")')
     write (ioutfile,*)
-    DO I=1,natom*3
+    do I=1,natom*3
         HARMONIC(I) = convfact*HARMONIC(I)
-        IF (HARMONIC(I) < 0.d0) THEN
+        if (HARMONIC(I) < 0.d0) then
             HARMONIC(I) = -1.d0* DABS(HARMONIC(I))**.5d0
-        ELSE
+        else
             HARMONIC(I) = HARMONIC(I)**.5d0
-        ENDIF
+        endif
         write (ioutfile,'(6x,F15.5)') HARMONIC(I)
-    ENDDO
+    enddo
     write (ioutfile,*)
     
 ! Now we have the frequencies.  Before continuing, we need to see if the
 ! molecule is linear.  Note that this assumes the molecule is polyatomic.
 
-    IF (natom == 2) THEN
+    if (natom == 2) then
         ignore=5
-    ELSE
+    else
         ignore=5
-        DO I=3,natom
+        do I=3,natom
             CALL BNDANG(1,2,I,ANGLE)
             ANGLE = ANGLE*180.d0/pi
-            IF (ANGLE > 5.d0 .AND. ANGLE < 175.d0) ignore=6
-        ENDDO
-    ENDIF
-    IF (ignore == 5) write (ioutfile,'(/" MOLECULE IS LINEAR!! ")')
+            if (ANGLE > 5.d0 .and. ANGLE < 175.d0) ignore=6
+        enddo
+    endif
+    if (ignore == 5) write (ioutfile,'(/" MOLECULE IS LINEAR!! ")')
 
 ! Now we can calculate the zero point energy.
 ! ZPE = 1/2 (Sum over i) Harmonic(i)
@@ -93,9 +93,9 @@
     write(ioutfile,'(2x,"------------------------")')
     write (ioutfile,'("TEMPERATURE          = ",F15.7,"K")') tempK
     Ezp = 0.d0
-    DO I=ignore+1,natom*3
+    do I=ignore+1,natom*3
         Ezp = Ezp + HARMONIC(I)
-    ENDDO
+    enddo
     Ezp = Ezp*.5d0
     Ezp = Ezp*6.6260755D-34*2.99792458D10/4.3597482D-18
     write (ioutfile,'("ZERO POINT ENERGY    = ",F15.7)') Ezp
@@ -103,11 +103,11 @@
 ! We can also calculate the vibrational contribution to internal energy.
 
     Evib = 0.d0
-    DO I=ignore+1,natom*3
+    do I=ignore+1,natom*3
         vibtemp = Harmonic(I)*(6.6260755D-34)/1.380658D-23*2.99792458D10
         ratio = vibtemp/TempK
         Evib = Evib +vibtemp*(.5d0 + 1.d0/(DEXP(ratio)-1.d0))
-    ENDDO
+    enddo
     Evib = Evib*1.380658D-23/4.3597482D-18
     write (ioutfile,'("VIBRATIONAL ENERGY   = ",F15.7)') Evib
 
@@ -116,18 +116,18 @@
     Etrans=1.5d0*TempK*1.380658D-23/4.3597482D-18
     write (ioutfile,'("TRANSLATIONAL ENERGY = ",F15.7)') Etrans
 
-    IF (ignore == 5) THEN
+    if (ignore == 5) then
         Erot = TempK*1.380658D-23/4.3597482D-18
-    ELSE
+    else
         Erot = 1.5d0*TempK*1.380658D-23/4.3597482D-18
-    ENDIF
+    endif
     write (ioutfile,'("ROTATIONAL ENERGY    = ",F15.7)') Etrans
 
 
     write (ioutfile,'("INTERNAL ENERGY      = ",F15.7)') &
-    Etot+Ezp+Etrans+Erot+Evib
+    quick_qm_struct%Etot+Ezp+Etrans+Erot+Evib
     write (ioutfile,'("INTERNAL ENTHALPY    = ",F15.7)') &
-    Etot+Ezp+Etrans+Erot+Evib+TempK*1.380658D-23/4.3597482D-18
+    quick_qm_struct%Etot+Ezp+Etrans+Erot+Evib+TempK*1.380658D-23/4.3597482D-18
 
     call prtAct(ioutfile,"Finish Frequency calculation")
     end subroutine frequency

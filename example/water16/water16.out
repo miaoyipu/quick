@@ -1,0 +1,267 @@
+  **************************************************************************
+  **                      QUICK-0.07 Mar 2011                             **
+  **                                                                      **
+  **                        Copyright (c) 2011                            **
+  **                Regents of the University of Florida                  **
+  **                       All Rights Reserved.                           **
+  **                                                                      **
+  **  This software provided pursuant to a license agreement containing   **
+  **  restrictions on its disclosure, duplication, and use. This software **
+  **  contains confidential and proprietary information, and may not be   **
+  **  extracted or distributed, in whole or in part, for any purpose      **
+  **  whatsoever, without the express written permission of the authors.  **
+  **  This notice, and the associated author list, must be attached to    **
+  **  all copies, or extracts, of this software. Any additional           **
+  **  restrictions set forth in the license agreement also apply to this  **
+  **  software.                                                           **
+  **************************************************************************
+
+  Cite this work as:
+  Miao, Y.: He, X.: Ayers,K: Brothers, E.: Merz,K. M. QUICK;
+  University of Florida, Gainesville, FL, 2010
+
+  If you have any comment or queries, please send email for technic support:
+  quick@qtp.ufl.edu
+
+ TASK STARTS ON: Wed Mar 30 00:54:18 2011
+ INPUT FILE:     water16.in                    
+ OUTPUT FILE:    water16.out                   
+ BASIS SET PATH: /Users/miao/Workspace/new_quick/basis                                           
+
+ ! WARNING: NODE=1, TURN OFF MPI
+
+
+ @ Read Job And Atom
+
+  -------------------------------------
+KEYWORD=HF BASIS=STO-3G ENERGY                                                                                                                                                                                  
+  -------------------------------------
+ ============== JOB CARD =============
+| METHOD = HATREE FOCK
+| SAD INITAL GUESS 
+| USE DIIS SCF
+| PRINT ENERGY EVERY CYCLE
+| MAX SCF CYCLES =    200
+| MAX DIIS CYCLES =   10
+| DELTA DENSITY START CYCLE = 1000
+| COMPUATIONAL CUTOFF: 
+|      TWO-e INTEGRAL   =  0.100E-06
+|      BASIS SET PRIME  =  0.100E-06
+|      MATRIX ELEMENTS  =  0.100E-09
+|      BASIS FUNCTION   =  0.100E-09
+| DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+| BASIS SET = STO-3G
+| BASIS FILE = /Users/miao/Workspace/new_quick/basis/STO-3G
+THRESHOLD FOR ECP-INTEGRALS PRESCREENING =     0.10000E-11  (DEFAULT)
+
+ @ Finish reading job
+
+
+ @ Begin SAD initial guess
+
+ For Atom Kind =    1
+ ELEMENT = O 
+BASIS FUNCTIONS =    5
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.02
+RMS CHANGE     = 0.238978E+00  MAX CHANGE= 0.477605E+00
+
+SCF CYCLE      =        2      TIME      =     0.01
+RMS CHANGE     = 0.933226E-10  MAX CHANGE= 0.246666E-09
+CONVERGED!!!!!
+ELECTRONIC ENERGY  =     0.000000000
+CORE_CORE REPULSION=     0.000000000
+TOTAL ENERGY       =     0.000000000
+
+ @ End Energy calculation
+
+ For Atom Kind =    2
+ ELEMENT = H 
+BASIS FUNCTIONS =    1
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.00
+RMS CHANGE     = 0.100000E-07  MAX CHANGE= 0.100000E-07
+CONVERGED!!!!!
+ELECTRONIC ENERGY  =     0.000000000
+CORE_CORE REPULSION=     0.000000000
+TOTAL ENERGY       =     0.000000000
+
+ @ End Energy calculation
+
+
+ @ Finish SAD initial guess
+
+
+ @ Begin to Read Mol Info
+
+
+ =========== Molecule Input ==========
+| TOTAL MOLECULAR CHARGE  =    0    MULTIPLICITY                =    1
+| TOTOAL ATOM NUMBER      =   48    NUMBER OF ATOM TYPES        =    2
+| NUMBER OF HYDROGEN ATOM =   32    NUMBER OF NON-HYDROGEN ATOM =   16
+| NUMBER OF ELECTRONS     =  160
+| NUMBER OF BASIS FUNTIONS=  112
+
+ -- INPUT GEOMETRY -- :
+    O          -0.5643      -0.5734      -2.5273
+    O          -3.5590      -1.8435      -2.1456
+    O          -0.7806       0.5496       1.5597
+    O          -2.3521      -2.1876       0.7218
+    O          -2.7879       1.0651      -0.8010
+    O          -0.7439       3.0665       3.6962
+    O          -2.2986       3.5277       1.0071
+    O           1.9001      -0.3040      -0.1640
+    O           2.2878      -2.1786      -2.7939
+    O           0.0172      -3.5649      -1.1306
+    O           0.6726      -2.5006       1.9095
+    O           3.7088       2.3443      -0.2631
+    O           2.3191       0.8862      -3.2167
+    O           0.3389       2.5935      -0.7537
+    O           2.5721       3.9953      -2.7283
+    O           1.8879       2.3905       2.2242
+    H           1.5341       3.0011       2.8797
+    H          -0.0809      -1.3359      -2.1921
+    H           0.1191      -0.0635      -2.9730
+    H          -3.9769      -2.3774      -2.8238
+    H          -2.6618      -1.7188      -2.4740
+    H          -1.5385      -0.0144       1.3705
+    H          -0.9513       1.3228       1.0103
+    H          -3.1967      -2.0267       0.2916
+    H          -1.8897      -2.7435       0.0858
+    H          -3.3631       0.3723      -1.1384
+    H          -1.9954       0.9732      -1.3413
+    H          -1.1428       2.2205       3.4790
+    H          -1.2679       3.6925       3.1867
+    H          -3.0130       2.9889       0.6537
+    H          -1.6862       3.5879       0.2682
+    H           1.0341       0.1185      -0.1486
+    H           1.8553      -0.9123       0.5813
+    H           2.6044      -1.6508      -2.0546
+    H           2.4443      -1.6056      -3.5500
+    H           0.5482      -3.5172      -0.3297
+    H           0.6702      -3.7095      -1.8231
+    H          -0.1721      -2.0381       1.8606
+    H           0.6431      -2.9289       2.7670
+    H           3.6123       1.4063      -0.0710
+    H           3.6198       2.7473       0.6069
+    H           2.5496       1.0766      -2.3014
+    H           2.4175       1.7397      -3.6493
+    H           0.6674       2.9573      -1.5817
+    H           1.0771       2.7218      -0.1482
+    H           3.2604       3.8077      -2.0802
+    H           2.7565       4.8955      -3.0037
+    H           1.3161       1.6222       2.3217
+| BASIS FUNCTIONS =  112
+
+ @ End Reading Mol Info 
+
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+  1  -1196.474854754      ------         3.832     1        0.05      3.79      0.02    0.1602E+01  0.7248E-01  0.7350E+00
+  2  -1198.945000499  0.247015E+01       6.044     2        0.05      6.00      0.02    0.2006E+00  0.1585E-01  0.2980E+00
+  3  -1199.504443524  0.559443E+00       6.107     3        0.04      6.07      0.02    0.3028E-01  0.3406E-02  0.4336E-01
+  4  -1199.530644642  0.262011E-01       6.134     4        0.04      6.10      0.02    0.1124E-01  0.1954E-02  0.2957E-01
+  5  -1199.535201061  0.455642E-02       6.195     5        0.05      6.15      0.02    0.2189E-02  0.4570E-03  0.7709E-02
+  6  -1199.535394298  0.193237E-03       6.229     6        0.04      6.19      0.02    0.3187E-03  0.5927E-04  0.1040E-02
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER   6 CYLCES
+ MAX ERROR = 0.318741E-03   RMS CHANGE = 0.592680E-04   MAX CHANGE = 0.103988E-02
+ -----------------------------------------------
+ELECTRONIC ENERGY  = -2713.024308230
+CORE_CORE REPULSION=  1513.488913932
+TOTAL ENERGY       = -1199.535394298
+
+ @ End Energy calculation
+
+
+ @ Begin Charge and Dipole Calculation
+
+    ATOMIC CHARGES
+   ATOM          MULLIKEN            LOWDIN
+   O             -0.3984            -0.2826
+   O             -0.3851            -0.2701
+   O             -0.3999            -0.2848
+   O             -0.3912            -0.2761
+   O             -0.3951            -0.2796
+   O             -0.3869            -0.2723
+   O             -0.3897            -0.2748
+   O             -0.3974            -0.2814
+   O             -0.3889            -0.2741
+   O             -0.3899            -0.2750
+   O             -0.3843            -0.2693
+   O             -0.3955            -0.2801
+   O             -0.3900            -0.2748
+   O             -0.3923            -0.2773
+   O             -0.3860            -0.2708
+   O             -0.3936            -0.2782
+   H              0.1990             0.1408
+   H              0.1987             0.1408
+   H              0.1971             0.1392
+   H              0.1859             0.1294
+   H              0.2016             0.1431
+   H              0.1995             0.1415
+   H              0.1975             0.1402
+   H              0.1940             0.1365
+   H              0.1978             0.1400
+   H              0.1941             0.1366
+   H              0.1992             0.1412
+   H              0.1885             0.1318
+   H              0.1967             0.1388
+   H              0.1954             0.1376
+   H              0.1934             0.1361
+   H              0.1993             0.1415
+   H              0.1994             0.1412
+   H              0.1952             0.1375
+   H              0.1927             0.1354
+   H              0.1930             0.1358
+   H              0.1970             0.1392
+   H              0.2026             0.1442
+   H              0.1865             0.1300
+   H              0.1970             0.1393
+   H              0.1975             0.1397
+   H              0.1947             0.1375
+   H              0.1970             0.1390
+   H              0.1945             0.1370
+   H              0.1969             0.1394
+   H              0.2019             0.1433
+   H              0.1865             0.1299
+   H              0.1945             0.1373
+   TOTAL         0.0000             0.0000
+
+    DIPOLE (DEBYE)
+      X         Y         Z        TOTAL
+    0.9325    0.0746   -2.3095    2.4918
+
+ @ End Charge and Dipole Calculation
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     0.067032000(  0.19%)
+TOTAL SCF TIME     =    34.541611000( 96.01%)
+      TOTAL OP TIME      =    34.285278000( 95.30%)
+            TOTAL 1e TIME      =     0.561650000(  1.56%)
+            TOTAL 2e TIME      =    34.279402000( 95.28%)
+            TOTAL ENERGY TIME  =     0.001314000(  0.00%)
+      TOTAL DII TIME     =     0.254030000(  0.71%)
+            TOTAL DIAG TIME    =     0.116656000(  0.32%)
+      DIPOLE TIME        =     0.160672000(  0.45%)
+TOTAL TIME         =    35.976644000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes 36.0 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Wed Mar 30 00:54:54 2011

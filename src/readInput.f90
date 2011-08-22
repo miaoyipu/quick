@@ -39,10 +39,10 @@
 
                 if(iAtomType.gt.1)then
                   do itemp=1,iAtomType-1
-                    if(symbol(i).eq.atomxiao(itemp))goto 111
+                    if(symbol(i).eq.atom_type_sym(itemp))goto 111
                   enddo
                 endif
-                     atomxiao(iAtomType)=symbol(i)
+                     atom_type_sym(iAtomType)=symbol(i)
                      iAtomType=iAtomType+1                   
 111         endif
         enddo
@@ -468,8 +468,8 @@ endif
 !  allocate(Yxiaotemp(10,10,0:4))
   allocate(Ycutoff(nshell,nshell))
   allocate(cutmatrix(nshell,nshell))
-  allocate(allerror(MAXDIISSCF,nbasis,nbasis))
-  allocate(alloperator(MAXDIISSCF,nbasis,nbasis))
+  allocate(allerror(quick_method%maxdiisscf,nbasis,nbasis))
+  allocate(alloperator(quick_method%maxdiisscf,nbasis,nbasis))
 !  allocate(debug1(nbasis,nbasis))
 !  allocate(debug2(nbasis,nbasis))
 ! allocate(CPMEM(10,10,0:4))
@@ -550,7 +550,7 @@ ncontract = 0
 
 ! various arrays that depend on the # of basis functions
 
- allocate(sigrad2(nbasis))
+ call allocate_quick_gridpoints(nbasis)
 
  allocate(Smatrix(nbasis,nbasis))
  allocate(X(nbasis,nbasis))
@@ -901,45 +901,15 @@ masterwork_readfile: if (master) then
                  ktypecp(jshell)=4
                end if
 
-!                 xnewtemp=xnewnorm(0,3,0,iprim,gccoeff(1:iprim,Ninitial-3),gcexpo(1:iprim,Ninitial-3))
-!                 do iitemp=Ninitial-9,Ninitial
-!                   do k=1,iprim
-!                     gccoeff(k,iitemp)=xnewtemp*gccoeff(k,iitemp)
-!                   enddo
-!                 enddo
-!                
-!                  print*,'xnewtemp=',iprim,gccoeff(1:iprim,Ninitial-3),gcexpo(1:iprim,Ninitial-3),xnewtemp
-
-!                 xnewtemp=xnewnorm(1,1,0,iprim,gccoeff(:,Ninitial),gcexpo(:,Ninitial))
-!                 do iitemp=Ninitial-2,Ninitial
-!                   do k=1,iprim
-!                     gccoeff(k,iitemp)=xnewtemp*gccoeff(k,iitemp)
-!                   enddo
-!                 enddo
-
-!               do k=1,iprim
-!                 read(ibasisfile,'(A80)',iostat=iofile) line
-!                 read(line,*) aex(jbasis),gcf(jbasis)
-!                 jbasis = jbasis+1
-!               enddo
                jshell = jshell+1
              endif
-!             print*,jshell
            enddo
-!             print*,'stop 1',iofile,io
-!             if(i.eq.natomxiao) goto 999
          endif
-!            print*,'stop 2',iofile,io
        endif
-!           print*,'stop 3',iofile,io
      enddo
-!          print*,'stop 4',iofile,io
      rewind ibasisfile
    end if
 
-!   print*,'stop here',natomxiao
-
-!
    if (atmbs2(iattype(i)) .and. quick_method%ecp) then
      iofile = 0
      do while (iofile == 0)
@@ -1227,15 +1197,9 @@ if (master) then
     iecpstart=1
     iecpend=80
 
-    acutoff=1.0d0/(10.0d0**7.0d0)
     molchg=100
     imult=0
-    iscf=0
-    pmaxrms=0.d0
-    MAXDIISSCF=10
-    NCYC=2
-    signif=0.d0
-    tol=0.d0
+
 ! AG 03/05/2007
     itolecp=0
 
@@ -1244,7 +1208,6 @@ if (master) then
     call PrtAct(iOutFile,"Read Job Type")
     
     read (inFile,'(A200)') keyWD
-    close(inFile)
     call upcase(keyWD,200)
     write(iOutFile,*) " -------------------------------------"
     write(iOutFile,'("KEYWORD=",a)') keyWD
@@ -1252,13 +1215,22 @@ if (master) then
     write(iOutFile,*)
 
     call rdword(basisdir,ibasisstart,ibasisend)
-
-!AG 03/05/2007
-    call rdword(ecpdir,iecpstart,iecpend)
+    call rdword(ecpdir,iecpstart,iecpend) !AG 03/05/2007
     
-    call read_quick_method(quick_method,keyWD)
-    call print_quick_method(quick_method,iOutFile)
+    ! read method
+    call read(quick_method,keyWD)
+        
+    ! read mol
+    call read(quick_molspec,inFile)
+    call alloc(quick_molspec)
+    call read2(quick_molspec,inFile)  
+    call set(quick_molspec)
     
+    ! then print
+    call print(quick_method,iOutFile)
+    call print(quick_molspec,iOutFile)
+    
+    close(inFile)
 
 !------------------------------------------------------------------
 ! ECP Basis
@@ -1290,53 +1262,26 @@ if (master) then
        END if
     endif
 
-
-!------------------------------------------------------------------
-! OPT
-!
-        iopt = 0
-!------------------------------------------------------------------
-! DIIS OPT
-!
-        if (index(keywd,'OPTIMIZE=') /= 0) then
-            istrt = index(keywd,'OPTIMIZE=')+9
-            iend=istrt+index(keywd(istrt:80),' ')
-            tempstring = keywd(istrt:iend)
-            call rdinum(tempstring,1,iopt,ierror)
-            write (iOutFile,'("MAX OPTIMIZATION CYCLES = ",I4)') iopt
-        endif
-!------------------------------------------------------------------
 ! Charge
 !
-        if (index(keywd,'CHARGE=') /= 0) then
-            istrt = index(keywd,'CHARGE=')+7
-            iend=istrt+index(keywd(istrt:80),' ')
-            tempstring = keywd(istrt:iend)
-            call rdinum(tempstring,1,molchg,ierror)
-            write (iOutFile,'("TOTAL MOLECULAR CHARGE = ",I4)') molchg
-        endif
+!        if (index(keywd,'CHARGE=') /= 0) then
+!            istrt = index(keywd,'CHARGE=')+7
+!            iend=istrt+index(keywd(istrt:80),' ')
+!            tempstring = keywd(istrt:iend)
+!            call rdinum(tempstring,1,molchg,ierror)
+!            write (iOutFile,'("TOTAL MOLECULAR CHARGE = ",I4)') molchg
+!        endif
 !------------------------------------------------------------------
 ! Multiplicity
 !
-        if (index(keywd,'MULT=') /= 0) then
-            istrt = index(keywd,'MULT=')+5
-            iend=istrt+index(keywd(istrt:80),' ')
-            tempstring = keywd(istrt:iend)
-            call rdinum(tempstring,1,imult,ierror)
-            write (iOutFile,'("MULTIPLICITY = ",I4)') imult
-        endif
+!        if (index(keywd,'MULT=') /= 0) then
+!            istrt = index(keywd,'MULT=')+5
+!            iend=istrt+index(keywd(istrt:80),' ')
+!            tempstring = keywd(istrt:iend)
+!            call rdinum(tempstring,1,imult,ierror)
+!            write (iOutFile,'("MULTIPLICITY = ",I4)') imult
+!        endif
         
-!
-!------------------------------------------------------------------
-! SCF Cycles
-!
-        if (index(keywd,'SCF=') /= 0) then
-            istrt = index(keywd,'SCF=')+4
-            iend=istrt+index(keywd(istrt:80),' ')
-            tempstring = keywd(istrt:iend)
-            call rdinum(tempstring,1,iscf,ierror)
-            write (iOutFile,'("MAX SCF CYCLES = ",I4)') iscf
-        endif
         
 !------------------------------------------------------------------
 ! Experimental Solvantion energy
@@ -1345,70 +1290,6 @@ if (master) then
             istrt = index(keywd,'GSOL=')+4
             call rdnum(keywd,istrt,Gsolexp,ierror)
             write (iOutFile,'("Experimental solvation energy = ",E10.3)') Gsolexp
-        endif
-!------------------------------------------------------------------
-! DM Max RMS
-!
-        if (index(keywd,'DENSERMS=') /= 0) then
-            istrt = index(keywd,'DENSERMS=')+8
-            call rdnum(keywd,istrt,pmaxrms,ierror)
-            write (iOutFile,'("DENSITY MATRIX MAXIMUM RMS FOR", &
-            & " CONVERGENCE  = ",E10.3)') pmaxrms
-        endif
-!------------------------------------------------------------------
-! 2e-cutoff
-!
-        if (index(keywd,'CUTOFF=') /= 0) then
-            istrt = index(keywd,'CUTOFF=')+6
-            call rdnum(keywd,istrt,acutoff,ierror)
-            write (iOutFile,'("TWO-ELECTRON INTEGRAL CUTOFF", &
-            & " = ",E10.3)') acutoff
-        endif
-
-        integralCutoff=min(integralCutoff,acutoff)
-        Primlimit=min(integralCutoff,acutoff)
-!------------------------------------------------------------------
-! MAX DIIS cycles
-!
-        if (index(keywd,'MAXDIIS=') /= 0) then
-            istrt = index(keywd,'MAXDIIS=')+8
-            iend=istrt+index(keywd(istrt:80),' ')
-            tempstring = keywd(istrt:iend)
-            call rdinum(tempstring,1,maxdiisscf,ierror)
-            write (iOutFile,'("MAX DIIS CYCLES =", &
-            & I4)') maxdiisscf
-        endif
-!------------------------------------------------------------------
-! Delta DM Cycle Start
-!
-        if (index(keywd,'NCYC=') /= 0) then
-            istrt = index(keywd,'NCYC=')+5
-            iend=istrt+index(keywd(istrt:80),' ')
-            tempstring = keywd(istrt:iend)
-            call rdinum(tempstring,1,ncyc,ierror)
-            write (iOutFile,'("DELTA DENSITY CYCLE STARTS FROM CYCLE", &
-            & I4)') ncyc
-        endif
-!------------------------------------------------------------------
-! DM cutoff
-!
-        if (index(keywd,'MATRIXZERO=') /= 0) then
-            istrt = index(keywd,'MATRIXZERO=')+10
-            call rdnum(keywd,istrt,tol,ierror)
-            write (iOutFile,'("MATRIX ELEMENTS LESS THAN",E10.3, &
-            & " CONSIDERED ZERO.")') tol
-        endif
-!------------------------------------------------------------------
-! Basis Set cutoff
-!
-        if (index(keywd,'BASISZERO=') /= 0) then
-            istrt = index(keywd,'BASISZERO=')+9
-            iend=istrt+index(keywd(istrt:80),' ')
-            tempstring = keywd(istrt:iend)
-            call rdinum(tempstring,1,itemp,ierror)
-            signif=10.d0**(-1.d0*itemp)
-            write (iOutFile,'("BASIS FUNCTION MAGNITUDE LESS THAN",E10.1, &
-            & " A.U. CONSIDERED ZERO.")') signif
         endif
 !------------------------------------------------------------------
 ! ECP integrals prescreening
@@ -1423,33 +1304,7 @@ if (master) then
           & E15.5)')thrshecp
         END if
 
-!------------------------------------------------------------------
-! Density map
-! JOHN FAVER 12/2008
-        if (index(keywd,'DENSITYMAP') /= 0) then
-            gridspacing=0.1d0 
-            istrt = index(keywd,'DENSITYMAP')+10
-            iend=istrt+index(keywd(istrt:80),' ')
-            tempstring = keywd(istrt:iend)
-            call rdnum(tempstring,1,gridspacing,ierror)
-            write (iOutFile,'("GENERATE ELECTRON DENSITY FILE WITH GRIDSPACING ",E12.6, "A")') gridspacing 
-            quick_method%calcdens = .true.
-        endif 
-!------------------------------------------------------------------
-! Density lapmap
-!
-        if (index(keywd,'DENSITYLAPMAP') /= 0) then
-            lapgridspacing=0.1d0 
-            istrt = index(keywd,'DENSITYLAPMAP')+13
-            iend=istrt+index(keywd(istrt:80),' ')
-            tempstring = keywd(istrt:iend)
-            call rdnum(tempstring,1,lapgridspacing,ierror)
-            write (iOutFile,'("GENERATE ELECTRON DENSITY LAPLACIAN FILE WITH GRIDSPACING ",E12.6, "A")') lapgridspacing 
-            quick_method%calcdenslap = .true.
-        endif 
 
-
-!------------------------------------------------------------------
 !------------------------------------------------------------------
 ! If some quantities have not been set, define a default.
 
@@ -1463,40 +1318,6 @@ if (master) then
         imult=1
     endif
 
-    if (iscf == 0) then
-        write (iOutFile,'("MAX SCF CYCLES = 200 (DEFAULT)")')
-        iscf=200
-    endif
-
-    if (pmaxrms == 0.d0) then
-        write (iOutFile,'("DENSITY MATRIX MAXIMUM RMS FOR", &
-        & " CONVERGENCE  = 1E-4 (DEFAULT)")')
-        pmaxrms=1.D-4
-    endif
-
-    if (maxdiisscf == 10) then
-        write (iOutFile,'("MAX DIIS CYCLES", &
-        & " = 10 (DEFAULT)")')
-        maxdiisscf = 10
-    endif
-
-    if (NCYC == 2) then
-        write (iOutFile,'("DELTA DENSITY IMPLEMENTATION STARTS FROM CYCLE", &
-        & " 2 (DEFAULT)")')
-        NCYC =2
-    endif
-
-    if (tol == 0) then
-        tol=1.d-10
-        write (iOutFile,'("MATRIX ELEMENTS LESS THAN",E10.3, &
-        & " CONSIDERED ZERO. (DEFAULT)")') tol
-    endif
-    if (signif == 0) then
-        signif=1.D-10
-        write (iOutFile,'("BASIS FUNCTION MAGNITUDE LESS THAN",E10.1, &
-        & " A.U. CONSIDERED ZERO. (DEFAULT)")') signif
-    endif
-
     if (ibasis == 2 .AND. .NOT. quick_method%core) then
         write (iOutFile,'("VO BASIS FUNCTIONS ARE USED WITH", &
         & " THE CORE APPROXIMATION.")')
@@ -1505,7 +1326,7 @@ if (master) then
 
     if (imult /= 1) quick_method%UNRST= .TRUE. 
 
-! Alessandro GENONI 03/05/2007
+    ! Alessandro GENONI 03/05/2007
     if (itolecp == 0) then
       itolecp=12
       tolecp=2.30258d+00*itolecp
@@ -1514,17 +1335,12 @@ if (master) then
       & E15.5,"  (DEFAULT)")')thrshecp
     END if
 
-    
-    if(pmaxrms.lt.0.0001d0)then
-      integralCutoff=1.0d0/(10.0d0**7.0d0)
-      Primlimit=1.0d0/(10.0d0**7.0d0)
-    endif
-    call Check_quick_method(quick_method,iOutFile)
+    call check(quick_method,iOutFile)
     
     call PrtAct(iOutFile,"Finish reading job")
 
     close(infile)
-endif
+    endif
 
     !-------------------MPI/ALL NODES---------------------------------------
     if (bMPI) then
@@ -1534,87 +1350,3 @@ endif
     !-------------------MPI/ALL NODES---------------------------------------
 
     end
-    
-    
-!
-!********************************************************
-! readpdb
-!--------------------------------------------------------
-! Subroutines to read pdb and put it to input file
-!
-! Yipu Miao: A bug is can't find elements with two letters like "CL". 
-!
-    subroutine readpdb(inputfile)
-    use allmod
-    implicit none
-!
-! input- (integer) inputfile the QUICK-stype input file the this subroutine will port.
-!    
-    integer inputfile
-    
-    integer i,j,number
-    character(len=200) :: keyWD                 ! Key words input file contains
-    character(len=200) :: tmpWD                 ! temp character words
-    character*6,allocatable:: sn(:)             ! series no.
-    double precision,allocatable::coord(:,:)    ! cooridnates
-    integer,allocatable::class(:),ttnumber(:)   ! class and residue number
-    character*4,allocatable::atomname(:)        ! atom name
-    character*3,allocatable::residue(:)         ! residue name
-
-
-    open(inputfile,file=inFileName)
-    
-    read(inputfile,'(A200)') keyWD
-    
-    allocate(sn(number))
-    allocate(coord(3,number))
-    allocate(class(number),ttnumber(number))
-    allocate(atomname(number))
-    allocate(residue(number))
-        
-    open(iPDBFile,file=PDBFileName)
-    read(iPDBFile,'(A200)') tmpWD
-    i=1
-    do while (index(tmpWD,"TER").eq.0)
-      read(tmpWD,100) sn(i),ttnumber(i),atomname(i),residue(i),class(i), &
-              (coord(j,i),j=1,3)
-      i=i+1
-      read(iPDBFile,'(A200)') tmpWD
-    enddo
-
-    number=i-1
-    close(iPDBFile)
-    
-    call PrtAct(iOutFile," Read PDB file")
-    rewind(inputfile)
-    write(inputfile,'(A200)') keyWD
-    write(inputfile,*)
-    
-    do i=1,number
-      tmpWD=atomname(i)
-      atomname(i)=tmpWD(2:2)
-    enddo
-    
-    do i=1,number
-        write(inputfile,200) atomname(i),(coord(j,i),j=1,3)
-    enddo
-    write(inputfile,*)
-    write(iOutFile,*) "Total Atom Read from PDB=",number
-    write(iOutFile,*) "Residues Read from PDB=",class(number)
-    call PrtAct(iOutFile," done PDB Reading")
-    call flush(iOutFile)
-
-    deallocate(sn)
-    deallocate(coord)
-    deallocate(class,ttnumber)
-    deallocate(atomname)
-    deallocate(residue)
-    
-    close(inputfile)
-100 format(a6,1x,I4,1x,a4,1x,a3,3x,I3,4x,3f8.3)
-200 format(a4,4x,3f8.3)
-    
-    return
-    
-    end subroutine
-
