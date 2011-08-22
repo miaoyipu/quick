@@ -242,22 +242,22 @@
     GO TO (172,100) IFLAG
     10 ITER= 0
     IF(N <= 0 .OR. M <= 0) GO TO 196
-    IF(GTOL <= 1.D-04) THEN
+    IF(GTOL <= 1.D-04) then
         IF(LP > 0) WRITE(LP,245)
         GTOL=9.D-01
-    ENDIF
+    endif
     NFUN= 1
     POINT= 0
     FINISH= .FALSE.
-    IF(DIAGCO) THEN
-        DO I=1,N
+    IF(DIAGCO) then
+        do I=1,N
             IF (DIAG(I) <= ZERO) GO TO 195
-        ENDDO
-    ELSE
-        DO I=1,N
+        enddo
+    else
+        do I=1,N
             DIAG(I)= 1.0D0
-        ENDDO
-    ENDIF
+        enddo
+    endif
 
 ! THE WORK VECTOR W IS DIVIDED AS FOLLOWS:
 ! ---------------------------------------
@@ -276,9 +276,9 @@
 
     ISPT= N+2*M
     IYPT= ISPT+N*M
-    DO I=1,N
+    do I=1,N
         W(ISPT+I)= -G(I)*DIAG(I)
-    ENDDO
+    enddo
     GNORM= DSQRT(DDOT(N,G,1,G,1))
     STP1= ONE/GNORM
 
@@ -301,21 +301,21 @@
     IF (ITER > M)BOUND=M
 
     YS= DDOT(N,W(IYPT+NPT+1),1,W(ISPT+NPT+1),1)
-    IF( .NOT. DIAGCO) THEN
+    IF( .not. DIAGCO) then
         YY= DDOT(N,W(IYPT+NPT+1),1,W(IYPT+NPT+1),1)
-        DO I=1,N
+        do I=1,N
             DIAG(I)= YS/YY
-        ENDDO
-    ELSE
+        enddo
+    else
         IFLAG=2
         RETURN
-    ENDIF
+    endif
     100 CONTINUE
-    IF(DIAGCO) THEN
-        DO I=1,N
+    IF(DIAGCO) then
+        do I=1,N
             IF (DIAG(I) <= ZERO) GO TO 195
-        ENDDO
-    ENDIF
+        enddo
+    endif
 
 ! COMPUTE -H*G USING THE FORMULA GIVEN IN: Nocedal, J. 1980,
 ! "Updating quasi-Newton matrices with limited storage",
@@ -325,11 +325,11 @@
     CP= POINT
     IF (POINT == 0) CP=M
     W(N+CP)= ONE/YS
-    DO I=1,N
+    do I=1,N
         W(I)= -G(I)
-    ENDDO
+    enddo
     CP= POINT
-    DO I= 1,BOUND
+    do I= 1,BOUND
         CP=CP-1
         IF (CP == -1)CP=M-1
         SQ= DDOT(N,W(ISPT+CP*N+1),1,W,1)
@@ -337,13 +337,13 @@
         IYCN=IYPT+CP*N
         W(INMC)= W(N+CP+1)*SQ
         CALL DAXPY(N,-W(INMC),W(IYCN+1),1,W,1)
-    ENDDO
+    enddo
 
-    DO I=1,N
+    do I=1,N
         W(I)=DIAG(I)*W(I)
-    ENDDO
+    enddo
 
-    DO I=1,BOUND
+    do I=1,BOUND
         YR= DDOT(N,W(IYPT+CP*N+1),1,W,1)
         BETA= W(N+CP+1)*YR
         INMC=N+M+CP+1
@@ -352,14 +352,14 @@
         CALL DAXPY(N,BETA,W(ISCN+1),1,W,1)
         CP=CP+1
         IF (CP == M)CP=0
-    ENDDO
+    enddo
 
 ! STORE THE NEW SEARCH DIRECTION
 ! ------------------------------
 
-    DO I=1,N
+    do I=1,N
         W(ISPT+POINT*N+I)= W(I)
-    ENDDO
+    enddo
 
 ! OBTAIN THE ONE-DIMENSIONAL MINIMIZER OF THE FUNCTION
 ! BY USING THE LINE SEARCH ROUTINE MCSRCH
@@ -367,16 +367,16 @@
     165 NFEV=0
     STP=ONE
     IF (ITER == 1) STP=STP1
-    DO I=1,N
+    do I=1,N
         W(I)=G(I)
-    ENDDO
+    enddo
     172 CONTINUE
     CALL MCSRCH(N,X,F,G,W(ISPT+POINT*N+1),STP,FTOL, &
     XTOL,MAXFEV,INFO,NFEV,DIAG)
-    IF (INFO == -1) THEN
+    IF (INFO == -1) then
         IFLAG=1
         RETURN
-    ENDIF
+    endif
     IF (INFO /= 1) GO TO 190
     NFUN= NFUN + NFEV
 
@@ -384,10 +384,10 @@
 ! -----------------------------------------
 
     NPT=POINT*N
-    DO I=1,N
+    do I=1,N
         W(ISPT+NPT+I)= STP*W(ISPT+NPT+I)
         W(IYPT+NPT+I)= G(I)-W(I)
-    ENDDO
+    enddo
     POINT=POINT+1
     IF (POINT == M)POINT=0
 
@@ -401,10 +401,10 @@
 
     IF(IPRINT(1) >= 0) CALL LB1(IPRINT,ITER,NFUN, &
     GNORM,N,M,X,F,G,STP,FINISH)
-    IF (FINISH) THEN
+    IF (FINISH) then
         IFLAG=0
         RETURN
-    ENDIF
+    endif
     GO TO 80
 
 ! ------------------------------------------------------------
@@ -453,45 +453,45 @@
     LOGICAL :: FINISH
     COMMON /LB3/MP,LP,GTOL,STPMIN,STPMAX
 
-    IF (ITER == 0)THEN
+    IF (ITER == 0)then
         WRITE(MP,10)
         WRITE(MP,20) N,M
         WRITE(MP,30)F,GNORM
-        IF (IPRINT(2) >= 1)THEN
+        IF (IPRINT(2) >= 1)then
             WRITE(MP,40)
             WRITE(MP,50) (X(I),I=1,N)
             WRITE(MP,60)
             WRITE(MP,50) (G(I),I=1,N)
-        ENDIF
+        endif
         WRITE(MP,10)
         WRITE(MP,70)
-    ELSE
-        IF ((IPRINT(1) == 0) .AND. (ITER /= 1 .AND. .NOT. FINISH))RETURN
-        IF (IPRINT(1) /= 0)THEN
-            IF(MOD(ITER-1,IPRINT(1)) == 0 .OR. FINISH)THEN
-                IF(IPRINT(2) > 1 .AND. ITER > 1) WRITE(MP,70)
+    else
+        IF ((IPRINT(1) == 0) .and. (ITER /= 1 .and. .not. FINISH))RETURN
+        IF (IPRINT(1) /= 0)then
+            IF(MOD(ITER-1,IPRINT(1)) == 0 .OR. FINISH)then
+                IF(IPRINT(2) > 1 .and. ITER > 1) WRITE(MP,70)
                 WRITE(MP,80)ITER,NFUN,F,GNORM,STP
-            ELSE
+            else
                 RETURN
-            ENDIF
-        ELSE
-            IF( IPRINT(2) > 1 .AND. FINISH) WRITE(MP,70)
+            endif
+        else
+            IF( IPRINT(2) > 1 .and. FINISH) WRITE(MP,70)
             WRITE(MP,80)ITER,NFUN,F,GNORM,STP
-        ENDIF
-        IF (IPRINT(2) == 2 .OR. IPRINT(2) == 3)THEN
-            IF (FINISH)THEN
+        endif
+        IF (IPRINT(2) == 2 .OR. IPRINT(2) == 3)then
+            IF (FINISH)then
                 WRITE(MP,90)
-            ELSE
+            else
                 WRITE(MP,40)
-            ENDIF
+            endif
             WRITE(MP,50)(X(I),I=1,N)
-            IF (IPRINT(2) == 3)THEN
+            IF (IPRINT(2) == 3)then
                 WRITE(MP,60)
                 WRITE(MP,50)(G(I),I=1,N)
-            ENDIF
-        ENDIF
+            endif
+        endif
         IF (FINISH) WRITE(MP,100)
-    ENDIF
+    endif
 
     10 FORMAT('*************************************************')
     20 FORMAT('  N=',I5,'   NUMBER OF CORRECTIONS=',I2, &
@@ -538,7 +538,7 @@
 
     if(n <= 0)return
     if (da == 0.0d0) return
-    if(incx == 1 .AND. incy == 1)go to 20
+    if(incx == 1 .and. incy == 1)go to 20
 
 ! code for unequal increments or equal increments
 ! not equal to 1
@@ -551,7 +551,7 @@
         dy(iy) = dy(iy) + da*dx(ix)
         ix = ix + incx
         iy = iy + incy
-    10 ENDDO
+    10 enddo
     return
 
 ! code for both increments equal to 1
@@ -563,7 +563,7 @@
     if( m == 0 ) go to 40
     do 30 i = 1,m
         dy(i) = dy(i) + da*dx(i)
-    30 ENDDO
+    30 enddo
     if( n < 4 ) return
     40 mp1 = m + 1
     do 50 i = mp1,n,4
@@ -571,7 +571,7 @@
         dy(i + 1) = dy(i + 1) + da*dx(i + 1)
         dy(i + 2) = dy(i + 2) + da*dx(i + 2)
         dy(i + 3) = dy(i + 3) + da*dx(i + 3)
-    50 ENDDO
+    50 enddo
     return
     end subroutine daxpy
 
@@ -590,7 +590,7 @@
     ddot = 0.0d0
     dtemp = 0.0d0
     if(n <= 0)return
-    if(incx == 1 .AND. incy == 1)go to 20
+    if(incx == 1 .and. incy == 1)go to 20
 
 ! code for unequal increments or equal increments
 ! not equal to 1
@@ -603,7 +603,7 @@
         dtemp = dtemp + dx(ix)*dy(iy)
         ix = ix + incx
         iy = iy + incy
-    10 ENDDO
+    10 enddo
     ddot = dtemp
     return
 
@@ -616,13 +616,13 @@
     if( m == 0 ) go to 40
     do 30 i = 1,m
         dtemp = dtemp + dx(i)*dy(i)
-    30 ENDDO
+    30 enddo
     if( n < 5 ) go to 60
     40 mp1 = m + 1
     do 50 i = mp1,n,5
         dtemp = dtemp + dx(i)*dy(i) + dx(i + 1)*dy(i + 1) + &
         dx(i + 2)*dy(i + 2) + dx(i + 3)*dy(i + 3) + dx(i + 4)*dy(i + 4)
-    50 ENDDO
+    50 enddo
     60 ddot = dtemp
     return
     end function ddot
@@ -657,7 +657,7 @@
 
 ! IF A STEP IS OBTAINED FOR WHICH THE MODIFIED FUNCTION
 ! HAS A NONPOSITIVE FUNCTION VALUE AND NONNEGATIVE DERIVATIVE,
-! THEN THE INTERVAL OF UNCERTAINTY IS CHOSEN SO THAT IT
+! then THE INTERVAL OF UNCERTAINTY IS CHOSEN SO THAT IT
 ! CONTAINS A MINIMIZER OF F(X+STP*S).
 
 ! THE ALGORITHM IS DESIGNED TO FIND A STEP WHICH SATISFIES
@@ -670,9 +670,9 @@
 ! ABS(GRADF(X+STP*S)'S)) .LE. GTOL*ABS(GRADF(X)'S).
 
 ! IF FTOL IS LESS THAN GTOL AND IF, FOR EXAMPLE, THE FUNCTION
-! IS BOUNDED BELOW, THEN THERE IS ALWAYS A STEP WHICH SATISFIES
+! IS BOUNDED BELOW, then THERE IS ALWAYS A STEP WHICH SATISFIES
 ! BOTH CONDITIONS. IF NO STEP CAN BE FOUND WHICH SATISFIES BOTH
-! CONDITIONS, THEN THE ALGORITHM USUALLY STOPS WHEN ROUNDING
+! CONDITIONS, then THE ALGORITHM USUALLY STOPS WHEN ROUNDING
 ! ERRORS PREVENT FURTHER PROGRESS. IN THIS CASE STP ONLY
 ! SATISFIES THE SUFFICIENT DECREASE CONDITION.
 
@@ -778,14 +778,14 @@
 ! AND CHECK THAT S IS A DESCENT DIRECTION.
 
     DGINIT = ZERO
-    DO 10 J = 1, N
+    do 10 J = 1, N
         DGINIT = DGINIT + G(J)*S(J)
-    10 ENDDO
+    10 enddo
     IF (DGINIT >= ZERO) then
         write(LP,15)
         15 FORMAT(/'  THE SEARCH DIRECTION IS NOT A DESCENT DIRECTION')
         RETURN
-    ENDIF
+    endif
 
 ! INITIALIZE LOCAL VARIABLES.
 
@@ -796,9 +796,9 @@
     DGTEST = FTOL*DGINIT
     WIDTH = STPMAX - STPMIN
     WIDTH1 = WIDTH/P5
-    DO 20 J = 1, N
+    do 20 J = 1, N
         WA(J) = X(J)
-    20 ENDDO
+    20 enddo
 
 ! THE VARIABLES STX, FX, DGX CONTAIN THE VALUES OF THE STEP,
 ! FUNCTION, AND DIRECTIONAL DERIVATIVE AT THE BEST STEP.
@@ -822,10 +822,10 @@
 ! SET THE MINIMUM AND MAXIMUM STEPS TO CORRESPOND
 ! TO THE PRESENT INTERVAL OF UNCERTAINTY.
 
-    IF (BRACKT) THEN
+    IF (BRACKT) then
         STMIN = MIN(STX,STY)
         STMAX = MAX(STX,STY)
-    ELSE
+    else
         STMIN = STX
         STMAX = STP + XTRAPF*(STP - STX)
     END IF
@@ -835,42 +835,42 @@
     STP = MAX(STP,STPMIN)
     STP = MIN(STP,STPMAX)
 
-! IF AN UNUSUAL TERMINATION IS TO OCCUR THEN LET
+! IF AN UNUSUAL TERMINATION IS TO OCCUR then LET
 ! STP BE THE LOWEST POINT OBTAINED SO FAR.
 
-    IF ((BRACKT .AND. (STP <= STMIN .OR. STP >= STMAX)) &
+    IF ((BRACKT .and. (STP <= STMIN .OR. STP >= STMAX)) &
      .OR. NFEV >= MAXFEV-1 .OR. INFOC == 0 &
-     .OR. (BRACKT .AND. STMAX-STMIN <= XTOL*STMAX)) STP = STX
+     .OR. (BRACKT .and. STMAX-STMIN <= XTOL*STMAX)) STP = STX
 
 ! EVALUATE THE FUNCTION AND GRADIENT AT STP
 ! AND COMPUTE THE DIRECTIONAL DERIVATIVE.
 ! We return to main program to obtain F and G.
 
-    DO 40 J = 1, N
+    do 40 J = 1, N
         X(J) = WA(J) + STP*S(J)
-    40 ENDDO
+    40 enddo
     INFO=-1
     RETURN
 
     45 INFO=0
     NFEV = NFEV + 1
     DG = ZERO
-    DO 50 J = 1, N
+    do 50 J = 1, N
         DG = DG + G(J)*S(J)
-    50 ENDDO
+    50 enddo
     FTEST1 = FINIT + STP*DGTEST
 
 ! TEST FOR CONVERGENCE.
 
-    IF ((BRACKT .AND. (STP <= STMIN .OR. STP >= STMAX)) &
+    IF ((BRACKT .and. (STP <= STMIN .OR. STP >= STMAX)) &
      .OR. INFOC == 0) INFO = 6
-    IF (STP == STPMAX .AND. &
-    F <= FTEST1 .AND. DG <= DGTEST) INFO = 5
-    IF (STP == STPMIN .AND. &
+    IF (STP == STPMAX .and. &
+    F <= FTEST1 .and. DG <= DGTEST) INFO = 5
+    IF (STP == STPMIN .and. &
     (F > FTEST1 .OR. DG >= DGTEST)) INFO = 4
     IF (NFEV >= MAXFEV) INFO = 3
-    IF (BRACKT .AND. STMAX-STMIN <= XTOL*STMAX) INFO = 2
-    IF (F <= FTEST1 .AND. ABS(DG) <= GTOL*(-DGINIT)) INFO = 1
+    IF (BRACKT .and. STMAX-STMIN <= XTOL*STMAX) INFO = 2
+    IF (F <= FTEST1 .and. ABS(DG) <= GTOL*(-DGINIT)) INFO = 1
 
 ! CHECK FOR TERMINATION.
 
@@ -879,7 +879,7 @@
 ! IN THE FIRST STAGE WE SEEK A STEP FOR WHICH THE MODIFIED
 ! FUNCTION HAS A NONPOSITIVE VALUE AND NONNEGATIVE DERIVATIVE.
 
-    IF (STAGE1 .AND. F <= FTEST1 .AND. &
+    IF (STAGE1 .and. F <= FTEST1 .and. &
     DG >= MIN(FTOL,GTOL)*DGINIT) STAGE1 = .FALSE. 
 
 ! A MODIFIED FUNCTION IS USED TO PREDICT THE STEP ONLY IF
@@ -888,7 +888,7 @@
 ! DERIVATIVE, AND IF A LOWER FUNCTION VALUE HAS BEEN
 ! OBTAINED BUT THE DECREASE IS NOT SUFFICIENT.
 
-    IF (STAGE1 .AND. F <= FX .AND. F > FTEST1) THEN
+    IF (STAGE1 .and. F <= FX .and. F > FTEST1) then
     
     ! DEFINE THE MODIFIED FUNCTION AND DERIVATIVE VALUES.
     
@@ -911,7 +911,7 @@
         FY = FYM + STY*DGTEST
         DGX = DGXM + DGTEST
         DGY = DGYM + DGTEST
-    ELSE
+    else
     
     ! CALL MCSTEP TO UPDATE THE INTERVAL OF UNCERTAINTY
     ! AND TO COMPUTE THE NEW STEP.
@@ -923,7 +923,7 @@
 ! FORCE A SUFFICIENT DECREASE IN THE SIZE OF THE
 ! INTERVAL OF UNCERTAINTY.
 
-    IF (BRACKT) THEN
+    IF (BRACKT) then
         IF (ABS(STY-STX) >= P66*WIDTH1) &
         STP = STX + P5*(STY - STX)
         WIDTH1 = WIDTH
@@ -952,7 +952,7 @@
 ! THE PARAMETER STX CONTAINS THE STEP WITH THE LEAST FUNCTION
 ! VALUE. THE PARAMETER STP CONTAINS THE CURRENT STEP. IT IS
 ! ASSUMED THAT THE DERIVATIVE AT STX IS NEGATIVE IN THE
-! DIRECTION OF THE STEP. IF BRACKT IS SET TRUE THEN A
+! DIRECTION OF THE STEP. IF BRACKT IS SET TRUE then A
 ! MINIMIZER HAS BEEN BRACKETED IN AN INTERVAL OF UNCERTAINTY
 ! WITH ENDPOINTS STX AND STY.
 
@@ -976,19 +976,19 @@
 
 ! STP, FP, AND DP ARE VARIABLES WHICH SPECIFY THE STEP,
 ! THE FUNCTION, AND THE DERIVATIVE AT THE CURRENT STEP.
-! IF BRACKT IS SET TRUE THEN ON INPUT STP MUST BE
+! IF BRACKT IS SET TRUE then ON INPUT STP MUST BE
 ! BETWEEN STX AND STY. ON OUTPUT STP IS SET TO THE NEW STEP.
 
 ! BRACKT IS A LOGICAL VARIABLE WHICH SPECIFIES IF A MINIMIZER
 ! HAS BEEN BRACKETED. IF THE MINIMIZER HAS NOT BEEN BRACKETED
-! THEN ON INPUT BRACKT MUST BE SET FALSE. IF THE MINIMIZER
-! IS BRACKETED THEN ON OUTPUT BRACKT IS SET TRUE.
+! then ON INPUT BRACKT MUST BE SET FALSE. IF THE MINIMIZER
+! IS BRACKETED then ON OUTPUT BRACKT IS SET TRUE.
 
 ! STPMIN AND STPMAX ARE INPUT VARIABLES WHICH SPECIFY LOWER
 ! AND UPPER BOUNDS FOR THE STEP.
 
 ! INFO IS AN INTEGER OUTPUT VARIABLE SET AS FOLLOWS:
-! IF INFO = 1,2,3,4,5, THEN THE STEP HAS BEEN COMPUTED
+! IF INFO = 1,2,3,4,5, then THE STEP HAS BEEN COMPUTED
 ! ACCORDING TO ONE OF THE FIVE CASES BELOW. OTHERWISE
 ! INFO = 0, AND THIS INDICATES IMPROPER INPUT PARAMETERS.
 
@@ -1004,7 +1004,7 @@
 
 ! CHECK THE INPUT PARAMETERS FOR ERRORS.
 
-    IF ((BRACKT .AND. (STP <= MIN(STX,STY) .OR. &
+    IF ((BRACKT .and. (STP <= MIN(STX,STY) .OR. &
     STP >= MAX(STX,STY))) .OR. &
     DX*(STP-STX) >= 0.0 .OR. STPMAX < STPMIN) RETURN
 
@@ -1015,9 +1015,9 @@
 ! FIRST CASE. A HIGHER FUNCTION VALUE.
 ! THE MINIMUM IS BRACKETED. IF THE CUBIC STEP IS CLOSER
 ! TO STX THAN THE QUADRATIC STEP, THE CUBIC STEP IS TAKEN,
-! ELSE THE AVERAGE OF THE CUBIC AND QUADRATIC STEPS IS TAKEN.
+! else THE AVERAGE OF THE CUBIC AND QUADRATIC STEPS IS TAKEN.
 
-    IF (FP > FX) THEN
+    IF (FP > FX) then
         INFO = 1
         BOUND = .TRUE.
         THETA = 3*(FX - FP)/(STP - STX) + DX + DP
@@ -1029,9 +1029,9 @@
         R = P/Q
         STPC = STX + R*(STP - STX)
         STPQ = STX + ((DX/((FX-FP)/(STP-STX)+DX))/2)*(STP - STX)
-        IF (ABS(STPC-STX) < ABS(STPQ-STX)) THEN
+        IF (ABS(STPC-STX) < ABS(STPQ-STX)) then
             STPF = STPC
-        ELSE
+        else
             STPF = STPC + (STPQ - STPC)/2
         END IF
         BRACKT = .TRUE.
@@ -1039,9 +1039,9 @@
     ! SECOND CASE. A LOWER FUNCTION VALUE AND DERIVATIVES OF
     ! OPPOSITE SIGN. THE MINIMUM IS BRACKETED. IF THE CUBIC
     ! STEP IS CLOSER TO STX THAN THE QUADRATIC (SECANT) STEP,
-    ! THE CUBIC STEP IS TAKEN, ELSE THE QUADRATIC STEP IS TAKEN.
+    ! THE CUBIC STEP IS TAKEN, else THE QUADRATIC STEP IS TAKEN.
     
-    ELSE IF (SGND < 0.0) THEN
+    else IF (SGND < 0.0) then
         INFO = 2
         BOUND = .FALSE.
         THETA = 3*(FX - FP)/(STP - STX) + DX + DP
@@ -1053,9 +1053,9 @@
         R = P/Q
         STPC = STP + R*(STX - STP)
         STPQ = STP + (DP/(DP-DX))*(STX - STP)
-        IF (ABS(STPC-STP) > ABS(STPQ-STP)) THEN
+        IF (ABS(STPC-STP) > ABS(STPQ-STP)) then
             STPF = STPC
-        ELSE
+        else
             STPF = STPQ
         END IF
         BRACKT = .TRUE.
@@ -1066,10 +1066,10 @@
     ! IN THE DIRECTION OF THE STEP OR IF THE MINIMUM OF THE CUBIC
     ! IS BEYOND STP. OTHERWISE THE CUBIC STEP IS DEFINED TO BE
     ! EITHER STPMIN OR STPMAX. THE QUADRATIC (SECANT) STEP IS ALSO
-    ! COMPUTED AND IF THE MINIMUM IS BRACKETED THEN THE THE STEP
-    ! CLOSEST TO STX IS TAKEN, ELSE THE STEP FARTHEST AWAY IS TAKEN.
+    ! COMPUTED AND IF THE MINIMUM IS BRACKETED then THE THE STEP
+    ! CLOSEST TO STX IS TAKEN, else THE STEP FARTHEST AWAY IS TAKEN.
     
-    ELSE IF (ABS(DP) < ABS(DX)) THEN
+    else IF (ABS(DP) < ABS(DX)) then
         INFO = 3
         BOUND = .TRUE.
         THETA = 3*(FX - FP)/(STP - STX) + DX + DP
@@ -1083,24 +1083,24 @@
         P = (GAMMA - DP) + THETA
         Q = (GAMMA + (DX - DP)) + GAMMA
         R = P/Q
-        IF (R < 0.0 .AND. GAMMA /= 0.0) THEN
+        IF (R < 0.0 .and. GAMMA /= 0.0) then
             STPC = STP + R*(STX - STP)
-        ELSE IF (STP > STX) THEN
+        else IF (STP > STX) then
             STPC = STPMAX
-        ELSE
+        else
             STPC = STPMIN
         END IF
         STPQ = STP + (DP/(DP-DX))*(STX - STP)
-        IF (BRACKT) THEN
-            IF (ABS(STP-STPC) < ABS(STP-STPQ)) THEN
+        IF (BRACKT) then
+            IF (ABS(STP-STPC) < ABS(STP-STPQ)) then
                 STPF = STPC
-            ELSE
+            else
                 STPF = STPQ
             END IF
-        ELSE
-            IF (ABS(STP-STPC) > ABS(STP-STPQ)) THEN
+        else
+            IF (ABS(STP-STPC) > ABS(STP-STPQ)) then
                 STPF = STPC
-            ELSE
+            else
                 STPF = STPQ
             END IF
         END IF
@@ -1108,12 +1108,12 @@
     ! FOURTH CASE. A LOWER FUNCTION VALUE, DERIVATIVES OF THE
     ! SAME SIGN, AND THE MAGNITUDE OF THE DERIVATIVE DOES
     ! NOT DECREASE. IF THE MINIMUM IS NOT BRACKETED, THE STEP
-    ! IS EITHER STPMIN OR STPMAX, ELSE THE CUBIC STEP IS TAKEN.
+    ! IS EITHER STPMIN OR STPMAX, else THE CUBIC STEP IS TAKEN.
     
-    ELSE
+    else
         INFO = 4
         BOUND = .FALSE.
-        IF (BRACKT) THEN
+        IF (BRACKT) then
             THETA = 3*(FP - FY)/(STY - STP) + DY + DP
             S = MAX(ABS(THETA),ABS(DY),ABS(DP))
             GAMMA = S*SQRT((THETA/S)**2 - (DY/S)*(DP/S))
@@ -1123,9 +1123,9 @@
             R = P/Q
             STPC = STP + R*(STY - STP)
             STPF = STPC
-        ELSE IF (STP > STX) THEN
+        else IF (STP > STX) then
             STPF = STPMAX
-        ELSE
+        else
             STPF = STPMIN
         END IF
     END IF
@@ -1133,12 +1133,12 @@
 ! UPDATE THE INTERVAL OF UNCERTAINTY. THIS UPDATE DOES NOT
 ! DEPEND ON THE NEW STEP OR THE CASE ANALYSIS ABOVE.
 
-    IF (FP > FX) THEN
+    IF (FP > FX) then
         STY = STP
         FY = FP
         DY = DP
-    ELSE
-        IF (SGND < 0.0) THEN
+    else
+        IF (SGND < 0.0) then
             STY = STX
             FY = FX
             DY = DX
@@ -1153,10 +1153,10 @@
     STPF = MIN(STPMAX,STPF)
     STPF = MAX(STPMIN,STPF)
     STP = STPF
-    IF (BRACKT .AND. BOUND) THEN
-        IF (STY > STX) THEN
+    IF (BRACKT .and. BOUND) then
+        IF (STY > STX) then
             STP = MIN(STX+0.66*(STY-STX),STP)
-        ELSE
+        else
             STP = MAX(STX+0.66*(STY-STX),STP)
         END IF
     END IF

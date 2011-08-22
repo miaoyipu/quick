@@ -6,10 +6,15 @@
 !	Copyright 2011 University of Florida. All rights reserved.
 !
 !   this subroutine is a collection of one-electron integeral
+!   subroutine inventory:
+!           FullX       :       calculate transformation matrix X and overlap matrix S
+!           ekinetic    :       calculate kinetic energy
+!           overlap     :       calculate overlap matrix element
+!           ssoverlap   :
+!           overlapone, overlaptwo, overlapzero
+!                       :       overlap for FMM
+!           repulsion   :       calculate repulsion element (only used in unrestricted)
 
-
-
-!
 subroutine fullx
    !   The purpose of this subroutine is to calculate the transformation
    !   matrix X.  The first step is forming the overlap matrix (Smatrix).
@@ -17,8 +22,7 @@ subroutine fullx
    use allmod
    implicit none
 
-
-   double precision, external :: overlap
+   double precision :: overlap
    double precision :: Sminhalf(nbasis)
    double precision :: V(3,nbasis)
    double precision :: IDEGEN1(nbasis)
@@ -32,7 +36,7 @@ subroutine fullx
             do Jcon=1,ncontract(jbas)
                SJI =SJI + &
                      dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
-                     *overlap(aexp(Jcon,Jbas),     aexp(Icon,Ibas), &
+                     *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                      itype(1,Jbas),       itype(2,Jbas),       itype(3,Jbas), &
                      itype(1,Ibas),       itype(2,Ibas),       itype(3,Ibas), &
                      xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)),xyz(3,quick_basis%ncenter(Jbas)), &
@@ -52,7 +56,7 @@ subroutine fullx
 
    ! Now diagonalize HOLD to generate the eigenvectors and eigenvalues.
 
-   call DIAG(NBASIS,quick_scratch%hold,NBASIS,quick_method%DMCutoff,V,Sminhalf,IDEGEN1,Uxiao,IERROR)
+   call DIAG(NBASIS,quick_scratch%hold,NBASIS,quick_method%DMCutoff,V,Sminhalf,IDEGEN1,quick_scratch%hold2,IERROR)
 
    ! Consider the following:
 
@@ -91,8 +95,8 @@ subroutine fullx
 
    ! Transpose U onto X then copy on to U.  Now U contains U transpose.
 
-   call transpose(Uxiao,quick_qm_struct%x,nbasis)
-   call copyDMat(quick_qm_struct%x,Uxiao,nbasis)
+   call transpose(quick_scratch%hold2,quick_qm_struct%x,nbasis)
+   call copyDMat(quick_qm_struct%x,quick_scratch%hold2,nbasis)
 
 
    ! Now calculate X.
@@ -102,7 +106,7 @@ subroutine fullx
       do J=I,nbasis
          sum = 0.d0
          do K=1,nbasis
-            sum = Uxiao(K,I)*Uxiao(K,J)*Sminhalf(K)+sum
+            sum = quick_scratch%hold2(K,I)*quick_scratch%hold2(K,J)*Sminhalf(K)+sum
          enddo
          quick_qm_struct%x(I,J) = sum
          quick_qm_struct%x(J,I) = quick_qm_struct%x(I,J)
@@ -118,13 +122,14 @@ subroutine fullx
    return
 end subroutine fullx
 
-! Ed Brothers. October 12, 2001
-! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
-
-double precision function ekinetic(a,b,i,j,k,ii,jj,kk,Ax,Ay,Az,Bx, &
-      By,Bz)
-   implicit double precision(a-h,o-z)
+double precision function ekinetic(a,b,i,j,k,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz)
+   implicit none
    double precision :: kinetic
+   double precision :: a,b
+   integer :: i,j,k,ii,jj,kk
+   double precision :: Ax,Ay,Az,Bx,By,Bz
+
+   double precision :: xi,xj,xk,overlap
 
    ! The purpose of this subroutine is to calculate the kinetic energy
    ! of an electron  distributed between gtfs with orbital exponents a
@@ -136,211 +141,187 @@ double precision function ekinetic(a,b,i,j,k,ii,jj,kk,Ax,Ay,Az,Bx, &
 
    kinetic = (1+(-1)**(i+ii))*(1+(-1)**(j+jj))*(1+(-1)**(k+kk)) &
          +(Ax-Bx)**2 + (Ay-By)**2 + (Az-Bz)**2
-   IF (kinetic == 0.d0) goto 100
-   kinetic=0.d0
+   if (kinetic .ne. 0.d0) then
+      kinetic=0.d0
 
-   ! Kinetic energy is the integral of an orbital times the second derivative
-   ! over space of the other orbital.  For GTFs, this means that it is just a
-   ! sum of various overlap integrals with the powers adjusted.
+      ! Kinetic energy is the integral of an orbital times the second derivative
+      ! over space of the other orbital.  For GTFs, this means that it is just a
+      ! sum of various overlap integrals with the powers adjusted.
 
-   xi = dble(i)
-   xj = dble(j)
-   xk = dble(k)
-   kinetic = kinetic + (-1.d0+xi)*xi*overlap(a,b,i-2,j,k,ii,jj,kk, &
-         Ax,Ay,Az,Bx,By,Bz) &
-         - 2.d0*a*(1.d0+2.d0*xi)*overlap(a,b,i,j,k,ii,jj,kk, &
-         Ax,Ay,Az,Bx,By,Bz) &
-         + 4.d0*(a**2.d0)*overlap(a,b,i+2,j,k,ii,jj,kk, &
-         Ax,Ay,Az,Bx,By,Bz)
-   kinetic = kinetic + (-1.d0+xj)*xj*overlap(a,b,i,j-2,k,ii,jj,kk, &
-         Ax,Ay,Az,Bx,By,Bz) &
-         - 2.d0*a*(1.d0+2.d0*xj)*overlap(a,b,i,j,k,ii,jj,kk, &
-         Ax,Ay,Az,Bx,By,Bz) &
-         + 4.d0*(a**2.d0)*overlap(a,b,i,j+2,k,ii,jj,kk, &
-         Ax,Ay,Az,Bx,By,Bz)
-   kinetic = kinetic + (-1.d0+xk)*xk*overlap(a,b,i,j,k-2,ii,jj,kk, &
-         Ax,Ay,Az,Bx,By,Bz) &
-         - 2.d0*a*(1.d0+2.d0*xk)*overlap(a,b,i,j,k,ii,jj,kk, &
-         Ax,Ay,Az,Bx,By,Bz) &
-         + 4.d0*(a**2.d0)*overlap(a,b,i,j,k+2,ii,jj,kk, &
-         Ax,Ay,Az,Bx,By,Bz)
-
-   100 continue
+      xi = dble(i)
+      xj = dble(j)
+      xk = dble(k)
+      kinetic = kinetic &
+            +        (-1.d0+     xi)*xi  *overlap(a,b,i-2,j,k,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz) &
+            - 2.d0*a*( 1.d0+2.d0*xi)     *overlap(a,b,i  ,j,k,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz) &
+            + 4.d0*(a**2.d0)             *overlap(a,b,i+2,j,k,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz)
+      kinetic = kinetic &
+            +         (-1.d0+     xj)*xj *overlap(a,b,i,j-2,k,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz) &
+            - 2.d0*a* ( 1.d0+2.d0*xj)    *overlap(a,b,i,j  ,k,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz) &
+            + 4.d0*(a**2.d0)             *overlap(a,b,i,j+2,k,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz)
+      kinetic = kinetic &
+            +         (-1.d0+     xk)*xk *overlap(a,b,i,j,k-2,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz) &
+            - 2.d0*a* ( 1.d0+2.d0*xk)    *overlap(a,b,i,j,k  ,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz) &
+            + 4.d0*(a**2.d0)             *overlap(a,b,i,j,k+2,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz)
+   endif
    ekinetic = kinetic/(-2.d0)
    return
 end function ekinetic
 
+
 ! Ed Brothers. October 3, 2001
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
-
-function overlap(a,b,i,j,k,ii,jj,kk,Ax,Ay,Az,Bx, &
-      By,Bz)
+double precision function overlap (a,b,i,j,k,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz)
    use quick_constants_module
-   implicit double precision(a-h,o-z)
+   implicit none
+   ! INPUT PARAMETERS
+   double precision a,b                 ! exponent of basis set 1 and 2
+   integer i,j,k,ii,jj,kk               ! i,j,k are itype for basis set 1 and ii,jj,kk for 2
+   double precision Ax,Ay,Az,Bx,By,Bz   ! Ax,Ay,Az are position for basis set 1 and Bx,By,Bz for 2
+   
+   ! INNER VARIBLES
+   double precision element,g
+   integer ig,jg,kg
+   integer iiloop,iloop,jloop,jjloop,kloop,kkloop,ix,jy,kz
+   double precision pAx,pAy,pAz,pBx,pBy,pBz
+   double precision Px,py,pz
+   double precision xnumfact
 
    ! The purpose of this subroutine is to calculate the overlap between
    ! two normalized gaussians. i,j and k are the x,y,
    ! and z exponents for the gaussian with exponent a, and ii,jj, and kk
    ! have the same order for b.
 
-   ! Constants:
-
-   !    pi=3.1415926535897932385
-   !    pito3half=5.568327996831707845284817982118835702014
-   !    pito3half = pi**(1.5)
-
    ! The first step is to see if this function is zero due to symmetry.
    ! If it is not, reset overlap to 0.
+   overlap = (1+(-1)**(i+ii))*(1+(-1)**(j+jj))*(1+(-1)**(k+kk))+(Ax-Bx)**2+(Ay-By)**2+(Az-Bz)**2
+   if (overlap.ne.zero) then
 
-   overlap = (1+(-1)**(i+ii))*(1+(-1)**(j+jj))*(1+(-1)**(k+kk)) &
-         +(Ax-Bx)**2 + (Ay-By)**2 + (Az-Bz)**2
-   if (overlap == 0.d0) goto 100
-   overlap=0.d0
+      overlap=zero
+      ! If it is not zero, construct P and g values.  The gaussian product
+      ! theory states the product of two s gaussians on centers A and B
+      ! with exponents a and b forms a new s gaussian on P with exponent
+      ! g.  (g comes from gamma, as is "alpha,beta, gamma" and P comes
+      ! from "Product." Also needed are the PA differences.
 
+      g = a+b
+      Px = (a*Ax + b*Bx)/g
+      Py = (a*Ay + b*By)/g
+      Pz = (a*Az + b*Bz)/g
 
-   ! If it is not zero, construct P and g values.  The gaussian product
-   ! theory states the product of two s gaussians on centers A and B
-   ! with exponents a and b forms a new s gaussian on P with exponent
-   ! g.  (g comes from gamma, as is "alpha,beta, gamma" and P comes
-   ! from "Product." Also needed are the PA differences.
+      PAx= Px-Ax
+      PAy= Py-Ay
+      PAz= Pz-Az
+      PBx= Px-Bx
+      PBy= Py-By
+      PBz= Pz-Bz
 
-   g = a+b
-   Px = (a*Ax + b*Bx)/g
-   Py = (a*Ay + b*By)/g
-   Pz = (a*Az + b*Bz)/g
+      ! There is also a few factorials that are needed in the integral many
+      ! times.  Calculate these as well.
 
-   PAx= Px-Ax
-   PAy= Py-Ay
-   PAz= Pz-Az
-   PBx= Px-Bx
-   PBy= Py-By
-   PBz= Pz-Bz
+      xnumfact=fact(i)*fact(ii)*fact(j)*fact(jj)*fact(k)*fact(kk)
 
-   ! There is also a few factorials that are needed in the integral many
-   ! times.  Calculate these as well.
+      ! Now start looping over i,ii,j,jj,k,kk to form all the required elements.
 
-   xnumfact=fact(i)*fact(ii)*fact(j)*fact(jj)*fact(k)*fact(kk)
+      do iloop=0,i
+         do iiloop=0,ii
+            do jloop=0,j
+               do jjloop=0,jj
+                  do kloop=0,k
+                     do kkloop=0,kk
+                        ix=iloop+iiloop
+                        jy=jloop+jjloop
+                        kz=kloop+kkloop
 
-   ! Now start looping over i,ii,j,jj,k,kk to form all the required elements.
+                        ! Check to see if this element is zero.
 
-   do iloop=0,i
-      do iiloop=0,ii
-         do jloop=0,j
-            do jjloop=0,jj
-               do kloop=0,k
-                  do kkloop=0,kk
-                     ix=iloop+iiloop
-                     jy=jloop+jjloop
-                     kz=kloop+kkloop
+                        element=(1+(-1)**(ix))*(1+(-1)**(jy))*(1+(-1)**(kz))/8
+                        if (element .ne. zero) then
 
-                     ! Check to see if this element is zero.
+                        ! Continue calculating the elements.  The next elements arise from the
+                        ! different angular momentums portion of the GPT.
 
-                     element=(1+(-1)**(ix))*(1+(-1)**(jy))*(1+(-1)**(kz))/8
-                     if (element == 0) goto 50
+                        element=PAx**(i-iloop)*PBx**(ii-iiloop) &
+                               *PAy**(j-jloop)*PBy**(jj-jjloop) &
+                               *PAz**(k-kloop)*PBz**(kk-kkloop) &
+                               *xnumfact &
+                               /(fact(iloop)*fact(iiloop)* &
+                                 fact(jloop)*fact(jjloop)* &
+                                 fact(kloop)*fact(kkloop)* &
+                                 fact(i-iloop)*fact(ii-iiloop)* &
+                                 fact(j-jloop)*fact(jj-jjloop)* &
+                                 fact(k-kloop)*fact(kk-kkloop))
 
-                     ! Continue calculating the elements.  The next elements arise from the
-                     ! different angular momentums portion of the GPT.
+                        ! The next part arises from the integratation of a gaussian of arbitrary
+                        ! angular momentum.
 
-                     element=PAx**(i-iloop) &
-                           *PBx**(ii-iiloop) &
-                           *PAy**(j-jloop) &
-                           *PBy**(jj-jjloop) &
-                           *PAz**(k-kloop) &
-                           *PBz**(kk-kkloop) &
-                           *xnumfact &
-                           /(fact(iloop)*fact(iiloop)* &
-                           fact(jloop)*fact(jjloop)* &
-                           fact(kloop)*fact(kkloop)* &
-                           fact(i-iloop)*fact(ii-iiloop)* &
-                           fact(j-jloop)*fact(jj-jjloop)* &
-                           fact(k-kloop)*fact(kk-kkloop))
+                        element=element*g**(dble(-3 - ix - jy - kz)/2.d0)
 
-                     ! The next part arises from the integratation of a gaussian of arbitrary
-                     ! angular momentum.
+                        ! Before the Gamma function code, a quick note. All gamma functions are
+                        ! of the form:
+                        ! 1
+                        ! Gamma[- + integer].  Now since Gamma[z] = (z-1)Gamma(z-1)
+                        ! 2
 
-                     element=element*g**(dble(-3 - ix - jy - kz)/2.d0)
+                        ! We can say Gamma(0.5 + i) = (i-1+.5)(i-2+.5)...(i-i+.5)Gamma(0.5)
+                        ! and Gamma(.5) is Sqrt(Pi).  Thus to calculate the three gamma
+                        ! just requires a loop and multiplying by Pi^3/2
 
-                     ! Before the Gamma function code, a quick note. All gamma functions are
-                     ! of the form:
-                     ! 1
-                     ! Gamma[- + integer].  Now since Gamma[z] = (z-1)Gamma(z-1)
-                     ! 2
+                        do iG=1,ix/2
+                           element = element * (dble(ix)/2.d0-dble(iG) + .5d0)
+                        enddo
+                        do jG=1,jy/2
+                           element = element * (dble(jy)/2.d0-dble(jG) + .5d0)
+                        enddo
+                        do kG=1,kz/2
+                           element = element * (dble(kz)/2.d0-dble(kG) + .5d0)
+                        enddo
+                        element=element*pito3half
 
-                     ! We can say Gamma(0.5 + i) = (i-1+.5)(i-2+.5)...(i-i+.5)Gamma(0.5)
-                     ! and Gamma(.5) is Sqrt(Pi).  Thus to calculate the three gamma
-                     ! just requires a loop and multiplying by Pi^3/2
+                        ! Now sum the whole thing into the overlap.
 
-                     do iG=1,ix/2
-                        element = element * (dble(ix)/2.d0-dble(iG) + .5d0)
+                        endif
+                        overlap = overlap + element
                      enddo
-                     do jG=1,jy/2
-                        element = element * (dble(jy)/2.d0-dble(jG) + .5d0)
-                     enddo
-                     do kG=1,kz/2
-                        element = element * (dble(kz)/2.d0-dble(kG) + .5d0)
-                     enddo
-                     element=element*pito3half
-
-                     ! Now sum the whole thing into the overlap.
-
-                     50 continue
-                     overlap = overlap + element
                   enddo
                enddo
             enddo
          enddo
       enddo
-   enddo
 
-   ! The final step is multiplying in the K factor (from the gpt)
+      ! The final step is multiplying in the K factor (from the gpt)
 
-   overlap = overlap* Exp(-((a*b*((Ax - Bx)**2.d0 + (Ay - By)**2.d0 &
-         + (Az - Bz)**2.d0))/(a + b)))
+      overlap = overlap*exp(-((a*b*((Ax-Bx)**2.d0 + (Ay-By)**2.d0+(Az-Bz)**2.d0))/(a+b)))
 
-   100 continue
+   endif
    return
 end function overlap
 
-function ssoverlap(a,b,Ax,Ay,Az,Bx,By,Bz)
+double precision function ssoverlap(a,b,Ax,Ay,Az,Bx,By,Bz)
    use quick_constants_module
-   implicit double precision(a-h,o-z)
+   implicit none
+   double precision a,b,Ax,Ay,Az,Bx,By,Bz
 
-   !    pito3half=5.568327996831707845284817982118835702014
-   !    pito3half = pi**1.5
-   g = a+b
-
-   ssoverlap = pito3half*1.d0*g**(-3.d0/2.d0)
-
-   ssoverlap = ssoverlap* Exp(-((a*b*((Ax - Bx)**2.d0 + &
-         (Ay - By)**2.d0 &
-         + (Az - Bz)**2.d0))/(a + b)))
+   ssoverlap = pito3half*1.d0*(a+b)**(-3.d0/2.d0)*Exp(-((a*b*((Ax-Bx)**2.d0+(Ay-By)**2.d0+(Az-Bz)**2.d0))/(a+b)))
 
 end function ssoverlap
 
 
 ! Ed Brothers. October 3, 2001
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
-
-subroutine overlapone(a,b,i,j,k,ii,jj,kk,Ax,Ay,Az,Bx, &
-      By,Bz,fmmtemparray)
+subroutine overlapone(a,b,i,j,k,ii,jj,kk,Ax,Ay,Az,Bx,By,Bz,fmmtemparray)
    use quick_constants_module
    implicit double precision(a-h,o-z)
 
-   real*8 Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g
-   real*8 AA(3),BB(3),CC(3),PP(3)
-   real*8 fmmtemparray(0:2,0:2,1:2)
-   !           common /xiaofmm/fmmonearray,AA,BB,CC,PP,g
+   double precision Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g
+   double precision AA(3),BB(3),CC(3),PP(3)
+   double precision fmmtemparray(0:2,0:2,1:2)
 
    ! The purpose of this subroutine is to calculate the overlap between
    ! two normalized gaussians. i,j and k are the x,y,
    ! and z exponents for the gaussian with exponent a, and ii,jj, and kk
    ! have the same order for b.
 
-   ! Constants:
-
-   !    pi=3.1415926535897932385
-   !    pito3half=5.568327996831707845284817982118835702014
-   !    pito3half = pi**(1.5)
 
    ! The first step is to see if this function is zero due to symmetry.
    ! If it is not, reset overlap to 0.
@@ -592,9 +573,9 @@ subroutine overlaptwo(a,b,i,j,k,ii,jj,kk,Ax,Ay,Az,Bx, &
    use quick_constants_module
    implicit double precision(a-h,o-z)
 
-   real*8 Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g
-   real*8 AA(3),BB(3),CC(3),PP(3)
-   real*8 fmmonearray(0:2,0:2,1:2)
+   double precision Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g
+   double precision AA(3),BB(3),CC(3),PP(3)
+   double precision fmmonearray(0:2,0:2,1:2)
    !           common /xiaofmm/fmmonearray,AA,BB,CC,PP,g
 
    ! The purpose of this subroutine is to calculate the overlap between
@@ -1111,9 +1092,9 @@ subroutine overlapzero(a,b,fmmtemparray)
    use quick_constants_module
    implicit double precision(a-h,o-z)
 
-   real*8 Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g
-   real*8 AA(3),BB(3),CC(3),PP(3)
-   real*8 fmmtemparray(0:2,0:2,1:2)
+   double precision Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g
+   double precision AA(3),BB(3),CC(3),PP(3)
+   double precision fmmtemparray(0:2,0:2,1:2)
    !           common /xiaofmm/fmmonearray,AA,BB,CC,PP,g
 
    !    pito3half=5.568327996831707845284817982118835702014
@@ -1129,11 +1110,10 @@ subroutine overlapzero(a,b,fmmtemparray)
    fmmtemparray(0,0,1)=ssoverlap
 
 end
+
 ! Ed Brothers. November 2, 2001
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
-
-double precision function repulsion(gi,gj,gk,gl,pos1,pos2,pos3, &
-      pos4) result(repint)
+double precision function repulsion(gi,gj,gk,gl,pos1,pos2,pos3,pos4) result(repint)
    use quick_gaussian_class_module
    implicit none
 
@@ -1149,14 +1129,17 @@ double precision function repulsion(gi,gj,gk,gl,pos1,pos2,pos3, &
          do K=1,gk%ncontract
             do L=1,gl%ncontract
                repint = repint+ &
-                     gi%dcoeff(i)*gj%dcoeff(j)*gk%dcoeff(k)*gl%dcoeff(l)* &
-                     (repulsion_prim(gi%aexp(i),gj%aexp(j),gk%aexp(k),gl%aexp(l), &
-                     gi%itype(1),gi%itype(2),gi%itype(3), &
-                     gj%itype(1),gj%itype(2),gj%itype(3), &
-                     gk%itype(1),gk%itype(2),gk%itype(3), &
-                     gl%itype(1),gl%itype(2),gl%itype(3), &
-                     pos1(1),pos1(2),pos1(3),pos2(1),pos2(2),pos2(3), &
-                     pos3(1),pos3(2),pos3(3),pos4(1),pos4(2),pos4(3)))
+                        gi%dcoeff(i)*gj%dcoeff(j)*gk%dcoeff(k)*gl%dcoeff(l)* &
+                        (repulsion_prim(gi%aexp(i), gj%aexp(j),&
+                                        gk%aexp(k), gl%aexp(l), &
+                                        gi%itype(1),gi%itype(2),gi%itype(3), &
+                                        gj%itype(1),gj%itype(2),gj%itype(3), &
+                                        gk%itype(1),gk%itype(2),gk%itype(3), &
+                                        gl%itype(1),gl%itype(2),gl%itype(3), &
+                                        pos1(1),pos1(2),pos1(3),&
+                                        pos2(1),pos2(2),pos2(3),&
+                                        pos3(1),pos3(2),pos3(3),&
+                                        pos4(1),pos4(2),pos4(3)))
             enddo
          enddo
       enddo
@@ -1165,10 +1148,15 @@ double precision function repulsion(gi,gj,gk,gl,pos1,pos2,pos3, &
 end function repulsion
 
 
-double precision function repulsion_prim(a,b,c,d, &
-      i,j,k,ii,jj,kk,i2,j2,k2,ii2,jj2,kk2, &
-      Ax,Ay,Az,Bx,By,Bz, &
-      Cx,Cy,Cz,Dx,Dy,Dz) result(repulsion)
+double precision function repulsion_prim(a, b, c, d, &
+                                         i,  j,  k,  &
+                                         ii, jj, kk, &
+                                         i2, j2, k2, &
+                                         ii2,jj2,kk2,&
+                                         Ax, Ay, Az, &
+                                         Bx, By, Bz, &
+                                         Cx, Cy, Cz, &
+                                         Dx, Dy, Dz) result(repulsion)
    use quick_constants_module
    implicit double precision(a-h,o-z)
    dimension aux(0:20)
@@ -1744,6 +1732,9 @@ subroutine get1e(oneElecO)
 
          call cpu_time(timer_end%t1e)
          timer_cumer%T1e=timer_cumer%T1e+timer_end%T1e-timer_begin%T1e
+         timer_cumer%TOp = timer_cumer%T1e
+         timer_cumer%TSCF = timer_cumer%T1e
+   
          call copySym(quick_qm_struct%o,nbasis)
          call CopyDMat(quick_qm_struct%o,oneElecO,nbasis)
       endif
@@ -1822,10 +1813,10 @@ subroutine attrashell(IIsh,JJsh)
    !    use xiaoconstants
    implicit double precision(a-h,o-z)
    dimension aux(0:20)
-   real*8 AA(3),BB(3),CC(3),PP(3)
+   double precision AA(3),BB(3),CC(3),PP(3)
    common /xiaoattra/attra,aux,AA,BB,CC,PP,g
 
-   real*8 RA(3),RB(3),RP(3)
+   double precision RA(3),RB(3),RP(3)
 
    ! Variables needed later:
    !    pi=3.1415926535897932385
@@ -1863,9 +1854,9 @@ subroutine attrashell(IIsh,JJsh)
 
 
    do ips=1,quick_basis%kprim(IIsh)
-      a=gcexpo(ips,quick_basis%ksumtype(IIsh))
+      a=quick_basis%gcexpo(ips,quick_basis%ksumtype(IIsh))
       do jps=1,quick_basis%kprim(JJsh)
-         b=gcexpo(jps,quick_basis%ksumtype(JJsh))
+         b=quick_basis%gcexpo(jps,quick_basis%ksumtype(JJsh))
 
          g = a+b
          Px = (a*Ax + b*Bx)/g

@@ -1,1 +1,3 @@
-#define CUDA 1
+#define CUDA
+#define DEBUG
+#undef MPI

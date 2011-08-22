@@ -33,41 +33,41 @@
 ! BEGIN ORTHOGONALIZATION.
 
     JSTOP = JSTART + NVECT - 1
-    DO 120 J=JSTART,JSTOP
-        IF(J > JSTART)THEN
+    do 120 J=JSTART,JSTOP
+        if(J > JSTART)then
         
         ! SUBTRACT OFF COMPONENTS OF PREVIOUSLY DETERMINED ORTHOGONAL
         ! VECTORS FROM THE VECTOR IN COLUMN J.
         
-            DO 60 JPREV=JSTART,J-1
+            do 60 JPREV=JSTART,J-1
                 DOT = 0.0D0
-                DO 20 I=1,NDIM
+                do 20 I=1,NDIM
                     DOT = DOT + VECT(I,JPREV)*VECT(I,J)
-                20 ENDDO
-                DO 40 I=1,NDIM
+                20 enddo
+                do 40 I=1,NDIM
                     VECT(I,J) = VECT(I,J) - DOT*VECT(I,JPREV)
-                40 ENDDO
-            60 ENDDO
-        ENDIF
+                40 enddo
+            60 enddo
+        endif
     
     ! NORMALIZE COLUMN J.
     
         VJNORM = 0.0D0
-        DO 80 I=1,NDIM
+        do 80 I=1,NDIM
             VJNORM = VJNORM + VECT(I,J)**2
-        80 ENDDO
+        80 enddo
         VJNORM = DSQRT(VJNORM)
     
-    ! IF THE NORM OF THIS VECTOR IS TOO SMALL THEN THE VECTORS ARE
+    ! IF THE NORM OF THIS VECTOR IS TOO SMALL then THE VECTORS ARE
     ! NOT LINEARLY INDEPENDENT.
     
-        IF(VJNORM < ORTEST)THEN
+        if(VJNORM < ORTEST)then
             ORTH = .FALSE.
             GO TO 1000
-        ENDIF
-        DO 100 I=1,NDIM
+        endif
+        do 100 I=1,NDIM
             VECT(I,J) = VECT(I,J)/VJNORM
-        100 ENDDO
-    120 ENDDO
+        100 enddo
+    120 enddo
     1000 RETURN
     end SUBROUTINE ORTHOG

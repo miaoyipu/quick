@@ -1,13 +1,15 @@
 #include "config.h"
-! getAtoms(iAtomType)
-!-------------------------------------------------------
-! Ed Brothers. 11/26/01
-! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
-!-------------------------------------------------------
-! This subroutine is to get molecule information
-! and assign basis function.
+!
+!	getMol.f90
+!	new_quick
+!
+!	Created by Yipu Miao on 3/4/11.
+!	Copyright 2011 University of Florida. All rights reserved.
+!
 
 subroutine getMol()
+! This subroutine is to get molecule information
+! and assign basis function.
    use allmod
    implicit none
 
@@ -50,10 +52,13 @@ subroutine getMol()
    !-----------END MPI/MASTER-----------------------
    
 
-   !-----------MPI/ALL NODES------------------------
-
 #ifdef MPI
+   !-----------MPI/ALL NODES------------------------
    if (bMPI)  call mpi_setup_mol1()
+   !-----------END MPI/ALL NODES--------------------
+#endif
+#ifdef CUDA
+    quick_method%bCUDA = .true.
 #endif
    
    ! At this point we have the positions and identities of the atoms. We also
@@ -64,14 +69,14 @@ subroutine getMol()
    call alloc(quick_qm_struct)
    call init(quick_qm_struct)
    
-   !-----------END MPI/ALL NODES--------------------
+
 
 
    !-----------MPI/MASTER------------------------
    if (master) then
       ! now print molecule specification to output file
       call print(quick_molspec,iOutFile)
-      write (iOutFile,'("| BASIS FUNCTIONS = ",I4)') nbasis
+      call print(quick_basis,iOutFile)
 
       ! the following some step are setup for basis and for ECP or DFT calculation
       ! and see comments for details
@@ -116,17 +121,17 @@ subroutine check_quick_method_and_molspec(io,quick_molspec_arg,quick_method_arg)
    integer i
 
    ! Check for errors.
-   if (natom == 1 .AND. quick_method_arg%opt) then
+   if (natom == 1 .and. quick_method_arg%opt) then
       call PrtWrn(io," ONLY ONE ATOM, TURN OFF OPTIMIZATION.")
       quick_method_arg%opt=.false.
    endif
 
    ! Define the number of optimization cycles if not set. default is 9*natom
-   if (quick_method_arg%iopt == 0 .AND. quick_method_arg%opt) then
+   if (quick_method_arg%iopt == 0 .and. quick_method_arg%opt) then
       quick_method_arg%iopt=3*3*quick_molspec_arg%natom
    endif
 
-   ! If this is a core approximatation calculation, modify the atomic
+   ! if this is a core approximatation calculation, modify the atomic
    ! charges and the number of electrons.
    if (quick_method_arg%core) then
       do i=1,quick_molspec_arg%natom
@@ -147,12 +152,12 @@ subroutine check_quick_method_and_molspec(io,quick_molspec_arg,quick_method_arg)
    ! check the correctness between elections, multiplicity and unrestricted calculation
    ! request. And try to correct possible error
    i = mod(dble(quick_molspec_arg%nelec),2.d0)
-   if (i.ne.0 .AND. .NOT. quick_method_arg%unrst) then
+   if (i.ne.0 .and. .not. quick_method_arg%unrst) then
       call PrtWrn(io,"UNPAIRED ELECTRONS REQUIRE UNRESTRICTED CALCULATIONS.")
       quick_method_arg%UNRST=.true.
    endif
 
-   if (quick_molspec_arg%imult.ne.1 .AND. .NOT. quick_method_arg%unrst) then
+   if (quick_molspec_arg%imult.ne.1 .and. .not. quick_method_arg%unrst) then
       call PrtWrn(io,"HIGHER MULTIPLICITIES REQUIRE UNRESTRICTED CALCULATIONS.")
       call quick_exit(6,1)
    endif
@@ -166,7 +171,7 @@ subroutine check_quick_method_and_molspec(io,quick_molspec_arg,quick_method_arg)
          quick_molspec_arg%nelec = quick_molspec_arg%nelec +1
       enddo
 
-      if (quick_molspec_arg%imult .eq. 2 .AND. quick_molspec_arg%nelec-1 .ne. quick_molspec_arg%nelecb) then
+      if (quick_molspec_arg%imult .eq. 2 .and. quick_molspec_arg%nelec-1 .ne. quick_molspec_arg%nelecb) then
          call PrtWrn(io,"INCORRECT NUMBER OF ELECTRONS FOR A DOUBLET.")
          call quick_exit(6,1)
       endif
@@ -235,7 +240,7 @@ subroutine initialGuess
       endif
       close(idmxfile)
 
-      if (quick_qm_struct%denseb(1,1) == 0.d0 .AND. quick_method%unrst) then
+      if (quick_qm_struct%denseb(1,1) == 0.d0 .and. quick_method%unrst) then
          call PrtWrn(iOutFile,"CONVERTING RESTRICTED DENSITY TO UNRESTRICTED")
          do I=1,nbasis
             do J =1,nbasis
@@ -255,7 +260,7 @@ subroutine initialGuess
          n=0
          do Iatm=1,natom
             do sadAtom=1,10
-               If(symbol(quick_molspec%iattype(Iatm)).eq. &
+               if(symbol(quick_molspec%iattype(Iatm)).eq. &
                   quick_molspec%atom_type_sym(sadAtom))then
                   do i=1,atombasis(sadAtom)
                      do j=1,atombasis(sadAtom)

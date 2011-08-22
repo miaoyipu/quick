@@ -1015,7 +1015,7 @@ end subroutine dividex
 
 subroutine wtoscorr
   use allmod
-  implicit real*8 (a-h,o-z)
+  implicit double precision (a-h,o-z)
 
   do itt=1,np
      itempcount=0

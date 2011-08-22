@@ -48,7 +48,7 @@ FC=gfortran
 #FFLAGS = -O3
 #FFLAGS = -i4 -O3 -auto -assume byterecl -w95 -cm 
 #FFLAGS = -g -O3 -traceback
-FFLAGS = -std=gnu -W
+FFLAGS = 
 LD = $(FC)
 LDFLAGS = $(FFLAGS)
 #LDFLAGS = $(FFLAGS)
@@ -57,16 +57,16 @@ TMPFILES = *.mod *.stb
 
 # CPP Compiler
 FPP = cpp -traditional -P  -DBINTRAJ 
-CPP = gcc -O3 -DCUBLAS_USE_THUNKING
+CPP = gcc -DCUBLAS_USE_THUNKING
 
 # CUDA Compiler
-CUDAC = /usr/local/cuda/bin/nvcc
+CUDAC = nvcc
 CUDA_LIBPATH = -L/usr/local/gfortran/lib 
-CUDA_FLAGS= -m64 -O3
+CUDA_FLAGS= -Xptxas=-v -m64 -g -G -use_fast_math -maxrregcount=63 -gencode arch=compute_20,code=sm_20
 
 # G++ Compiler
 CXX = g++
-CFLAGS = -L/usr/local/cuda/lib -lcuda -lcudart -lm -lgfortran $(CUDA_LIBPATH)    
+CFLAGS = -lgfortran -lgfortranbegin -g -L/usr/local/cuda/lib64 -lcuda -lm $(CUDA_LIBPATH) -lcudart
 
 #----------------------
 # exe file location
@@ -79,10 +79,15 @@ exefile = ../bin/quick
 libfolder = ../lib
 
 #----------------------
+# config file location
+#----------------------
+configfolder = ./config
+
+#----------------------
 # cuda files
 #----------------------
 cudafolder = ./cuda
-cudaobj = gpu_info.o gpu_write_info.o gpu_startup.o
+cudaobj = gpu_info.o gpu_write_info.o gpu.o gpu_type.o gpu_get2e.o
 
 #----------------------
 # quick modules and object files
@@ -111,7 +116,7 @@ modobj2  = quick_size_module.o quick_amber_interface_module.o quick_basis_module
 #.DEFAULT:
 #	-touch $@
 
-all: quick
+all: quick quick.cuda
 
 #************************************************************************
 # 
@@ -121,15 +126,15 @@ all: quick
 
 #================= common subroutine library ============================
 quick_subs:
-	cp *.mod ./subs
-	cd ./subs && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
-	ar -r $(libfolder)/quicklib.a ./subs/*.o
-	rm ./subs/*.mod
+#	cp *.mod ./subs
+#	cd ./subs && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
+#	ar -r $(libfolder)/quicklib.a ./subs/*.o
+#	rm ./subs/*.mod
 
 #================= quick module library =================================
 quick_modules:
-	cd $(modfolder) && make
-	mv ${modfolder}/*.mod ${modfolder}/*.o ./
+#	cd $(modfolder) && make
+#	mv ${modfolder}/*.mod ${modfolder}/*.o ./
 #=========== targets for cuda =========================================
 quick_cuda:
 	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c *.cu
@@ -140,84 +145,7 @@ quick_cuda:
 main.o: main.f90 quick_modules
 	$(FPP) main.f90 > _main.f90
 	$(FC) -o main.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _main.f90
-initialize.o: initialize.f90 quick_modules
-	$(FPP) initialize.f90 > _initialize.f90
-	$(FC) -o initialize.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _initialize.f90
-read_job_and_atom.o: read_job_and_atom.f90 quick_modules
-	$(FPP) read_job_and_atom.f90 > _read_job_and_atom.f90
-	$(FC) -o read_job_and_atom.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _read_job_and_atom.f90
-shell.o: shell.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       shell.f90
-getMolSad.o: getMolSad.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       getMolSad.f90
-getMol.o: getMol.f90 quick_modules
-	$(FPP) getMol.f90 > _getMol.f90
-	$(FC) -o getMol.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _getMol.f90
-schwarz.o: schwarz.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       schwarz.f90
-quick_one_electron_integral.o: quick_one_electron_integral.f90 quick_modules
-	$(FPP) quick_one_electron_integral.f90 > _quick_one_electron_integral.f90
-	$(FC) -o quick_one_electron_integral.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _quick_one_electron_integral.f90
-getEnergy.o: getEnergy.f90 quick_modules
-	$(FPP) getEnergy.f90 > _getEnergy.f90
-	$(FC) -o getEnergy.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _getEnergy.f90
-inidivcon.o: inidivcon.f90 quick_modules
-	$(FPP) inidivcon.f90 > _inidivcon.f90
-	$(FC) -o inidivcon.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _inidivcon.f90
-ecp.o: ecp.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       ecp.f90
-uelectdii.o: uelectdii.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       uelectdii.f90
-hfoperator.o: hfoperator.f90 quick_modules
-	$(FPP) hfoperator.f90 >_hfoperator.f90
-	$(FC) -o hfoperator.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _hfoperator.f90
-nuclear.o: nuclear.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       nuclear.f90
-fmm.o: fmm.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       fmm.f90
-dft.o: dft.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       dft.f90
-sedftoperator.o: sedftoperator.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       sedftoperator.f90
-scf.o: scf.f90 quick_modules
-	$(FPP) scf.f90 > _scf.f90
-	$(FC) -o scf.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c		      _scf.f90
-uscf.o: uscf.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       uscf.f90
-finalize.o: finalize.f90 quick_modules
-	$(FPP) finalize.f90 > _finalize.f90
-	$(FC) -o finalize.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _finalize.f90
-uhfoperator.o: uhfoperator.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       uhfoperator.f90
-udftoperator.o: udftoperator.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       udftoperator.f90
-usedftoperator.o: usedftoperator.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       usedftoperator.f90
-quick_debug.o: quick_debug.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       quick_debug.f90
-mpi_setup.o: mpi_setup.f90 quick_modules
-	$(FPP) mpi_setup.f90 > _mpi_setup.f90
-	$(FC) -o mpi_setup.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c      _mpi_setup.f90
-calMP2.o: calMP2.f90 quick_modules
-	$(FPP) calMP2.f90 > _calMP2.f90
-	$(FC) -o calMP2.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c         _calMP2.f90
-optimize.o: optimize.f90 quick_modules
-	$(FPP) optimize.f90 > _optimize.f90
-	$(FC) -o optimize.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _optimize.f90
-gradient.o: gradient.f90 quick_modules
-	$(FPP) gradient.f90 > _gradient.f90
-	$(FC) -o gradient.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _gradient.f90
-hessian.o: hessian.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       hessian.f90
-CPHF.o: CPHF.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       CPHF.f90
-frequency.o: frequency.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       frequency.f90
-MFCC.o: MFCC.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       MFCC.f90
-basis.o: basis.f90 quick_modules
-	$(FPP) basis.f90 > _basis.f90
-	$(FC) -o basis.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c          _basis.f90
+
 
 #=========== targets for amber-quick interface ========================
 # This is a fake amber-quick interface
@@ -229,14 +157,18 @@ amber_interface.o: amber_interface.f90 quick_modules qmmm_module.mod
 	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       amber_interface.f90
 
 									
-OBJ =   $(mpimod_o) main.o ${modobj0} ${modobj1} ${modobj2} \
+OBJ =   main.o $(mpimod_o) ${modobj0} ${modobj1} ${modobj2} \
 		initialize.o read_job_and_atom.o fmm.o \
 		getMolSad.o getMol.o shell.o schwarz.o quick_one_electron_integral.o \
 		getEnergy.o inidivcon.o ecp.o hfoperator.o nuclear.o \
-		dft.o sedftoperator.o \
+		dft.o sedftoperator.o dipole.o \
 		scf.o uscf.o finalize.o uhfoperator.o udftoperator.o usedftoperator.o \
 		uelectdii.o mpi_setup.o quick_debug.o calMP2.o optimize.o \
 		gradient.o hessian.o CPHF.o frequency.o MFCC.o basis.o 
+cpconfig:
+	cp $(configfolder)/config.h ./config.h
+cpconfig.cuda:
+	cp $(configfolder)/config.cuda.h ./config.h
 
 #************************************************************************
 # 
@@ -244,11 +176,11 @@ OBJ =   $(mpimod_o) main.o ${modobj0} ${modobj1} ${modobj2} \
 # 
 #************************************************************************
 
-quick: quick_modules quick_subs $(OBJ) fake_amber_interface.o
+quick: cpconfig quick_modules quick_subs $(OBJ) fake_amber_interface.o
 	$(FC) -o ${exefile} $(OBJ) $(libfolder)/quicklib.a fake_amber_interface.o $(LDFLAGS)
 
-quick.cuda: quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o
-	$(CXX) -o ${exefile}.cuda $(cudaobj) $(OBJ) $(libfolder)/quicklib.a fake_amber_interface.o $(CFLAGS) 
+quick.cuda: cpconfig.cuda quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o
+	$(CXX) -o ${exefile}.cuda $(OBJ) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o $(CFLAGS) 
 
 
 quick_lib:$(OBJ) ambermod amber_interface.o
@@ -270,7 +202,7 @@ ambermod:
 
 # - 1. Clean object files
 clean: neat
-	-rm -f .cppdefs *.mod *.o subs/*.o quick
+	-rm -f _*.f90 .cppdefs *.mod *.o subs/*.o quick
 	
 neat:
 	-rm -f $(TMPFILES)
@@ -280,3 +212,5 @@ TAGS: $(SRC)
 	etags $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
+
+#include depend

@@ -14,7 +14,7 @@
 subroutine PriSym(io,n,mat,fm) ! format: f(x.y) x>7 sugg 12.5,12.7,14.9
   implicit none
   integer j,jj,n,io,n5,nf,x,y,ini,ifi,k
-  real*8 mat(n,n)
+  double precision mat(n,n)
   character fm*(*),ch,fm2*10
   character*40 fmt1,fmt2,fmt3,fmt4
 

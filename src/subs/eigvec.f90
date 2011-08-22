@@ -257,12 +257,12 @@ end SUBROUTINE EIGVEC
 
     EVAL1(1) = A(1,1)
     BETAH(1,1) = A(2,1)
-    IF(NDIM > 2)THEN
-        DO 50 I=2,NDIM-1
+    IF(NDIM > 2)then
+        do 50 I=2,NDIM-1
             EVAL1(I) = A(I,I)
             BETAH(1,I) = A(I+1,I)
-        50 ENDDO
-    ENDIF
+        50 enddo
+    endif
     EVAL1(NDIM) = A(NDIM,NDIM)
 
 ! EACH QR ITERATION WILL OPERATE ON THE UNREDUCED TRIDIAGONAL
@@ -277,51 +277,51 @@ end SUBROUTINE EIGVEC
 ! (N,N).  I.E., SEARCH UPWARD FOR A BETAH THAT IS ZERO.
 
     80 KUPPER = N-L
-    DO 100 K=1,KUPPER
+    do 100 K=1,KUPPER
         I = N-K
-        IF(ABS(BETAH(1,I)) <= EPSLON)THEN
+        IF(ABS(BETAH(1,I)) <= EPSLON)then
             L = I+1
             GO TO 150
-        ENDIF
-    100 ENDDO
+        endif
+    100 enddo
 
-! IF WE GET TO THE NEXT STATEMENT, THEN THERE ARE NO ZERO OFF-DIAGONALS
+! IF WE GET TO THE NEXT STATEMENT, then THERE ARE NO ZERO OFF-DIAGONALS
 ! FOR THE SUBMATRIX WITH UPPER LEFT A(L,L) AND LOWER RIGHT A(N,N).
 ! WE CAN STILL GET EIGENVALUES IF THE MATRIX IS 2 BY 2 OR 1 BY 1.
-! OTHERWISE, DO ANOTHER QR ITERATION PROVIDED ITMAX CYCLES HAVE
+! OTHERWISE, do ANOTHER QR ITERATION PROVIDED ITMAX CYCLES HAVE
 ! NOT OCCURRED.
 
-    IF(L == N .OR. L == N-1)THEN
+    IF(L == N .OR. L == N-1)then
         GO TO 150
-    ELSE
-        IF(ITER == ITMAX)THEN
+    else
+        IF(ITER == ITMAX)then
             IERROR = 1
             GO TO 1000
-        ELSE
+        else
             GO TO 200
-        ENDIF
-    ENDIF
+        endif
+    endif
 
-! IF WE GET TO 150 THEN A(L,L-1) IS ZERO AND THE UNREDUCED SUBMATRIX
+! IF WE GET TO 150 then A(L,L-1) IS ZERO AND THE UNREDUCED SUBMATRIX
 ! HAS UPPER LEFT AT A(L,L) AND LOWER RIGHT AT A(N,N).  WE CAN
 ! EXTRACT ONE EIGENVALUE IF THIS MATRIX IS 1 BY 1 AND 2 EIGENVALUES
 ! IF IT IS 2 BY 2.
 
-    150 IF(L == N)THEN
+    150 IF(L == N)then
     
     ! IT'S A 1 BY 1 AND EVAL1(N) IS AN EIGENVALUE.  IF L=2 OR 1 WE ARE
     ! DONE.  OTHERWISE, UPDATE N, RESET L AND ITER, AND REPEAT THE
     ! SEARCH.
     
-        IF(L <= 2)THEN
+        IF(L <= 2)then
             GO TO 500
-        ELSE
+        else
             N = L-1
             L = 1
             ITER = 0
             GO TO 80
-        ENDIF
-    ELSEIF(L == N-1)THEN
+        endif
+    ELSEIF(L == N-1)then
     
     ! THE UNREDUCED SUBMATRIX IS A 2 BY 2.  OVERWRITE EVAL1(N-1)
     ! AND EVAL1(N) WITH THE EIGENVALUES OF THE LOWER RIGHT 2 BY 2.
@@ -330,33 +330,33 @@ end SUBROUTINE EIGVEC
         ROOT1 = BTERM*0.5D0
         ROOT2 = ROOT1
         DISCR = BTERM**2 - 4.0D0*(EVAL1(N-1)*EVAL1(N)-BETAH(1,N-1)**2)
-        IF(DISCR > 0.0D0)THEN
+        IF(DISCR > 0.0D0)then
             D = DSQRT(DISCR)*0.5D0
             ROOT1 = ROOT1 - D
             ROOT2 = ROOT2 + D
-        ENDIF
+        endif
         EVAL1(N-1) = ROOT1
         EVAL1(N) = ROOT2
     
     ! SEE IF WE ARE DONE.  IF NOT, RESET N, L, AND ITER AND LOOK
     ! FOR NEXT UNREDUCED SUBMATRIX.
     
-        IF(L <= 2)THEN
+        IF(L <= 2)then
             GO TO 500
-        ELSE
+        else
             N = L-1
             L = 1
             ITER = 0
             GO TO 80
-        ENDIF
-    ELSE
+        endif
+    else
     
     ! AN EIGENVALUE WAS FOUND AND THE NEW UNREDUCED MATRIX LIMITS
-    ! N AND L ARE SET.  DO A QR ITERATION ON NEW MATRIX.
+    ! N AND L ARE SET.  do A QR ITERATION ON NEW MATRIX.
     
         ITER = 0
         GO TO 200
-    ENDIF
+    endif
 
 ! QR ITERATION BEGINS HERE.
 
@@ -376,7 +376,7 @@ end SUBROUTINE EIGVEC
 
 ! OVERWRITE A WITH Q'*A*Q.
 
-    DO 250 K=L,N-1
+    do 250 K=L,N-1
         D = DSQRT(P*P + R*R)
         C = P/D
         S = R/D
@@ -391,7 +391,7 @@ end SUBROUTINE EIGVEC
         T = SS*T - CSW + CC*AK1
         R = S*BETAH(1,K+1)
         W = C*BETAH(1,K+1)
-    250 ENDDO
+    250 enddo
     BETAH(1,N-1) = P
     EVAL1(N) = T
 
@@ -401,19 +401,19 @@ end SUBROUTINE EIGVEC
 
 ! SORT EIGENVALUES IN ASCENDING ALGEBRAIC ORDER.
 
-    500 DO 600 I=2,NDIM
+    500 do 600 I=2,NDIM
         JMAX = NDIM-I+1
         ISORT = 0
-        DO 550 J=1,JMAX
-            IF(EVAL1(J) > EVAL1(J+1))THEN
+        do 550 J=1,JMAX
+            IF(EVAL1(J) > EVAL1(J+1))then
                 ETEMP = EVAL1(J)
                 EVAL1(J) = EVAL1(J+1)
                 EVAL1(J+1) = ETEMP
                 ISORT = 1
-            ENDIF
-        550 ENDDO
+            endif
+        550 enddo
         IF(ISORT == 0) GO TO 1000
-    600 ENDDO
+    600 enddo
     1000 RETURN
     end SUBROUTINE EIGVAL
 

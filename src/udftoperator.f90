@@ -285,7 +285,7 @@
         enddo
     enddo
 
-    END subroutine udftoperatora
+    end subroutine udftoperatora
 
 ! Ed Brothers. Febuary 8,2002
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
@@ -577,5 +577,5 @@
         enddo
     enddo
 
-    END subroutine udftoperatorb
+    end subroutine udftoperatorb
 

@@ -93,8 +93,21 @@ module quick_basis_module
         ! function for shell i with angular momenta j
         integer, allocatable, dimension(:,:) :: Qsbasis,Qfbasis
         
+        ! normalized coeffecient
+        double precision, allocatable, dimension(:,:) :: gccoeff
         
-!        integer, allocatable, dimension(:,:) :: KLMN
+        ! basis set factor
+        double precision, allocatable, dimension(:) :: cons
+        
+        ! combined coeffecient for two indices
+        double precision, allocatable, dimension(:,:,:,:) :: Xcoeff
+        
+        ! exponent
+        double precision, allocatable, dimension(:,:) :: gcexpo
+ 
+        integer, allocatable, dimension(:,:) :: KLMN  
+        
+        
    end type quick_basis_type
     
    type(quick_basis_type) quick_basis
@@ -108,35 +121,40 @@ module quick_basis_module
 
    integer,target :: nshell,nprim,jshell,jbasis
    integer,target :: nbasis
-   
+   integer :: maxcontract   
    
    ! used for 2e integral indices
    integer :: IJKLtype,III,JJJ,KKK,LLL,IJtype,KLtype
 
    ! used for hrr and vrr
-   double precision :: Y,dnmax,Yaa(3),Ybb(3),Ycc(3)
+   double precision :: Y,dnmax
+   double precision :: Yaa(3),Ybb(3),Ycc(3)  ! only used for opt
    
    
    ! this is for SAD initial guess
    integer,allocatable,dimension(:) :: atombasis    ! basis number for every atom
-   double precision,allocatable,dimension(:,:,:) :: atomdens    ! density matrix for single atom
+   double precision,allocatable,dimension(:,:,:) :: atomdens    ! density matrix for ceitain atom
    
-   double precision, allocatable, dimension(:,:) :: Apri,Kpri,gccoeff,gcexpo,Ycutoff, &
-    cutmatrix,cutprim
-
-    integer, allocatable, dimension(:,:) :: KLMN
-    double precision, allocatable, dimension(:) :: cons
+   
+   double precision, allocatable, dimension(:,:) :: Apri,Kpri
    double precision, allocatable, dimension(:,:,:) :: Ppri
-   double precision, allocatable, dimension(:,:,:,:) :: Xcoeff,Yxiaoprim !Yxiaoprim only used at shwartz cutoff
+      
+   ! they are for Schwartz cutoff
+   double precision, allocatable, dimension(:,:) :: Ycutoff,cutmatrix,cutprim
+   double precision, allocatable, dimension(:,:,:,:) :: Yxiaoprim !Yxiaoprim only used at shwartz cutoff
+
+
+   ! for MP2 
    double precision, allocatable, dimension(:,:,:) :: orbmp2dcsub
    double precision, allocatable, dimension(:,:) :: orbmp2
    double precision, allocatable, dimension(:,:,:,:,:) :: orbmp2i331
    double precision, allocatable, dimension(:,:,:,:,:) :: orbmp2j331
    double precision, allocatable, dimension(:,:,:,:) :: orbmp2k331
    double precision, allocatable, dimension(:,:,:) :: orbmp2k331dcsub
+   
+   ! 
    double precision, allocatable, dimension(:,:,:) :: Yxiao,Yxiaotemp,attraxiao
-   double precision, allocatable, dimension(:,:,:) :: allerror,alloperator ! to remove to diis
-
+   
     !only for opt
    double precision, allocatable, dimension(:,:,:,:) :: attraxiaoopt
    
@@ -152,21 +170,31 @@ module quick_basis_module
    integer,allocatable:: mpi_nbasis(:,:)   ! basis series no. calcluated in this node
 #endif
 
+    interface alloc
+        module procedure allocate_quick_basis
+    end interface alloc
+
+    interface dealloc
+        module procedure deallocate_quick_basis
+    end interface dealloc
+    
+    interface print
+        module procedure print_quick_basis
+    end interface print
+
 contains
 
+   !----------------
+   ! Allocate quick basis
+   !----------------
    subroutine allocate_quick_basis(self,natom_arg,nshell_arg,nbasis_arg)
         use quick_gaussian_class_module
         implicit none
-        integer natom_arg,nshell_arg,nbasis_arg
+        integer natom_arg,nshell_arg,nbasis_arg,i,j
         type(quick_basis_type) self
-!        self%nshell => nshell
-!        self%nprim  => nprim
-!        self%jshell => jshell
-!        self%jbasis => jbasis
-!        self%nbasis => nbasis
         
-        allocate(self%gauss_fnc(nbasis))
-        allocate(self%ncenter(nbasis))
+        allocate(self%gauss_fnc(nbasis_arg))
+        allocate(self%ncenter(nbasis_arg))
         allocate(self%first_basis_function(natom_arg))
         allocate(self%last_basis_function(natom_arg))
         allocate(self%first_shell_basis_function(natom_arg))
@@ -185,9 +213,25 @@ contains
         
         allocate(self%Qsbasis(nshell_arg,0:3))
         allocate(self%Qfbasis(nshell_arg,0:3))
-!        allocate(self%KLMN(3,nbasis_arg))
+        
+        do i = 1, nshell_arg
+            do j = 0, 3
+                self%Qfbasis(i,j) = 0
+                self%Qfbasis(i,j) = 0
+            enddo
+        enddo
+        
+        allocate(self%gcexpo(6,nbasis_arg))
+        allocate(self%gccoeff(6,nbasis_arg))
+        allocate(self%cons(nbasis_arg))
+        
+        allocate(self%KLMN(3,nbasis_arg))
    end subroutine allocate_quick_basis
    
+   
+   !----------------
+   ! deallocate quick basis
+   !----------------
    subroutine deallocate_quick_basis(self)
         use quick_gaussian_class_module
         implicit none
@@ -211,7 +255,11 @@ contains
         deallocate(self%gcexpomin)
         deallocate(self%Qsbasis)
         deallocate(self%Qfbasis)
-!        deallocate(self%KLMN)
+        deallocate(self%cons)
+        deallocate(self%gcexpo)
+        deallocate(self%gccoeff)
+
+        deallocate(self%KLMN)
    end subroutine deallocate_quick_basis
    
    
@@ -224,7 +272,7 @@ contains
       allocate(Kpri(jbasis,jbasis))
       allocate(cutprim(jbasis,jbasis))
       allocate(Ppri(3,jbasis,jbasis))
-      allocate(Xcoeff(jbasis,jbasis,0:3,0:3))
+      allocate(quick_basis%Xcoeff(jbasis,jbasis,0:3,0:3))
       if(quick_method_arg%DFT)then
          allocate(phiXiao(nbasis))
          allocate(dPhidXXiao(nbasis))
@@ -233,6 +281,21 @@ contains
       end if
 
    end subroutine
+   
+   subroutine print_quick_basis(self,ioutfile)
+        implicit none
+        type(quick_basis_type) self
+        integer iOutFile
+        
+        if (ioutfile.ne.0) then
+            write (iOutFile,*)
+            write (iOutFile,'("============== BASIS INFOS ==============")')
+            write (iOutFile,'("| BASIS FUNCTIONS = ",I4)') nbasis
+            write (iOutFile,'("| NSHELL = ",I4, " NPRIM  = ", I4)') nshell,nprim
+            write (iOutFile,'("| JSHELL = ",I4, " JBASIS = " ,I4)') jshell,jbasis
+            write (iOutFile,*)
+        endif
+   end subroutine print_quick_basis
    
    subroutine normalize_basis()
       use quick_constants_module

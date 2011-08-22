@@ -10,7 +10,7 @@
 
     logical locallog1,locallog2
 
-    real*8 Xiaotest,testtmp
+    double precision Xiaotest,testtmp
  integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
  common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
@@ -39,17 +39,17 @@
 
 do itt=1,np
 
- Do i=1,nbasisdc(itt)
-  Do j=1,nbasisdc(itt)
+ do i=1,nbasisdc(itt)
+  do j=1,nbasisdc(itt)
     quick_qm_struct%co(i,j)=COdcsub(i,j,itt)
-  ENDDO
- ENDDO 
+  enddo
+ enddo 
 
- Do i=1,nbasisdc(itt)
-  Do j=1,nbasisdc(itt)
+ do i=1,nbasisdc(itt)
+  do j=1,nbasisdc(itt)
     quick_scratch%hold(i,j)=quick_qm_struct%co(j,i)
-  ENDDO
- ENDDO
+  enddo
+ enddo
 
  ttt=0.0d0
 
@@ -59,14 +59,14 @@ do itt=1,np
     do jjat=iiat,dcsubn(itt)
      jjatom=dcsub(itt,jjat)
       do JJ=max(quick_basis%first_shell_basis_function(jjatom),II),quick_basis%last_shell_basis_function(jjatom)
-!  Do II=1,jshell
+!  do II=1,jshell
 !   do JJ=II,jshell
      Testtmp=Ycutoff(II,JJ)
      ttt=max(ttt,Testtmp)
      enddo
     enddo
    enddo
- Enddo
+ enddo
 
 
  if(mod(nelecmp2sub(itt),2).eq.1)then
@@ -118,7 +118,7 @@ do itt=1,np
 !enddo
 !stop
 
-DO i3=1,iocc
+do i3=1,iocc
 
      do l1=1,ivir
     do k1=1,ivir
@@ -154,7 +154,7 @@ DO i3=1,iocc
 
 ntemp=0
 
-! Do II=1,jshell
+! do II=1,jshell
 !   do JJ=II,jshell
  do iiat=1,dcsubn(itt)
   iiatom=dcsub(itt,iiat)
@@ -206,7 +206,7 @@ ntemp=0
 
             comax=0.d0
             XiaoTEST1 = TESTtmp*Ycutoff(KK,LL)
-          If(XiaoTEST1.gt.XiaoCUTOFFmp2)then
+          if(XiaoTEST1.gt.XiaoCUTOFFmp2)then
 
  NKK1=quick_basis%Qstart(KK)
  NKK2=quick_basis%Qfinal(KK)
@@ -223,32 +223,32 @@ ntemp=0
    LL111=quick_basis%ksumtype(LL)+NBL1
    LL112=quick_basis%ksumtype(LL)+NBL2
 
-       Do KKK=KK111,KK112
-          Do LLL=max(KKK,LL111),LL112
+       do KKK=KK111,KK112
+          do LLL=max(KKK,LL111),LL112
 
 !            print*,co(kkk,i3),co(lll,i3)
             comax=max(comax,dabs(quick_qm_struct%co(wtospoint(itt,kkk),i3)))
             comax=max(comax,dabs(quick_qm_struct%co(wtospoint(itt,lll),i3)))    
        
-          Enddo
-       Enddo        
+          enddo
+       enddo        
 
             Xiaotest=xiaotest1*comax
 !            DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
 !                  cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
 !            XiaoTest=Xiaotest1*DNmax
-            If(XiaoTEST.gt.XiaoCUTOFFmp2)then
+            if(XiaoTEST.gt.XiaoCUTOFFmp2)then
               ntemp=ntemp+1
               call shellmp2divcon(i3,itt)
-            Endif
+            endif
 
            endif
 
        enddo
      enddo
 
-    ENDDO
-   ENDDO
+    enddo
+   enddo
 
 
  NII1=quick_basis%Qstart(II)
@@ -266,8 +266,8 @@ ntemp=0
    JJ111=quick_basis%ksumtype(JJ)+NBJ1
    JJ112=quick_basis%ksumtype(JJ)+NBJ2
 
-       Do III=II111,II112
-          Do JJJ=max(III,JJ111),JJ112
+       do III=II111,II112
+          do JJJ=max(III,JJ111),JJ112
 
           IIInew=III-II111+1
           JJJnew=JJJ-JJ111+1
@@ -329,33 +329,33 @@ if(mod(nelecmp2sub(itt),2).eq.1)j33new=j33+iocc-1
    enddo
  endif
 
-           Enddo
-       Enddo
+           enddo
+       enddo
 
    endif
 
    enddo
  enddo
 
- ENDDO
-ENDDO
+ enddo
+enddo
 
   write (ioutfile,*)"ntemp=",ntemp
 
-                   Do LLL=1,nbasisdc(itt)
-                  Do J3=1,ivir
-                Do L3=1,ivir
+                   do LLL=1,nbasisdc(itt)
+                  do J3=1,ivir
+                do L3=1,ivir
                    L3new=L3+iocc
 if(mod(nelecmp2sub(itt),2).eq.1)L3new=L3+iocc-1
-                 Do k3=i3,iocc
+                 do k3=i3,iocc
                     orbmp2(k3,l3,j3)=orbmp2(k3,l3,j3)+orbmp2k331(k3,j3,LLL)*quick_scratch%hold(L3new,LLL)
 !                    print*,orbmp2(k3,l3,i3,j3),orbmp2k331(k3,JJJ,j33)
                     orbmp2dcsub(k3,l3,j3)=orbmp2dcsub(k3,l3,j3)+ &
                                           orbmp2k331dcsub(k3,j3,LLL)*quick_scratch%hold(L3new,LLL)
-                   Enddo
-                  Enddo
-                 Enddo
-                Enddo
+                   enddo
+                  enddo
+                 enddo
+                enddo
 
 if(mod(nelecmp2sub(itt),2).eq.0)then
               do l=1,ivir
@@ -396,7 +396,7 @@ if(mod(nelecmp2sub(itt),2).eq.1)then
 endif
 
 
- ENDDO
+ enddo
 
  write(ioutfile,*)quick_qm_struct%EMP2,quick_qm_struct%EMP2-emp2temp
 

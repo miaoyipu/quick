@@ -62,11 +62,9 @@ subroutine read_job_and_atom
 
 
 
-      !------------------------------------------------------------------
-      ! ECP integrals prescreening
-      ! Alessandro GENONI 03/05/2007
-      !
-      if (index(keywd,'TOL_ECPINT=') /= 0) then
+
+      ! ECP integrals prescreening  -Alessandro GENONI 03/05/2007
+      if ((index(keywd,'TOL_ECPINT=') /= 0).and.quick_method%ecp) then
          istrt = index(keywd,'TOL_ECPINT=')+10
          call rdinum(keywd,istrt,itolecp,ierror)
          tolecp=2.30258d+00*itolecp
@@ -77,7 +75,7 @@ subroutine read_job_and_atom
 
 
       ! Alessandro GENONI 03/05/2007
-      if (itolecp == 0) then
+      if ((itolecp == 0).and.quick_method%ecp) then
          itolecp=12
          tolecp=2.30258d+00*itolecp
          thrshecp=10.0d0**(-1.0d0*itolecp)
@@ -90,10 +88,11 @@ subroutine read_job_and_atom
       close(infile)
    endif
 
-   !-------------------MPI/ALL NODES---------------------------------------
+
 #ifdef MPI
-   if (bMPI) call mpi_setup_job() ! communicates nodes and pass job specs to all nodes
-#endif
    !-------------------MPI/ALL NODES---------------------------------------
+   if (bMPI) call mpi_setup_job() ! communicates nodes and pass job specs to all nodes
+   !-------------------MPI/ALL NODES---------------------------------------
+#endif
 
 end
