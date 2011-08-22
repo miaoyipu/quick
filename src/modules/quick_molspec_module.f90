@@ -1,6 +1,4 @@
 
-
-
 !
 !	quick_molspec_module.f90
 !	new_quick
@@ -65,7 +63,7 @@ module quick_molspec_module
 
    end type quick_molspec_type
 
-   type (quick_molspec_type),save:: quick_molspec
+   type (quick_molspec_type) quick_molspec
    double precision, dimension(:,:), allocatable,target :: xyz 
    integer,target :: natom
 
@@ -389,6 +387,10 @@ contains
          else
             write (io,'("| NUMBER OF ELECTRONS     = ",I4)') self%nelec
          endif
+         
+         if (self%nbasis.ne.0) then
+            write (io,'("| NUMBER OF BASIS FUNTIONS= ",i4)') self%nbasis
+         endif
 
          write(io,*)
          write(io,'(" -- INPUT GEOMETRY -- :")')
@@ -409,12 +411,10 @@ contains
          if (self%natom.le.30) then
             write(io,*)
             write(io,'(" -- DISTANCE MATRIX -- :")')
-            call PriSym(io,self%natom,self%atomdistance,'f12.5')
+            call PriSym(io,self%natom,self%atomdistance,'f10.4')
          endif
       endif
-      
-      return
-      
+
    end subroutine print_quick_molspec
 
    !-------------------

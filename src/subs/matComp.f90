@@ -21,19 +21,6 @@ function rms(mat1,mat2,n)
     rms = (rms/n**2)**0.5d0
 end function rms
 
-function rootSquare(mat1,mat2,n)
-    implicit none
-    double precision rootSquare
-    integer n,i,j
-    double precision mat1(n),mat2(n)
-    
-    rootSquare=0.0d0
-    do i=1,n
-        rootSquare=(mat1(i)-mat2(i))**2.0d0+rootSquare
-    enddo
-    rootSquare = rootSquare**0.5d0
-end function rootSquare
-
 function maxDiff(mat1,mat2,n)
     implicit none
     double precision maxDiff

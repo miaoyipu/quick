@@ -35,7 +35,7 @@ SUBROUTINE RDWORD(STRING,ISTART,ISTOP)
            RETURN
         endif
      else
-        if( .not. INWORD)then
+        if( .NOT. INWORD)then
            INWORD = .TRUE.
            ISTART = I
         endif

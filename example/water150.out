@@ -23,10 +23,10 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Mon Aug 22 00:09:08 2011
+ TASK STARTS ON: Fri Aug 19 18:06:04 2011
  INPUT FILE:     water150.in
  OUTPUT FILE:    water150.out
- BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
+ BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
  @ Read Job And Atom
 
@@ -48,8 +48,8 @@ KEYWORD=HF  MAXDIIS=2 CUTOFF=1.234E-9 SCF=100 ENERGY ZMAKE NCYC=1000  BASIS=6-31
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
-| BASIS SET = 6-31G.BAS
-| BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31G.BAS
+| BASIS SET = 6-31G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
 
  @ Finish reading job
 

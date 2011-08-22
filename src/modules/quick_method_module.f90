@@ -1,6 +1,4 @@
 
-
-
 !
 !	quick_method_module.f90
 !	new_quick
@@ -100,13 +98,9 @@ module quick_method_module
         double precision :: gradMaxCrt     = .00045d0 ! max gradient change
         double precision :: gNormCrt      = .00030d0 ! gradient normalization
         
-
-
-
-        
     end type quick_method_type
     
-    type (quick_method_type),save :: quick_method
+    type (quick_method_type) quick_method
     
     interface print
         module procedure print_quick_method
@@ -500,7 +494,7 @@ module quick_method_module
             endif
 
             ! OPT not available for other DFT except BLYP            
-            if(self%DFT.and. self%OPT .and. (.not. self%BLYP))then
+            if(self%DFT.and. self%OPT .and. (.NOT. self%BLYP))then
                 call PrtWrn(io,"GEOMETRY OPTIMIZATION is only available with HF, DFT/BLYP" )
                 self%OPT = .false.
             endif

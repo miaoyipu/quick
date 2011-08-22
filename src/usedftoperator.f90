@@ -624,7 +624,7 @@
         enddo
     enddo
 
-    end subroutine usedftoperatora
+    END subroutine usedftoperatora
 
 ! Ed Brothers. Febuary 8,2002
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
@@ -1253,5 +1253,5 @@
         enddo
     enddo
 
-    end subroutine usedftoperatorb
+    END subroutine usedftoperatorb
 

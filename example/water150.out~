@@ -1,5 +1,5 @@
   **************************************************************************
-  **                      QUICK-0.07 Mar 2011                             **
+  **                      QUICK-0.06 June 12                              **
   **                                                                      **
   **                        Copyright (c) 2011                            **
   **                Regents of the University of Florida                  **
@@ -23,10 +23,10 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Mon Aug 22 00:03:58 2011
+ TASK STARTS ON: Fri Aug 19 18:05:10 2011
  INPUT FILE:     water150.in
  OUTPUT FILE:    water150.out
- BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
+ BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
 |------------ CUDA INFORMATION ---------------
 |  CUDA version of Quick in use
@@ -41,15 +41,12 @@
 |------------ GPU INFORMATION ---------------
 | CUDA ENABLED DEVICE         :        1
 | CUDA DEVICE IN USE          :        0
-| CUDA DEVICE NAME            : GeForce GT 330M
-| CUDA DEVICE PM              :        6
-| CUDA DEVICE CORE FREQ(GHZ)  :     1.10
-| CUDA DEVICE MEMORY SIZE (MB):      255
-| SUPPORTING CUDA VERSION     :      1.2
+| CUDA DEVICE NAME            : GeForce GTX 580
+| CUDA DEVICE PM              :       16
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
+| CUDA DEVICE MEMORY SIZE (MB):     1535
+| SUPPORTING CUDA VERSION     :      2.0
 |--------------------------------------------
-
- ! WARNING: Selected GPU does not support double-precision computation.
-
 
  @ Read Job And Atom
 
@@ -71,9 +68,8 @@ KEYWORD=HF  MAXDIIS=2 CUTOFF=1.234E-9 SCF=100 ENERGY ZMAKE NCYC=1000  BASIS=6-31
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
-| BASIS SET = 6-31G.BAS
-| BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31G.BAS
-THRESHOLD FOR ECP-INTEGRALS PRESCREENING =     0.10000E-11  (DEFAULT)
+| BASIS SET = 6-31G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
 
  @ Finish reading job
 
@@ -122,7 +118,6 @@ TOTAL ENERGY         =     0.000000000
 | TOTOAL ATOM NUMBER      =  150    NUMBER OF ATOM TYPES        =    1
 | NUMBER OF HYDROGEN ATOM =  150    NUMBER OF NON-HYDROGEN ATOM =    0
 | NUMBER OF ELECTRONS     =  150
-| NUMBER OF BASIS FUNTIONS=  300
 
  -- INPUT GEOMETRY -- :
     H           0.3032      -0.4940       0.0000
@@ -275,7 +270,12 @@ TOTAL ENERGY         =     0.000000000
     H          -0.3032     -42.9088       9.0000
     H           0.3032     -42.4940      12.0000
     H          -0.3032     -42.9088      12.0000
+
+============== BASIS INFOS ==============
 | BASIS FUNCTIONS =  300
+| NSHELL =  300 NPRIM  =  600
+| JSHELL =  300 JBASIS =  600
+
 
  @ End Reading Mol Info 
 

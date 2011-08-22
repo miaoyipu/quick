@@ -46,6 +46,6 @@ Subroutine GDate(Date1)
   !C#ifndef GDATE_doNE
   Call FDate(Date1)
   !C#endif
-  if(Len(Date1).gt.24) Date1(25:) = ' '
+  If(Len(Date1).gt.24) Date1(25:) = ' '
   Return
 end Subroutine GDate

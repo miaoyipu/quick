@@ -32,6 +32,7 @@ subroutine getmolsad()
    quick_method%UNRST=.true.
    quick_method%ZMAT=.false.
    quick_method%divcon=.false.
+
    call allocate_mol_sad(quick_molspec%iatomtype)
 
 
@@ -106,7 +107,7 @@ subroutine getmolsad()
             enddo
          endif
          ! From SCF calculation to get initial density guess
-         if(quick_molspec%atom_type_sym(iitemp).ne.'ZN')then ! if not ZN
+         if(quick_molspec%atom_type_sym(iitemp).ne.'ZN')then ! If not ZN
             call getenergy(failed)
             do i=1,nbasis
                do j=1,nbasis

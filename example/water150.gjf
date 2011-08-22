@@ -1,4 +1,4 @@
-#p NoSymmetry HF/6-31g scf=tight nofmm
+#p charge NoSymmetry HF/6-31g scf=tight nofmm
 
 water
 
@@ -153,5 +153,3 @@ H           0.3032      -42.4940       9.0000
 H          -0.3032      -42.9088       9.0000
 H           0.3032      -42.4940       12.0000
 H          -0.3032      -42.9088       12.0000
-
-

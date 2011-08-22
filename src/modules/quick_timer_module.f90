@@ -1,6 +1,4 @@
 
-
-
 !
 !	quick_timer_module.f90
 !	new_quick
@@ -46,10 +44,10 @@ module quick_timer_module
         double precision:: TGrad=0.0d0
     end type quick_timer_cumer
 
-    type (quick_timer),save:: timer_begin
-    type (quick_timer),save:: timer_end
-    type (quick_timer_cumer),save:: timer_cumer
-    type (quick_timer_cumer),save:: MPI_timer_cumer
+    type (quick_timer) timer_begin
+    type (quick_timer) timer_end
+    type (quick_timer_cumer) timer_cumer
+    type (quick_timer_cumer) MPI_timer_cumer
     
     contains
     

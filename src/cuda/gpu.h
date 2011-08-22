@@ -17,8 +17,9 @@ extern "C" void gpu_init_(void);
 extern "C" void gpu_shutdown_(void);
 
 extern "C" void gpu_upload_atom_and_chg_(int* atom, QUICKDouble* atom_chg);
-extern "C" void gpu_upload_cutoff_(QUICKDouble* cutMatrix, QUICKDouble* YCutoff, QUICKDouble* integralCutoff,\
-                                   QUICKDouble* cutPrim, QUICKDouble* primLimit);
+extern "C" void gpu_upload_cutoff_(QUICKDouble* cutMatrix, QUICKDouble* integralCutoff,QUICKDouble* primLimit);
+extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutPrim);
+
 extern "C" void gpu_upload_calculated_(QUICKDouble* o, QUICKDouble* co, QUICKDouble* vec, QUICKDouble* dense);
 extern "C" void gpu_upload_basis_(int* nshell, int* nprim, int* jshell, int* jbasis, int* maxcontract, \
                                   int* ncontract, int* itype,     QUICKDouble* aexp,      QUICKDouble* dcoeff,\

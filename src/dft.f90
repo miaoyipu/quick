@@ -61,7 +61,7 @@ subroutine mpw91(p,gx,gy,gz,gotherx,gothery,gotherz, &
 
    dfdggo = 0.d0
 
-end subroutine mpw91
+END subroutine mpw91
 
 ! Ed Brothers. As above.
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
@@ -100,11 +100,16 @@ subroutine mpw91_e(pa,pb,gax,gay,gaz,gbx,gby,gbz,e)
    e = e - pb**(4.d0/3.d0)*Fb
 
 
-end subroutine mpw91_e
+END subroutine mpw91_e
 
+!      subroutine rks_xc_b3lyp
+!     & (ideriv,npt,rhoa1,sigmaaa1,
+!     &  zk,vrhoa,vsigmaaa,
+!     &  v2rhoa2,v2rhoasigmaaa,v2sigmaaa2)
 
-
-subroutine b3lypf (rhoa1,sigmaaa1, vrhoa,vsigmaaa)
+subroutine b3lypf &
+      (rhoa1,sigmaaa1, &
+      vrhoa,vsigmaaa)
    !
    !     P.J. Stephens, F.J. Devlin, C.F. Chabalowski, M.J. Frisch
    !     Ab initio calculation of vibrational absorption and circular
@@ -136,13 +141,13 @@ subroutine b3lypf (rhoa1,sigmaaa1, vrhoa,vsigmaaa)
    !        Automatic code generation in density functional theory
    !        Comp. Phys. Comm. 136 (2001) 310-318.
    !
-   implicit double precision (a-h,o-z)
+   implicit real*8 (a-h,o-z)
    integer,parameter::npt=1
    integer ideriv
-   double precision rhoa1(npt)
-   double precision sigmaaa1(npt)
-   double precision zk(npt),vrhoa(npt),vsigmaaa(npt)
-   double precision v2rhoa2(npt),v2rhoasigmaaa(npt),v2sigmaaa2(npt)
+   real*8 rhoa1(npt)
+   real*8 sigmaaa1(npt)
+   real*8 zk(npt),vrhoa(npt),vsigmaaa(npt)
+   real*8 v2rhoa2(npt),v2rhoasigmaaa(npt),v2sigmaaa2(npt)
    parameter(tol=1.0d-20)
 
 
@@ -259,17 +264,19 @@ end
 
 subroutine b3lyp_e(rhoa1,sigmaaa1,zk)
 
-   implicit double precision (a-h,o-z)
+   implicit real*8 (a-h,o-z)
    integer,parameter::npt=1
    integer ideriv
-   double precision rhoa1(npt)
-   double precision sigmaaa1(npt)
-   double precision zk(npt),vrhoa(npt),vsigmaaa(npt)
-   double precision v2rhoa2(npt),v2rhoasigmaaa(npt),v2sigmaaa2(npt)
+   real*8 rhoa1(npt)
+   real*8 sigmaaa1(npt)
+   real*8 zk(npt),vrhoa(npt),vsigmaaa(npt)
+   real*8 v2rhoa2(npt),v2rhoasigmaaa(npt),v2sigmaaa2(npt)
    parameter(tol=1.0d-20)
 
+   !      do i=1,npt
    i=1
    rho = dmax1(0.D0,rhoa1(i))
+   !      if(rho.gt.tol) then
    sigma = dmax1(0.D0,sigmaaa1(i))
    t2 = rho**(1.D0/3.D0)
    t3 = t2*rho
@@ -304,12 +311,17 @@ subroutine b3lyp_e(rhoa1,sigmaaa1,zk)
          *sigma-0.2777777777777778D-1*(t23+0.349D0*t34-11.D0)*sigma) &
          -0.4583333333333333D0*t26*sigma)+0.19D0*rho*(0.310907D-1*t65 &
          +0.205219729378375D2*t71+0.4431373767749538D-2*t77)
+   !      else ! rho
+   !      zk(i) = 0.0d0
+   !      endif ! rho
+   !      enddo
 
 end
-
 ! Ed Brothers. January 28, 2002
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
-subroutine becke(density,gx,gy,gz,gotherx,gothery,gotherz,dfdr,dfdgg,dfdggo)
+
+subroutine becke(density,gx,gy,gz,gotherx,gothery,gotherz, &
+      dfdr,dfdgg,dfdggo)
    implicit double precision(a-h,o-z)
 
    ! Given either density and the two gradients, (with gother being for
@@ -345,7 +357,7 @@ subroutine becke(density,gx,gy,gz,gotherx,gothery,gotherz,dfdr,dfdgg,dfdggo)
 
    dfdgg= .5d0 * gprimeofx /(x * rho4thirds)
 
-end subroutine becke
+END subroutine becke
 
 ! Ed Brothers. January 28, 2002
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
@@ -378,6 +390,7 @@ end subroutine becke_e
 
 ! Ed Brothers. January 28, 2002
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
+
 subroutine lyp(pa,pb,gax,gay,gaz,gbx,gby,gbz, &
       dfdr,dfdgg,dfdggo)
    implicit double precision(a-h,o-z)
@@ -456,7 +469,7 @@ subroutine lyp(pa,pb,gax,gay,gaz,gbx,gby,gbz, &
          -abwpapb*(47.d0/18.d0 - 7.d0*delta/18.d0)*2.d0 &
          +abw*(2.d0/3.d0)*ptot*ptot*2.d0
 
-end subroutine lyp
+END subroutine lyp
 
 ! Ed Brothers. January 31, 2003.
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
@@ -505,7 +518,7 @@ subroutine lyp_e(pa,pb,gax,gay,gaz,gbx,gby,gbz,e)
          -abw*((2.d0/3.d0)*ptot*ptot - pa*pa)*gbb &
          -abw*((2.d0/3.d0)*ptot*ptot - pb*pb)*gaa
 
-end subroutine lyp_e
+END subroutine lyp_e
 
 subroutine read_sedft_parm()
    use allmod
@@ -641,6 +654,19 @@ subroutine dftoperator
                      xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                      xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                      xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
+
+               !                    do iatom = 1,natom
+               !                        O(Jbas,Ibas)=O(Jbas,Ibas)+ &
+                     !                        dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
+                     !                        attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
+                     !                        itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
+                     !                        itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
+                     !                        xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                     !                        xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                     !                        xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)), &
+                     !                        xyz(1,iatom),xyz(2,iatom),xyz(3,iatom), &
+                     !                        chg(iatom))
+               !                    enddo
             enddo
          enddo
       enddo
@@ -672,6 +698,21 @@ subroutine dftoperator
                      xyz(1,quick_basis%ncenter(Ibas)),xyz(2,quick_basis%ncenter(Ibas)), &
                      xyz(3,quick_basis%ncenter(Ibas)),xyz(1,quick_basis%ncenter(Ibas)), &
                      xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
+
+               ! Nuclear attraction.
+
+               !                do iatom = 1,natom
+               !                    quick_qm_struct%Eel=quick_qm_struct%Eel+DENSE(Ibas,Ibas)* &
+                     !                    dcoeff(Jcon,Ibas)*dcoeff(Icon,Ibas)* &
+                     !                    attraction(aexp(Jcon,Ibas),aexp(Icon,Ibas), &
+                     !                    itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
+                     !                    itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
+                     !                    xyz(1,quick_basis%ncenter(Ibas)),xyz(2,quick_basis%ncenter(Ibas)), &
+                     !                    xyz(3,quick_basis%ncenter(Ibas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                     !                    xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)), &
+                     !                    xyz(1,iatom),xyz(2,iatom),xyz(3,iatom), &
+                     !                    chg(iatom))
+               !                enddo
             enddo
          enddo
       enddo
@@ -691,7 +732,22 @@ subroutine dftoperator
                         xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                         xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                         xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
+
+                  ! Nuclear attraction.
+
+                  !                    do iatom = 1,natom
+                  !                        quick_qm_struct%Eel=quick_qm_struct%Eel+DENSE(Jbas,Ibas)* &
+                        !                        dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
+                        !                        2.d0*attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
+                        !                        itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
+                        !                        itype(1,Ibas),itype(2,Ibas),itype(3,Ibas), &
+                        !                        xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
+                        !                        xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
+                        !                        xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)), &
+                        !                        xyz(1,iatom),xyz(2,iatom),xyz(3,iatom), &
+                        !                        chg(iatom))
+                  !                    enddo
+               enddo
             enddo
          enddo
       enddo
@@ -703,11 +759,16 @@ subroutine dftoperator
       enddo
 
    endif
+   !    print*,'quick_qm_struct%Eel=', quick_qm_struct%Eel
+
    call cpu_time(t2)
 
    if(quick_method%printEnergy)then
       write (ioutfile,'("Time for one-electron energy evaluation=",F16.9)') t2-t1
    endif
+
+   !
+
 
    !
    ! Alessandro GENONI 03/21/2007
@@ -745,13 +806,13 @@ subroutine dftoperator
                do LL=KK,jshell
                   !          Nxiao1=Nxiao1+1
                   testCutoff = TESTtmp*Ycutoff(KK,LL)
-                  if(testCutoff.gt.quick_method%integralCutoff)then
+                  If(testCutoff.gt.quick_method%integralCutoff)then
                      DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                            cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
                      !            DNmax=max(cutmatrix(II,JJ),cutmatrix(KK,LL) &
                            !                  )
                      cutoffTest=testCutoff*DNmax
-                     if(cutoffTest.gt.quick_method%integralCutoff)then
+                     If(cutoffTest.gt.quick_method%integralCutoff)then
                         IIxiao=II
                         JJxiao=JJ
                         KKxiao=KK
@@ -775,13 +836,13 @@ subroutine dftoperator
                do LL=KK,jshell
                   !          Nxiao1=Nxiao1+1
                   testCutoff = TESTtmp*Ycutoff(KK,LL)
-                  if(testCutoff.gt.quick_method%integralCutoff)then
+                  If(testCutoff.gt.quick_method%integralCutoff)then
                      !            DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                            !                  cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
                      DNmax=max(cutmatrix(II,JJ),cutmatrix(KK,LL) &
                            )
                      cutoffTest=testCutoff*DNmax
-                     if(cutoffTest.gt.quick_method%integralCutoff)then
+                     If(cutoffTest.gt.quick_method%integralCutoff)then
                         IIxiao=II
                         JJxiao=JJ
                         KKxiao=KK
@@ -807,8 +868,10 @@ subroutine dftoperator
 
    call cpu_time(t2)
 
-   write (ioutfile,'(" TIME of evaluation integral = ",F12.2)') T2-T1
+   write (ioutfile,'(" TIME of evaluation integral = ",F12.2)') &
+         T2-T1
 
+   ! print*,'Nxiao1=',Nxiao1,'Nxiao2=',Nxiao2,integralCutOff
 
    do Ibas=1,nbasis
       do Jbas=Ibas+1,nbasis
@@ -825,6 +888,9 @@ subroutine dftoperator
 
       quick_qm_struct%Eel=quick_qm_struct%Eel/2.0d0
    endif
+
+
+   ! stop
 
    ! The next portion is the exchange/correlation functional.
    ! The angular grid code came from CCL.net.  The radial grid
@@ -852,12 +918,21 @@ subroutine dftoperator
    quick_qm_struct%aelec=0.d0
    quick_qm_struct%belec=0.d0
 
+   ! Xiao HE 02/09/1007 SG0 SG1 grids
+   !    do Ireg=1,iregion
+   !        call gridform(iangular(Ireg))
+   !        do Irad=iradial(ireg-1)+1,iradial(ireg)
+   !            do Iatm=1,natom
+   !                rad = radii(quick_molspec%iattype(iatm))
+   !                rad3 = rad*rad*rad
+   !                do Iang=1,iangular(Ireg)
+
    if(quick_method%B3LYP)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -865,7 +940,7 @@ subroutine dftoperator
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -874,12 +949,13 @@ subroutine dftoperator
             endif
 
             rad3 = rad*rad*rad
+            !             print*,iiangt
             do Iang=1,iiangt
                gridx=xyz(1,Iatm)+rad*RGRID(Irad)*XANG(Iang)
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -911,6 +987,8 @@ subroutine dftoperator
                      densitysum=2.0d0*density
                      sigma=4.0d0*(gax*gax+gay*gay+gaz*gaz)
                      call b3lyp_e(densitysum,sigma,zkec)
+                     !
+                     !                    quick_qm_struct%Eel = quick_qm_struct%Eel + (param7*Ex+param8*Ec) &
                            Eelxc = Eelxc + zkec*weight
 
 
@@ -920,40 +998,70 @@ subroutine dftoperator
                      ! This allows the calculation of the derivative of the functional
                      ! with regard to the density (dfdr), with regard to the alpha-alpha
                      ! density invariant (df/dgaa), and the alpha-beta density invariant.
+
+                     !                            call becke(density,gax,gay,gaz,gbx,gby,gbz, &
+                           !                            dfdr,dfdgaa,dfdgab)
+                     !
+                     !                            call lyp(density,densityb,gax,gay,gaz,gbx,gby,gbz, &
+                           !                            dfdr2,dfdgaa2,dfdgab2)
+
                      densitysum=2.0d0*density
                      sigma=4.0d0*(gax*gax+gay*gay+gaz*gaz)
 
                      call b3lypf(densitysum,sigma,dfdr,xiaodot)
+
+                     !                            dfdr=dfdr*2.0d0
+
+                     !                            dfdr = dfdr+dfdr2
+                     !                            dfdgaa = dfdgaa + dfdgaa2
+                     !                            dfdgab = dfdgab + dfdgab2
+
                      ! Calculate the first term in the dot product shown above,i.e.:
                      ! (2 df/dgaa Grad(rho a) + df/dgab Grad(rho b)) doT Grad(Phimu Phinu))
                      xdot=xiaodot*gax
                      ydot=xiaodot*gay
                      zdot=xiaodot*gaz
 
+                     !                            xdot=2.d0*dfdgaa*gax+dfdgab*gbx
+                     !                            ydot=2.d0*dfdgaa*gay+dfdgab*gby
+                     !                            zdot=2.d0*dfdgaa*gaz+dfdgab*gbz
+
                      ! Now loop over basis functions and compute the addition to the matrix
                      ! element.
 
                      do Ibas=1,nbasis
+                        !                                call pteval(gridx,gridy,gridz,phi,dphidx,dphidy, &
+                              !                                dphidz,Ibas)
                         phi=phixiao(Ibas)
                         dphidx=dphidxxiao(Ibas)
                         dphidy=dphidyxiao(Ibas)
                         dphidz=dphidzxiao(Ibas)
+                        !                                quicktest = DABS(dphidx)+DABS(dphidy)+DABS(dphidz) &
+                              !                                +DABS(phi)
                         quicktest = DABS(dphidx+dphidy+dphidz+ &
                               phi)
                         if (quicktest < quick_method%DMCutoff ) then
                            continue
                         else
                            do Jbas=Ibas,nbasis
+                              !                                        call pteval(gridx,gridy,gridz,phi2,dphi2dx,dphi2dy, &
+                                    !                                        dphi2dz,Jbas)
                               phi2=phixiao(Jbas)
                               dphi2dx=dphidxxiao(Jbas)
                               dphi2dy=dphidyxiao(Jbas)
                               dphi2dz=dphidzxiao(Jbas)
+                              !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
+                                    !                                        +DABS(phi2)
+                              !                                        if (quicktest < quick_method%DMCutoff ) then
+                              !                                            continue
+                              !                                        else
                               temp = phi*phi2
                               tempgx = phi*dphi2dx + phi2*dphidx
                               tempgy = phi*dphi2dy + phi2*dphidy
                               tempgz = phi*dphi2dz + phi2*dphidz
                               quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+(temp*dfdr+ &
                                     xdot*tempgx+ydot*tempgy+zdot*tempgz)*weight
+                              !                                        endif
                            enddo
                         endif
                      enddo
@@ -962,14 +1070,15 @@ subroutine dftoperator
             enddo
          enddo
       enddo
+      !    enddo
    endif
 
    if(quick_method%BLYP)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -977,7 +1086,7 @@ subroutine dftoperator
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -986,12 +1095,13 @@ subroutine dftoperator
             endif
 
             rad3 = rad*rad*rad
+            !             print*,iiangt
             do Iang=1,iiangt
                gridx=xyz(1,Iatm)+rad*RGRID(Irad)*XANG(Iang)
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -1041,6 +1151,10 @@ subroutine dftoperator
                      call lyp(density,densityb,gax,gay,gaz,gbx,gby,gbz, &
                            dfdr2,dfdgaa2,dfdgab2)
 
+                     !                            dfdr = param7*dfdr+param8*dfdr2
+                     !                            dfdgaa = param7*dfdgaa + param8*dfdgaa2
+                     !                            dfdgab = param7*dfdgab + param8*dfdgab2
+
                      dfdr = dfdr+dfdr2
                      dfdgaa = dfdgaa + dfdgaa2
                      dfdgab = dfdgab + dfdgab2
@@ -1056,26 +1170,38 @@ subroutine dftoperator
                      ! element.
 
                      do Ibas=1,nbasis
+                        !                                call pteval(gridx,gridy,gridz,phi,dphidx,dphidy, &
+                              !                                dphidz,Ibas)
                         phi=phixiao(Ibas)
                         dphidx=dphidxxiao(Ibas)
                         dphidy=dphidyxiao(Ibas)
                         dphidz=dphidzxiao(Ibas)
+                        !                                quicktest = DABS(dphidx)+DABS(dphidy)+DABS(dphidz) &
+                              !                                +DABS(phi)
                         quicktest = DABS(dphidx+dphidy+dphidz+ &
                               phi)
                         if (quicktest < quick_method%DMCutoff ) then
                            continue
                         else
                            do Jbas=Ibas,nbasis
+                              !                                        call pteval(gridx,gridy,gridz,phi2,dphi2dx,dphi2dy, &
+                                    !                                        dphi2dz,Jbas)
                               phi2=phixiao(Jbas)
                               dphi2dx=dphidxxiao(Jbas)
                               dphi2dy=dphidyxiao(Jbas)
                               dphi2dz=dphidzxiao(Jbas)
+                              !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
+                                    !                                        +DABS(phi2)
+                              !                                        if (quicktest < quick_method%DMCutoff ) then
+                              !                                            continue
+                              !                                        else
                               temp = phi*phi2
                               tempgx = phi*dphi2dx + phi2*dphidx
                               tempgy = phi*dphi2dy + phi2*dphidy
                               tempgz = phi*dphi2dz + phi2*dphidz
                               quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+(temp*dfdr+ &
                                     xdot*tempgx+ydot*tempgy+zdot*tempgz)*weight
+                              !                                        endif
                            enddo
                         endif
                      enddo
@@ -1090,10 +1216,10 @@ subroutine dftoperator
 
    if(quick_method%MPW91LYP)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -1101,7 +1227,7 @@ subroutine dftoperator
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -1116,7 +1242,7 @@ subroutine dftoperator
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -1229,10 +1355,10 @@ subroutine dftoperator
 
    if(quick_method%BPW91)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -1240,7 +1366,7 @@ subroutine dftoperator
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -1249,12 +1375,13 @@ subroutine dftoperator
             endif
 
             rad3 = rad*rad*rad
+            !             print*,iiangt
             do Iang=1,iiangt
                gridx=xyz(1,Iatm)+rad*RGRID(Irad)*XANG(Iang)
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -1304,6 +1431,10 @@ subroutine dftoperator
                      call lyp(density,densityb,gax,gay,gaz,gbx,gby,gbz, &
                            dfdr2,dfdgaa2,dfdgab2)
 
+                     !                            dfdr = param7*dfdr+param8*dfdr2
+                     !                            dfdgaa = param7*dfdgaa + param8*dfdgaa2
+                     !                            dfdgab = param7*dfdgab + param8*dfdgab2
+
                      dfdr = dfdr+dfdr2
                      dfdgaa = dfdgaa + dfdgaa2
                      dfdgab = dfdgab + dfdgab2
@@ -1319,26 +1450,38 @@ subroutine dftoperator
                      ! element.
 
                      do Ibas=1,nbasis
+                        !                                call pteval(gridx,gridy,gridz,phi,dphidx,dphidy, &
+                              !                                dphidz,Ibas)
                         phi=phixiao(Ibas)
                         dphidx=dphidxxiao(Ibas)
                         dphidy=dphidyxiao(Ibas)
                         dphidz=dphidzxiao(Ibas)
+                        !                                quicktest = DABS(dphidx)+DABS(dphidy)+DABS(dphidz) &
+                              !                                +DABS(phi)
                         quicktest = DABS(dphidx+dphidy+dphidz+ &
                               phi)
                         if (quicktest < quick_method%DMCutoff ) then
                            continue
                         else
                            do Jbas=Ibas,nbasis
+                              !                                        call pteval(gridx,gridy,gridz,phi2,dphi2dx,dphi2dy, &
+                                    !                                        dphi2dz,Jbas)
                               phi2=phixiao(Jbas)
                               dphi2dx=dphidxxiao(Jbas)
                               dphi2dy=dphidyxiao(Jbas)
                               dphi2dz=dphidzxiao(Jbas)
+                              !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
+                                    !                                        +DABS(phi2)
+                              !                                        if (quicktest < quick_method%DMCutoff ) then
+                              !                                            continue
+                              !                                        else
                               temp = phi*phi2
                               tempgx = phi*dphi2dx + phi2*dphidx
                               tempgy = phi*dphi2dy + phi2*dphidy
                               tempgz = phi*dphi2dz + phi2*dphidz
                               quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+(temp*dfdr+ &
                                     xdot*tempgx+ydot*tempgy+zdot*tempgz)*weight
+                              !                                        endif
                            enddo
                         endif
                      enddo
@@ -1351,10 +1494,10 @@ subroutine dftoperator
 
    if(quick_method%MPW91PW91)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -1362,7 +1505,7 @@ subroutine dftoperator
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -1371,12 +1514,13 @@ subroutine dftoperator
             endif
 
             rad3 = rad*rad*rad
+            !             print*,iiangt
             do Iang=1,iiangt
                gridx=xyz(1,Iatm)+rad*RGRID(Irad)*XANG(Iang)
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -1426,6 +1570,9 @@ subroutine dftoperator
                      call lyp(density,densityb,gax,gay,gaz,gbx,gby,gbz, &
                            dfdr2,dfdgaa2,dfdgab2)
 
+                     !                            dfdr = param7*dfdr+param8*dfdr2
+                     !                            dfdgaa = param7*dfdgaa + param8*dfdgaa2
+                     !                            dfdgab = param7*dfdgab + param8*dfdgab2
 
                      dfdr = dfdr+dfdr2
                      dfdgaa = dfdgaa + dfdgaa2
@@ -1442,26 +1589,38 @@ subroutine dftoperator
                      ! element.
 
                      do Ibas=1,nbasis
+                        !                                call pteval(gridx,gridy,gridz,phi,dphidx,dphidy, &
+                              !                                dphidz,Ibas)
                         phi=phixiao(Ibas)
                         dphidx=dphidxxiao(Ibas)
                         dphidy=dphidyxiao(Ibas)
                         dphidz=dphidzxiao(Ibas)
+                        !                                quicktest = DABS(dphidx)+DABS(dphidy)+DABS(dphidz) &
+                              !                                +DABS(phi)
                         quicktest = DABS(dphidx+dphidy+dphidz+ &
                               phi)
                         if (quicktest < quick_method%DMCutoff ) then
                            continue
                         else
                            do Jbas=Ibas,nbasis
+                              !                                        call pteval(gridx,gridy,gridz,phi2,dphi2dx,dphi2dy, &
+                                    !                                        dphi2dz,Jbas)
                               phi2=phixiao(Jbas)
                               dphi2dx=dphidxxiao(Jbas)
                               dphi2dy=dphidyxiao(Jbas)
                               dphi2dz=dphidzxiao(Jbas)
+                              !                                        quicktest = DABS(dphi2dx)+DABS(dphi2dy)+DABS(dphi2dz) &
+                                    !                                        +DABS(phi2)
+                              !                                        if (quicktest < quick_method%DMCutoff ) then
+                              !                                            continue
+                              !                                        else
                               temp = phi*phi2
                               tempgx = phi*dphi2dx + phi2*dphidx
                               tempgy = phi*dphi2dy + phi2*dphidy
                               tempgz = phi*dphi2dz + phi2*dphidz
                               quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas)+(temp*dfdr+ &
                                     xdot*tempgx+ydot*tempgy+zdot*tempgz)*weight
+                              !                                        endif
                            enddo
                         endif
                      enddo
@@ -1485,12 +1644,19 @@ subroutine dftoperator
    write (ioutfile,'(" TIME of evaluation numerical integral = ",F12.2)') &
          T3-T2
 
+   !   if(printEnergy)then
+   !    do Ibas=1,nbasis
+   !        do Jbas=1,nbasis
+   !            Eel=Eel+DENSE(Ibas,Jbas)*O(Jbas,Ibas)
+   !        enddo
+   !    enddo
+
    quick_qm_struct%Eel=quick_qm_struct%Eel+Eelxc
+   !   endif
 
 
 
-
-end subroutine dftoperator
+END subroutine dftoperator
 
 ! Ed Brothers. November 27, 2001
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
@@ -1658,13 +1824,13 @@ subroutine dftoperatordelta
                do LL=KK,jshell
                   !          Nxiao1=Nxiao1+1
                   testCutoff = TESTtmp*Ycutoff(KK,LL)
-                  if(testCutoff.gt.quick_method%integralCutoff)then
+                  If(testCutoff.gt.quick_method%integralCutoff)then
                      DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                            cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
                      !            DNmax=max(cutmatrix(II,JJ),cutmatrix(KK,LL) &
                            !                  )
                      cutoffTest=testCutoff*DNmax
-                     if(cutoffTest.gt.quick_method%integralCutoff)then
+                     If(cutoffTest.gt.quick_method%integralCutoff)then
                         IIxiao=II
                         JJxiao=JJ
                         KKxiao=KK
@@ -1688,13 +1854,13 @@ subroutine dftoperatordelta
                do LL=KK,jshell
                   !          Nxiao1=Nxiao1+1
                   testCutoff = TESTtmp*Ycutoff(KK,LL)
-                  if(testCutoff.gt.quick_method%integralCutoff)then
+                  If(testCutoff.gt.quick_method%integralCutoff)then
                      !            DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                            !                  cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
                      DNmax=max(cutmatrix(II,JJ),cutmatrix(KK,LL) &
                            )
                      cutoffTest=testCutoff*DNmax
-                     if(cutoffTest.gt.quick_method%integralCutoff)then
+                     If(cutoffTest.gt.quick_method%integralCutoff)then
                         IIxiao=II
                         JJxiao=JJ
                         KKxiao=KK
@@ -1789,10 +1955,10 @@ subroutine dftoperatordelta
 
    if(quick_method%B3LYP)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -1800,7 +1966,7 @@ subroutine dftoperatordelta
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -1814,7 +1980,7 @@ subroutine dftoperatordelta
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -1934,10 +2100,10 @@ subroutine dftoperatordelta
 
    if(quick_method%BLYP)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -1945,7 +2111,7 @@ subroutine dftoperatordelta
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -1960,7 +2126,7 @@ subroutine dftoperatordelta
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -2073,10 +2239,10 @@ subroutine dftoperatordelta
 
    if(quick_method%MPW91LYP)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -2084,7 +2250,7 @@ subroutine dftoperatordelta
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -2099,7 +2265,7 @@ subroutine dftoperatordelta
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -2212,10 +2378,10 @@ subroutine dftoperatordelta
 
    if(quick_method%BPW91)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -2223,7 +2389,7 @@ subroutine dftoperatordelta
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -2238,7 +2404,7 @@ subroutine dftoperatordelta
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -2351,10 +2517,10 @@ subroutine dftoperatordelta
 
    if(quick_method%MPW91PW91)then
       do Iatm=1,natom
-         if(quick_method%ISG.eq.1)then
+         If(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
-            if(quick_molspec%iattype(iatm).le.10)then
+            If(quick_molspec%iattype(iatm).le.10)then
                Iradtemp=23
             else
                Iradtemp=26
@@ -2362,7 +2528,7 @@ subroutine dftoperatordelta
          endif
 
          do Irad=1,Iradtemp
-            if(quick_method%ISG.eq.1)then
+            If(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
                rad = radii(quick_molspec%iattype(iatm))
             else
@@ -2377,7 +2543,7 @@ subroutine dftoperatordelta
                gridy=xyz(2,Iatm)+rad*RGRID(Irad)*YANG(Iang)
                gridz=xyz(3,Iatm)+rad*RGRID(Irad)*ZANG(Iang)
 
-               ! Next, calculate the weight of the grid point in the SSW scheme.  if
+               ! Next, calculate the weight of the grid point in the SSW scheme.  If
                ! the grid point has a zero weight, we can skip it.
 
                weight=SSW(gridx,gridy,gridz,Iatm) &
@@ -2517,7 +2683,7 @@ subroutine dftoperatordelta
    !           write (ioutfile,'("TOTAL ENERGY OF CURRENT CYCLE=",F16.9)') Eel
 
 
-end subroutine dftoperatordelta
+END subroutine dftoperatordelta
 
 
 ! Ed Brothers. January 10, 2002
@@ -2738,7 +2904,7 @@ subroutine gridformSG0(iitype,ILEB,iiang,RGRIDt,RWTt)
 
    !  First, calculate the angular points and weights.
 
-   if(quick_molspec%iattype(iitype).eq.1.or.quick_molspec%iattype(iitype).eq.3)then
+   If(quick_molspec%iattype(iitype).eq.1.or.quick_molspec%iattype(iitype).eq.3)then
       if(ILEB.le.6)then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -2775,7 +2941,7 @@ subroutine gridformSG0(iitype,ILEB,iiang,RGRIDt,RWTt)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).eq.6)then
+   If(quick_molspec%iattype(iitype).eq.6)then
       if(ILEB.le.6)then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -2818,7 +2984,7 @@ subroutine gridformSG0(iitype,ILEB,iiang,RGRIDt,RWTt)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).eq.7)then
+   If(quick_molspec%iattype(iitype).eq.7)then
       if(ILEB.le.6)then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -2852,7 +3018,7 @@ subroutine gridformSG0(iitype,ILEB,iiang,RGRIDt,RWTt)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).eq.8)then
+   If(quick_molspec%iattype(iitype).eq.8)then
       if(ILEB.le.5)then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -2889,7 +3055,7 @@ subroutine gridformSG0(iitype,ILEB,iiang,RGRIDt,RWTt)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).eq.9)then
+   If(quick_molspec%iattype(iitype).eq.9)then
       if(ILEB.le.4)then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -2923,7 +3089,7 @@ subroutine gridformSG0(iitype,ILEB,iiang,RGRIDt,RWTt)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).eq.15)then
+   If(quick_molspec%iattype(iitype).eq.15)then
       if(ILEB.le.5)then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -2960,7 +3126,7 @@ subroutine gridformSG0(iitype,ILEB,iiang,RGRIDt,RWTt)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).eq.16)then
+   If(quick_molspec%iattype(iitype).eq.16)then
       if(ILEB.le.4)then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -3000,7 +3166,7 @@ subroutine gridformSG0(iitype,ILEB,iiang,RGRIDt,RWTt)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).eq.17)then
+   If(quick_molspec%iattype(iitype).eq.17)then
       if(ILEB.le.4)then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -3069,7 +3235,7 @@ subroutine gridformnew(iitype,distance,iiang)
 
    !  First, calculate the angular points and weights.
 
-   if(quick_molspec%iattype(iitype).ge.1.and.quick_molspec%iattype(iitype).le.2)then
+   If(quick_molspec%iattype(iitype).ge.1.and.quick_molspec%iattype(iitype).le.2)then
       if(distance.lt.hpartpara(1))then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -3088,7 +3254,7 @@ subroutine gridformnew(iitype,distance,iiang)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).ge.3.and.quick_molspec%iattype(iitype).le.10)then
+   If(quick_molspec%iattype(iitype).ge.3.and.quick_molspec%iattype(iitype).le.10)then
       if(distance.lt.lpartpara(1))then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -3107,7 +3273,7 @@ subroutine gridformnew(iitype,distance,iiang)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).ge.11.and.quick_molspec%iattype(iitype).le.18)then
+   If(quick_molspec%iattype(iitype).ge.11.and.quick_molspec%iattype(iitype).le.18)then
       if(distance.lt.npartpara(1))then
          CALL LD0006(XANG,YANG,ZANG,WTANG,N)
          iiang=6
@@ -3126,7 +3292,7 @@ subroutine gridformnew(iitype,distance,iiang)
       endif
    endif
 
-   if(quick_molspec%iattype(iitype).eq.30)then
+   If(quick_molspec%iattype(iitype).eq.30)then
       CALL LD0194(XANG,YANG,ZANG,WTANG,N)
       iiang=194
    endif

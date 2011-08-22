@@ -42,11 +42,15 @@ struct gpu_cutoff_type {
     int                             natom;
     int                             nbasis;
     int                             nshell;
+    
+    int                             sqrQshell;
+    cuda_buffer_type<int2>*         sorted_YCutoffIJ;
     cuda_buffer_type<QUICKDouble>*  cutMatrix;
     cuda_buffer_type<QUICKDouble>*  YCutoff;
     cuda_buffer_type<QUICKDouble>*  cutPrim;
     QUICKDouble                     integralCutoff;
     QUICKDouble                     primLimit;
+    
 };
 
 struct gpu_simulation_type {
@@ -61,6 +65,7 @@ struct gpu_simulation_type {
     int                             molchg;
     int                             iAtomType;
     int                             maxcontract;
+    int                             Qshell;
     // Gaussian Type function
     int*                            ncontract;
     int*                            itype;
@@ -85,12 +90,14 @@ struct gpu_simulation_type {
     int*                            Qfinal;
     int*                            Qsbasis;
     int*                            Qfbasis;
+    int*                            sorted_Qnumber;
+    int*                            sorted_Q;
     QUICKDouble*                    gccoeff;
     QUICKDouble*                    cons;
     QUICKDouble*                    gcexpo;
     int*                            KLMN;
     
-    // Some more infos about calculated values
+    // Some more infos about pre-calculated values
     QUICKDouble*                    o;
     QUICKDouble*                    co;
     QUICKDouble*                    vec;
@@ -98,8 +105,14 @@ struct gpu_simulation_type {
     QUICKULL*                       oULL;
     QUICKDouble*                    distance;
     QUICKDouble*                    Xcoeff;                     // 4-dimension one
+    QUICKDouble*                    expoSum;
+    QUICKDouble*                    weightedCenterX;
+    QUICKDouble*                    weightedCenterY;
+    QUICKDouble*                    weightedCenterZ;
     
     // cutoff
+    int                             sqrQshell;
+    int2*                           sorted_YCutoffIJ;
     QUICKDouble*                    cutMatrix;
     QUICKDouble*                    YCutoff;
     QUICKDouble*                    cutPrim;
@@ -114,6 +127,7 @@ struct gpu_basis_type {
     int                             nprim;
     int                             jshell;
     int                             jbasis;
+    int                             Qshell;
     int                             maxcontract;
     // Gaussian Type function
     cuda_buffer_type<int>*          ncontract;
@@ -139,8 +153,14 @@ struct gpu_basis_type {
     cuda_buffer_type<int>*          Qfinal;
     cuda_buffer_type<int>*          Qsbasis;
     cuda_buffer_type<int>*          Qfbasis;
+    cuda_buffer_type<int>*          sorted_Qnumber;
+    cuda_buffer_type<int>*          sorted_Q;
     cuda_buffer_type<QUICKDouble>*  gccoeff;
     cuda_buffer_type<QUICKDouble>*  Xcoeff;                     // 4-dimension one
+    cuda_buffer_type<QUICKDouble>*  expoSum;                    // 4-dimension one
+    cuda_buffer_type<QUICKDouble>*  weightedCenterX;            // 4-dimension one
+    cuda_buffer_type<QUICKDouble>*  weightedCenterY;            // 4-dimension one
+    cuda_buffer_type<QUICKDouble>*  weightedCenterZ;            // 4-dimension one
     cuda_buffer_type<QUICKDouble>*  cons;
     cuda_buffer_type<QUICKDouble>*  gcexpo;
     cuda_buffer_type<int>*          KLMN;
@@ -159,6 +179,10 @@ struct gpu_basis_type {
 // a type to define a graphic card
 struct gpu_type {
     SM_VERSION                      sm_version;
+    
+    // Memory parameters
+    long long int                   totalCPUMemory; // total CPU memory allocated by CUDA part
+    long long int                   totalGPUMemory; // total GPU memory allocated by CUDA part
     
     // Launch parameters
     int                             gpu_dev_id;  // set 0 for master GPU
@@ -194,6 +218,8 @@ struct gpu_type {
  */
 };
 
+typedef struct gpu_type *_gpu_type;
+static _gpu_type gpu = NULL;
 
 // template to pack buffered data for GPU-CPU communication
 template <typename T>
@@ -294,7 +320,7 @@ cuda_buffer_type<T> :: ~cuda_buffer_type()
 template <typename T>
 void cuda_buffer_type<T> :: Allocate()
 {
-
+    
     PRINTDEBUG(">>BEGIN TO ALLOCATE TEMPLATE")
 
     if (! _f90Data) // if not constructed from f90 array
@@ -305,13 +331,19 @@ void cuda_buffer_type<T> :: Allocate()
         status = cudaMalloc((void**)&_devData,_length*_length2*sizeof(T));
 //		status = cudaHostAlloc((void**)&_hostData, _length*_length2*sizeof(T),cudaHostAllocMapped);
         PRINTERROR(status, " cudaMalloc cuda_buffer_type :: Allocate failed!");
+        gpu->totalGPUMemory   += _length*_length2*sizeof(T);
+        gpu->totalCPUMemory   += _length*_length2*sizeof(T);        
+        
 //		status = cudaHostGetDevicePointer((void **)&_devData, (void *)_hostData, 0);
 //		PRINTERROR(status, " cudaGetDevicePointer cuda_buffer_type :: Allocate failed!");
 //		memset(_hostData, 0, _length*_length2*sizeof(T));
+        
         //Allocate CPU emembory
   		_hostData = new T[_length*_length2];      
 		memset(_hostData, 0, _length*_length2*sizeof(T));
-    }else { // if constructed from f90 array
+    }else {
+        
+        // if constructed from f90 array
         cudaError_t status;
 
         //Allocate GPU memeory
@@ -320,8 +352,11 @@ void cuda_buffer_type<T> :: Allocate()
         //Allocate CPU emembory
 //        _hostData = (T*) malloc(_length*_length2*sizeof(T));
         _hostData = new T[_length*_length2];
-//       status = cudaHostAlloc((void**)&_hostData, _length*_length2*sizeof(T),cudaHostAllocMapped);
+        gpu->totalGPUMemory   += _length*_length2*sizeof(T);
+        gpu->totalCPUMemory   += _length*_length2*sizeof(T);        
+//     status = cudaHostAlloc((void**)&_hostData, _length*_length2*sizeof(T),cudaHostAllocMapped);
 //	   PRINTERROR(status, " cudaMalloc cuda_buffer_type :: Allocate failed!");
+
 //	   status = cudaHostGetDevicePointer((void **)&_devData, (void *)_hostData, 0);
 //     PRINTERROR(status, " cudaGetDevicePointer cuda_buffer_type :: Allocate failed!");
 
@@ -336,7 +371,9 @@ void cuda_buffer_type<T> :: Allocate()
         }
         
     }
-
+    PRINTMEM("ALLOCATE GPU MEMORY",(unsigned long long int)_length*_length2*sizeof(T))
+    PRINTMEM("GPU++",gpu->totalGPUMemory);
+    PRINTMEM("CPU++",gpu->totalCPUMemory);
     PRINTDEBUG("<<FINISH ALLOCATION TEMPLATE")
 }
 
@@ -355,7 +392,14 @@ void cuda_buffer_type<T> :: Deallocate()
     _hostData = NULL;
     _devData = NULL;
     _f90Data = NULL;
-
+#ifdef DEBUG
+    gpu->totalGPUMemory -= _length*_length2*sizeof(T);
+    gpu->totalCPUMemory -= _length*_length2*sizeof(T);
+    
+    PRINTMEM("GPU--",gpu->totalGPUMemory);
+    PRINTMEM("CPU--",gpu->totalCPUMemory);
+    
+#endif
     PRINTDEBUG("<<FINSH DEALLOCATION TEMPLATE")
 
 }
@@ -399,10 +443,6 @@ void cuda_buffer_type<T> :: Download(T* f90Data)
     PRINTDEBUG("<<FINISH DOWNLOADING TEMPLATE TO FORTRAN ARRAY")
 }
 
-           
-
-typedef struct gpu_type *_gpu_type;
-static _gpu_type gpu = NULL;
 
 
 

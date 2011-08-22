@@ -438,7 +438,7 @@
         enddo
     enddo
 
-    end subroutine uhfoperatora
+    END subroutine uhfoperatora
 
 ! CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 ! Ed Brothers. December 20, 2001
@@ -883,5 +883,5 @@
         enddo
     enddo
 
-    end subroutine uhfoperatorb
+    END subroutine uhfoperatorb
 

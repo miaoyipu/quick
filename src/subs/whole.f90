@@ -5,10 +5,13 @@
 !	Created by Yipu Miao on 2/23/11.
 !	Copyright 2011 University of Florida. All rights reserved.
 !
+
+!------------------------------------------------------------
+!  whole
+!------------------------------------------------------------
 ! returns the whole number in the field string(ibeg:iend).  only
 ! the numbers 0-9 are allowed to be present.
-!
-
+!------------------------------------------------------------
 subroutine whole(string,ibeg,iend,value,ierror)
   implicit double precision (a-h,o-z)
   character string*(*)

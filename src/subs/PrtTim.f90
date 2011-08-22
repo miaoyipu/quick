@@ -10,10 +10,10 @@
 ! PrtTime
 !-----------------------------------------------------------
 !  Print out total Time used by the job
-!*     in parent program def. "double precision Tim0,CPUTim"; "Tim0=CPUTim(0)" for initial time
+!*     in parent program def. "real*8 Tim0,CPUTim"; "Tim0=CPUTim(0)" for initial time
 !-----------------------------------------------------------
 subroutine PrtTim(IOut,sec)
-  Implicit double precision(A-H,O-Z)
+  Implicit Real*8(A-H,O-Z)
 
 1000 Format(' Job cpu time:',I3,' days ',I2,' hours ',I2,' minutes ',F4.1,' seconds.')
 

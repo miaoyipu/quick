@@ -23,10 +23,10 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Fri Jul 15 15:55:48 2011
+ TASK STARTS ON: Fri Jul 22 21:30:47 2011
  INPUT FILE:     1vtpa5emfcc.in
  OUTPUT FILE:    1vtpa5emfcc.out
- BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
+ BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
  @ Read Job And Atom
 
@@ -48,7 +48,7 @@ KEYWORD=HF BASIS=STO-3G DENSERMS=1.0D-6 CUTOFF=1.0D-9 CHARGE=-3
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-05
 | BASIS SET = STO-3G
-| BASIS FILE = /Users/miao/Workspace/new_quick/basis/STO-3G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/STO-3G
 
  @ Finish reading job
 
@@ -66,7 +66,7 @@ SCF CYCLE      =        1      TIME      =     0.02
 RMS CHANGE     = 0.242566E+00  MAX CHANGE= 0.658473E+00
 
 SCF CYCLE      =        2      TIME      =     0.01
-RMS CHANGE     = 0.605088E-10  MAX CHANGE= 0.152095E-09
+RMS CHANGE     = 0.605086E-10  MAX CHANGE= 0.152096E-09
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -97,11 +97,11 @@ BASIS FUNCTIONS =    5
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.01
+SCF CYCLE      =        1      TIME      =     0.02
 RMS CHANGE     = 0.245482E+00  MAX CHANGE= 0.665739E+00
 
 SCF CYCLE      =        2      TIME      =     0.01
-RMS CHANGE     = 0.646038E-10  MAX CHANGE= 0.162088E-09
+RMS CHANGE     = 0.632563E-10  MAX CHANGE= 0.150058E-09
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -117,10 +117,10 @@ BASIS FUNCTIONS =    5
 
 
 SCF CYCLE      =        1      TIME      =     0.01
-RMS CHANGE     = 0.238978E+00  MAX CHANGE= 0.477605E+00
+RMS CHANGE     = 0.238978E+00  MAX CHANGE= 0.504578E+00
 
-SCF CYCLE      =        2      TIME      =     0.01
-RMS CHANGE     = 0.933226E-10  MAX CHANGE= 0.246666E-09
+SCF CYCLE      =        2      TIME      =     0.02
+RMS CHANGE     = 0.307220E-10  MAX CHANGE= 0.827385E-10
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -546,4 +546,7 @@ TOTAL ENERGY         =     0.000000000
 
 
  @ End Reading Mol Info 
+
+
+ @ Begin Energy Calculation
 

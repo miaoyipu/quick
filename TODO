@@ -1,1 +1,1 @@
-add destructor and mem cleaner for gputype.h
+remove V2, Uxiao,quick_qm_struct%Osave,denseOld,Osavedft from struct and move them to local variable
