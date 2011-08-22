@@ -20,9 +20,14 @@
 !
 !  Cite this work as:
 !  Miao,Y.: He, X.: Ayers,K; Brothers, E.: Merz,K. M. QUICK
-!  University of Florida, Gainesville, FL, 2010
+!  University of Florida, Gainesville, FL, 32611
 !************************************************************************
 !
+#ifdef CUDA
+! If cuda part is used, pleas add following as citation:
+!  Miao, Y: Merz, K.M. QUICK.CUDA
+!  University of FLorida, Gainesville, FL, 32611
+#endif
     program quick
     
     use allMod
