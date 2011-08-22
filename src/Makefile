@@ -213,5 +213,5 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
-include depend
+#include depend
 
