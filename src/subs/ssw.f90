@@ -5,7 +5,13 @@
 !	Created by Yipu Miao on 2/23/11.
 !	Copyright 2011 University of Florida. All rights reserved.
 !
-!   Written by Ed Brothers. January 22, 2002
+
+!-----------------------------------------------------------
+! ssw
+!-----------------------------------------------------------
+! Ed Brothers. January 22, 2002
+! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
+!-----------------------------------------------------------
 
 double precision function ssw(gridx,gridy,gridz,iparent)
   use allmod
@@ -211,4 +217,4 @@ double precision function ssw(gridx,gridy,gridz,iparent)
 
   ssw=wofparent/totalw
 
-end function ssw
+END function ssw

@@ -20,9 +20,9 @@ subroutine hfgrad
 
   !Xiao HE modified 09/12/2007
   call cpu_time(timer_begin%TGrad)
-  do Iatm=1,natom*3
+  DO Iatm=1,natom*3
      quick_qm_struct%gradient(iatm)=0.d0
-  enddo
+  ENDDO
 
   ! The gradient at this level of theory is the sum of five terms.
   ! 1)  The derivative of the nuclear repulsion.  Quick derivation:
@@ -46,8 +46,8 @@ subroutine hfgrad
   ! for A is the negative of the BA derivative for atom B.
 
 
-  do Iatm = 1,natom*3
-     do Jatm = Iatm+1,natom
+  DO Iatm = 1,natom*3
+     DO Jatm = Iatm+1,natom
         RIJ  = (xyz(1,Iatm)-xyz(1,Jatm))*(xyz(1,Iatm)-xyz(1,Jatm)) &
              +(xyz(2,Iatm)-xyz(2,Jatm))*(xyz(2,Iatm)-xyz(2,Jatm)) &
              +(xyz(3,Iatm)-xyz(3,Jatm))*(xyz(3,Iatm)-xyz(3,Jatm))
@@ -63,8 +63,8 @@ subroutine hfgrad
         quick_qm_struct%gradient(JSTART+1) = quick_qm_struct%gradient(JSTART+1)-XBminXA*ZAZBdivRIJ3
         quick_qm_struct%gradient(JSTART+2) = quick_qm_struct%gradient(JSTART+2)-YBminYA*ZAZBdivRIJ3
         quick_qm_struct%gradient(JSTART+3) = quick_qm_struct%gradient(JSTART+3)-ZBminZA*ZAZBdivRIJ3
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! 2)  The negative of the energy weighted density matrix element i j
   ! with the derivative of the ij overlap.
@@ -82,25 +82,25 @@ subroutine hfgrad
   ! We'll store this in HOLD as we don't really need it (except for hessian
   ! calculations later).
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         HOLDJI = 0.d0
-        do K=1,quick_molspec%nelec/2
+        DO K=1,quick_molspec%nelec/2
            HOLDJI = HOLDJI + (quick_qm_struct%E(K)*quick_qm_struct%co(J,K)*quick_qm_struct%co(I,K))
-        enddo
+        ENDDO
         quick_scratch%hold(J,I) = 2.d0*HOLDJI
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-  if (quick_method%debug) then
+  IF (quick_method%debug) THEN
      write(ioutfile,'(/"THE ENERGY WEIGHTED DENSITY MATRIX")')
-     do I=1,nbasis
-        do J=1,nbasis
+     DO I=1,nbasis
+        DO J=1,nbasis
            write (ioutfile,'("W[",I4,",",I4,"]=",F18.10)') &
                 J,I,quick_scratch%hold(J,I)
-        enddo
-     enddo
-  endif
+        ENDDO
+     ENDDO
+  ENDIF
 
   ! The contribution to the derivative of energy with respect to nuclear
   ! postion for this term is: -(Sum over i,j) Q(i,j) dS(ij)/dXA
@@ -115,25 +115,25 @@ subroutine hfgrad
 
   ! Note that the negative on the final term comes from the form of (x-XA).
 
-  do Ibas=1,nbasis
+  DO Ibas=1,nbasis
      ISTART = (quick_basis%ncenter(Ibas)-1) *3
-     do Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
+     DO Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
         JSTART = (quick_basis%ncenter(Jbas)-1) *3
         DENSEJI = quick_qm_struct%dense(Jbas,Ibas)
 
         ! We have selected our two basis functions, now loop over angular momentum.
 
-        do Imomentum=1,3
+        DO Imomentum=1,3
            dSI = 0.d0
            dSJ =0.d0
            dKEI = 0.d0
            dKEJ = 0.d0
 
-           ! do the Ibas derivatives first.
+           ! Do the Ibas derivatives first.
 
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  dSI = dSI + 2.d0*aexp(Icon,Ibas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -150,13 +150,13 @@ subroutine hfgrad
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-           if (itype(Imomentum,Ibas) /= 0) then
+           IF (itype(Imomentum,Ibas) /= 0) THEN
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dSI = dSI - dble(itype(Imomentum,Ibas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -173,10 +173,10 @@ subroutine hfgrad
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           endif
+           ENDIF
            quick_qm_struct%gradient(ISTART+Imomentum) = quick_qm_struct%gradient(ISTART+Imomentum) &
                 -dSI*quick_scratch%hold(Jbas,Ibas)*2.d0 &
                 +dKeI*DENSEJI*2.d0
@@ -184,8 +184,8 @@ subroutine hfgrad
            ! Now do the Jbas derivatives.
 
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  dSJ = dSJ + 2.d0*aexp(Jcon,Jbas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -202,13 +202,13 @@ subroutine hfgrad
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-           if (itype(Imomentum,Jbas) /= 0) then
+           IF (itype(Imomentum,Jbas) /= 0) THEN
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dSJ = dSJ - dble(itype(Imomentum,Jbas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -225,16 +225,16 @@ subroutine hfgrad
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           endif
+           ENDIF
            quick_qm_struct%gradient(JSTART+Imomentum) = quick_qm_struct%gradient(JSTART+Imomentum) &
                 -dSJ*quick_scratch%hold(Jbas,Ibas)*2.d0 &
                 +dKEJ*DENSEJI*2.d0
-        enddo
-     enddo
-  enddo
+        ENDDO
+     ENDDO
+  ENDDO
 
 
   ! 4)  The derivative of the 1 electron nuclear attraction term ij times
@@ -242,19 +242,19 @@ subroutine hfgrad
 
   ! Please note that these are the three center terms.
 
-  do IIsh=1,jshell
-     do JJsh=IIsh,jshell
+  DO IIsh=1,jshell
+     Do JJsh=IIsh,jshell
         call attrashellopt(IIsh,JJsh)
-     enddo
-  enddo
+     Enddo
+  Enddo
 
   !        write (ioutfile,'(/," ANALYTICAL GRADIENT first: ")')
-  !        do Iatm=1,natom
-  !            do Imomentum=1,3
+  !        DO Iatm=1,natom
+  !            DO Imomentum=1,3
   !                write (ioutfile,'(I5,7x,F20.10)')Iatm, &
   !                GRADIENT((Iatm-1)*3+Imomentum)
-  !            enddo
-  !        enddo
+  !            ENDDO
+  !        ENDDO
 
 
 
@@ -267,21 +267,21 @@ subroutine hfgrad
 
   ! Delta density matrix cutoff
 
-  do II=1,jshell
-     do JJ=II,jshell
+  Do II=1,jshell
+     Do JJ=II,jshell
         DNtemp=0.0d0
         call DNscreen(II,JJ,DNtemp)
         Cutmatrix(II,JJ)=DNtemp
         Cutmatrix(JJ,II)=DNtemp
-     enddo
-  enddo
+     Enddo
+  Enddo
 
 
 
   ! ntempxiao1=0
   ! ntempxiao2=0
 
-  do II=1,jshell
+  Do II=1,jshell
      do JJ=II,jshell
         Testtmp=Ycutoff(II,JJ)
         do KK=II,jshell
@@ -292,15 +292,15 @@ subroutine hfgrad
                  !          ntempxiao1=ntempxiao1+1
               else
                  testCutoff = TESTtmp*Ycutoff(KK,LL)
-                 if(testCutoff.gt.quick_method%gradCutoff)then
+                 If(testCutoff.gt.quick_method%gradCutoff)then
                     DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                          cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
                     cutoffTest=testCutoff*DNmax
-                    if(cutoffTest.gt.quick_method%gradCutoff)then
+                    If(cutoffTest.gt.quick_method%gradCutoff)then
                        !              print*,II,JJ,KK,LL
                        call shellopt
                        !              ntempxiao2=ntempxiao2+1
-                    endif
+                    Endif
                  endif
               endif
            enddo
@@ -342,9 +342,9 @@ subroutine mpi_hfgrad
   !Xiao HE modified 09/12/2007
   call cpu_time(timer_begin%TGrad)
 
-  do Iatm=1,natom*3
+  DO Iatm=1,natom*3
      quick_qm_struct%gradient(iatm)=0.d0
-  enddo
+  ENDDO
 
   ! The gradient at this level of theory is the sum of five terms.
   ! 1)  The derivative of the nuclear repulsion.  Quick derivation:
@@ -367,8 +367,8 @@ subroutine mpi_hfgrad
   ! that that atom A can never equal atom B, and A-B part of the derivative
   ! for A is the negative of the BA derivative for atom B.
 
-  do Iatm = 1,natom*3
-     do Jatm = Iatm+1,natom
+  DO Iatm = 1,natom*3
+     DO Jatm = Iatm+1,natom
         RIJ  = (xyz(1,Iatm)-xyz(1,Jatm))*(xyz(1,Iatm)-xyz(1,Jatm)) &
              +(xyz(2,Iatm)-xyz(2,Jatm))*(xyz(2,Iatm)-xyz(2,Jatm)) &
              +(xyz(3,Iatm)-xyz(3,Jatm))*(xyz(3,Iatm)-xyz(3,Jatm))
@@ -386,8 +386,8 @@ subroutine mpi_hfgrad
            quick_qm_struct%gradient(JSTART+2) = quick_qm_struct%gradient(JSTART+2)-YBminYA*ZAZBdivRIJ3
            quick_qm_struct%gradient(JSTART+3) = quick_qm_struct%gradient(JSTART+3)-ZBminZA*ZAZBdivRIJ3
         endif
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
 
 
@@ -408,29 +408,29 @@ subroutine mpi_hfgrad
   ! calculations later).
   
   if (master) then
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         HOLDJI = 0.d0
-        do K=1,quick_molspec%nelec/2
+        DO K=1,quick_molspec%nelec/2
            HOLDJI = HOLDJI + (quick_qm_struct%E(K)*quick_qm_struct%co(J,K)*quick_qm_struct%co(I,K))
-        enddo
+        ENDDO
         quick_scratch%hold(J,I) = 2.d0*HOLDJI
-     enddo
-  enddo
+     ENDDO
+  ENDDO
   endif
   
 !  call MPI_BCAST(HOLD,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 !  call MPI_BCAST(quick_method%gradCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
   
-  if (quick_method%debug) then
+  IF (quick_method%debug) THEN
      write(ioutfile,'(/"THE ENERGY WEIGHTED DENSITY MATRIX")')
-     do I=1,nbasis
-        do J=1,nbasis
+     DO I=1,nbasis
+        DO J=1,nbasis
            write (ioutfile,'("W[",I4,",",I4,"]=",F18.10)') &
                 J,I,quick_scratch%hold(J,I)
-        enddo
-     enddo
-  endif
+        ENDDO
+     ENDDO
+  ENDIF
 
   ! The contribution to the derivative of energy with respect to nuclear
   ! postion for this term is: -(Sum over i,j) Q(i,j) dS(ij)/dXA
@@ -448,23 +448,23 @@ subroutine mpi_hfgrad
   do i=1,mpi_nbasisn(mpirank)
      Ibas=mpi_nbasis(mpirank,i)
      ISTART = (quick_basis%ncenter(Ibas)-1) *3
-     do Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
+     DO Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
         JSTART = (quick_basis%ncenter(Jbas)-1) *3
         DENSEJI = quick_qm_struct%dense(Jbas,Ibas)
 
         ! We have selected our two basis functions, now loop over angular momentum.
 
-        do Imomentum=1,3
+        DO Imomentum=1,3
            dSI = 0.d0
            dSJ =0.d0
            dKEI = 0.d0
            dKEJ = 0.d0
 
-           ! do the Ibas derivatives first.
+           ! Do the Ibas derivatives first.
 
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  dSI = dSI + 2.d0*aexp(Icon,Ibas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -481,13 +481,13 @@ subroutine mpi_hfgrad
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-           if (itype(Imomentum,Ibas) /= 0) then
+           IF (itype(Imomentum,Ibas) /= 0) THEN
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dSI = dSI - dble(itype(Imomentum,Ibas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -504,10 +504,10 @@ subroutine mpi_hfgrad
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           endif
+           ENDIF
            quick_qm_struct%gradient(ISTART+Imomentum) = quick_qm_struct%gradient(ISTART+Imomentum) &
                 -dSI*quick_scratch%hold(Jbas,Ibas)*2.d0 &
                 +dKeI*DENSEJI*2.d0
@@ -515,8 +515,8 @@ subroutine mpi_hfgrad
            ! Now do the Jbas derivatives.
 
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  dSJ = dSJ + 2.d0*aexp(Jcon,Jbas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -533,13 +533,13 @@ subroutine mpi_hfgrad
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-           if (itype(Imomentum,Jbas) /= 0) then
+           IF (itype(Imomentum,Jbas) /= 0) THEN
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dSJ = dSJ - dble(itype(Imomentum,Jbas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -556,16 +556,16 @@ subroutine mpi_hfgrad
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           endif
+           ENDIF
            quick_qm_struct%gradient(JSTART+Imomentum) = quick_qm_struct%gradient(JSTART+Imomentum) &
                 -dSJ*quick_scratch%hold(Jbas,Ibas)*2.d0 &
                 +dKEJ*DENSEJI*2.d0
-        enddo
-     enddo
-  enddo
+        ENDDO
+     ENDDO
+  ENDDO
   !endif
 
   ! 4)  The derivative of the 1 electron nuclear attraction term ij times
@@ -576,20 +576,20 @@ subroutine mpi_hfgrad
 
   do i=1,mpi_jshelln(mpirank)
      IIsh=mpi_jshell(mpirank,i)
-     do JJsh=IIsh,jshell
+     Do JJsh=IIsh,jshell
         call attrashellopt(IIsh,JJsh)
-     enddo
-  enddo
+     Enddo
+  Enddo
 
 
-  do II=1,jshell
-     do JJ=II,jshell
+  Do II=1,jshell
+     Do JJ=II,jshell
         DNtemp=0.0d0
         call DNscreen(II,JJ,DNtemp)
         Cutmatrix(II,JJ)=DNtemp
         Cutmatrix(JJ,II)=DNtemp
-     enddo
-  enddo
+     Enddo
+  Enddo
 
 
 
@@ -603,13 +603,13 @@ subroutine mpi_hfgrad
                  continue
               else
                  testCutoff = TESTtmp*Ycutoff(KK,LL)
-                 if(testCutoff.gt.quick_method%gradCutoff)then
+                 If(testCutoff.gt.quick_method%gradCutoff)then
                     DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                          cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
                     cutoffTest=testCutoff*DNmax
-                    if(cutoffTest.gt.quick_method%gradCutoff)then
+                    If(cutoffTest.gt.quick_method%gradCutoff)then
                        call shellopt
-                    endif
+                    Endif
                  endif
               endif
            enddo

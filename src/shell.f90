@@ -1,64 +1,47 @@
-#include "config.h"
-
 subroutine g2eshell
+  !*******************************************************
+  ! g2eshell
+  !--------------------------------------------------------
+  ! BE careful of FmT.f90!!!!!!!!!!!!
+  ! BE careful of IJKLtype!!!!!!!!!!!!!!!!!
+  ! BE careful of size FM,store
+  ! Xiao HE Prepare pair-shell constant 07/07/07 version
   !--------------------------------------------------------
   ! This subroutine is to Use the shell structure as initial guess
   ! to save the computational time
-  ! this subroutine generates Apri, Ppri, Kpri and Xcoeff
   !--------------------------------------------------------
-
+  !
   use allmod
-  implicit none
-  integer ics,ips,jcs,jps,itemp,itemp2,i
-  integer NA,NB
-  double precision AA,BB,XYZA(3),XYZB(3),DAB
-  
-  ! ics cycle
+  !
+  implicit double precision(a-h,o-z)
+  real*8 Kab 
+  double precision temp(3)     
+
+  call zeroVec(temp,3)
+
   do ics=1,jshell                       ! ics is the shell no.
      do ips=1,quick_basis%kprim(ics)                ! ips is prim no. for certain shell
-             
-        ! jcs cycle
+        Nprii=quick_basis%kstart(ics)+IPS-1         ! we can get globle prim no. for ips
+        AA=gcexpo(ips,quick_basis%ksumtype(ics))    ! so we have the exponent part for ics shell ips prim
         do jcs=1,jshell
            do jps=1,quick_basis%kprim(jcs)
-              
-              ! We have ics,jcs, ips and jps, which is the prime for shell, so we can
-              ! obtain its global prim. and its exponents and coeffecients
-              NA=quick_basis%kstart(ics)+IPS-1         ! we can get globle prim no. for ips
-              NB=quick_basis%kstart(jcs)+jps-1         ! and jps  
-              
-              AA=quick_basis%gcexpo(ips,quick_basis%ksumtype(ics))    ! so we have the exponent part for ics shell ips prim
-              BB=quick_basis%gcexpo(jps,quick_basis%ksumtype(jcs))    ! and jcs shell jps prim  
-              
-              Apri(NA,NB)=AA+BB                     ! A'=expo(A)+expo(B)
-              do i=1,3
-                XYZA(i)=xyz(i,quick_basis%katom(ics))     ! xyz(A)
-                XYZB(i)=xyz(i,quick_basis%katom(jcs))     ! xyz(B)
+              Nprij=quick_basis%kstart(jcs)+jps-1
+              BB=gcexpo(jps,quick_basis%ksumtype(jcs))
+              Apri(Nprii,Nprij)=AA+BB
+              do I=1,3
+                 Ppri(i,Nprii,Nprij)=(xyz(i,quick_basis%katom(ics))*AA+ &
+                      xyz(i,quick_basis%katom(jcs))*BB)/(AA+BB)
               enddo
-              DAB=quick_molspec%atomdistance(quick_basis%katom(ics),quick_basis%katom(jcs))
-
-              ! P' is the weighting center of NpriI and NpriJ
-              !              expo(A)*xyz(A)+expo(B)*xyz(B)
-              ! P'(A,B)  = ------------------------------
-              !                 expo(A) + expo(B)    
-              do i=1,3
-                Ppri(i,NA,NB) = (XYZA(i)*AA + XYZB(i)*BB)/(AA+BB)
-              enddo
-              
-              !                    expo(A)*expo(B)*(xyz(A)-xyz(B))^2              1
-              ! K'(A,B) =  exp[ - ------------------------------------]* -------------------
-              !                            expo(A)+expo(B)                  expo(A)+expo(B)
-              Kpri(NA,NB) = dexp(-AA*BB/(AA+BB)*(DAB**2))/(AA+BB)
-              
+              ! K(A,B)=1/(a+b)*exp(-ab/(a+b)*(A-B)^2)
+              Kpri(Nprii,Nprij)=dexp(-AA*BB/(AA+BB)* &
+                (quick_molspec%atomdistance(quick_basis%katom(ics),quick_basis%katom(jcs)))**2)/(AA+BB)
+              X1temp=ONE*Kpri(Nprii,Nprij)
               do  itemp=quick_basis%Qstart(ics),quick_basis%Qfinal(ics)
-                do itemp2=quick_basis%Qstart(jcs),quick_basis%Qfinal(jcs)
-                
-                    ! Xcoeff(A,B,itmp1,itmp2)=K'(A,B)*a(itmp1)*a(itmp2)
-                    quick_basis%Xcoeff(NA,NB,itemp,itemp2)=Kpri(NA,NB)* &
-                                quick_basis%gccoeff(ips,quick_basis%ksumtype(ics)+Itemp )* &
-                                quick_basis%gccoeff(jps,quick_basis%ksumtype(jcs)+Itemp2)
-                enddo
+                 X1=X1temp*gccoeff(ips,quick_basis%ksumtype(ics)+Itemp)
+                 do itemp2=quick_basis%Qstart(jcs),quick_basis%Qfinal(jcs)
+                    Xcoeff(Nprii,Nprij,itemp,itemp2)=X1*gccoeff(jps,quick_basis%ksumtype(jcs)+Itemp2)
+                 enddo
               enddo
-              
            enddo
         enddo
      enddo
@@ -66,37 +49,22 @@ subroutine g2eshell
 end subroutine g2eshell
 
 ! Vertical Recursion by Xiao HE 07/07/07 version
-
-#ifdef CUDA
-    subroutine shell(II_arg,JJ_arg,KK_arg,LL_arg)
-#else
-    subroutine shell
-#endif
-
+subroutine shell
   use allmod
 
-  Implicit double precision(a-h,o-z)
-  double precision P(3),Q(3),W(3),KAB,KCD,AAtemp(3)
+  Implicit real*8(a-h,o-z)
+  real*8 P(3),Q(3),W(3),KAB,KCD,AAtemp(3)
   Parameter(NN=13)
-  double precision FM(0:13)
-  double precision RA(3),RB(3),RC(3),RD(3)
+  real*8 FM(0:13)
+  real*8 RA(3),RB(3),RC(3),RD(3)
 
-  double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+  real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
   integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
-
   common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
   COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
   COMMON /COM1/RA,RB,RC,RD
 
-#ifdef CUDA
-  integer II_arg,JJ_arg,KK_arg,LL_arg
-  
-  II=II_arg
-  JJ=JJ_arg
-  KK=KK_arg
-  LL=LL_arg
-#endif
-    
+
   do M=1,3
      RA(M)=xyz(M,quick_basis%katom(II))
      RB(M)=xyz(M,quick_basis%katom(JJ))
@@ -114,7 +82,6 @@ end subroutine g2eshell
   NLL1=quick_basis%Qstart(LL)
   NLL2=quick_basis%Qfinal(LL)
 
-goto 1011
   NNAB=(NII2+NJJ2)
   NNCD=(NKK2+NLL2)
 
@@ -123,136 +90,61 @@ goto 1011
 
   NNAB=sumindex(NNAB)
   NNCD=sumindex(NNCD)
-  NNA=sumindex(NII1-1)+1
-  NNC=sumindex(NKK1-1)+1
+  NNA=Sumindex(NII1-1)+1
+  NNC=Sumindex(NKK1-1)+1
   NABCD=NII2+NJJ2+NKK2+NLL2
   ITT=0
 
-  
-  !  the first cycle is for j prim
-  !  JJJ and NpriJ are the tracking indices
+
   do JJJ=1,quick_basis%kprim(JJ)
-     Nprij=quick_basis%kstart(JJ)+JJJ-1     
-     
-     ! the second cycle is for i prim
-     ! II and NpriI are the tracking indices
+     Nprij=quick_basis%kstart(JJ)+JJJ-1
      do III=1,quick_basis%kprim(II)
         Nprii=quick_basis%kstart(II)+III-1
-                
-        AB=Apri(Nprii,Nprij)    ! AB = Apri = expo(NpriI)+expo(NpriJ)
-        ABtemp=0.5d0/AB         ! ABtemp = 1/(2Apri) = 1/2(expo(NpriI)+expo(NpriJ))
+        AB=Apri(Nprii,Nprij)
+        ABtemp=0.5d0/AB
         cutoffprim1=dnmax*cutprim(Nprii,Nprij)
 
         do M=1,3
-        
-           ! P' is the weighting center of NpriI and NpriJ
-           !                           --->           --->
-           ! ->  ------>       expo(I)*xyz(I)+expo(J)*xyz(J)
-           ! P = P'(I,J)  = ------------------------------
-           !                       expo(I) + expo(J)    
            P(M)=Ppri(M,Nprii,Nprij)
-           
-           !                        -->            -->
-           ! ----->         expo(I)*xyz(I)+expo(J)*xyz(J)                                 -->            -->
-           ! AAtemp = ----------------------------------- * (expo(I) + expo(J)) = expo(I)*xyz(I)+expo(J)*xyz(J)
-           !                  expo(I) + expo(J)
            AAtemp(M)=P(M)*AB
-           
-           ! ----->   ->  ->
-           ! Ptemp  = P - A
            Ptemp(M)=P(M)-RA(M)
         enddo
 
-        ! the third cycle is for l prim
-        ! LLL and npriL are the tracking indices
         do LLL=1,quick_basis%kprim(LL)
            Npril=quick_basis%kstart(LL)+LLL-1
-           
-           ! the forth cycle is for k prim
-           ! the KKK and nprik are the tracking indices
            do KKK=1,quick_basis%kprim(KK)
               Nprik=quick_basis%kstart(KK)+KKK-1
-              
-              ! prim cutoff: cutoffprim(I,J,K,L) = dnmax * cutprim(I,J) * cutprim(K,L)
-              cutoffprim=cutoffprim1*cutprim(Nprik,Npril)   
-              
-              if(cutoffprim.gt.quick_method%primLimit)then
-              
-                 CD=Apri(Nprik,Npril)  ! CD = Apri = expo(NpriK) + expo(NpriL)
-                 ABCD=AB+CD            ! ABCD = expo(NpriI)+expo(NpriJ)+expo(NpriK)+expo(NpriL)
-                 
-                 !         AB * CD      (expo(I)+expo(J))*(expo(K)+expo(L))
-                 ! Rou = ----------- = ------------------------------------
-                 !         AB + CD         expo(I)+expo(J)+expo(K)+expo(L)
-                 ROU=AB*CD/ABCD        
-                 
+              cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
+              If(cutoffprim.gt.quick_method%primLimit)then
+                 CD=Apri(Nprik,Npril)
+                 ABCD=AB+CD
+                 ROU=AB*CD/ABCD
                  RPQ=0.0d0
-                 
-                 !              _______________________________
-                 ! ABCDxiao = \/expo(I)+expo(J)+expo(K)+expo(L)
-                 ABCDxiao=dsqrt(ABCD)  
-                 
-                 CDtemp=0.5d0/CD       ! CDtemp =  1/2(expo(NpriK)+expo(NpriL))
-                 
-                 !                expo(I)+expo(J)                        expo(K)+expo(L)
-                 ! ABcom = --------------------------------  CDcom = --------------------------------
-                 !          expo(I)+expo(J)+expo(K)+expo(L)           expo(I)+expo(J)+expo(K)+expo(L)
-                 ABcom=AB/ABCD         
+                 ABCDxiao=dsqrt(ABCD) 
+
+                 CDtemp=0.5d0/CD
+                 ABcom=AB/ABCD
                  CDcom=CD/ABCD
-                 
-                 ! ABCDtemp = 1/2(expo(I)+expo(J)+expo(K)+expo(L))
                  ABCDtemp=0.5d0/ABCD
 
                  do M=1,3
-                 
-                    ! Q' is the weighting center of NpriK and NpriL
-                    !                           --->           --->
-                    ! ->  ------>       expo(K)*xyz(K)+expo(L)*xyz(L)
-                    ! Q = P'(K,L)  = ------------------------------
-                    !                       expo(K) + expo(L)  
                     Q(M)=Ppri(M,Nprik,Npril)
-                    
-                    ! W' is the weight center for NpriI,NpriJ,NpriK and NpriL
-                    !                --->             --->             --->            --->
-                    ! ->     expo(I)*xyz(I) + expo(J)*xyz(J) + expo(K)*xyz(K) +expo(L)*xyz(L)
-                    ! W = -------------------------------------------------------------------
-                    !                    expo(I) + expo(J) + expo(K) + expo(L)
                     W(M)=(AAtemp(M)+Q(M)*CD)/ABCD
-                    
-                    !        ->  ->  2
-                    ! RPQ =| P - Q | 
                     XXXtemp=P(M)-Q(M)
                     RPQ=RPQ+XXXtemp*XXXtemp
-                    
-                    ! ---->   ->  ->
-                    ! Qtemp = Q - K
                     Qtemp(M)=Q(M)-RC(M)
-                    
-                    ! ----->   ->  ->
-                    ! WQtemp = W - Q
-                    ! ----->   ->  ->
-                    ! WPtemp = W - P
                     WQtemp(M)=W(M)-Q(M)
                     WPtemp(M)=W(M)-P(M)
                  enddo
-                 
-                 !             ->  -> 2
-                 ! T = ROU * | P - Q|
                  T=RPQ*ROU
 
-                 !                         2m        2
-                 ! Fm(T) = integral(1,0) {t   exp(-Tt )dt}
-                 ! NABCD is the m value, and FM returns the FmT value
                  call FmT(NABCD,T,FM)
                  do iitemp=0,NABCD
-                    ! Yxiaotemp(1,1,iitemp) is the starting point of recurrsion
-                    Yxiaotemp(1,1,iitemp)=FM(iitemp)/ABCDxiao!              _______________________________
-                                                             ! ABCDxiao = \/expo(I)+expo(J)+expo(K)+expo(L) 
+                    Yxiaotemp(1,1,iitemp)=FM(iitemp)/ABCDxiao
                  enddo
                  ITT=ITT+1
 
-                 ! now we will do vrr and and the double-electron integral
-                 call vertical(NABCDTYPE)
+                 call vertical(NABCDTYPE) 
 
                  do I2=NNC,NNCD
                     do I1=NNA,NNAB
@@ -265,7 +157,7 @@ goto 1011
      enddo
   enddo
 
-1011 continue
+
   do I=NII1,NII2
      NNA=Sumindex(I-1)+1
      do J=NJJ1,NJJ2
@@ -286,20 +178,14 @@ end subroutine shell
 subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
   use allmod
 
-  Implicit double precision(A-H,O-Z)
-  double precision store(120,120)
+  Implicit real*8(A-H,O-Z)
+  real*8 store(120,120)
   INTEGER NA(3),NB(3),NC(3),ND(3)
-  double precision P(3),Q(3),W(3),KAB,KCD
+  real*8 P(3),Q(3),W(3),KAB,KCD
   Parameter(NN=13)
-  double precision FM(0:13)
-  double precision RA(3),RB(3),RC(3),RD(3)
-  double precision AAtemp(3)
-
-  double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
-
-  COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
-
-!  double precision X44(129600)
+  real*8 FM(0:13)
+  real*8 RA(3),RB(3),RC(3),RD(3)
+  real*8 X44(129600)
 
   COMMON /COM1/RA,RB,RC,RD
   COMMON /COM2/AA,BB,CC,DD,AB,CD,ROU,ABCD
@@ -310,183 +196,37 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
   common /xiaostore/store
   common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
-  do MM2 = NNC, NNCD
-    do MM1 = NNA, NNAB
-    store(MM1,MM2) = 0
-    enddo
-  enddo
-  
-  do M=1,3
-     RA(M)=xyz(M,quick_basis%katom(II))
-     RB(M)=xyz(M,quick_basis%katom(JJ))
-     RC(M)=xyz(M,quick_basis%katom(KK))
-     RD(M)=xyz(M,quick_basis%katom(LL))
-  enddo
-  
-  NII1=quick_basis%Qstart(II)
-  NII2=quick_basis%Qfinal(II)
-  NJJ1=quick_basis%Qstart(JJ)
-  NJJ2=quick_basis%Qfinal(JJ)
-  NKK1=quick_basis%Qstart(KK)
-  NKK2=quick_basis%Qfinal(KK)
-  NLL1=quick_basis%Qstart(LL)
-  NLL2=quick_basis%Qfinal(LL)
-
-
-  NABCDTYPE=(NII2+NJJ2)*10+(NKK2+NLL2)
-
-  NABCD=NII2+NJJ2+NKK2+NLL2
-
+  ITT=0
   do JJJ=1,quick_basis%kprim(JJ)
      Nprij=quick_basis%kstart(JJ)+JJJ-1
-     
      do III=1,quick_basis%kprim(II)
         Nprii=quick_basis%kstart(II)+III-1
-        
-!        X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)
+        X2=X0*XCoeff(Nprii,Nprij,I,J)
         cutoffprim1=dnmax*cutprim(Nprii,Nprij)
-
-        AB=Apri(Nprii,Nprij)    ! AB = Apri = expo(NpriI)+expo(NpriJ)
-
-        ABtemp=0.5d0/AB         ! ABtemp = 1/(2Apri) = 1/2(expo(NpriI)+expo(NpriJ))
-        do M=1,3
-        
-           ! P' is the weighting center of NpriI and NpriJ
-           !                           --->           --->
-           ! ->  ------>       expo(I)*xyz(I)+expo(J)*xyz(J)
-           ! P = P'(I,J)  = ------------------------------
-           !                       expo(I) + expo(J)    
-           P(M)=Ppri(M,Nprii,Nprij)
-           
-           !                        -->            -->
-           ! ----->         expo(I)*xyz(I)+expo(J)*xyz(J)                                 -->            -->
-           ! AAtemp = ----------------------------------- * (expo(I) + expo(J)) = expo(I)*xyz(I)+expo(J)*xyz(J)
-           !                  expo(I) + expo(J)
-           AAtemp(M)=P(M)*AB
-           
-           ! ----->   ->  ->
-           ! Ptemp  = P - A
-           Ptemp(M)=P(M)-RA(M)
-        enddo
-        
         do LLL=1,quick_basis%kprim(LL)
            Npril=quick_basis%kstart(LL)+LLL-1
-           
            do KKK=1,quick_basis%kprim(KK)
               Nprik=quick_basis%kstart(KK)+KKK-1
               cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-             
-              !--------------------------------
-              ! use the following code instead of the original will save 10% 
-              ! time but cost more space
-              ! uncommend !double prcision X44(129600)
-              !========= PART I ======================
-              ! X44(ITT) = X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
-              !========= DELETE IN BETWEEN ===============
-              if(cutoffprim.gt.quick_method%primLimit)then
-              CD=Apri(Nprik,Npril)  ! CD = Apri = expo(NpriK) + expo(NpriL)
-                 ABCD=AB+CD            ! ABCD = expo(NpriI)+expo(NpriJ)+expo(NpriK)+expo(NpriL)
-
-                 !         AB * CD      (expo(I)+expo(J))*(expo(K)+expo(L))
-                 ! Rou = ----------- = ------------------------------------
-                 !         AB + CD         expo(I)+expo(J)+expo(K)+expo(L)
-                 ROU=AB*CD/ABCD        
-                 
-                 RPQ=0.0d0
-                 
-                 !              _______________________________
-                 ! ABCDxiao = \/expo(I)+expo(J)+expo(K)+expo(L)
-                 ABCDxiao=dsqrt(ABCD)  
-                 
-                 CDtemp=0.5d0/CD       ! CDtemp =  1/2(expo(NpriK)+expo(NpriL))
-                 
-                 !                expo(I)+expo(J)                        expo(K)+expo(L)
-                 ! ABcom = --------------------------------  CDcom = --------------------------------
-                 !          expo(I)+expo(J)+expo(K)+expo(L)           expo(I)+expo(J)+expo(K)+expo(L)
-                 ABcom=AB/ABCD         
-                 CDcom=CD/ABCD
-                 
-                 ! ABCDtemp = 1/2(expo(I)+expo(J)+expo(K)+expo(L))
-                 ABCDtemp=0.5d0/ABCD
-                 do M=1,3
-                 
-                    ! Q' is the weighting center of NpriK and NpriL
-                    !                           --->           --->
-                    ! ->  ------>       expo(K)*xyz(K)+expo(L)*xyz(L)
-                    ! Q = P'(K,L)  = ------------------------------
-                    !                       expo(K) + expo(L)  
-                    Q(M)=Ppri(M,Nprik,Npril)
-
-                    ! W' is the weight center for NpriI,NpriJ,NpriK and NpriL
-                    !                --->             --->             --->            --->
-                    ! ->     expo(I)*xyz(I) + expo(J)*xyz(J) + expo(K)*xyz(K) +expo(L)*xyz(L)
-                    ! W = -------------------------------------------------------------------
-                    !                    expo(I) + expo(J) + expo(K) + expo(L)
-                    W(M)=(AAtemp(M)+Q(M)*CD)/ABCD
-                    
-                    !        ->  ->  2
-                    ! RPQ =| P - Q | 
-                    XXXtemp=P(M)-Q(M)
-                    RPQ=RPQ+XXXtemp*XXXtemp
-                    
-                    ! ---->   ->  ->
-                    ! Qtemp = Q - K
-                    Qtemp(M)=Q(M)-RC(M)
-                    
-                    ! ----->   ->  ->
-                    ! WQtemp = W - Q
-                    ! ----->   ->  ->
-                    ! WPtemp = W - P
-                    WQtemp(M)=W(M)-Q(M)
-                    WPtemp(M)=W(M)-P(M)
-                 enddo
-                 
-                 !             ->  -> 2
-                 ! T = ROU * | P - Q|
-                 T=RPQ*ROU
-
-                 !                         2m        2
-                 ! Fm(T) = integral(1,0) {t   exp(-Tt )dt}
-                 ! NABCD is the m value, and FM returns the FmT value
-                 call FmT(NABCD,T,FM)
-            
-                 do iitemp=0,NABCD
-                    ! Yxiaotemp(1,1,iitemp) is the starting point of recurrsion
-                    Yxiaotemp(1,1,iitemp)=FM(iitemp)/ABCDxiao!              _______________________________
-                                                             ! ABCDxiao = \/expo(I)+expo(J)+expo(K)+expo(L) 
-                 enddo
+              If(cutoffprim.gt.quick_method%primLimit)then
                  ITT=ITT+1
-
-                 ! now we will do vrr and and the double-electron integral
-                 call vertical(NABCDTYPE)
-                 
-                 X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)*quick_basis%Xcoeff(Nprik,Npril,K,L)
-
-                 do MM2=NNC,NNCD
-                    do MM1=NNA,NNAB
-                        store(MM1,MM2)=store(MM1,MM2)+ &
-                            X2*Yxiaotemp(MM1,MM2,0)
-                    enddo
-                enddo
+                 X44(ITT)=X2*XCoeff(Nprik,Npril,K,L)
               endif
-              !========= DELETE IN BETWEEN ============
            enddo
         enddo
      enddo
   enddo
 
-!=================== PART II========================
-!  do MM2=NNC,NNCD
-!     do MM1=NNA,NNAB
-!        Ytemp=0.0d0
-!        do itemp=1,ITT
-!           Ytemp=Ytemp+X44(itemp)*Yxiao(itemp,MM1,MM2)
-!        enddo
-!        write(*,*) II,JJ,KK,LL,i,j,k,l,MM1,MM2,Ytemp, itt
-!        store(MM1,MM2)=Ytemp
-!     enddo
-!  enddo
-!===================================================
+  do MM2=NNC,NNCD
+     do MM1=NNA,NNAB
+        Ytemp=0.0d0
+        do itemp=1,ITT
+           Ytemp=Ytemp+X44(itemp)*Yxiao(itemp,MM1,MM2)
+        enddo
+        store(MM1,MM2)=Ytemp
+     enddo
+  enddo
+
 
   NBI1=quick_basis%Qsbasis(II,I)
   NBI2=quick_basis%Qfbasis(II,I)
@@ -514,30 +254,18 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
   LLL1=quick_basis%ksumtype(LL)+NBL1
   LLL2=quick_basis%ksumtype(LL)+NBL2
 
-
-  if(II.lt.JJ.and.II.lt.KK.and.KK.lt.LL)then
+  If(II.lt.JJ.and.II.lt.KK.and.KK.lt.LL)then
      do III=III1,III2
         do JJJ=JJJ1,JJJ2
            do KKK=KKK1,KKK2
               do LLL=LLL1,LLL2
                  call hrrwhole
-                 !write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL,III,JJJ,KKK,LLL
                  DENSEKI=quick_qm_struct%dense(KKK,III)
                  DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
                  DENSELJ=quick_qm_struct%dense(LLL,JJJ)
                  DENSELI=quick_qm_struct%dense(LLL,III)
                  DENSELK=quick_qm_struct%dense(LLL,KKK)
                  DENSEJI=quick_qm_struct%dense(JJJ,III)
-write(*,*) "1", DENSEKI, DENSEKJ, DENSELJ, DENSELI, DENSELK, DENSEJI
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
-write(*,*) quick_qm_struct%o(JJJ,LLL)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
 
                  ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
                  ! can be equal.
@@ -549,15 +277,7 @@ write(*,*) quick_qm_struct%o(LLL,JJJ)
                  quick_qm_struct%o(JJJ,LLL) = quick_qm_struct%o(JJJ,LLL)-.5d0*DENSEKI*Y
                  quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSELI*Y
                  quick_qm_struct%o(LLL,JJJ) = quick_qm_struct%o(LLL,JJJ)-.5d0*DENSEKI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
-write(*,*) quick_qm_struct%o(JJJ,LLL)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
+
               enddo
            enddo
         enddo
@@ -567,26 +287,16 @@ write(*,*) quick_qm_struct%o(LLL,JJJ)
         do JJJ=max(III,JJJ1),JJJ2                          
            do KKK=max(III,KKK1),KKK2                          
               do LLL=max(KKK,LLL1),LLL2                          
-                 if(III.LT.KKK)then
+                 If(III.LT.KKK)then
                     call hrrwhole
-                  !  write(*,*) IJKLTYPE, NABCDTYPE,Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
-                    if(III.lt.JJJ.and.KKK.lt.LLL)then
+                    If(III.lt.JJJ.and.KKK.lt.LLL)then
                        DENSEKI=quick_qm_struct%dense(KKK,III)
                        DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
                        DENSELJ=quick_qm_struct%dense(LLL,JJJ)
                        DENSELI=quick_qm_struct%dense(LLL,III)
                        DENSELK=quick_qm_struct%dense(LLL,KKK)
                        DENSEJI=quick_qm_struct%dense(JJJ,III)
-write(*,*) "2", DENSEKI, DENSEKJ, DENSELJ, DENSELI, DENSELK, DENSEJI
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
-write(*,*) quick_qm_struct%o(JJJ,LLL)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
+
                        ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
                        ! can be equal.
 
@@ -598,50 +308,24 @@ write(*,*) quick_qm_struct%o(LLL,JJJ)
                        quick_qm_struct%o(JJJ,LLL) = quick_qm_struct%o(JJJ,LLL)-.5d0*DENSEKI*Y
                        quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSELI*Y
                        quick_qm_struct%o(LLL,JJJ) = quick_qm_struct%o(LLL,JJJ)-.5d0*DENSEKI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
-write(*,*) quick_qm_struct%o(JJJ,LLL)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
-
                     elseif(III.eq.JJJ.and.KKK.eq.LLL)then
-
                        DENSEJI=quick_qm_struct%dense(KKK,III)
                        DENSEJJ=quick_qm_struct%dense(KKK,KKK)
                        DENSEII=quick_qm_struct%dense(III,III)
-write(*,*) "3", DENSEJI, DENSEJJ, DENSEII
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(KKK,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
+
                        ! Find  all the (ii|jj) integrals.
                        quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+DENSEJJ*Y
                        quick_qm_struct%o(KKK,KKK) = quick_qm_struct%o(KKK,KKK)+DENSEII*Y
                        quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEJI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(KKK,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-                    elseif(JJJ.eq.KKK.and.JJJ.eq.LLL)then
 
+                    elseif(JJJ.eq.KKK.and.JJJ.eq.LLL)then
                        DENSEJI=quick_qm_struct%dense(JJJ,III)
                        DENSEJJ=quick_qm_struct%dense(JJJ,JJJ)
-write(*,*) "4", DENSEJI, DENSEJJ
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(JJJ,JJJ)
 
                        ! Find  all the (ij|jj) integrals.
                        quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+.5d0*DENSEJJ*Y
                        quick_qm_struct%o(JJJ,JJJ) = quick_qm_struct%o(JJJ,JJJ)+DENSEJI*Y
 
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(JJJ,JJJ)
                        !        ! Find  all the (ii|ij) integrals.
                        !        ! Find all the (ij|ij) integrals
 
@@ -651,13 +335,6 @@ write(*,*) quick_qm_struct%o(JJJ,JJJ)
                        DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
                        DENSEKK=quick_qm_struct%dense(KKK,KKK)
                        DENSEJI=quick_qm_struct%dense(JJJ,III)
-write(*,*) "5", DENSEKI, DENSEKJ, DENSEKK, DENSEJI
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(KKK,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
 
                        ! Find all the (ij|kk) integrals where j>i, k>j.
                        quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+DENSEKK*Y
@@ -665,104 +342,59 @@ write(*,*) quick_qm_struct%o(JJJ,KKK)
                        quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEKJ*Y
                        quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSEKI*Y
                        quick_qm_struct%o(JJJ,KKK) = quick_qm_struct%o(JJJ,KKK)-.5d0*DENSEKI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(KKK,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
+
                        !        ! Find all the (ik|jj) integrals where j>i, k>j.
                     elseif(III.eq.JJJ.and.KKK.lt.LLL)then
                        DENSEII=quick_qm_struct%dense(III,III)
                        DENSEJI=quick_qm_struct%dense(KKK,III)
                        DENSEKI=quick_qm_struct%dense(LLL,III)
                        DENSEKJ=quick_qm_struct%dense(LLL,KKK)
-write(*,*) "6", DENSEII, DENSEJJ, DENSEKI, DENSEKJ
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
 
                        ! Find all the (ii|jk) integrals where j>i, k>j.
                        quick_qm_struct%o(LLL,KKK) = quick_qm_struct%o(LLL,KKK)+DENSEII*Y
                        quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+2.d0*DENSEKJ*Y
                        quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEKI*Y
                        quick_qm_struct%o(LLL,III) = quick_qm_struct%o(LLL,III)-.5d0*DENSEJI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
+
                     endif
 
                  else
-                    if(JJJ.LE.LLL)then
+                    If(JJJ.LE.LLL)then
                        call hrrwhole
-                   !    write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
                        if(III.eq.JJJ.and.III.eq.KKK.and.III.eq.LLL)then
                           DENSEII=quick_qm_struct%dense(III,III)
-write(*,*) "7",DENSEII
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(III,III)
 
                           ! do all the (ii|ii) integrals.
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+.5d0*DENSEII*Y
-
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(III,III)
                        elseif(III.eq.JJJ.and.III.eq.KKK.and.III.lt.LLL)then
                           DENSEJI=quick_qm_struct%dense(LLL,III)
                           DENSEII=quick_qm_struct%dense(III,III)
-write(*,*) "8",DENSEJI, DENSEII
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(III,III)
+
                           ! Find  all the (ii|ij) integrals.
                           quick_qm_struct%o(LLL,III) = quick_qm_struct%o(LLL,III)+.5d0*DENSEII*Y
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+DENSEJI*Y
 
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(III,III)
                        elseif(III.eq.KKK.and.JJJ.eq.LLL.and.III.lt.JJJ)then
                           DENSEJI=quick_qm_struct%dense(JJJ,III)
                           DENSEJJ=quick_qm_struct%dense(JJJ,JJJ)
                           DENSEII=quick_qm_struct%dense(III,III)
-write(*,*) "9",DENSEJI, DENSEJJ, DENSEII
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(JJJ,JJJ)
-write(*,*) quick_qm_struct%o(III,III)
+
                           ! Find all the (ij|ij) integrals
                           quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+1.50*DENSEJI*Y
                           quick_qm_struct%o(JJJ,JJJ) = quick_qm_struct%o(JJJ,JJJ)-.5d0*DENSEII*Y
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)-.5d0*DENSEJJ*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(JJJ,JJJ)
-write(*,*) quick_qm_struct%o(III,III)
+
                        elseif(III.eq.KKK.and.III.lt.JJJ.and.JJJ.lt.LLL)then
                           DENSEKI=quick_qm_struct%dense(LLL,III)
                           DENSEKJ=quick_qm_struct%dense(LLL,JJJ)
                           DENSEII=quick_qm_struct%dense(III,III)
                           DENSEJI=quick_qm_struct%dense(JJJ,III)
-write(*,*) "10",DENSEKI, DENSEKJ, DENSEII, DENSEJI
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
+
                           ! Find all the (ij|ik) integrals where j>i,k>j
                           quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+1.5d0*DENSEKI*Y
                           quick_qm_struct%o(LLL,III) = quick_qm_struct%o(LLL,III)+1.5d0*DENSEJI*Y
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)-1.d0*DENSEKJ*Y
                           quick_qm_struct%o(LLL,JJJ) = quick_qm_struct%o(LLL,JJJ)-.5d0*DENSEII*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
                        endif
                     endif
                  endif
@@ -776,6 +408,2531 @@ write(*,*) quick_qm_struct%o(LLL,JJJ)
 End subroutine iclass
 
 
+subroutine vertical(NABCDTYPE)
+  use allMod
+
+  implicit double precision(a-h,o-z)
+
+  select case (NABCDTYPE)
+
+  case(0)
+     !                              goto 123
+  case(10)
+     call PSSS(0)
+  case(1)
+     call SSPS(0)
+  case(11)
+     call PSSS(0)
+
+     call SSPS(0)
+     call SSPS(1)
+     call PSPS(0)
+  case(20)
+     call PSSS(0)
+     call PSSS(1)
+     call DSSS(0)
+  case(2)
+     call SSPS(0)
+     call SSPS(1)
+     call SSDS(0)
+  case(21)
+     call SSPS(0)
+
+     call PSSS(0)
+     call SSPS(1)
+     call PSPS(0)
+
+     call PSSS(1)
+     call DSSS(0)
+
+     call PSSS(2)
+     call DSSS(1)
+     call DSPS(0)
+  case(12)
+     call SSPS(0)
+
+     call PSSS(0)
+     call SSPS(1)
+     call PSPS(0)
+
+     call SSDS(0)
+
+     call SSPS(2) 
+     call SSDS(1)
+     call PSDS(0)
+  case(22)
+     call SSPS(0)
+
+     call PSSS(0)
+     call SSPS(1)
+     call PSPS(0)
+
+     call SSDS(0)
+     call SSPS(2) 
+     call SSDS(1)
+     call PSDS(0)
+
+     call PSSS(1)
+     call DSSS(0)
+     call PSSS(2)
+     call DSSS(1)
+     call DSPS(0)
+
+     !                             call SSPS(2)
+     call SSPS(3)
+     call SSDS(2)
+     call PSDS(1)
+
+     call PSPS(1)
+     call DSDS(0)
+
+  case(30)
+     call PSSS(0)
+     call PSSS(1)
+     call DSSS(0)
+
+     call PSSS(2)
+     call DSSS(1)
+
+     call FSSS(0)
+
+  case(3)
+     call SSPS(0)
+     call SSPS(1)
+     call SSDS(0)
+
+     call SSPS(2)
+     call SSDS(1)
+
+     call SSFS(0)
+
+  case(40)
+     call PSSS(0)
+     call PSSS(1)
+     call DSSS(0)
+
+     call PSSS(2)
+     call DSSS(1)
+
+     call FSSS(0)
+
+     call PSSS(3)
+     call DSSS(2)
+
+     call FSSS(1)
+
+     call GSSS(0)
+
+  case(4)
+     call SSPS(0)
+     call SSPS(1)
+     call SSDS(0)
+
+     call SSPS(2)
+     call SSDS(1)
+
+     call SSFS(0)
+
+     call SSPS(3)
+     call SSDS(2)
+
+     call SSFS(1)
+
+     call SSGS(0)
+
+  case(31)
+     call PSSS(0)
+     call PSSS(1)
+     call DSSS(0)
+
+     call PSSS(2)
+     call DSSS(1)
+
+     call FSSS(0)
+
+     call PSSS(3)
+     call DSSS(2)
+
+     call FSSS(1)
+
+     call SSPS(0)
+     call SSPS(1)
+     call PSPS(0)
+
+     call DSPS(0)
+
+     call FSPS(0)
+
+  case(13)
+     call SSPS(0)
+     call SSPS(1)
+     call SSDS(0)
+
+     call SSPS(2)
+     call SSDS(1)
+
+     call SSFS(0)
+
+     call SSPS(3)
+     call SSDS(2)
+
+     call SSFS(1)
+
+     call PSSS(0)
+     !                             call PSSS(1)
+     call PSPS(0)
+
+     call PSDS(0)
+
+     call PSFS(0)
+
+  case(41)
+     call PSSS(0)
+     call PSSS(1)
+     call DSSS(0)
+
+     call PSSS(2)
+     call DSSS(1)
+
+     call FSSS(0)
+
+     call PSSS(3)
+     call DSSS(2)
+
+     call FSSS(1)
+
+     call GSSS(0)
+
+     call PSSS(4)
+     call DSSS(3)
+
+     call FSSS(2)
+
+     call GSSS(1)
+
+     call SSPS(0)
+     call SSPS(1)
+     call PSPS(0)
+
+     !                             call PSSS(1)
+     call DSPS(0)
+
+     call FSPS(0)
+
+     call GSPS(0)
+
+  case(14)
+     call SSPS(0)
+     call SSPS(1)
+     call SSDS(0)
+
+     call SSPS(2)
+     call SSDS(1)
+
+     call SSFS(0)
+
+     call SSPS(3)
+     call SSDS(2)
+
+     call SSFS(1)
+
+     call PSSS(0)
+     call PSSS(1)
+     call PSPS(0)
+
+     call SSGS(0)
+
+     call SSPS(4)
+     call SSDS(3)
+
+     call SSFS(2)
+
+     call SSGS(1)
+
+     !                             call PSSS(1)
+     call PSDS(0)
+
+     call PSFS(0)
+
+     call PSGS(0)
+
+  case(32)
+     call PSSS(0)
+     call PSSS(1)
+     call DSSS(0)
+
+     call PSSS(2)
+     call DSSS(1)
+
+     call FSSS(0)
+
+     call PSSS(3)
+     call DSSS(2)
+
+     call FSSS(1)
+
+     call SSPS(0)
+     call SSPS(1)
+     call PSPS(0)
+
+     call DSPS(0)
+
+     call FSPS(0)
+
+     call PSSS(4)
+     call DSSS(3)
+
+     call FSSS(2)
+
+     call FSPS(1)
+
+     call DSPS(1)
+
+     call SSDS(0)
+
+     !                             call SSDS(0)
+
+     call SSPS(2)
+     call SSDS(1)
+     call PSDS(0)    
+
+     call SSPS(3)
+     call SSDS(2)
+     call PSDS(1)
+
+     !                             call SSPS(1)
+     !                             call SSDS(1)
+
+     !                             call PSSS(1)
+     call PSPS(1)
+     call DSDS(0)
+
+     call FSDS(0)                                                      
+
+  case(23)
+     !                           if(NNAB.eq.2.and.NNCD.eq.3)then
+     call SSPS(0)
+     call SSPS(1)
+     call SSDS(0)
+
+     call SSPS(2)
+     call SSDS(1)
+
+     call SSFS(0)
+
+     call SSPS(3)
+     call SSDS(2)
+
+     call SSFS(1)
+
+     call PSSS(0)
+     call PSSS(1)
+     call PSPS(0)
+
+     call PSDS(0)
+
+     call PSFS(0)
+
+     call SSPS(4)
+     call SSDS(3)
+
+     call SSFS(2)
+
+     call PSFS(1)
+
+     call PSDS(1)
+
+     call DSSS(0)
+
+     call PSSS(2)
+     call DSSS(1)
+     call DSPS(0)
+
+     !                             call PSSS(3)
+     !                             call DSSS(2)
+     !                             call PSDS(1)
+
+     !                             call SSPS(1)
+     !                             call SSDS(1)
+
+     !                             call PSSS(1)
+     call PSPS(1)
+     call DSDS(0)
+
+     call DSFS(0)                                        
+
+  case(42)
+     !                           if(NNAB.eq.4.and.NNCD.eq.2)then
+     call PSSS(0)
+     call PSSS(1)
+     call DSSS(0)
+
+     call PSSS(2)
+     call DSSS(1)
+
+     call FSSS(0)
+
+     call PSSS(3)
+     call DSSS(2)
+
+     call FSSS(1)
+
+     call GSSS(0)
+
+     call PSSS(4)
+     call DSSS(3)
+
+     call FSSS(2)
+
+     call GSSS(1)
+
+     !                             call PSSS(1)
+     call DSPS(0)
+
+     call FSPS(0)
+
+     call GSPS(0)
+
+     call PSSS(5)
+     call DSSS(4)
+     call FSSS(3)
+
+     call GSSS(2)
+     call DSPS(1)
+
+     call FSPS(1)
+
+     call GSPS(1)
+
+     !********************DSDS
+
+     call SSPS(0)
+
+     !                             call PSSS(0)
+     call SSPS(1)
+     call PSPS(0)
+
+     call SSDS(0)
+     call SSPS(2)
+     call SSDS(1)
+     call PSDS(0)
+
+     !                             call PSSS(1)
+     !                             call DSSS(0)
+     !                             call PSSS(2)
+     !                             call DSSS(1)
+     !                             call DSPS(0)
+
+     call SSPS(3)
+     call SSDS(2)
+     call PSDS(1)
+
+     call PSPS(1)
+     call DSDS(0)
+
+     !*******************FSDS
+     !                             call FSPS(1)
+
+     !                              call DSPS(1)
+
+     !                             call SSDS(0)
+
+     !                             call SSPS(2)
+     !                             call SSDS(1)
+     !                             call PSDS(0)
+
+     !                             call SSPS(3)
+     !                             call SSDS(2)
+     !                             call PSDS(1)
+
+     !                             call PSPS(1)
+     !                             call DSDS(0)
+
+     call FSDS(0)
+
+     call GSDS(0)
+
+
+  case(24)
+     !                           if(NNAB.eq.2.and.NNCD.eq.4)then
+     call SSPS(0)
+     call SSPS(1)
+     call SSDS(0)
+
+     call SSPS(2)
+     call SSDS(1)
+
+     call SSFS(0)
+
+     call SSPS(3)
+     call SSDS(2)
+
+     call SSFS(1)
+
+     call SSGS(0)
+
+     call SSPS(4)
+     call SSDS(3)
+
+     call SSFS(2)
+
+     call SSGS(1)
+
+     !                             call PSSS(1)
+     call PSDS(0)
+
+     call PSFS(0)
+
+     call PSGS(0)
+
+     call SSPS(5)
+     call SSDS(4)
+
+     call SSFS(3)
+
+     call SSGS(2)
+     call PSDS(1)
+     call PSFS(1)
+
+     call PSGS(1)
+
+     !********************DSDS
+
+     call PSSS(0)
+
+     !                             call PSSS(0)
+     call PSSS(1)
+     call PSPS(0)
+
+     call DSSS(0)
+     call PSSS(2)
+     call DSSS(1)
+     call DSPS(0)
+
+     !                             call PSSS(1)
+     !                             call DSSS(0)
+     !                             call PSSS(2)
+     !                             call DSSS(1)
+     !                             call DSPS(0)
+
+     call PSSS(3)
+     call DSSS(2)
+     call DSPS(1)
+
+     call PSPS(1)
+     call DSDS(0)
+
+     !*******************FSDS
+
+     !                             call PSFS(1)
+
+     !                             call PSDS(1)
+
+     !                             call SSDS(0)
+
+     !                             call SSPS(2)
+     !                             call SSDS(1)
+     !                             call PSDS(0)
+
+     !                             call SSPS(3)
+     !                             call SSDS(2)
+     !                             call PSDS(1)
+
+     !                             call PSPS(1)
+     !                             call DSDS(0)
+
+     call DSFS(0)
+     call DSGS(0)
+
+
+  case(33)
+     !                           if(NNAB.eq.3.and.NNCD.eq.3)then
+     do ixiao=0,5
+        call PSSS(ixiao)
+        !                              call SSPS(ixiao)
+     enddo
+     do ixiao=0,4
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,3
+        call PSPS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSSS(ixiao)
+        !                              call SSDS(ixiao)
+     enddo
+     do ixiao=0,3
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,3
+        call DSPS(ixiao)
+        !                              call PSDS(ixiao)
+     enddo
+     do ixiao=0,2
+        call PSDS(ixiao)
+     enddo
+     do ixiao=0,1
+        call DSDS(ixiao)
+     enddo
+     do ixiao=0,3
+        call FSSS(ixiao)
+        !                              call SSFS(ixiao)
+     enddo
+     do ixiao=0,2
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,2
+        call FSPS(ixiao)
+        !                              call PSFS(ixiao)
+     enddo
+     do ixiao=0,1
+        call PSFS(ixiao)
+     enddo
+     call FSDS(0)
+     call DSFS(0)
+     call FSDS(1)
+     !                              call DSFS(1)
+     call FSFS(0)
+
+  case(43)
+     do ixiao=0,6
+        call PSSS(ixiao)
+        !                              call SSPS(ixiao)
+     enddo
+     do ixiao=0,5
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSPS(ixiao)
+     enddo
+     do ixiao=0,5
+        call DSSS(ixiao)
+        !                             call SSDS(ixiao)
+     enddo
+     do ixiao=0,4
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSPS(ixiao)
+        !                              call PSDS(ixiao)
+     enddo
+     do ixiao=0,3
+        call PSDS(ixiao)
+     enddo
+     do ixiao=0,2
+        call DSDS(ixiao)
+     enddo
+     do ixiao=0,4
+        call FSSS(ixiao)
+        !                              call SSFS(ixiao)
+     enddo
+     do ixiao=0,3
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,3
+        call FSPS(ixiao)
+        !                              call PSFS(ixiao)
+     enddo
+     do ixiao=0,2
+        call PSFS(ixiao)
+     enddo
+     call FSDS(0)
+     call DSFS(0)
+     call FSDS(1)
+     call DSFS(1)
+     call FSDS(2)
+     !                              call DSFS(2)
+     call FSFS(0)
+     !                              call FSFS(1)
+     do ixiao=0,3
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,2
+        call GSPS(ixiao)
+     enddo
+     do ixiao=0,1
+        call GSDS(ixiao)
+     enddo
+     call GSFS(0)
+
+  case(34)
+     !                           if(NNAB.eq.3.and.NNCD.eq.4)then
+     do ixiao=0,6
+        !                              call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSPS(ixiao)
+     enddo
+     do ixiao=0,5
+        !                              call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        !                              call DSPS(ixiao)
+        call PSDS(ixiao)
+     enddo
+     do ixiao=0,3
+        call DSPS(ixiao)
+     enddo
+     do ixiao=0,2
+        call DSDS(ixiao)
+     enddo
+     do ixiao=0,4
+        !                              call FSSS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,3
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        !                              call FSPS(ixiao)
+        call PSFS(ixiao)
+     enddo
+     do ixiao=0,2
+        call FSPS(ixiao)
+     enddo
+     call FSDS(0)
+     call DSFS(0)
+     call FSDS(1)
+     call DSFS(1)
+     !                              call FSDS(2)
+     call DSFS(2)
+     call FSFS(0)
+     !                              call FSFS(1)
+     do ixiao=0,3
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,2
+        call PSGS(ixiao)
+     enddo
+     do ixiao=0,1
+        call DSGS(ixiao)
+     enddo
+     call FSGS(0)
+
+  case(44)
+     !                           if(NNAB.eq.4.and.NNCD.eq.4)then
+     do ixiao=0,7
+        call PSSS(ixiao)
+        !                              call SSPS(ixiao)
+     enddo
+     do ixiao=0,6
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSPS(ixiao)
+     enddo
+     do ixiao=0,6
+        call DSSS(ixiao)
+        !                              call SSDS(ixiao)
+     enddo
+     do ixiao=0,5
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,5
+        call DSPS(ixiao)
+        !                              call PSDS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSDS(ixiao)
+     enddo
+     do ixiao=0,3
+        call DSDS(ixiao)
+     enddo
+     do ixiao=0,5
+        call FSSS(ixiao)
+        !                              call SSFS(ixiao)
+     enddo
+     do ixiao=0,4
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,4
+        call FSPS(ixiao)
+        !                              call PSFS(ixiao)
+     enddo
+     do ixiao=0,3
+        call PSFS(ixiao)
+     enddo
+     do ixiao=0,3
+        call FSDS(ixiao)
+        !                              call DSFS(ixiao)
+     enddo
+     do ixiao=0,2
+        call DSFS(ixiao)
+     enddo
+     do ixiao=0,1 
+        call FSFS(ixiao)
+     enddo
+     do ixiao=0,4
+        call GSSS(ixiao)
+        !                              call SSGS(ixiao)
+     enddo
+     do ixiao=0,3
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,3
+        call GSPS(ixiao)
+        !                              call PSGS(ixiao)
+     enddo
+     do ixiao=0,2
+        call PSGS(ixiao)
+     enddo
+     do ixiao=0,2
+        call GSDS(ixiao)
+        !                              call DSGS(ixiao)
+     enddo
+     do ixiao=0,1
+        call DSGS(ixiao)
+     enddo
+     do ixiao=0,1
+        call GSFS(ixiao)
+        !                              call FSGS(ixiao)
+     enddo
+     call FSGS(0)
+     call GSGS(0)
+
+  case(50)
+     do ixiao=0,4
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,2
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,1
+        call GSSS(ixiao)
+     enddo
+     call BSLS(5,0,0)
+
+  case(5)
+     do ixiao=0,4
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,3
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,2
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,1
+        call SSGS(ixiao)
+     enddo
+     call LSBS(0,5,0)
+
+  case(51)
+     do ixiao=0,5
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSPS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        call DSPS(ixiao)
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,2
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,1
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     call BSLS(5,1,0)
+
+  case(15)
+     do ixiao=0,5
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSPS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,3
+        call PSDS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,2
+        call PSFS(ixiao)
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,1
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     call LSBS(1,5,0)
+
+  case(52)
+     do ixiao=0,6
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,2
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,1
+        call GSDS(ixiao) 
+        call BSLS(5,1,ixiao)
+     enddo
+     call BSLS(5,2,0)
+
+  case(25)
+     do ixiao=0,6
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSPS(ixiao)
+        call SSDS(ixiao)
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSPS(ixiao)
+        call PSDS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,3
+        call DSDS(ixiao)
+        call PSFS(ixiao)
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,2
+        call DSFS(ixiao)
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,1
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+     enddo
+     call LSBS(2,5,0)
+
+  case(53)
+     do ixiao=0,7
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call FSSS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,2
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+     enddo
+     do ixiao=0,1
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+     enddo
+     call BSLS(5,3,0)
+
+  case(35)
+     do ixiao=0,7
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSPS(ixiao)
+        call SSDS(ixiao)
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call DSPS(ixiao)
+        call PSDS(ixiao)
+        call SSFS(ixiao)
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call FSPS(ixiao)
+        call DSDS(ixiao)
+        call PSFS(ixiao)
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,3
+        call FSDS(ixiao)
+        call DSFS(ixiao)
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,2
+        call FSFS(ixiao)
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+     enddo
+     do ixiao=0,1
+        call FSGS(ixiao)
+        call LSBS(2,5,ixiao)
+     enddo
+     call LSBS(3,5,0)
+
+  case(54)
+     do ixiao=0,8
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,7
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,6
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,5
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,3
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+     enddo
+     do ixiao=0,2
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+     enddo
+     do ixiao=0,1    
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+     enddo
+     call BSLS(5,4,0)
+
+  case(45)
+     do ixiao=0,8
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,7
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,6
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,5
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call GSPS(ixiao)
+        call FSDS(ixiao)
+        call DSFS(ixiao)
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,3
+        call GSDS(ixiao)
+        call FSFS(ixiao)
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+     enddo
+     do ixiao=0,2
+        call GSFS(ixiao)
+        call FSGS(ixiao)
+        call LSBS(2,5,ixiao)
+     enddo
+     do ixiao=0,1
+        call GSGS(ixiao)
+        call LSBS(3,5,ixiao)
+     enddo
+     call LSBS(4,5,0)
+
+  case(55)
+     do ixiao=0,9
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,8
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,7
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,6
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call LSBS(0,5,ixiao)
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,4
+        call LSBS(1,5,ixiao)
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+     enddo
+     do ixiao=0,3
+        call LSBS(2,5,ixiao)
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(3,5,ixiao)
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(4,5,ixiao)
+        call BSLS(5,4,ixiao)
+     enddo
+     call BSLS(5,5,0)
+
+  case(60)
+     do ixiao=0,5
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,2
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(5,0,ixiao)
+     enddo
+     call BSLS(6,0,0)
+
+  case(6)
+     do ixiao=0,5
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,4
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,3
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,2
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(0,5,ixiao)
+     enddo
+     call LSBS(0,6,0)
+
+  case(61)
+     do ixiao=0,6
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSPS(ixiao)
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,2
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     call BSLS(6,1,0)
+
+  case(16)
+     do ixiao=0,6
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSPS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSDS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,3
+        call PSFS(ixiao)
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,2
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     call LSBS(1,6,0)
+
+  case(62)
+     do ixiao=0,7
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,2
+        call GSDS(ixiao) 
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+     enddo
+     call BSLS(6,2,0)
+
+  case(26)
+     do ixiao=0,7
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSPS(ixiao)
+        call SSDS(ixiao)
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call DSPS(ixiao)
+        call PSDS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSDS(ixiao)
+        call PSFS(ixiao)
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,3
+        call DSFS(ixiao)
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,2
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(2,5,ixiao)
+        call LSBS(1,6,ixiao)
+     enddo
+     call LSBS(2,6,0)
+
+  case(63)
+     do ixiao=0,8
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,7
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call FSSS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,3
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,2
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+     enddo
+     call BSLS(6,3,0)
+
+  case(36)
+     do ixiao=0,8
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,7
+        call PSPS(ixiao)
+        call SSDS(ixiao)
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call DSPS(ixiao)
+        call PSDS(ixiao)
+        call SSFS(ixiao)
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call FSPS(ixiao)
+        call DSDS(ixiao)
+        call PSFS(ixiao)
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,4
+        call FSDS(ixiao)
+        call DSFS(ixiao)
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,3
+        call FSFS(ixiao)
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     do ixiao=0,2
+        call FSGS(ixiao)
+        call LSBS(2,5,ixiao)
+        call LSBS(1,6,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(3,5,ixiao)
+        call LSBS(2,6,ixiao)
+     enddo
+     call LSBS(3,6,0)
+
+  case(64)
+     do ixiao=0,9
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,8
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,7
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,6
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,4
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,3
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+     enddo
+     do ixiao=0,2    
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(5,4,ixiao)
+        call BSLS(6,3,ixiao)
+     enddo
+     call BSLS(6,4,0)
+
+  case(46)
+     do ixiao=0,9
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,8
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,7
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,6
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call GSPS(ixiao)
+        call FSDS(ixiao)
+        call DSFS(ixiao)
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,4
+        call GSDS(ixiao)
+        call FSFS(ixiao)
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     do ixiao=0,3
+        call GSFS(ixiao)
+        call FSGS(ixiao)
+        call LSBS(2,5,ixiao)
+        call LSBS(1,6,ixiao)
+     enddo
+     do ixiao=0,2
+        call GSGS(ixiao)
+        call LSBS(3,5,ixiao)
+        call LSBS(2,6,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(4,5,ixiao)
+        call LSBS(3,6,ixiao)
+     enddo
+     call LSBS(4,6,0)
+
+  case(65)
+     do ixiao=0,10
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,9
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,8
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,7
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call LSBS(0,5,ixiao)
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,5
+        call LSBS(1,5,ixiao)
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,4
+        call LSBS(2,5,ixiao)
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+     enddo
+     do ixiao=0,3
+        call LSBS(3,5,ixiao)
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(4,5,ixiao)
+        call BSLS(5,4,ixiao)
+        call BSLS(6,3,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(5,5,ixiao)
+        call BSLS(6,4,ixiao)
+     enddo
+     call BSLS(6,5,0)
+
+  case(56)
+     do ixiao=0,10
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,9
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,8
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,7
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call LSBS(0,5,ixiao)
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,5
+        call BSLS(5,1,ixiao)
+        call GSDS(ixiao)
+        call FSFS(ixiao)
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     do ixiao=0,4
+        call BSLS(5,2,ixiao)
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call LSBS(2,5,ixiao)
+        call LSBS(1,6,ixiao)
+     enddo
+     do ixiao=0,3
+        call BSLS(5,3,ixiao)
+        call GSGS(ixiao)
+        call LSBS(3,5,ixiao)
+        call LSBS(2,6,ixiao)
+     enddo
+     do ixiao=0,2
+        call BSLS(5,4,ixiao)
+        call LSBS(4,5,ixiao)
+        call LSBS(3,6,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(5,5,ixiao)
+        call LSBS(4,6,ixiao)
+     enddo
+     call LSBS(5,6,0)
+
+  case(66)
+     do ixiao=0,11
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,10
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,9
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,8
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,7
+        call LSBS(0,5,ixiao)
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,6
+        call LSBS(0,6,ixiao)
+        call LSBS(1,5,ixiao)
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,5
+        call LSBS(1,6,ixiao)
+        call LSBS(2,5,ixiao)
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+     enddo
+     do ixiao=0,4
+        call LSBS(2,6,ixiao)
+        call LSBS(3,5,ixiao)
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+     enddo
+     do ixiao=0,3
+        call LSBS(3,6,ixiao)
+        call LSBS(4,5,ixiao)
+        call BSLS(5,4,ixiao)
+        call BSLS(6,3,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(4,6,ixiao)
+        call BSLS(5,5,ixiao)
+        call BSLS(6,4,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(5,6,ixiao)
+        call BSLS(6,5,ixiao)
+     enddo
+     call BSLS(6,6,0)
+
+  case(70)
+     do ixiao=0,6
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,2
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(6,0,ixiao)
+     enddo
+     call BSLS(7,0,0)
+
+  case(7)
+     do ixiao=0,6
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,5
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,4
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,3
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(0,6,ixiao)
+     enddo
+     call LSBS(0,7,0)
+
+  case(71)
+     do ixiao=0,7
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call DSPS(ixiao)
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,3
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,2
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(6,1,ixiao)
+        call BSLS(7,0,ixiao)
+     enddo
+     call BSLS(7,1,0)
+
+  case(17)
+     do ixiao=0,7
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSPS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,5
+        call PSDS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,4
+        call PSFS(ixiao)
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,3
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(1,6,ixiao)
+        call LSBS(0,7,ixiao)
+     enddo
+     call LSBS(1,7,0)
+
+  case(72)
+     do ixiao=0,8
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,7
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,4
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,3
+        call GSDS(ixiao) 
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,2
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+        call BSLS(7,0,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(6,2,ixiao)
+        call BSLS(7,1,ixiao)
+     enddo
+     call BSLS(7,2,0)
+
+  case(27)
+     do ixiao=0,8
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,7
+        call PSPS(ixiao)
+        call SSDS(ixiao)
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call DSPS(ixiao)
+        call PSDS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,5
+        call DSDS(ixiao)
+        call PSFS(ixiao)
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,4
+        call DSFS(ixiao)
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,3
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(2,5,ixiao)
+        call LSBS(1,6,ixiao)
+        call LSBS(0,7,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(2,6,ixiao)
+        call LSBS(1,7,ixiao)
+     enddo
+     call LSBS(2,7,0)
+
+  case(73)
+     do ixiao=0,9
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,8
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,7
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call FSSS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,5
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,4
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,3
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+        call BSLS(7,0,ixiao)
+     enddo
+     do ixiao=0,2
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+        call BSLS(7,1,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(6,3,ixiao)
+        call BSLS(7,2,ixiao)
+     enddo
+     call BSLS(7,3,0)
+
+  case(37)
+     do ixiao=0,9
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,8
+        call PSPS(ixiao)
+        call SSDS(ixiao)
+        call DSSS(ixiao)
+     enddo
+     do ixiao=0,7
+        call DSPS(ixiao)
+        call PSDS(ixiao)
+        call SSFS(ixiao)
+        call FSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call FSPS(ixiao)
+        call DSDS(ixiao)
+        call PSFS(ixiao)
+        call SSGS(ixiao)
+     enddo
+     do ixiao=0,5
+        call FSDS(ixiao)
+        call DSFS(ixiao)
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,4
+        call FSFS(ixiao)
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     do ixiao=0,3
+        call FSGS(ixiao)
+        call LSBS(2,5,ixiao)
+        call LSBS(1,6,ixiao)
+        call LSBS(0,7,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(3,5,ixiao)
+        call LSBS(2,6,ixiao)
+        call LSBS(1,7,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(3,6,ixiao)
+        call LSBS(2,7,ixiao)
+     enddo
+     call LSBS(3,7,0)
+
+  case(74)
+     do ixiao=0,10
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,9
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,8
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,7
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,5
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,4
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+        call BSLS(7,0,ixiao)
+     enddo
+     do ixiao=0,3    
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+        call BSLS(7,1,ixiao)
+     enddo
+     do ixiao=0,2
+        call BSLS(5,4,ixiao)
+        call BSLS(6,3,ixiao)
+        call BSLS(7,2,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(6,4,ixiao)
+        call BSLS(7,3,ixiao)
+     enddo
+     call BSLS(7,4,0)
+
+  case(47)
+     do ixiao=0,10
+        call SSPS(ixiao)
+        call PSSS(ixiao)
+     enddo
+     do ixiao=0,9
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,8
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,7
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,6
+        call GSPS(ixiao)
+        call FSDS(ixiao)
+        call DSFS(ixiao)
+        call PSGS(ixiao)
+        call LSBS(0,5,ixiao)
+     enddo
+     do ixiao=0,5
+        call GSDS(ixiao)
+        call FSFS(ixiao)
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     do ixiao=0,4
+        call GSFS(ixiao)
+        call FSGS(ixiao)
+        call LSBS(2,5,ixiao)
+        call LSBS(1,6,ixiao)
+        call LSBS(0,7,ixiao)
+     enddo
+     do ixiao=0,3
+        call GSGS(ixiao)
+        call LSBS(3,5,ixiao)
+        call LSBS(2,6,ixiao)
+        call LSBS(1,7,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(4,5,ixiao)
+        call LSBS(3,6,ixiao)
+        call LSBS(2,7,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(4,6,ixiao)
+        call LSBS(3,7,ixiao)
+     enddo
+     call LSBS(4,7,0)
+
+  case(75)
+     do ixiao=0,11
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,10
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,9
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,8
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,7
+        call LSBS(0,5,ixiao)
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,6
+        call LSBS(1,5,ixiao)
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,5
+        call LSBS(2,5,ixiao)
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+        call BSLS(7,0,ixiao)
+     enddo
+     do ixiao=0,4
+        call LSBS(3,5,ixiao)
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+        call BSLS(7,1,ixiao)
+     enddo
+     do ixiao=0,3
+        call LSBS(4,5,ixiao)
+        call BSLS(5,4,ixiao)
+        call BSLS(6,3,ixiao)
+        call BSLS(7,2,ixiao)
+     enddo
+     do ixiao=0,2
+        call BSLS(5,5,ixiao)
+        call BSLS(6,4,ixiao)
+        call BSLS(7,3,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(6,5,ixiao)
+        call BSLS(7,4,ixiao)
+     enddo
+     call BSLS(7,5,0)
+
+  case(57)
+     do ixiao=0,11
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,10
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,9
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,8
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,7
+        call LSBS(0,5,ixiao)
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,6
+        call BSLS(5,1,ixiao)
+        call GSDS(ixiao)
+        call FSFS(ixiao)
+        call DSGS(ixiao)
+        call LSBS(1,5,ixiao)
+        call LSBS(0,6,ixiao)
+     enddo
+     do ixiao=0,5
+        call BSLS(5,2,ixiao)
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call LSBS(2,5,ixiao)
+        call LSBS(1,6,ixiao)
+        call LSBS(0,7,ixiao)
+     enddo
+     do ixiao=0,4
+        call BSLS(5,3,ixiao)
+        call GSGS(ixiao)
+        call LSBS(3,5,ixiao)
+        call LSBS(2,6,ixiao)
+        call LSBS(1,7,ixiao)
+     enddo
+     do ixiao=0,3
+        call BSLS(5,4,ixiao)
+        call LSBS(4,5,ixiao)
+        call LSBS(3,6,ixiao)
+        call LSBS(2,7,ixiao)
+     enddo
+     do ixiao=0,2
+        call BSLS(5,5,ixiao)
+        call LSBS(4,6,ixiao)
+        call LSBS(3,7,ixiao)
+     enddo
+     do ixiao=0,1
+        call LSBS(5,6,ixiao)
+        call LSBS(4,7,ixiao)
+     enddo
+     call LSBS(5,7,0)
+
+  case(76)
+     do ixiao=0,12
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,11
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,10
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,9
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,8
+        call LSBS(0,5,ixiao)
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,7
+        call LSBS(0,6,ixiao)
+        call LSBS(1,5,ixiao)
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,6
+        call LSBS(1,6,ixiao)
+        call LSBS(2,5,ixiao)
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+        call BSLS(7,0,ixiao)
+     enddo
+     do ixiao=0,5
+        call LSBS(2,6,ixiao)
+        call LSBS(3,5,ixiao)
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+        call BSLS(7,1,ixiao)
+     enddo
+     do ixiao=0,4
+        call LSBS(3,6,ixiao)
+        call LSBS(4,5,ixiao)
+        call BSLS(5,4,ixiao)
+        call BSLS(6,3,ixiao)
+        call BSLS(7,2,ixiao)
+     enddo
+     do ixiao=0,3
+        call LSBS(4,6,ixiao)
+        call BSLS(5,5,ixiao)
+        call BSLS(6,4,ixiao)
+        call BSLS(7,3,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(5,6,ixiao)
+        call BSLS(6,5,ixiao)
+        call BSLS(7,4,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(6,6,ixiao)
+        call BSLS(7,5,ixiao)
+     enddo
+     call BSLS(7,6,0)
+
+  case(67)
+     do ixiao=0,12
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,11
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,10
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,9
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,8
+        call LSBS(0,5,ixiao)
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,7
+        call LSBS(0,6,ixiao)
+        call LSBS(1,5,ixiao)
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,6
+        call BSLS(6,1,ixiao)
+        call BSLS(5,2,ixiao)
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call LSBS(2,5,ixiao)
+        call LSBS(1,6,ixiao)
+        call LSBS(0,7,ixiao)
+     enddo
+     do ixiao=0,5
+        call LSBS(2,6,ixiao)
+        call LSBS(3,5,ixiao)
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+        call LSBS(1,7,ixiao)
+     enddo
+     do ixiao=0,4
+        call LSBS(3,6,ixiao)
+        call LSBS(4,5,ixiao)
+        call BSLS(5,4,ixiao)
+        call BSLS(6,3,ixiao)
+        call LSBS(2,7,ixiao)
+     enddo
+     do ixiao=0,3
+        call LSBS(4,6,ixiao)
+        call BSLS(5,5,ixiao)
+        call BSLS(6,4,ixiao)
+        call LSBS(3,7,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(5,6,ixiao)
+        call BSLS(6,5,ixiao)
+        call LSBS(4,7,ixiao)
+     enddo
+     do ixiao=0,1
+        call BSLS(6,6,ixiao)
+        call LSBS(5,7,ixiao)
+     enddo
+     call LSBS(6,7,0)
+
+  case(77)
+     do ixiao=0,13
+        call PSSS(ixiao)
+        call SSPS(ixiao)
+     enddo
+     do ixiao=0,12
+        call PSPS(ixiao)
+        call DSSS(ixiao)
+        call SSDS(ixiao)
+     enddo
+     do ixiao=0,11
+        call FSSS(ixiao)
+        call PSDS(ixiao)
+        call DSPS(ixiao)
+        call SSFS(ixiao)
+     enddo
+     do ixiao=0,10
+        call SSGS(ixiao)
+        call PSFS(ixiao)
+        call DSDS(ixiao)
+        call FSPS(ixiao)
+        call GSSS(ixiao)
+     enddo
+     do ixiao=0,9
+        call LSBS(0,5,ixiao)
+        call PSGS(ixiao)
+        call DSFS(ixiao)
+        call FSDS(ixiao)
+        call GSPS(ixiao)
+        call BSLS(5,0,ixiao)
+     enddo
+     do ixiao=0,8
+        call LSBS(0,6,ixiao)
+        call LSBS(1,5,ixiao)
+        call DSGS(ixiao)
+        call FSFS(ixiao)
+        call GSDS(ixiao)
+        call BSLS(5,1,ixiao)
+        call BSLS(6,0,ixiao)
+     enddo
+     do ixiao=0,7
+        call LSBS(0,7,ixiao)
+        call LSBS(1,6,ixiao)
+        call LSBS(2,5,ixiao)
+        call FSGS(ixiao)
+        call GSFS(ixiao)
+        call BSLS(5,2,ixiao)
+        call BSLS(6,1,ixiao)
+        call BSLS(7,0,ixiao)
+     enddo
+     do ixiao=0,6
+        call LSBS(1,7,ixiao)
+        call LSBS(2,6,ixiao)
+        call LSBS(3,5,ixiao)
+        call GSGS(ixiao)
+        call BSLS(5,3,ixiao)
+        call BSLS(6,2,ixiao)
+        call BSLS(7,1,ixiao)
+     enddo
+     do ixiao=0,5
+        call LSBS(2,7,ixiao)
+        call LSBS(3,6,ixiao)
+        call LSBS(4,5,ixiao)
+        call BSLS(5,4,ixiao)
+        call BSLS(6,3,ixiao)
+        call BSLS(7,2,ixiao)
+     enddo
+     do ixiao=0,4
+        call LSBS(3,7,ixiao)
+        call LSBS(4,6,ixiao)
+        call BSLS(5,5,ixiao)
+        call BSLS(6,4,ixiao)
+        call BSLS(7,3,ixiao)
+     enddo
+     do ixiao=0,3
+        call LSBS(4,7,ixiao)
+        call LSBS(5,6,ixiao)
+        call BSLS(6,5,ixiao)
+        call BSLS(7,4,ixiao)
+     enddo
+     do ixiao=0,2
+        call LSBS(5,7,ixiao)
+        call BSLS(6,6,ixiao)
+        call BSLS(7,5,ixiao)
+     enddo
+     call LSBS(6,7,0)
+     call BSLS(7,6,0)
+     call LSBS(6,7,1)
+     call BSLS(7,6,1)
+     call BSLS(7,7,0)
+
+  end select
+end subroutine vertical
+
+
+
 ! Ed Brothers. October 23, 2001
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
 
@@ -786,10 +2943,10 @@ subroutine attrashellenergy(IIsh,JJsh)
   !    use xiaoconstants
   implicit double precision(a-h,o-z)
   dimension aux(0:20)
-  double precision AA(3),BB(3),CC(3),PP(3)
+  real*8 AA(3),BB(3),CC(3),PP(3)
   common /xiaoattra/attra,aux,AA,BB,CC,PP,g
 
-  double precision RA(3),RB(3),RP(3)
+  real*8 RA(3),RB(3),RP(3)
 
   ! Variables needed later:
   !    pi=3.1415926535897932385
@@ -826,9 +2983,9 @@ subroutine attrashellenergy(IIsh,JJsh)
 
 
   do ips=1,quick_basis%kprim(IIsh)
-     a=quick_basis%gcexpo(ips,quick_basis%ksumtype(IIsh))
+     a=gcexpo(ips,quick_basis%ksumtype(IIsh))
      do jps=1,quick_basis%kprim(JJsh)
-        b=quick_basis%gcexpo(jps,quick_basis%ksumtype(JJsh))       
+        b=gcexpo(jps,quick_basis%ksumtype(JJsh))       
 
         g = a+b
         Px = (a*Ax + b*Bx)/g
@@ -889,13 +3046,13 @@ end subroutine attrashellenergy
 subroutine shellmp2(nstepmp2s,nsteplength)
   use allmod
 
-  Implicit double precision(a-h,o-z)
-  double precision P(3),Q(3),W(3),KAB,KCD,AAtemp(3)
+  Implicit real*8(a-h,o-z)
+  real*8 P(3),Q(3),W(3),KAB,KCD,AAtemp(3)
   Parameter(NN=13)
-  double precision FM(0:13)
-  double precision RA(3),RB(3),RC(3),RD(3)
+  real*8 FM(0:13)
+  real*8 RA(3),RB(3),RC(3),RD(3)
 
-  double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+  real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
   integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
   common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
@@ -903,12 +3060,12 @@ subroutine shellmp2(nstepmp2s,nsteplength)
 
   COMMON /COM1/RA,RB,RC,RD
 
-  do M=1,3
+  Do M=1,3
      RA(M)=xyz(M,quick_basis%katom(II))
      RB(M)=xyz(M,quick_basis%katom(JJ))
      RC(M)=xyz(M,quick_basis%katom(KK))
      RD(M)=xyz(M,quick_basis%katom(LL))
-  enddo
+  Enddo
 
   NII1=quick_basis%Qstart(II)
   NII2=quick_basis%Qfinal(II)
@@ -933,26 +3090,26 @@ subroutine shellmp2(nstepmp2s,nsteplength)
 
   NABCD=NII2+NJJ2+NKK2+NLL2
   ITT=0
-  do JJJ=1,quick_basis%kprim(JJ)
+  Do JJJ=1,quick_basis%kprim(JJ)
      Nprij=quick_basis%kstart(JJ)+JJJ-1
-     do III=1,quick_basis%kprim(II)
+     Do III=1,quick_basis%kprim(II)
         Nprii=quick_basis%kstart(II)+III-1
         AB=Apri(Nprii,Nprij)
         ABtemp=0.5d0/AB
         cutoffprim1=dnmax*cutprim(Nprii,Nprij)
-        do M=1,3
+        Do M=1,3
            P(M)=Ppri(M,Nprii,Nprij)
            AAtemp(M)=P(M)*AB
            Ptemp(M)=P(M)-RA(M)
-        enddo
+        Enddo
         !            KAB=Kpri(Nprii,Nprij)
-        do LLL=1,quick_basis%kprim(LL)
+        Do LLL=1,quick_basis%kprim(LL)
            Npril=quick_basis%kstart(LL)+LLL-1
-           do KKK=1,quick_basis%kprim(KK)
+           Do KKK=1,quick_basis%kprim(KK)
               Nprik=quick_basis%kstart(KK)+KKK-1
               cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
               !                       print*,cutoffprim
-              if(cutoffprim.gt.quick_method%primLimit)then
+              If(cutoffprim.gt.quick_method%primLimit)then
                  CD=Apri(Nprik,Npril)
                  ABCD=AB+CD
                  ROU=AB*CD/ABCD
@@ -964,7 +3121,7 @@ subroutine shellmp2(nstepmp2s,nsteplength)
                  CDcom=CD/ABCD
                  ABCDtemp=0.5d0/ABCD
 
-                 do M=1,3
+                 Do M=1,3
                     Q(M)=Ppri(M,Nprik,Npril)
                     W(M)=(AAtemp(M)+Q(M)*CD)/ABCD
                     XXXtemp=P(M)-Q(M)
@@ -972,7 +3129,7 @@ subroutine shellmp2(nstepmp2s,nsteplength)
                     Qtemp(M)=Q(M)-RC(M)
                     WQtemp(M)=W(M)-Q(M)
                     WPtemp(M)=W(M)-P(M)
-                 enddo
+                 Enddo
                  !                         KCD=Kpri(Nprik,Npril)
 
                  T=RPQ*ROU
@@ -994,33 +3151,33 @@ subroutine shellmp2(nstepmp2s,nsteplength)
 
                  call vertical(NABCDTYPE) 
 
-                 do I2=NNC,NNCD
-                    do I1=NNA,NNAB
+                 Do I2=NNC,NNCD
+                    Do I1=NNA,NNAB
                        Yxiao(ITT,I1,I2)=Yxiaotemp(I1,I2,0)
-                    enddo
-                 enddo
+                    Enddo
+                 Enddo
                  !                           else
                  !!                             print*,cutoffprim
                  !                             ITT=ITT+1
-                 !                           do I2=NNC,NNCD
-                 !                             do I1=NNA,NNAB
+                 !                           Do I2=NNC,NNCD
+                 !                             Do I1=NNA,NNAB
                  !                               Yxiao(ITT,I1,I2)=0.0d0
-                 !                             enddo
-                 !                           enddo
-              endif
+                 !                             Enddo
+                 !                           Enddo
+              Endif
            enddo
         enddo
      enddo
   enddo
 
 
-  do I=NII1,NII2
+  Do I=NII1,NII2
      NNA=Sumindex(I-1)+1
-     do J=NJJ1,NJJ2
+     Do J=NJJ1,NJJ2
         NNAB=SumINDEX(I+J)
-        do K=NKK1,NKK2
+        Do K=NKK1,NKK2
            NNC=Sumindex(k-1)+1
-           do L=NLL1,NLL2
+           Do L=NLL1,NLL2
               NNCD=SumIndex(K+L)
               call classmp2(I,J,K,L,NNA,NNC,NNAB,NNCD,nstepmp2s,nsteplength)
               !                   call class
@@ -1036,13 +3193,13 @@ end subroutine shellmp2
 subroutine shellmp2divcon(i33,ittsub)
   use allmod
 
-  Implicit double precision(a-h,o-z)
-  double precision P(3),Q(3),W(3),KAB,KCD,AAtemp(3)
+  Implicit real*8(a-h,o-z)
+  real*8 P(3),Q(3),W(3),KAB,KCD,AAtemp(3)
   Parameter(NN=13)
-  double precision FM(0:13)
-  double precision RA(3),RB(3),RC(3),RD(3)
+  real*8 FM(0:13)
+  real*8 RA(3),RB(3),RC(3),RD(3)
 
-  double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+  real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
   integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
   common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
@@ -1050,12 +3207,12 @@ subroutine shellmp2divcon(i33,ittsub)
 
   COMMON /COM1/RA,RB,RC,RD
 
-  do M=1,3
+  Do M=1,3
      RA(M)=xyz(M,quick_basis%katom(II))
      RB(M)=xyz(M,quick_basis%katom(JJ))
      RC(M)=xyz(M,quick_basis%katom(KK))
      RD(M)=xyz(M,quick_basis%katom(LL))
-  enddo
+  Enddo
 
   NII1=quick_basis%Qstart(II)
   NII2=quick_basis%Qfinal(II)
@@ -1082,24 +3239,24 @@ subroutine shellmp2divcon(i33,ittsub)
   ITT=0
 
 
-  do JJJ=1,quick_basis%kprim(JJ)
+  Do JJJ=1,quick_basis%kprim(JJ)
      Nprij=quick_basis%kstart(JJ)+JJJ-1
-     do III=1,quick_basis%kprim(II)
+     Do III=1,quick_basis%kprim(II)
         Nprii=quick_basis%kstart(II)+III-1
         AB=Apri(Nprii,Nprij)
         ABtemp=0.5d0/AB
         cutoffprim1=dnmax*cutprim(Nprii,Nprij)
-        do M=1,3
+        Do M=1,3
            P(M)=Ppri(M,Nprii,Nprij)
            AAtemp(M)=P(M)*AB
            Ptemp(M)=P(M)-RA(M)
-        enddo
-        do LLL=1,quick_basis%kprim(LL)
+        Enddo
+        Do LLL=1,quick_basis%kprim(LL)
            Npril=quick_basis%kstart(LL)+LLL-1
-           do KKK=1,quick_basis%kprim(KK)
+           Do KKK=1,quick_basis%kprim(KK)
               Nprik=quick_basis%kstart(KK)+KKK-1
               cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-              if(cutoffprim.gt.quick_method%primLimit)then
+              If(cutoffprim.gt.quick_method%primLimit)then
                  CD=Apri(Nprik,Npril)
                  ABCD=AB+CD
                  ROU=AB*CD/ABCD
@@ -1111,7 +3268,7 @@ subroutine shellmp2divcon(i33,ittsub)
                  CDcom=CD/ABCD
                  ABCDtemp=0.5d0/ABCD
 
-                 do M=1,3
+                 Do M=1,3
                     Q(M)=Ppri(M,Nprik,Npril)
                     W(M)=(AAtemp(M)+Q(M)*CD)/ABCD
                     XXXtemp=P(M)-Q(M)
@@ -1119,7 +3276,7 @@ subroutine shellmp2divcon(i33,ittsub)
                     Qtemp(M)=Q(M)-RC(M)
                     WQtemp(M)=W(M)-Q(M)
                     WPtemp(M)=W(M)-P(M)
-                 enddo
+                 Enddo
                  T=RPQ*ROU
 
                  call FmT(NABCD,T,FM)
@@ -1130,25 +3287,25 @@ subroutine shellmp2divcon(i33,ittsub)
 
                  call vertical(NABCDTYPE) 
 
-                 do I2=NNC,NNCD
-                    do I1=NNA,NNAB
+                 Do I2=NNC,NNCD
+                    Do I1=NNA,NNAB
                        Yxiao(ITT,I1,I2)=Yxiaotemp(I1,I2,0)
-                    enddo
-                 enddo
-              endif
+                    Enddo
+                 Enddo
+              Endif
            enddo
         enddo
      enddo
   enddo
 
 
-  do I=NII1,NII2
+  Do I=NII1,NII2
      NNA=Sumindex(I-1)+1
-     do J=NJJ1,NJJ2
+     Do J=NJJ1,NJJ2
         NNAB=SumINDEX(I+J)
-        do K=NKK1,NKK2
+        Do K=NKK1,NKK2
            NNC=Sumindex(k-1)+1
-           do L=NLL1,NLL2
+           Do L=NLL1,NLL2
               NNCD=SumIndex(K+L)
               call classmp2divcon(I,J,K,L,NNA,NNC,NNAB,NNCD,i33,ittsub)
            enddo
@@ -1163,14 +3320,14 @@ end subroutine shellmp2divcon
    ! subroutine class
    use allmod
 
-   Implicit double precision(A-H,O-Z)
-   double precision store(120,120)
+   Implicit real*8(A-H,O-Z)
+   real*8 store(120,120)
    INTEGER NA(3),NB(3),NC(3),ND(3)
-   double precision P(3),Q(3),W(3),KAB,KCD
+   real*8 P(3),Q(3),W(3),KAB,KCD
    Parameter(NN=13)
-   double precision FM(0:13)
-   double precision RA(3),RB(3),RC(3),RD(3)
-   double precision X44(129600)
+   real*8 FM(0:13)
+   real*8 RA(3),RB(3),RC(3),RD(3)
+   real*8 X44(129600)
 
    COMMON /COM1/RA,RB,RC,RD
    COMMON /COM2/AA,BB,CC,DD,AB,CD,ROU,ABCD
@@ -1183,34 +3340,35 @@ end subroutine shellmp2divcon
 
    ITT=0
 
-   do JJJ=1,quick_basis%kprim(JJ)
+   Do JJJ=1,quick_basis%kprim(JJ)
       Nprij=quick_basis%kstart(JJ)+JJJ-1
-      do III=1,quick_basis%kprim(II)
+      Do III=1,quick_basis%kprim(II)
          Nprii=quick_basis%kstart(II)+III-1
-         X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)
+         X2=X0*XCoeff(Nprii,Nprij,I,J)
          cutoffprim1=dnmax*cutprim(Nprii,Nprij)
-         do LLL=1,quick_basis%kprim(LL)
+         Do LLL=1,quick_basis%kprim(LL)
             Npril=quick_basis%kstart(LL)+LLL-1
-            do KKK=1,quick_basis%kprim(KK)
+            Do KKK=1,quick_basis%kprim(KK)
                Nprik=quick_basis%kstart(KK)+KKK-1
                cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-               if(cutoffprim.gt.quick_method%primLimit)then
+               If(cutoffprim.gt.quick_method%primLimit)then
                   ITT=ITT+1
-                  X44(ITT)=X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
+                  X44(ITT)=X2*XCoeff(Nprik,Npril,K,L)
                endif
             enddo
          enddo
       enddo
    enddo
 
-   do MM2=NNC,NNCD
-      do MM1=NNA,NNAB
+   Do MM2=NNC,NNCD
+      Do MM1=NNA,NNAB
          Ytemp=0.0d0
-         do itemp=1,ITT
+         Do itemp=1,ITT
             Ytemp=Ytemp+X44(itemp)*Yxiao(itemp,MM1,MM2)
-         enddo
+            !                           Ytemp=Ytemp+Yxiao(itemp,MM1,MM2)
+         Enddo
          store(MM1,MM2)=Ytemp
-      enddo
+      Enddo
    enddo
 
 
@@ -1228,10 +3386,10 @@ end subroutine shellmp2divcon
    KLtype=10*K+L
    IJKLtype=100*IJtype+KLtype
 
-   !*****       if(max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0))IJKLtype=999
-   if((max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0)).or.(max(I,J,K,L).ge.3))IJKLtype=999
+   !*****       IF(max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0))IJKLtype=999
+   IF((max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0)).or.(max(I,J,K,L).ge.3))IJKLtype=999
    !       IJKLtype=999
-   !      if(J.eq.0.and.L.eq.0)then
+   !      If(J.eq.0.and.L.eq.0)then
 
    III1=quick_basis%ksumtype(II)+NBI1
    III2=quick_basis%ksumtype(II)+NBI2
@@ -1254,10 +3412,10 @@ end subroutine shellmp2divcon
 
    if(II.lt.JJ.and.KK.lt.LL)then
 
-      do III=III1,III2
-         do JJJ=JJJ1,JJJ2
-            do KKK=KKK1,KKK2
-               do LLL=LLL1,LLL2
+      Do III=III1,III2
+         Do JJJ=JJJ1,JJJ2
+            Do KKK=KKK1,KKK2
+               Do LLL=LLL1,LLL2
 
                   call hrrwhole
 
@@ -1275,19 +3433,19 @@ end subroutine shellmp2divcon
                   orbmp2i331(1,KKKsub,IIInew,JJJnew,1)=orbmp2i331(1,KKKsub,IIInew,JJJnew,1)+btemp
                   orbmp2i331(1,KKKsub,JJJnew,IIInew,2)=orbmp2i331(1,KKKsub,JJJnew,IIInew,2)+btemp
 
-               enddo
-            enddo
-         enddo
-      enddo
+               Enddo
+            Enddo
+         Enddo
+      Enddo
 
    else
 
-      do III=III1,III2
+      Do III=III1,III2
          !         if(max(III,JJJ1).le.JJJ2)then
-         do JJJ=max(III,JJJ1),JJJ2
-            do KKK=KKK1,KKK2
+         Do JJJ=max(III,JJJ1),JJJ2
+            Do KKK=KKK1,KKK2
                !            if(max(KKK,LLL1).le.LLL2)then
-               do LLL=max(KKK,LLL1),LLL2
+               Do LLL=max(KKK,LLL1),LLL2
 
                   call hrrwhole
 
@@ -1314,14 +3472,14 @@ end subroutine shellmp2divcon
                      endif
                   endif
 
-               enddo
+               Enddo
                !            endif
-            enddo
-         enddo
+            Enddo
+         Enddo
          !        endif
-      enddo
+      Enddo
 
-   endif
+   Endif
 
  End subroutine classmp2divcon
       
@@ -1331,14 +3489,14 @@ end subroutine shellmp2divcon
        ! subroutine class
        use allmod
 
-       Implicit double precision(A-H,O-Z)
-       double precision store(120,120)
+       Implicit real*8(A-H,O-Z)
+       real*8 store(120,120)
        INTEGER NA(3),NB(3),NC(3),ND(3)
-       double precision P(3),Q(3),W(3),KAB,KCD
+       real*8 P(3),Q(3),W(3),KAB,KCD
        Parameter(NN=13)
-       double precision FM(0:13)
-       double precision RA(3),RB(3),RC(3),RD(3)
-       double precision X44(129600)
+       real*8 FM(0:13)
+       real*8 RA(3),RB(3),RC(3),RD(3)
+       real*8 X44(129600)
 
        COMMON /COM1/RA,RB,RC,RD
        COMMON /COM2/AA,BB,CC,DD,AB,CD,ROU,ABCD
@@ -1350,35 +3508,35 @@ end subroutine shellmp2divcon
        common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
        ITT=0
-       do JJJ=1,quick_basis%kprim(JJ)
+       Do JJJ=1,quick_basis%kprim(JJ)
           Nprij=quick_basis%kstart(JJ)+JJJ-1
-          do III=1,quick_basis%kprim(II)
+          Do III=1,quick_basis%kprim(II)
              Nprii=quick_basis%kstart(II)+III-1
-             X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)
+             X2=X0*XCoeff(Nprii,Nprij,I,J)
              cutoffprim1=dnmax*cutprim(Nprii,Nprij)
-             do LLL=1,quick_basis%kprim(LL)
+             Do LLL=1,quick_basis%kprim(LL)
                 Npril=quick_basis%kstart(LL)+LLL-1
-                do KKK=1,quick_basis%kprim(KK)
+                Do KKK=1,quick_basis%kprim(KK)
                    Nprik=quick_basis%kstart(KK)+KKK-1
                    cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-                   if(cutoffprim.gt.quick_method%primLimit)then
+                   If(cutoffprim.gt.quick_method%primLimit)then
                       ITT=ITT+1
-                      X44(ITT)=X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
+                      X44(ITT)=X2*XCoeff(Nprik,Npril,K,L)
                    endif
                 enddo
              enddo
           enddo
        enddo
 
-       do MM2=NNC,NNCD
-          do MM1=NNA,NNAB
+       Do MM2=NNC,NNCD
+          Do MM1=NNA,NNAB
              Ytemp=0.0d0
-             do itemp=1,ITT
+             Do itemp=1,ITT
                 Ytemp=Ytemp+X44(itemp)*Yxiao(itemp,MM1,MM2)
                 !                           Ytemp=Ytemp+Yxiao(itemp,MM1,MM2)
-             enddo
+             Enddo
              store(MM1,MM2)=Ytemp
-          enddo
+          Enddo
        enddo
 
 
@@ -1396,10 +3554,10 @@ end subroutine shellmp2divcon
        KLtype=10*K+L
        IJKLtype=100*IJtype+KLtype
 
-       !*****       if(max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0))IJKLtype=999
-       if((max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0)).or.(max(I,J,K,L).ge.3))IJKLtype=999
+       !*****       IF(max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0))IJKLtype=999
+       IF((max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0)).or.(max(I,J,K,L).ge.3))IJKLtype=999
        !       IJKLtype=999
-       !      if(J.eq.0.and.L.eq.0)then
+       !      If(J.eq.0.and.L.eq.0)then
 
        III1=quick_basis%ksumtype(II)+NBI1
        III2=quick_basis%ksumtype(II)+NBI2
@@ -1422,10 +3580,10 @@ end subroutine shellmp2divcon
 
        if(II.lt.JJ.and.KK.lt.LL)then
 
-          do III=III1,III2
-             do JJJ=JJJ1,JJJ2
-                do KKK=KKK1,KKK2
-                   do LLL=LLL1,LLL2
+          Do III=III1,III2
+             Do JJJ=JJJ1,JJJ2
+                Do KKK=KKK1,KKK2
+                   Do LLL=LLL1,LLL2
 
                       call hrrwhole
 
@@ -1447,19 +3605,19 @@ end subroutine shellmp2divcon
                               orbmp2i331(i3mp2,KKK,JJJnew,IIInew,2)+btemp
                       enddo
 
-                   enddo
-                enddo
-             enddo
-          enddo
+                   Enddo
+                Enddo
+             Enddo
+          Enddo
 
        else
 
-          do III=III1,III2
+          Do III=III1,III2
              !         if(max(III,JJJ1).le.JJJ2)then
-             do JJJ=max(III,JJJ1),JJJ2
-                do KKK=KKK1,KKK2
+             Do JJJ=max(III,JJJ1),JJJ2
+                Do KKK=KKK1,KKK2
                    !            if(max(KKK,LLL1).le.LLL2)then
-                   do LLL=max(KKK,LLL1),LLL2
+                   Do LLL=max(KKK,LLL1),LLL2
 
                       call hrrwhole
 
@@ -1488,14 +3646,14 @@ end subroutine shellmp2divcon
 
                       enddo
 
-                   enddo
+                   Enddo
                    !            endif
-                enddo
-             enddo
+                Enddo
+             Enddo
              !        endif
-          enddo
+          Enddo
 
-       endif
+       Endif
 
      End subroutine classmp2
 
@@ -1509,10 +3667,10 @@ end subroutine shellmp2divcon
 !    use xiaoconstants
     implicit double precision(a-h,o-z)
     dimension aux(0:20)
-           double precision AA(3),BB(3),CC(3),PP(3)
+           real*8 AA(3),BB(3),CC(3),PP(3)
            common /xiaoattra/attra,aux,AA,BB,CC,PP,g
 
-    double precision RA(3),RB(3),RP(3)
+    real*8 RA(3),RB(3),RP(3)
 
 ! Variables needed later:
 !    pi=3.1415926535897932385
@@ -1547,10 +3705,10 @@ end subroutine shellmp2divcon
   NJJ2=quick_basis%Qfinal(JJsh)
   Maxm=NII2+NJJ2+1+1
 
-  do ips=1,quick_basis%kprim(IIsh)
-   a=quick_basis%gcexpo(ips,quick_basis%ksumtype(IIsh))
-     do jps=1,quick_basis%kprim(JJsh)
-       b=quick_basis%gcexpo(jps,quick_basis%ksumtype(JJsh))       
+  DO ips=1,quick_basis%kprim(IIsh)
+   a=gcexpo(ips,quick_basis%ksumtype(IIsh))
+     Do jps=1,quick_basis%kprim(JJsh)
+       b=gcexpo(jps,quick_basis%ksumtype(JJsh))       
 
     g = a+b
     Px = (a*Ax + b*Bx)/g
@@ -1560,7 +3718,7 @@ end subroutine shellmp2divcon
     constant = overlap(a,b,0,0,0,0,0,0,Ax,Ay,Az,Bx,By,Bz) &
     * 2.d0 * sqrt(g/Pi)
 
-      do iatom=1,natom
+      Do iatom=1,natom
        if(quick_basis%katom(IIsh).eq.iatom.and.quick_basis%katom(JJsh).eq.iatom)then
          continue
        else
@@ -1574,16 +3732,16 @@ end subroutine shellmp2divcon
     U = g* PCsquare
 !    Maxm = i+j+k+ii+jj+kk
     call FmT(Maxm,U,aux)
-    do L = 0,maxm
+    DO L = 0,maxm
         aux(L) = aux(L)*constant*Z
         attraxiao(1,1,L)=aux(L)
-    enddo
+    ENDDO
  
-    do L = 0,maxm-1
+    DO L = 0,maxm-1
         attraxiaoopt(1,1,1,L)=2.0d0*g*(Px-Cx)*aux(L+1)
         attraxiaoopt(2,1,1,L)=2.0d0*g*(Py-Cy)*aux(L+1)
         attraxiaoopt(3,1,1,L)=2.0d0*g*(Pz-Cz)*aux(L+1)
-    enddo
+    ENDDO
 
 
 ! At this point all the auxillary integrals have been calculated.
@@ -1620,13 +3778,13 @@ end subroutine shellmp2divcon
     subroutine shellopt
       use allmod
 
-      Implicit double precision(a-h,o-z)
-      double precision P(3),Q(3),W(3),KAB,KCD
+      Implicit real*8(a-h,o-z)
+      real*8 P(3),Q(3),W(3),KAB,KCD
       Parameter(NN=14)
-      double precision FM(0:14)
-      double precision RA(3),RB(3),RC(3),RD(3)
+      real*8 FM(0:14)
+      real*8 RA(3),RB(3),RC(3),RD(3)
 
-      double precision Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
+      real*8 Qtemp(3),WQtemp(3),CDtemp,ABcom,Ptemp(3),WPtemp(3),ABtemp,CDcom,ABCDtemp
       integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2,NNABfirst,NNCDfirst
       common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
@@ -1639,12 +3797,12 @@ end subroutine shellmp2divcon
 
       ! print*,II,JJ,KK,LL
 
-      do M=1,3
+      Do M=1,3
          RA(M)=xyz(M,quick_basis%katom(II))
          RB(M)=xyz(M,quick_basis%katom(JJ))
          RC(M)=xyz(M,quick_basis%katom(KK))
          RD(M)=xyz(M,quick_basis%katom(LL))
-      enddo
+      Enddo
 
       NII1=quick_basis%Qstart(II)
       NII2=quick_basis%Qfinal(II)
@@ -1687,24 +3845,24 @@ end subroutine shellmp2divcon
       !print*,'NABCD=',NABCD
 
       ITT=0
-      do JJJ=1,quick_basis%kprim(JJ)
+      Do JJJ=1,quick_basis%kprim(JJ)
          Nprij=quick_basis%kstart(JJ)+JJJ-1
-         do III=1,quick_basis%kprim(II)
+         Do III=1,quick_basis%kprim(II)
             Nprii=quick_basis%kstart(II)+III-1
             AB=Apri(Nprii,Nprij)
             ABtemp=0.5d0/AB
             cutoffprim1=dnmax*cutprim(Nprii,Nprij)
-            do M=1,3
+            Do M=1,3
                P(M)=Ppri(M,Nprii,Nprij)
                Ptemp(M)=P(M)-RA(M)
-            enddo
+            Enddo
             !            KAB=Kpri(Nprii,Nprij)
-            do LLL=1,quick_basis%kprim(LL)
+            Do LLL=1,quick_basis%kprim(LL)
                Npril=quick_basis%kstart(LL)+LLL-1
-               do KKK=1,quick_basis%kprim(KK)
+               Do KKK=1,quick_basis%kprim(KK)
                   Nprik=quick_basis%kstart(KK)+KKK-1
                   cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-                  if(cutoffprim.gt.quick_method%gradCutoff)then
+                  If(cutoffprim.gt.quick_method%gradCutoff)then
                      CD=Apri(Nprik,Npril)
                      ABCD=AB+CD
                      ROU=AB*CD/ABCD
@@ -1716,7 +3874,7 @@ end subroutine shellmp2divcon
                      CDcom=CD/ABCD
                      ABCDtemp=0.5d0/ABCD
 
-                     do M=1,3
+                     Do M=1,3
                         Q(M)=Ppri(M,Nprik,Npril)
                         W(M)=(P(M)*AB+Q(M)*CD)/ABCD
                         XXXtemp=P(M)-Q(M)
@@ -1724,7 +3882,7 @@ end subroutine shellmp2divcon
                         Qtemp(M)=Q(M)-RC(M)
                         WQtemp(M)=W(M)-Q(M)
                         WPtemp(M)=W(M)-P(M)
-                     enddo
+                     Enddo
                      !                         KCD=Kpri(Nprik,Npril)
 
                      T=RPQ*ROU
@@ -1740,13 +3898,13 @@ end subroutine shellmp2divcon
 
                      !                           if(NABCDTYPE.eq.44)print*,'xiao',NABCD,FM
 
-                     do I2=NNC,NNCDfirst
-                        do I1=NNA,NNABfirst
+                     Do I2=NNC,NNCDfirst
+                        Do I1=NNA,NNABfirst
                            Yxiao(ITT,I1,I2)=Yxiaotemp(I1,I2,0)
-                        enddo
-                     enddo
+                        Enddo
+                     Enddo
 
-                  endif
+                  Endif
                enddo
             enddo
          enddo
@@ -1755,15 +3913,15 @@ end subroutine shellmp2divcon
       ! NNA=1
       ! NNC=1
 
-      do I=NII1,NII2
+      Do I=NII1,NII2
          NNA=Sumindex(I-2)+1
-         do J=NJJ1,NJJ2
+         Do J=NJJ1,NJJ2
             NNAB=SumINDEX(I+J)
             ! change for first derivative
             NNABfirst=SumINDEX(I+J+1)
-            do K=NKK1,NKK2
+            Do K=NKK1,NKK2
                NNC=Sumindex(k-2)+1
-               do L=NLL1,NLL2
+               Do L=NLL1,NLL2
                   NNCD=SumIndex(K+L)
                   NNCDfirst=SumIndex(K+L+1)
                   call classopt(I,J,K,L,NNA,NNC,NNAB,NNCD,NNABfirst,NNCDfirst)
@@ -1780,26 +3938,26 @@ end subroutine shellmp2divcon
       ! subroutine class
       use allmod
 
-      Implicit double precision(A-H,O-Z)
-      double precision store(120,120)
+      Implicit real*8(A-H,O-Z)
+      real*8 store(120,120)
 
-      double precision storeaa(120,120)
-      double precision storebb(120,120)
-      double precision storecc(120,120) 
-      double precision storedd(120,120)
+      real*8 storeaa(120,120)
+      real*8 storebb(120,120)
+      real*8 storecc(120,120) 
+      real*8 storedd(120,120)
 
       INTEGER NA(3),NB(3),NC(3),ND(3)
-      double precision P(3),Q(3),W(3),KAB,KCD
+      real*8 P(3),Q(3),W(3),KAB,KCD
       Parameter(NN=14)
-      double precision FM(0:13)
-      double precision RA(3),RB(3),RC(3),RD(3)
-      double precision X44(129600)
+      real*8 FM(0:13)
+      real*8 RA(3),RB(3),RC(3),RD(3)
+      real*8 X44(129600)
 
-      double precision X44aa(1296)
-      double precision X44bb(1296)
-      double precision X44cc(1296)
-      double precision X44dd(1296)
-      double precision AA,BB,CC,DD
+      real*8 X44aa(1296)
+      real*8 X44bb(1296)
+      real*8 X44cc(1296)
+      real*8 X44dd(1296)
+      real*8 AA,BB,CC,DD
 
       COMMON /COM1/RA,RB,RC,RD
       COMMON /COM2/AA,BB,CC,DD,AB,CD,ROU,ABCD
@@ -1812,25 +3970,25 @@ end subroutine shellmp2divcon
       common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
       ITT=0
-      do JJJ=1,quick_basis%kprim(JJ)
+      Do JJJ=1,quick_basis%kprim(JJ)
          Nprij=quick_basis%kstart(JJ)+JJJ-1
-         BB=quick_basis%gcexpo(JJJ,quick_basis%ksumtype(JJ))
-         do III=1,quick_basis%kprim(II)
+         BB=gcexpo(JJJ,quick_basis%ksumtype(JJ))
+         Do III=1,quick_basis%kprim(II)
             Nprii=quick_basis%kstart(II)+III-1
-            AA=quick_basis%gcexpo(III,quick_basis%ksumtype(II))
+            AA=gcexpo(III,quick_basis%ksumtype(II))
 
-            X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)
+            X2=X0*XCoeff(Nprii,Nprij,I,J)
             cutoffprim1=dnmax*cutprim(Nprii,Nprij)
-            do LLL=1,quick_basis%kprim(LL)
+            Do LLL=1,quick_basis%kprim(LL)
                Npril=quick_basis%kstart(LL)+LLL-1
-               DD=quick_basis%gcexpo(LLL,quick_basis%ksumtype(LL))
-               do KKK=1,quick_basis%kprim(KK)
+               DD=gcexpo(LLL,quick_basis%ksumtype(LL))
+               Do KKK=1,quick_basis%kprim(KK)
                   Nprik=quick_basis%kstart(KK)+KKK-1
-                  CC=quick_basis%gcexpo(KKK,quick_basis%ksumtype(KK))
+                  CC=gcexpo(KKK,quick_basis%ksumtype(KK))
                   cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-                  if(cutoffprim.gt.quick_method%gradCutoff)then
+                  If(cutoffprim.gt.quick_method%gradCutoff)then
                      ITT=ITT+1
-                     X44(ITT)=X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
+                     X44(ITT)=X2*XCoeff(Nprik,Npril,K,L)
                      X44AA(ITT)=X44(ITT)*AA*2.0d0
                      X44BB(ITT)=X44(ITT)*BB*2.0d0
                      X44CC(ITT)=X44(ITT)*CC*2.0d0
@@ -1845,34 +4003,34 @@ end subroutine shellmp2divcon
       !         AA=gcexpo(III,quick_basis%ksumtype(II))
 
 
-      do MM2=NNC,NNCD
-         do MM1=NNA,NNAB
+      Do MM2=NNC,NNCD
+         Do MM1=NNA,NNAB
             Ytemp=0.0d0
             !                           YtempAA=0.0d0
             !                           YtempBB=0.0d0
             !                           YtempCC=0.0d0
-            do itemp=1,ITT
+            Do itemp=1,ITT
                Ytemp=Ytemp+X44(itemp)*Yxiao(itemp,MM1,MM2)
                !                           YtempAA=YtempAA+X44AA(itemp)*Yxiao(itemp,MM1,MM2)
                !                           YtempBB=YtempBB+X44BB(itemp)*Yxiao(itemp,MM1,MM2)
                !                           YtempCC=YtempCC+X44CC(itemp)*Yxiao(itemp,MM1,MM2)
 
-            enddo
+            Enddo
             store(MM1,MM2)=Ytemp
             !                         storeAA(MM1,MM2)=YtempAA
             !                         storeBB(MM1,MM2)=YtempBB
             !                         storeCC(MM1,MM2)=YtempCC
 
-         enddo
+         Enddo
       enddo
 
 
-      do MM2=NNC,NNCDfirst
-         do MM1=NNA,NNABfirst
+      Do MM2=NNC,NNCDfirst
+         Do MM1=NNA,NNABfirst
             YtempAA=0.0d0
             YtempBB=0.0d0
             YtempCC=0.0d0
-            do itemp=1,ITT
+            Do itemp=1,ITT
                YtempAA=YtempAA+X44AA(itemp)*Yxiao(itemp,MM1,MM2)
                YtempBB=YtempBB+X44BB(itemp)*Yxiao(itemp,MM1,MM2)
                YtempCC=YtempCC+X44CC(itemp)*Yxiao(itemp,MM1,MM2)
@@ -1881,12 +4039,12 @@ end subroutine shellmp2divcon
                !                    print*,KKK-39,LLL-39,III+12,JJJ+12,itemp,X44AA(itemp),Yxiao(itemp,MM1,MM2)
                !                  endif
 
-            enddo
+            Enddo
             storeAA(MM1,MM2)=YtempAA
             storeBB(MM1,MM2)=YtempBB
             storeCC(MM1,MM2)=YtempCC
 
-         enddo
+         Enddo
       enddo
 
       NBI1=quick_basis%Qsbasis(II,I)
@@ -1907,7 +4065,7 @@ end subroutine shellmp2divcon
 
       !    print*,II,JJ,KK,LL
 
-      !    if (same.eq..true.) return
+      !    IF (same.eq..true.) return
 
       !    iAstart = (iA-1)*3
       !    iBstart = (iB-1)*3
@@ -1932,9 +4090,9 @@ end subroutine shellmp2divcon
       KLtype=10*K+L
       IJKLtype=100*IJtype+KLtype
 
-      !       if(max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0))IJKLtype=999
+      !       IF(max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0))IJKLtype=999
       !       IJKLtype=999
-      !      if(J.eq.0.and.L.eq.0)then
+      !      If(J.eq.0.and.L.eq.0)then
 
       III1=quick_basis%ksumtype(II)+NBI1
       III2=quick_basis%ksumtype(II)+NBI2
@@ -1955,17 +4113,17 @@ end subroutine shellmp2divcon
       iCstart = (iC-1)*3
       iDstart = (iD-1)*3
 
-      if(II.lt.JJ.and.II.lt.KK.and.KK.lt.LL)then
+      If(II.lt.JJ.and.II.lt.KK.and.KK.lt.LL)then
 
-         !       do III=quick_basis%ksumtype(II)+NBI1,quick_basis%ksumtype(II)+NBI2
-         !         do JJJ=quick_basis%ksumtype(JJ)+NBJ1,quick_basis%ksumtype(JJ)+NBJ2
-         !            do KKK=quick_basis%ksumtype(KK)+NBK1,quick_basis%ksumtype(KK)+NBK2
-         !              do LLL=quick_basis%ksumtype(LL)+NBL1,quick_basis%ksumtype(LL)+NBL2
+         !       Do III=quick_basis%ksumtype(II)+NBI1,quick_basis%ksumtype(II)+NBI2
+         !         Do JJJ=quick_basis%ksumtype(JJ)+NBJ1,quick_basis%ksumtype(JJ)+NBJ2
+         !            Do KKK=quick_basis%ksumtype(KK)+NBK1,quick_basis%ksumtype(KK)+NBK2
+         !              Do LLL=quick_basis%ksumtype(LL)+NBL1,quick_basis%ksumtype(LL)+NBL2
 
-         do III=III1,III2
-            do JJJ=JJJ1,JJJ2
-               do KKK=KKK1,KKK2
-                  do LLL=LLL1,LLL2
+         Do III=III1,III2
+            Do JJJ=JJJ1,JJJ2
+               Do KKK=KKK1,KKK2
+                  Do LLL=LLL1,LLL2
 
                      !                call hrrwhole(IJKLtype,III,JJJ,KKK,LLL,Y)
                      call hrrwholeopt
@@ -2002,7 +4160,36 @@ end subroutine shellmp2divcon
                      Bgrad3=Bgrad3+Ybb(3)*constant
                      Cgrad1=Cgrad1+Ycc(1)*constant
                      Cgrad2=Cgrad2+Ycc(2)*constant
-                     Cgrad3=Cgrad3+Ycc(3)*constant      
+                     Cgrad3=Cgrad3+Ycc(3)*constant
+
+                     !                      print*,III,JJJ,KKK,LLL,Yaa(1)*constant,Ybb(1)*constant,Ycc(1)*constant, &
+                     !                             Yaa(2)*constant,Ybb(2)*constant,Ycc(2)*constant, &
+                     !                             Yaa(3)*constant,Ybb(3)*constant,Ycc(3)*constant
+
+                     !                      print*,III,JJJ,KKK,LLL,Yaa(1),Ybb(1),Ycc(1), &
+                     !                             Yaa(2),Ybb(2),Ycc(2), &
+                     !                             Yaa(3),Ybb(3),Ycc(3)
+
+
+                     !            if(III.eq.4.and.JJJ.eq.8.and.KKK.eq.8.and.LLL.eq.10)then
+                     !                do ixiao=1,20
+                     !                  do jxiao=1,10
+                     !                    print*,ixiao,jxiao,storeAA(ixiao,jxiao),KLMN(1:3,III),KLMN(1:3,JJJ),&
+                     !                           KLMN(1:3,KKK),KLMN(1:3,LLL),store(ixiao,jxiao),Yaa(1), &
+                     !                           Yaa(2),Yaa(3)
+                     !                  enddo
+                     !                enddo
+                     !            endif
+
+                     !    iA = quick_basis%ncenter(III)        
+                     !    iB = quick_basis%ncenter(JJJ)        
+                     !    iC = quick_basis%ncenter(KKK)
+                     !    iD = quick_basis%ncenter(LLL)
+                     !
+                     !    iAstart = (iA-1)*3
+                     !    iBstart = (iB-1)*3
+                     !    iCstart = (iC-1)*3    
+                     !    iDstart = (iD-1)*3      
 
                   enddo
                enddo
@@ -2011,16 +4198,32 @@ end subroutine shellmp2divcon
 
       else
 
-         do III=III1,III2                          
-            do JJJ=max(III,JJJ1),JJJ2                          
-               do KKK=max(III,KKK1),KKK2                          
-                  do LLL=max(KKK,LLL1),LLL2                          
+         !       Do III=quick_basis%ksumtype(II)+NBI1,quick_basis%ksumtype(II)+NBI2
+         !         Do JJJ=max(III,quick_basis%ksumtype(JJ)+NBJ1),quick_basis%ksumtype(JJ)+NBJ2
+         !            Do KKK=max(III,quick_basis%ksumtype(KK)+NBK1),quick_basis%ksumtype(KK)+NBK2
+         !              Do LLL=max(KKK,quick_basis%ksumtype(LL)+NBL1),quick_basis%ksumtype(LL)+NBL2
 
-                     if(III.LT.KKK)then
+         Do III=III1,III2                          
+            Do JJJ=max(III,JJJ1),JJJ2                          
+               Do KKK=max(III,KKK1),KKK2                          
+                  Do LLL=max(KKK,LLL1),LLL2                          
 
+                     !    iA = quick_basis%ncenter(III)
+                     !    iB = quick_basis%ncenter(JJJ)
+                     !    iC = quick_basis%ncenter(KKK)
+                     !    iD = quick_basis%ncenter(LLL)
+                     !
+                     !    iAstart = (iA-1)*3
+                     !    iBstart = (iB-1)*3
+                     !    iCstart = (iC-1)*3
+                     !    iDstart = (iD-1)*3
+
+                     If(III.LT.KKK)then
+
+                        !                call hrrwhole(IJKLtype,III,JJJ,KKK,LLL,Y)
                         call hrrwholeopt
 
-                        if(III.lt.JJJ.and.KKK.lt.LLL)then
+                        If(III.lt.JJJ.and.KKK.lt.LLL)then
                            DENSEKI=quick_qm_struct%dense(KKK,III)
                            DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
 
@@ -2031,6 +4234,16 @@ end subroutine shellmp2divcon
                            DENSEJI=quick_qm_struct%dense(JJJ,III)
                            ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
                            ! can be equal.
+
+                           !                    O(JJJ,III) = O(JJJ,III)+2.d0*DENSELK*Y
+                           !                    O(LLL,KKK) = O(LLL,KKK)+2.d0*DENSEJI*Y
+                           !                    O(KKK,III) = O(KKK,III)-.5d0*DENSELJ*Y
+                           !                    O(LLL,III) = O(LLL,III)-.5d0*DENSEKJ*Y
+                           !                        O(JJJ,KKK) = O(JJJ,KKK)-.5d0*DENSELI*Y
+                           !                        O(JJJ,LLL) = O(JJJ,LLL)-.5d0*DENSEKI*Y
+                           !                        O(KKK,JJJ) = O(KKK,JJJ)-.5d0*DENSELI*Y
+                           !                        O(LLL,JJJ) = O(LLL,JJJ)-.5d0*DENSEKI*Y
+
                            constant = (4.d0*DENSEJI*DENSELK-DENSEKI*DENSELJ &
                                 -DENSELI*DENSEKJ)
 
@@ -2048,7 +4261,7 @@ end subroutine shellmp2divcon
                            !                             Yaa(2)*constant,Ybb(2)*constant,Ycc(2)*constant, &
                            !                             Yaa(3)*constant,Ybb(3)*constant,Ycc(3)*constant
 
-                           !    ! do all the (ii|ii) integrals.
+                           !    ! DO all the (ii|ii) integrals.
                            !        ! Set some variables to reduce access time for some of the more
                            !        ! used quantities. (AGAIN)
                         ElseIf(III.eq.JJJ.and.KKK.eq.LLL)then
@@ -2073,7 +4286,7 @@ end subroutine shellmp2divcon
                            Cgrad2=Cgrad2+Ycc(2)*constant
                            Cgrad3=Cgrad3+Ycc(3)*constant
 
-                        elseif(JJJ.eq.KKK.and.JJJ.eq.LLL)then
+                        Elseif(JJJ.eq.KKK.and.JJJ.eq.LLL)then
                            DENSEJI=quick_qm_struct%dense(JJJ,III)
                            DENSEJJ=quick_qm_struct%dense(JJJ,JJJ)
 
@@ -2098,7 +4311,7 @@ end subroutine shellmp2divcon
                            !        ! Find all the (ij|ij) integrals
                            !
                            ! Find all the (ij|ik) integrals where j>i,k>j
-                        elseif(KKK.eq.LLL.and.III.lt.JJJ.and.JJJ.ne.KKK)then
+                        Elseif(KKK.eq.LLL.and.III.lt.JJJ.and.JJJ.ne.KKK)then
                            DENSEKI=quick_qm_struct%dense(KKK,III)
                            DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
                            DENSEKK=quick_qm_struct%dense(KKK,KKK)
@@ -2124,7 +4337,7 @@ end subroutine shellmp2divcon
                            Cgrad3=Cgrad3+Ycc(3)*constant
 
                            !            ! Find all the (ik|jj) integrals where j>i, k>j.
-                        elseif(III.eq.JJJ.and.KKK.lt.LLL)then
+                        Elseif(III.eq.JJJ.and.KKK.lt.LLL)then
                            DENSEII=quick_qm_struct%dense(III,III)
                            DENSEJI=quick_qm_struct%dense(KKK,III)
                            DENSEKI=quick_qm_struct%dense(LLL,III)
@@ -2148,10 +4361,10 @@ end subroutine shellmp2divcon
                            Cgrad2=Cgrad2+Ycc(2)*constant
                            Cgrad3=Cgrad3+Ycc(3)*constant
 
-                        endif
+                        Endif
 
-                     else
-                        if(JJJ.LE.LLL)then
+                     Else
+                        If(JJJ.LE.LLL)then
 
                            !                call hrrwhole(IJKLtype,III,JJJ,KKK,LLL,Y)
                            call hrrwholeopt
@@ -2159,12 +4372,12 @@ end subroutine shellmp2divcon
                            if(III.eq.JJJ.and.III.eq.KKK.and.III.eq.LLL)then
                               DENSEII=quick_qm_struct%dense(III,III)
 
-                              ! do all the (ii|ii) integrals.
+                              ! DO all the (ii|ii) integrals.
                               !        O(III,III) = O(III,III)+.5d0*DENSEII*Y
 
                               constant=0.0d0          
 
-                           elseif(III.eq.JJJ.and.III.eq.KKK.and.III.lt.LLL)then
+                           Elseif(III.eq.JJJ.and.III.eq.KKK.and.III.lt.LLL)then
                               DENSEJI=quick_qm_struct%dense(LLL,III)
                               DENSEII=quick_qm_struct%dense(III,III)
 
@@ -2184,7 +4397,7 @@ end subroutine shellmp2divcon
                               Cgrad2=Cgrad2+Ycc(2)*constant
                               Cgrad3=Cgrad3+Ycc(3)*constant
 
-                           elseif(III.eq.KKK.and.JJJ.eq.LLL.and.III.lt.JJJ)then
+                           Elseif(III.eq.KKK.and.JJJ.eq.LLL.and.III.lt.JJJ)then
                               DENSEJI=quick_qm_struct%dense(JJJ,III)
                               DENSEJJ=quick_qm_struct%dense(JJJ,JJJ)
                               DENSEII=quick_qm_struct%dense(III,III)
@@ -2206,7 +4419,7 @@ end subroutine shellmp2divcon
                               Cgrad2=Cgrad2+Ycc(2)*constant
                               Cgrad3=Cgrad3+Ycc(3)*constant
 
-                           elseif(III.eq.KKK.and.III.lt.JJJ.and.JJJ.lt.LLL)then
+                           Elseif(III.eq.KKK.and.III.lt.JJJ.and.JJJ.lt.LLL)then
                               DENSEKI=quick_qm_struct%dense(LLL,III)
                               DENSEKJ=quick_qm_struct%dense(LLL,JJJ)
                               !                DENSEKK=quick_qm_struct%dense(LLL,LLL)
@@ -2231,15 +4444,15 @@ end subroutine shellmp2divcon
                               Cgrad2=Cgrad2+Ycc(2)*constant
                               Cgrad3=Cgrad3+Ycc(3)*constant
 
-                           endif
+                           Endif
 
-                        endif
-                     endif
+                        Endif
+                     Endif
 
-                  enddo
-               enddo
-            enddo
-         enddo
+                  Enddo
+               Enddo
+            Enddo
+         Enddo
       endif
 
       quick_qm_struct%gradient(iASTART+1) = quick_qm_struct%gradient(iASTART+1)+ &
@@ -2351,7 +4564,7 @@ ITT=0
                        cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
 !                       print*,cutoffprim,quick_method%primLimit
 !                       stop
-                     if(cutoffprim.gt.quick_method%primLimit)then
+                     If(cutoffprim.gt.quick_method%primLimit)then
                        CD=Apri(Nprik,Npril)
                        ABCD=AB+CD
                        ROU=AB*CD/ABCD
@@ -2459,16 +4672,16 @@ ITT=0
         Nprij=quick_basis%kstart(JJ)+JJJ-1
  do III=1,quick_basis%kprim(II)
     Nprii=quick_basis%kstart(II)+III-1
-             X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)
+             X2=X0*XCoeff(Nprii,Nprij,I,J)
              cutoffprim1=dnmax*cutprim(Nprii,Nprij)
                    do LLL=1,quick_basis%kprim(LL)
                      Npril=quick_basis%kstart(LL)+LLL-1
               do KKK=1,quick_basis%kprim(KK)
                 Nprik=quick_basis%kstart(KK)+KKK-1
                        cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-                     if(cutoffprim.gt.quick_method%primLimit)then
+                     If(cutoffprim.gt.quick_method%primLimit)then
                        ITT=ITT+1
-                       X44(ITT)=X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
+                       X44(ITT)=X2*XCoeff(Nprik,Npril,K,L)
                      endif
                       enddo
                    enddo
@@ -2504,7 +4717,7 @@ ITT=0
 !*****       if(max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0))IJKLtype=999
        if((max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0)).or.(max(I,J,K,L).ge.3))IJKLtype=999
 !       IJKLtype=999
-!      if(J.eq.0.and.L.eq.0)then
+!      If(J.eq.0.and.L.eq.0)then
 
           III1=quick_basis%ksumtype(II)+NBI1
           III2=quick_basis%ksumtype(II)+NBI2
@@ -2515,7 +4728,7 @@ ITT=0
           LLL1=quick_basis%ksumtype(LL)+NBL1
           LLL2=quick_basis%ksumtype(LL)+NBL2
  
-         if(II.lt.JJ.and.II.lt.KK.and.KK.lt.LL)then
+         If(II.lt.JJ.and.II.lt.KK.and.KK.lt.LL)then
 
 !       do III=quick_basis%ksumtype(II)+NBI1,quick_basis%ksumtype(II)+NBI2
 !         do JJJ=quick_basis%ksumtype(JJ)+NBJ1,quick_basis%ksumtype(JJ)+NBJ2
@@ -2575,7 +4788,7 @@ ITT=0
             do KKK=max(III,KKK1),KKK2                          
               do LLL=max(KKK,LLL1),LLL2                          
 
-                 if(III.LT.KKK)then
+                 If(III.LT.KKK)then
 
 !                call hrrwhole(IJKLtype,III,JJJ,KKK,LLL,Y)
 !                 if(III.eq.1.and.JJJ.eq.2.and.KKK.eq.2.and.LLL.eq.30)then
@@ -2583,7 +4796,7 @@ ITT=0
 !                 endif
                 call hrrwhole
 
-         if(III.lt.JJJ.and.KKK.lt.LLL)then
+         If(III.lt.JJJ.and.KKK.lt.LLL)then
                     DENSELK=quick_qm_struct%dense(LLL,KKK)
                     DENSEJI=quick_qm_struct%dense(JJJ,III)
                 ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
@@ -2638,7 +4851,7 @@ ITT=0
              endif
 
                   else
-                    if(JJJ.LE.LLL)then
+                    If(JJJ.LE.LLL)then
 
 !                call hrrwhole(IJKLtype,III,JJJ,KKK,LLL,Y)
                 call hrrwhole
@@ -2759,7 +4972,7 @@ ITT=0
                        cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
 !                       print*,cutoffprim,quick_method%primLimit
 !                       stop
-                     if(cutoffprim.gt.quick_method%primLimit)then
+                     If(cutoffprim.gt.quick_method%primLimit)then
                        CD=Apri(Nprik,Npril)
                        ABCD=AB+CD
                        ROU=AB*CD/ABCD
@@ -2867,16 +5080,16 @@ ITT=0
         Nprij=quick_basis%kstart(JJ)+JJJ-1
  do III=1,quick_basis%kprim(II)
     Nprii=quick_basis%kstart(II)+III-1
-             X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)
+             X2=X0*XCoeff(Nprii,Nprij,I,J)
              cutoffprim1=dnmax*cutprim(Nprii,Nprij)
                    do LLL=1,quick_basis%kprim(LL)
                      Npril=quick_basis%kstart(LL)+LLL-1
               do KKK=1,quick_basis%kprim(KK)
                 Nprik=quick_basis%kstart(KK)+KKK-1
                        cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-                     if(cutoffprim.gt.quick_method%primLimit)then
+                     If(cutoffprim.gt.quick_method%primLimit)then
                        ITT=ITT+1
-                       X44(ITT)=X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
+                       X44(ITT)=X2*XCoeff(Nprik,Npril,K,L)
                      endif
                       enddo
                    enddo
@@ -2912,7 +5125,7 @@ ITT=0
 !*****       if(max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0))IJKLtype=999
        if((max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0)).or.(max(I,J,K,L).ge.3))IJKLtype=999
 !       IJKLtype=999
-!      if(J.eq.0.and.L.eq.0)then
+!      If(J.eq.0.and.L.eq.0)then
 
           III1=quick_basis%ksumtype(II)+NBI1
           III2=quick_basis%ksumtype(II)+NBI2
@@ -2923,7 +5136,7 @@ ITT=0
           LLL1=quick_basis%ksumtype(LL)+NBL1
           LLL2=quick_basis%ksumtype(LL)+NBL2
  
-         if(II.lt.JJ.and.II.lt.KK.and.KK.lt.LL)then
+         If(II.lt.JJ.and.II.lt.KK.and.KK.lt.LL)then
 
 !       do III=quick_basis%ksumtype(II)+NBI1,quick_basis%ksumtype(II)+NBI2
 !         do JJJ=quick_basis%ksumtype(JJ)+NBJ1,quick_basis%ksumtype(JJ)+NBJ2
@@ -2977,7 +5190,7 @@ ITT=0
             do KKK=max(III,KKK1),KKK2                          
               do LLL=max(KKK,LLL1),LLL2                          
 
-                 if(III.LT.KKK)then
+                 If(III.LT.KKK)then
 
 !                call hrrwhole(IJKLtype,III,JJJ,KKK,LLL,Y)
 !                 if(III.eq.1.and.JJJ.eq.2.and.KKK.eq.2.and.LLL.eq.30)then
@@ -2985,7 +5198,7 @@ ITT=0
 !                 endif
                 call hrrwhole
 
-         if(III.lt.JJJ.and.KKK.lt.LLL)then
+         If(III.lt.JJJ.and.KKK.lt.LLL)then
                 DENSEKI=quick_qm_struct%dense(KKK,III)
                 DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
 
@@ -3068,7 +5281,7 @@ ITT=0
              endif
 
                   else
-                    if(JJJ.LE.LLL)then
+                    If(JJJ.LE.LLL)then
 
 !                call hrrwhole(IJKLtype,III,JJJ,KKK,LLL,Y)
                 call hrrwhole

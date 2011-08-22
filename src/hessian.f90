@@ -18,16 +18,16 @@ subroutine calchessian(failed)
   call PrtAct(ioutfile,"Begin Hessian calculation")
 
   ! First print out a warning.
-  if ( .not. quick_method%opt) &
+  IF ( .NOT. quick_method%opt) &
        write (ioutfile,'(/" WARNING !! FREQUENCIES ONLY VALID AT ", &
        & "OPTIMIZED GEOMETRY!!!")')
        
   ! Now calculate the Hessian.
-  if (quick_method%analhess.and.quick_method%HF) then
+  IF (quick_method%analhess.and.quick_method%HF) then
     ! Analytical Hessian Matrix, but is broken now
     write (ioutfile,'(/"ANALYTICAL HESSIAN CURRENTLY BROKEN.")')
-    if (quick_method%HF) call HFHessian
-  else
+    IF (quick_method%HF) call HFHessian
+  ELSE
     ! Numerical Hessian Matrix
     call fdhessian(failed)
   endif
@@ -69,50 +69,50 @@ subroutine fdhessian(failed)
     ioutfile = icphffile
   endif
 
-  do Iatom = 1,natom
-     do Idirection = 1,3
+  DO Iatom = 1,natom
+     DO Idirection = 1,3
         xyz(Idirection,Iatom) = xyz(Idirection,Iatom) + stepsize
         call getenergy(failed)
-        if (failed) return
+        IF (failed) return
 
         ! BLOCKED by YIPU MIAO
-        if (quick_method%unrst) then
-           !                if (quick_method%HF) call uhfgrad
-           !                if (quick_method%DFT) call udftgrad
-           !                if (quick_method%SEDFT) call usedftgrad
-        else
-           if (quick_method%HF) call hfgrad
-           !                if (quick_method%DFT) call dftgrad
-           !               if (quick_method%SEDFT) call sedftgrad
-        endif
+        IF (quick_method%unrst) THEN
+           !                IF (quick_method%HF) call uhfgrad
+           !                IF (quick_method%DFT) call udftgrad
+           !                IF (quick_method%SEDFT) call usedftgrad
+        ELSE
+           IF (quick_method%HF) call hfgrad
+           !                IF (quick_method%DFT) call dftgrad
+           !               IF (quick_method%SEDFT) call sedftgrad
+        ENDIF
         Idest = (Iatom-1)*3 + Idirection
-        do Iadd = 1,natom*3
+        DO Iadd = 1,natom*3
            quick_qm_struct%hessian(Iadd,Idest) = quick_qm_struct%gradient(Iadd)
-        enddo
+        ENDDO
 
         xyz(Idirection,Iatom) = xyz(Idirection,Iatom)-2.d0*stepsize
         call getenergy(failed)
-        if (failed) return
-        if (quick_method%unrst) then
-           !                if (quick_method%HF) call uhfgrad
-           !                if (quick_method%DFT) call udftgrad
-           !                if (quick_method%SEDFT) call usedftgrad
-        else
-           if (quick_method%HF) call hfgrad
-           !                if (quick_method%DFT) call dftgrad
-           !                if (quick_method%SEDFT) call sedftgrad
-        endif
+        IF (failed) return
+        IF (quick_method%unrst) THEN
+           !                IF (quick_method%HF) call uhfgrad
+           !                IF (quick_method%DFT) call udftgrad
+           !                IF (quick_method%SEDFT) call usedftgrad
+        ELSE
+           IF (quick_method%HF) call hfgrad
+           !                IF (quick_method%DFT) call dftgrad
+           !                IF (quick_method%SEDFT) call sedftgrad
+        ENDIF
         Idest = (Iatom-1)*3 + Idirection
-        do Iadd = 1,natom*3
+        DO Iadd = 1,natom*3
            quick_qm_struct%hessian(Iadd,Idest) =(quick_qm_struct%hessian(Iadd,Idest) - quick_qm_struct%gradient(Iadd)) &
                 /(2.d0*stepsize)
-        enddo
+        ENDDO
 
         ! Finally, return the coordinates to the original location.
 
         xyz(Idirection,Iatom) = xyz(Idirection,Iatom) + stepsize
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   if (master) ioutfile=itemp
 
@@ -148,14 +148,14 @@ subroutine HFHessian
 
   ! Please also note the Hessian is symmetric.
 
-  do I=1,3
+  DO I=1,3
      ielecfld(I)=0
-  enddo
-  do Iatm=1,natom*3
-     do Jatm=1,natom*3
+  ENDDO
+  DO Iatm=1,natom*3
+     DO Jatm=1,natom*3
         quick_qm_struct%hessian(Jatm,Iatm)=0.d0
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! Note that the hessian is the sum of a series of term, each explained
   ! when we get to it.
@@ -175,8 +175,8 @@ subroutine HFHessian
   ! intesting fact is d2Vnn/dXAdXA=d2Vnn/dXBdXB.  We use this
   ! in the next loop.
 
-  do Iatm=1,natom
-     do Jatm=Iatm+1,natom
+  DO Iatm=1,natom
+     DO Jatm=Iatm+1,natom
         Istart = (Iatm-1)*3
         Jstart = (Jatm-1)*3
         XAminXB = xyz(1,Iatm)-xyz(1,Jatm)
@@ -220,8 +220,8 @@ subroutine HFHessian
         quick_qm_struct%hessian(Jstart+3,Jstart+2) = temp
         quick_qm_struct%hessian(Jstart+2,Istart+3) = -temp
         quick_qm_struct%hessian(Jstart+3,Istart+2) = -temp
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
 
   ! 2)  The negative of the energy weighted density matrix element i j
@@ -241,16 +241,16 @@ subroutine HFHessian
   ! E is the alpha or beta molecular orbital energies.
   ! We'll store this in HOLD as we don't really need it except breifly.
 
-  if ( .not. quick_method%unrst) then
-     do I=1,nbasis
-        do J=1,nbasis
+  IF ( .NOT. quick_method%unrst) THEN
+     DO I=1,nbasis
+        DO J=1,nbasis
            HOLDJI = 0.d0
-           do K=1,quick_molspec%nelec/2
+           DO K=1,quick_molspec%nelec/2
               HOLDJI = HOLDJI + (quick_qm_struct%E(K)*quick_qm_struct%co(J,K)*quick_qm_struct%co(I,K))
-           enddo
+           ENDDO
            quick_scratch%hold(J,I) = 2.d0*HOLDJI
-        enddo
-     enddo
+        ENDDO
+     ENDDO
 
      ! The energy weighted denisty matrix for unrestricted calculation is:
      ! Q(i,j) = (Sum over alpha electrons a)  E(a) C(I,a) C(J,a)
@@ -260,22 +260,22 @@ subroutine HFHessian
      ! We'll store this in HOLD as we don't really need it (except for hessian
      ! calculations later).
 
-  else
-     do I=1,nbasis
-        do J=1,nbasis
+  ELSE
+     DO I=1,nbasis
+        DO J=1,nbasis
            HOLDJI = 0.d0
            ! Alpha part
-           do K=1,quick_molspec%nelec
+           DO K=1,quick_molspec%nelec
               HOLDJI = HOLDJI + (quick_qm_struct%E(K)*quick_qm_struct%co(J,K)*quick_qm_struct%co(I,K))
-           enddo
+           ENDDO
            ! Beta part
-           do K=1,quick_molspec%nelecb
+           DO K=1,quick_molspec%nelecb
               HOLDJI = HOLDJI + (quick_qm_struct%EB(K)*quick_qm_struct%cob(J,K)*quick_qm_struct%cob(I,K))
-           enddo
+           ENDDO
            quick_scratch%hold(J,I) = HOLDJI
-        enddo
-     enddo
-  endif
+        ENDDO
+     ENDDO
+  ENDIF
 
   ! Before we begin this, a quick note on the second derivative of Gaussian
   ! orbitals.  If there is only one center, the second derivative is zero.
@@ -299,27 +299,27 @@ subroutine HFHessian
   ! sum of first derivatives.
 
 
-  do Ibas=1,nbasis
+  DO Ibas=1,nbasis
      ISTART = (quick_basis%ncenter(Ibas)-1) *3
-     do Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
+     DO Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
         JSTART = (quick_basis%ncenter(Jbas)-1) *3
         DENSEJI = quick_qm_struct%dense(Jbas,Ibas)
-        if(quick_method%unrst) DENSEJI = DENSEJI+quick_qm_struct%denseb(Jbas,Ibas)
+        IF(quick_method%unrst) DENSEJI = DENSEJI+quick_qm_struct%denseb(Jbas,Ibas)
 
         ! We have selected our two basis functions.  First,calculate the
         ! d^2/dXA^2 type terms.
 
-        do Imomentum=1,3
+        DO Imomentum=1,3
            d2SI = 0.d0
            d2SJ =0.d0
            d2KEI = 0.d0
            d2KEJ = 0.d0
 
-           ! do the Ibas derivatives first.
+           ! Do the Ibas derivatives first.
 
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+2
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  d2SI = d2SI + 4.d0*aexp(Icon,Ibas)*aexp(Icon,Ibas) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -336,12 +336,12 @@ subroutine HFHessian
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-2
 
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  d2SI = d2SI - 2.d0*aexp(Icon,Ibas) &
                       *(1.d0+2.d0*dble(itype(Imomentum,Ibas))) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -360,16 +360,16 @@ subroutine HFHessian
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
 
 
-           if (itype(Imomentum,Ibas) >= 2) then
+           IF (itype(Imomentum,Ibas) >= 2) THEN
               const = dble(itype(Imomentum,Ibas)) &
                    *dble(itype(Imomentum,Ibas)-1)
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-2
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     d2SI = d2SI + const* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -386,10 +386,10 @@ subroutine HFHessian
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+2
-           endif
+           ENDIF
            quick_qm_struct%hessian(ISTART+Imomentum,ISTART+Imomentum) = &
                 quick_qm_struct%hessian(ISTART+Imomentum,ISTART+Imomentum) &
                 -d2SI*quick_scratch%hold(Jbas,Ibas)*2.d0 &
@@ -398,8 +398,8 @@ subroutine HFHessian
            ! Now do the Jbas derivatives.
 
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+2
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  d2SJ = d2SJ + 4.d0*aexp(Jcon,Jbas)*aexp(Jcon,Jbas) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -416,12 +416,12 @@ subroutine HFHessian
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-2
 
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  d2SJ = d2SJ - 2.d0*aexp(Jcon,Jbas) &
                       *(1.d0+2.d0*dble(itype(Imomentum,Jbas))) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -440,16 +440,16 @@ subroutine HFHessian
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
 
 
-           if (itype(Imomentum,Jbas) >= 2) then
+           IF (itype(Imomentum,Jbas) >= 2) THEN
               const = dble(itype(Imomentum,Jbas)) &
                    *dble(itype(Imomentum,Jbas)-1)
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-2
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     d2SJ = d2SJ + const* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -466,10 +466,10 @@ subroutine HFHessian
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+2
-           endif
+           ENDIF
            quick_qm_struct%hessian(JSTART+Imomentum,JSTART+Imomentum) = &
                 quick_qm_struct%hessian(JSTART+Imomentum,JSTART+Imomentum) &
                 -d2SJ*quick_scratch%hold(Jbas,Ibas)*2.d0 &
@@ -479,18 +479,18 @@ subroutine HFHessian
            ! Now we are going to do derivatives of the d2/dXAdYA type.  Note that
            ! we are still in the IMOMENTUM loop.
 
-           do Imomentum2=Imomentum+1,3
+           DO Imomentum2=Imomentum+1,3
               d2SI = 0.d0
               d2SJ = 0.d0
               d2KEI = 0.d0
               d2KEJ = 0.d0
 
-              ! do the Ibas derivatives first.
+              ! Do the Ibas derivatives first.
 
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
               itype(Imomentum2,Ibas) = itype(Imomentum2,Ibas)+1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     d2SI = d2SI + 4.d0*aexp(Icon,Ibas)*aexp(Icon,Ibas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -507,17 +507,17 @@ subroutine HFHessian
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
               itype(Imomentum2,Ibas) = itype(Imomentum2,Ibas)-1
 
-              if (itype(Imomentum,Ibas) /= 0) then
+              IF (itype(Imomentum,Ibas) /= 0) THEN
                  const = dble(itype(Imomentum,Ibas))
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
                  itype(Imomentum2,Ibas) = itype(Imomentum2,Ibas)+1
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2SI = d2SI - 2.d0*aexp(Icon,Ibas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -534,18 +534,18 @@ subroutine HFHessian
                             xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                             xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                             xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
                  itype(Imomentum2,Ibas) = itype(Imomentum2,Ibas)-1
-              endif
+              ENDIF
 
-              if (itype(Imomentum2,Ibas) /= 0) then
+              IF (itype(Imomentum2,Ibas) /= 0) THEN
                  const = dble(itype(Imomentum2,Ibas))
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
                  itype(Imomentum2,Ibas) = itype(Imomentum2,Ibas)-1
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2SI = d2SI - 2.d0*aexp(Icon,Ibas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -562,20 +562,20 @@ subroutine HFHessian
                             xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                             xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                             xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
                  itype(Imomentum2,Ibas) = itype(Imomentum2,Ibas)+1
-              endif
+              ENDIF
 
-              if (itype(Imomentum2,Ibas) /= 0 .and. &
-                   itype(Imomentum,Ibas) /= 0) then
+              IF (itype(Imomentum2,Ibas) /= 0 .AND. &
+                   itype(Imomentum,Ibas) /= 0) THEN
                  const = dble(itype(Imomentum2,Ibas))* &
                       dble(itype(Imomentum,Ibas))
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
                  itype(Imomentum2,Ibas) = itype(Imomentum2,Ibas)-1
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2SI = d2SI +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -592,18 +592,18 @@ subroutine HFHessian
                             xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                             xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                             xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
                  itype(Imomentum2,Ibas) = itype(Imomentum2,Ibas)+1
-              endif
+              ENDIF
 
               ! Now do the Jbas derivatives.
 
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
               itype(Imomentum2,Jbas) = itype(Imomentum2,Jbas)+1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     d2SJ = d2SJ + 4.d0*aexp(Jcon,Jbas)*aexp(Jcon,Jbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -620,17 +620,17 @@ subroutine HFHessian
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
               itype(Imomentum2,Jbas) = itype(Imomentum2,Jbas)-1
 
-              if (itype(Imomentum,Jbas) /= 0) then
+              IF (itype(Imomentum,Jbas) /= 0) THEN
                  const = dble(itype(Imomentum,Jbas))
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
                  itype(Imomentum2,Jbas) = itype(Imomentum2,Jbas)+1
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2SJ = d2SJ - 2.d0*aexp(Jcon,Jbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -647,18 +647,18 @@ subroutine HFHessian
                             xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                             xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                             xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
                  itype(Imomentum2,Jbas) = itype(Imomentum2,Jbas)-1
-              endif
+              ENDIF
 
-              if (itype(Imomentum2,Jbas) /= 0) then
+              IF (itype(Imomentum2,Jbas) /= 0) THEN
                  const = dble(itype(Imomentum2,Jbas))
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
                  itype(Imomentum2,Jbas) = itype(Imomentum2,Jbas)-1
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2SJ = d2SJ - 2.d0*aexp(Jcon,Jbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -675,20 +675,20 @@ subroutine HFHessian
                             xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                             xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                             xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
                  itype(Imomentum2,Jbas) = itype(Imomentum2,Jbas)+1
-              endif
+              ENDIF
 
-              if (itype(Imomentum2,Jbas) /= 0 .and. &
-                   itype(Imomentum,Jbas) /= 0) then
+              IF (itype(Imomentum2,Jbas) /= 0 .AND. &
+                   itype(Imomentum,Jbas) /= 0) THEN
                  const = dble(itype(Imomentum2,Jbas))* &
                       dble(itype(Imomentum,Jbas))
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
                  itype(Imomentum2,Jbas) = itype(Imomentum2,Jbas)-1
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2SJ = d2SJ + const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -705,11 +705,11 @@ subroutine HFHessian
                             xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                             xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                             xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
                  itype(Imomentum2,Jbas) = itype(Imomentum2,Jbas)+1
-              endif
+              ENDIF
 
               ! Now add the contributions to the Hessian Array.
 
@@ -721,19 +721,19 @@ subroutine HFHessian
                    quick_qm_struct%hessian(JSTART+Imomentum2,JSTART+Imomentum) &
                    -d2SJ*quick_scratch%hold(Jbas,Ibas)*2.d0 &
                    +d2KeJ*DENSEJI*2.d0
-           enddo
+           ENDDO
 
            ! The last part is the d^2/dXAdYB portion.  Note that we are still
            ! inside the IMOMENTUM loop.
 
-           do Jmomentum=1,3
+           DO Jmomentum=1,3
               d2SIJ = 0.d0
               d2KEIJ = 0.d0
 
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
               itype(Jmomentum,Jbas) = itype(Jmomentum,Jbas)+1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     d2SIJ = d2SIJ + 4.d0*aexp(Icon,Ibas)*aexp(Jcon,Jbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -750,17 +750,17 @@ subroutine HFHessian
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
               itype(Jmomentum,Jbas) = itype(Jmomentum,Jbas)-1
 
-              if (itype(Jmomentum,Jbas) /= 0) then
+              IF (itype(Jmomentum,Jbas) /= 0) THEN
                  const = dble(itype(Jmomentum,Jbas))
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
                  itype(Jmomentum,Jbas) = itype(Jmomentum,Jbas)-1
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2SIJ = d2SIJ - 2.d0*aexp(Icon,Ibas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -777,18 +777,18 @@ subroutine HFHessian
                             xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                             xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                             xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
                  itype(Jmomentum,Jbas) = itype(Jmomentum,Jbas)+1
-              endif
+              ENDIF
 
-              if (itype(Imomentum,Ibas) /= 0) then
+              IF (itype(Imomentum,Ibas) /= 0) THEN
                  const = dble(itype(Imomentum,Ibas))
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
                  itype(Jmomentum,Jbas) = itype(Jmomentum,Jbas)+1
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2SIJ = d2SIJ - 2.d0*aexp(Jcon,Jbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -805,20 +805,20 @@ subroutine HFHessian
                             xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                             xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                             xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
                  itype(Jmomentum,Jbas) = itype(Jmomentum,Jbas)-1
-              endif
+              ENDIF
 
-              if (itype(Imomentum,Ibas) /= 0 .and. &
-                   itype(Jmomentum,Jbas) /= 0) then
+              IF (itype(Imomentum,Ibas) /= 0 .AND. &
+                   itype(Jmomentum,Jbas) /= 0) THEN
                  const = dble(itype(Imomentum,Ibas))* &
                       dble(itype(Jmomentum,Jbas))
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
                  itype(Jmomentum,Jbas) = itype(Jmomentum,Jbas)-1
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2SIJ = d2SIJ +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -835,11 +835,11 @@ subroutine HFHessian
                             xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                             xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                             xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
                  itype(Jmomentum,Jbas) = itype(Jmomentum,Jbas)+1
-              endif
+              ENDIF
 
               ! Now we add the contribution to the Hessian array.
 
@@ -848,57 +848,57 @@ subroutine HFHessian
                    -d2SIJ*quick_scratch%hold(Jbas,Ibas)*2.d0 &
                    +d2KeIJ*DENSEJI*2.d0
 
-           enddo
+           ENDDO
 
            ! Quick note:  The three loops closed here are Imomentum,Jbas, and Ibas.
-        enddo
-     enddo
-  enddo
+        ENDDO
+     ENDDO
+  ENDDO
 
   ! 4)  The second derivative of the 1 electron nuclear attraction term ij
   ! ij times the density matrix element ij.
 
   ! Please note that these are the three center terms.
 
-  do Ibas=1,nbasis
+  DO Ibas=1,nbasis
      iA=quick_basis%ncenter(Ibas)
      ISTART = (iA-1)*3
-     do I=1,3
+     DO I=1,3
         itype2(I,1) = itype(I,Ibas)
-     enddo
+     ENDDO
 
-     do Jbas=Ibas,nbasis
+     DO Jbas=Ibas,nbasis
         iB = quick_basis%ncenter(Jbas)
         JSTART = (iB-1)*3
-        do I=1,3
+        DO I=1,3
            itype2(I,2) = itype(I,Jbas)
-        enddo
+        ENDDO
 
-        do iC = 1,natom
+        DO iC = 1,natom
            iCSTART = (iC-1)*3
 
            ! As before, if all terms are on the same atom, they move with the
            ! atom and the derivative is zero.
 
-           if (iA == iC .and. iB == iC) then
+           IF (iA == iC .AND. iB == iC) THEN
               continue
-           else
+           ELSE
               DENSEJI=quick_qm_struct%dense(Jbas,Ibas)
-              if (quick_method%unrst) DENSEJI = DENSEJI+quick_qm_struct%denseb(Jbas,Ibas)
-              if (Ibas /= Jbas) DENSEJI=2.d0*DENSEJI
+              IF (quick_method%unrst) DENSEJI = DENSEJI+quick_qm_struct%denseb(Jbas,Ibas)
+              IF (Ibas /= Jbas) DENSEJI=2.d0*DENSEJI
               chgC = quick_molspec%chg(iC)
 
               ! First, take the second derivative of the center the electron is being
               ! attracted to.  These are the d2/dCXdCY and d2/dCX2 derivatives.
 
 
-              do ICmomentum=1,3
+              DO ICmomentum=1,3
                  ielecfld(ICmomentum) =  ielecfld(ICmomentum)+1
-                 do JCmomentum=ICmomentum,3
+                 DO JCmomentum=ICmomentum,3
                     ielecfld(JCmomentum) =  ielecfld(JCmomentum)+1
                     d2NAC=0.d0
-                    do Icon=1,ncontract(Ibas)
-                       do Jcon=1,ncontract(Jbas)
+                    DO Icon=1,ncontract(Ibas)
+                       DO Jcon=1,ncontract(Jbas)
                           d2NAC= d2NAC + dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                                itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
@@ -907,13 +907,13 @@ subroutine HFHessian
                                xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     quick_qm_struct%hessian(ICstart+JCmomentum,ICstart+ICmomentum) = &
                          quick_qm_struct%hessian(ICstart+JCmomentum,ICstart+ICmomentum)+ &
                          DENSEJI*d2NAC
                     ielecfld(JCmomentum) =  ielecfld(JCmomentum)-1
-                 enddo
+                 ENDDO
 
                  ! Now calculate the derivatives of the type d2/dCXdIbasCenterX.  This is
                  ! basically moving the attracting center and one of the centers that a
@@ -927,11 +927,11 @@ subroutine HFHessian
                  ! Note we are still in the ICmomentum loop.  First, loop over Ibas
                  ! momentums.
 
-                 do IImomentum = 1,3
+                 DO IImomentum = 1,3
                     d2NAC=0.d0
                     itype2(IImomentum,1) = itype2(IImomentum,1)+1
-                    do Icon=1,ncontract(Ibas)
-                       do Jcon=1,ncontract(Jbas)
+                    DO Icon=1,ncontract(Ibas)
+                       DO Jcon=1,ncontract(Jbas)
                           d2NAC= d2NAC + 2.d0*aexp(Icon,Ibas)* &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -941,15 +941,15 @@ subroutine HFHessian
                                xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     itype2(IImomentum,1) = itype2(IImomentum,1)-1
 
-                    if (itype2(IImomentum,1) /= 0) then
+                    IF (itype2(IImomentum,1) /= 0) THEN
                        const = dble(itype2(IImomentum,1))
                        itype2(IImomentum,1) = itype2(IImomentum,1)-1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2NAC= d2NAC -const* &
                                   dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -959,31 +959,31 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(IImomentum,1) = itype2(IImomentum,1)+1
-                    endif
+                    ENDIF
 
-                    if (iA == iC .and. ICmomentum == IImomentum) &
+                    IF (iA == iC .AND. ICmomentum == IImomentum) &
                          d2NAC=d2NAC*2.d0
-                    if (ICstart+ICmomentum >= Istart+IImomentum) then
+                    IF (ICstart+ICmomentum >= Istart+IImomentum) THEN
                        quick_qm_struct%hessian(ICstart+ICmomentum,Istart+IImomentum) = &
                             quick_qm_struct%hessian(ICstart+ICmomentum,Istart+IImomentum)+ &
                             DENSEJI*d2NAC
-                    else
+                    ELSE
                        quick_qm_struct%hessian(Istart+IImomentum,ICstart+ICmomentum) = &
                             quick_qm_struct%hessian(Istart+IImomentum,ICstart+ICmomentum)+ &
                             DENSEJI*d2NAC
-                    endif
-                 enddo
+                    ENDIF
+                 ENDDO
 
                  ! Now loop over Jbas momentums.
 
-                 do JJmomentum = 1,3
+                 DO JJmomentum = 1,3
                     d2NAC=0.d0
                     itype2(JJmomentum,2) = itype2(JJmomentum,2)+1
-                    do Icon=1,ncontract(Ibas)
-                       do Jcon=1,ncontract(Jbas)
+                    DO Icon=1,ncontract(Ibas)
+                       DO Jcon=1,ncontract(Jbas)
                           d2NAC= d2NAC + 2.d0*aexp(Jcon,Jbas)* &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -993,15 +993,15 @@ subroutine HFHessian
                                xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     itype2(JJmomentum,2) = itype2(JJmomentum,2)-1
 
-                    if (itype2(JJmomentum,2) /= 0) then
+                    IF (itype2(JJmomentum,2) /= 0) THEN
                        const = dble(itype2(JJmomentum,2))
                        itype2(JJmomentum,2) = itype2(JJmomentum,2)-1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2NAC= d2NAC -const* &
                                   dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1011,26 +1011,26 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(JJmomentum,2) = itype2(JJmomentum,2)+1
-                    endif
+                    ENDIF
 
-                    if (iB == iC .and. ICmomentum == JJmomentum) &
+                    IF (iB == iC .AND. ICmomentum == JJmomentum) &
                          d2NAC=d2NAC*2.d0
-                    if (ICstart+ICmomentum >= Jstart+JJmomentum) then
+                    IF (ICstart+ICmomentum >= Jstart+JJmomentum) THEN
                        quick_qm_struct%hessian(ICstart+ICmomentum,Jstart+JJmomentum) = &
                             quick_qm_struct%hessian(ICstart+ICmomentum,Jstart+JJmomentum)+ &
                             DENSEJI*d2NAC
-                    else
+                    ELSE
                        quick_qm_struct%hessian(Jstart+JJmomentum,ICstart+ICmomentum) = &
                             quick_qm_struct%hessian(Jstart+JJmomentum,ICstart+ICmomentum)+ &
                             DENSEJI*d2NAC
-                    endif
+                    ENDIF
 
-                 enddo
+                 ENDDO
                  ielecfld(ICmomentum) =  ielecfld(ICmomentum)-1
-              enddo
+              ENDDO
 
               ! Please note we have exited all inner loops at this point and are only
               ! inside the Ibas,Jbas,IC loop here.
@@ -1041,15 +1041,15 @@ subroutine HFHessian
               ! the two center integrals above in 2) and 3) with one exception.(d2/dXAdYB)
               ! First,calculate the d^2/dXA^2 type terms.
 
-              do Imomentum=1,3
+              DO Imomentum=1,3
                  d2AI = 0.d0
                  d2AJ =0.d0
 
-                 ! do the Ibas derivatives first.
+                 ! Do the Ibas derivatives first.
 
                  itype2(Imomentum,1) = itype2(Imomentum,1)+2
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2AI = d2AI + 4.d0*aexp(Icon,Ibas)*aexp(Icon,Ibas) &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1058,12 +1058,12 @@ subroutine HFHessian
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype2(Imomentum,1) = itype2(Imomentum,1)-2
 
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2AI = d2AI - 2.d0*aexp(Icon,Ibas) &
                             *(1.d0+2.d0*dble(itype2(Imomentum,1))) &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -1073,16 +1073,16 @@ subroutine HFHessian
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
 
 
-                 if (itype2(Imomentum,1) >= 2) then
+                 IF (itype2(Imomentum,1) >= 2) THEN
                     const = dble(itype2(Imomentum,1)) &
                          *dble(itype2(Imomentum,1)-1)
                     itype2(Imomentum,1) = itype2(Imomentum,1)-2
-                    do Icon=1,ncontract(Ibas)
-                       do Jcon=1,ncontract(Jbas)
+                    DO Icon=1,ncontract(Ibas)
+                       DO Jcon=1,ncontract(Jbas)
                           d2AI = d2AI + const* &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1091,10 +1091,10 @@ subroutine HFHessian
                                xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     itype2(Imomentum,1) = itype2(Imomentum,1)+2
-                 endif
+                 ENDIF
                  quick_qm_struct%hessian(ISTART+Imomentum,ISTART+Imomentum) = &
                       quick_qm_struct%hessian(ISTART+Imomentum,ISTART+Imomentum) &
                       +d2AI*DENSEJI
@@ -1102,8 +1102,8 @@ subroutine HFHessian
                  ! Now do the Jbas derivatives.
 
                  itype2(Imomentum,2) = itype2(Imomentum,2)+2
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2AJ = d2AJ + 4.d0*aexp(Jcon,Jbas)*aexp(Jcon,Jbas) &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1112,12 +1112,12 @@ subroutine HFHessian
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype2(Imomentum,2) = itype2(Imomentum,2)-2
 
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        d2AJ = d2AJ - 2.d0*aexp(Jcon,Jbas) &
                             *(1.d0+2.d0*dble(itype2(Imomentum,2))) &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -1127,16 +1127,16 @@ subroutine HFHessian
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
 
 
-                 if (itype2(Imomentum,2) >= 2) then
+                 IF (itype2(Imomentum,2) >= 2) THEN
                     const = dble(itype2(Imomentum,2)) &
                          *dble(itype2(Imomentum,2)-1)
                     itype2(Imomentum,2) = itype2(Imomentum,2)-2
-                    do Icon=1,ncontract(Ibas)
-                       do Jcon=1,ncontract(Jbas)
+                    DO Icon=1,ncontract(Ibas)
+                       DO Jcon=1,ncontract(Jbas)
                           d2AJ = d2AJ + const* &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1145,10 +1145,10 @@ subroutine HFHessian
                                xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     itype2(Imomentum,2) = itype2(Imomentum,2)+2
-                 endif
+                 ENDIF
                  quick_qm_struct%hessian(JSTART+Imomentum,JSTART+Imomentum) = &
                       quick_qm_struct%hessian(JSTART+Imomentum,JSTART+Imomentum) &
                       +d2AJ*DENSEJI
@@ -1157,16 +1157,16 @@ subroutine HFHessian
                  ! Now we are going to do derivatives of the d2/dXAdYA type.  Note that
                  ! we are still in the IMOMENTUM loop.
 
-                 do Imomentum2=Imomentum+1,3
+                 DO Imomentum2=Imomentum+1,3
                     d2AI = 0.d0
                     d2AJ = 0.d0
 
-                    ! do the Ibas derivatives first.
+                    ! Do the Ibas derivatives first.
 
                     itype2(Imomentum,1) = itype2(Imomentum,1)+1
                     itype2(Imomentum2,1) = itype2(Imomentum2,1)+1
-                    do Icon=1,ncontract(Ibas)
-                       do Jcon=1,ncontract(Jbas)
+                    DO Icon=1,ncontract(Ibas)
+                       DO Jcon=1,ncontract(Jbas)
                           d2AI = d2AI + 4.d0*aexp(Icon,Ibas)*aexp(Icon,Ibas) &
                                *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1175,17 +1175,17 @@ subroutine HFHessian
                                xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     itype2(Imomentum,1) = itype2(Imomentum,1)-1
                     itype2(Imomentum2,1) = itype2(Imomentum2,1)-1
 
-                    if (itype2(Imomentum,1) /= 0) then
+                    IF (itype2(Imomentum,1) /= 0) THEN
                        const = dble(itype2(Imomentum,1))
                        itype2(Imomentum,1) = itype2(Imomentum,1)-1
                        itype2(Imomentum2,1) = itype2(Imomentum2,1)+1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2AI = d2AI - 2.d0*aexp(Icon,Ibas)*const &
                                   *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1194,18 +1194,18 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(Imomentum,1) = itype2(Imomentum,1)+1
                        itype2(Imomentum2,1) = itype2(Imomentum2,1)-1
-                    endif
+                    ENDIF
 
-                    if (itype2(Imomentum2,1) /= 0) then
+                    IF (itype2(Imomentum2,1) /= 0) THEN
                        const = dble(itype2(Imomentum2,1))
                        itype2(Imomentum,1) = itype2(Imomentum,1)+1
                        itype2(Imomentum2,1) = itype2(Imomentum2,1)-1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2AI = d2AI - 2.d0*aexp(Icon,Ibas)*const &
                                   *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1214,20 +1214,20 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(Imomentum,1) = itype2(Imomentum,1)-1
                        itype2(Imomentum2,1) = itype2(Imomentum2,1)+1
-                    endif
+                    ENDIF
 
-                    if (itype2(Imomentum2,1) /= 0 .and. &
-                         itype2(Imomentum,1) /= 0) then
+                    IF (itype2(Imomentum2,1) /= 0 .AND. &
+                         itype2(Imomentum,1) /= 0) THEN
                        const = dble(itype2(Imomentum2,1))* &
                             dble(itype2(Imomentum,1))
                        itype2(Imomentum,1) = itype2(Imomentum,1)-1
                        itype2(Imomentum2,1) = itype2(Imomentum2,1)-1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2AI = d2AI +const &
                                   *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1236,19 +1236,19 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(Imomentum,1) = itype2(Imomentum,1)+1
                        itype2(Imomentum2,1) = itype2(Imomentum2,1)+1
-                    endif
+                    ENDIF
 
 
                     ! Now do the Jbas derivatives.
 
                     itype2(Imomentum,2) = itype2(Imomentum,2)+1
                     itype2(Imomentum2,2) = itype2(Imomentum2,2)+1
-                    do Icon=1,ncontract(Ibas)
-                       do Jcon=1,ncontract(Jbas)
+                    DO Icon=1,ncontract(Ibas)
+                       DO Jcon=1,ncontract(Jbas)
                           d2AJ = d2AJ + 4.d0*aexp(Jcon,Jbas)*aexp(Jcon,Jbas) &
                                *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1257,17 +1257,17 @@ subroutine HFHessian
                                xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     itype2(Imomentum,2) = itype2(Imomentum,2)-1
                     itype2(Imomentum2,2) = itype2(Imomentum2,2)-1
 
-                    if (itype2(Imomentum,2) /= 0) then
+                    IF (itype2(Imomentum,2) /= 0) THEN
                        const = dble(itype2(Imomentum,2))
                        itype2(Imomentum,2) = itype2(Imomentum,2)-1
                        itype2(Imomentum2,2) = itype2(Imomentum2,2)+1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2AJ = d2AJ - 2.d0*aexp(Jcon,Jbas)*const &
                                   *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1276,18 +1276,18 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(Imomentum,2) = itype2(Imomentum,2)+1
                        itype2(Imomentum2,2) = itype2(Imomentum2,2)-1
-                    endif
+                    ENDIF
 
-                    if (itype2(Imomentum2,2) /= 0) then
+                    IF (itype2(Imomentum2,2) /= 0) THEN
                        const = dble(itype2(Imomentum2,2))
                        itype2(Imomentum,2) = itype2(Imomentum,2)+1
                        itype2(Imomentum2,2) = itype2(Imomentum2,2)-1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2AJ = d2AJ - 2.d0*aexp(Jcon,Jbas)*const &
                                   *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1296,20 +1296,20 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(Imomentum,2) = itype2(Imomentum,2)-1
                        itype2(Imomentum2,2) = itype2(Imomentum2,2)+1
-                    endif
+                    ENDIF
 
-                    if (itype2(Imomentum2,2) /= 0 .and. &
-                         itype2(Imomentum,2) /= 0) then
+                    IF (itype2(Imomentum2,2) /= 0 .AND. &
+                         itype2(Imomentum,2) /= 0) THEN
                        const = dble(itype2(Imomentum2,2))* &
                             dble(itype2(Imomentum,2))
                        itype2(Imomentum,2) = itype2(Imomentum,2)-1
                        itype2(Imomentum2,2) = itype2(Imomentum2,2)-1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2AJ = d2AJ + const &
                                   *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1318,11 +1318,11 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(Imomentum,2) = itype2(Imomentum,2)+1
                        itype2(Imomentum2,2) = itype2(Imomentum2,2)+1
-                    endif
+                    ENDIF
 
                     ! Now add the contributions to the Hessian Array.
 
@@ -1332,7 +1332,7 @@ subroutine HFHessian
                     quick_qm_struct%hessian(JSTART+Imomentum2,JSTART+Imomentum) = &
                          quick_qm_struct%hessian(JSTART+Imomentum2,JSTART+Imomentum) &
                          +d2AJ*DENSEJI
-                 enddo
+                 ENDDO
 
                  ! Close the Imomentum2 loop.
 
@@ -1341,13 +1341,13 @@ subroutine HFHessian
 
 
 
-                 do Jmomentum=1,3
+                 DO Jmomentum=1,3
                     d2AIJ = 0.d0
 
                     itype2(Imomentum,1) = itype2(Imomentum,1)+1
                     itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-                    do Icon=1,ncontract(Ibas)
-                       do Jcon=1,ncontract(Jbas)
+                    DO Icon=1,ncontract(Ibas)
+                       DO Jcon=1,ncontract(Jbas)
                           d2AIJ = d2AIJ + 4.d0*aexp(Icon,Ibas)*aexp(Jcon,Jbas) &
                                *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1356,17 +1356,17 @@ subroutine HFHessian
                                xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     itype2(Imomentum,1) = itype2(Imomentum,1)-1
                     itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
 
-                    if (itype2(Jmomentum,2) /= 0) then
+                    IF (itype2(Jmomentum,2) /= 0) THEN
                        const = dble(itype2(Jmomentum,2))
                        itype2(Imomentum,1) = itype2(Imomentum,1)+1
                        itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2AIJ = d2AIJ - 2.d0*aexp(Icon,Ibas)*const &
                                   *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1375,18 +1375,18 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(Imomentum,1) = itype2(Imomentum,1)-1
                        itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-                    endif
+                    ENDIF
 
-                    if (itype2(Imomentum,1) /= 0) then
+                    IF (itype2(Imomentum,1) /= 0) THEN
                        const = dble(itype2(Imomentum,1))
                        itype2(Imomentum,1) = itype2(Imomentum,1)-1
                        itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2AIJ = d2AIJ - 2.d0*aexp(Jcon,Jbas)*const &
                                   *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1395,20 +1395,20 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(Imomentum,1) = itype2(Imomentum,1)+1
                        itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-                    endif
+                    ENDIF
 
-                    if (itype2(Imomentum,1) /= 0 .and. &
-                         itype2(Jmomentum,2) /= 0) then
+                    IF (itype2(Imomentum,1) /= 0 .AND. &
+                         itype2(Jmomentum,2) /= 0) THEN
                        const = dble(itype2(Imomentum,1))* &
                             dble(itype2(Jmomentum,2))
                        itype2(Imomentum,1) = itype2(Imomentum,1)-1
                        itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-                       do Icon=1,ncontract(Ibas)
-                          do Jcon=1,ncontract(Jbas)
+                       DO Icon=1,ncontract(Ibas)
+                          DO Jcon=1,ncontract(Jbas)
                              d2AIJ = d2AIJ +const &
                                   *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                   *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -1417,43 +1417,43 @@ subroutine HFHessian
                                   xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                                   xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                                   xyz(1,iC),xyz(2,iC),xyz(3,iC), chgC)
-                          enddo
-                       enddo
+                          ENDDO
+                       ENDDO
                        itype2(Imomentum,1) = itype2(Imomentum,1)+1
                        itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-                    endif
+                    ENDIF
 
                     ! Now we add the contribution to the Hessian array.
 
-                    if (iA /= iB) then
+                    IF (iA /= iB) THEN
                        quick_qm_struct%hessian(JSTART+Jmomentum,ISTART+Imomentum) = &
                             quick_qm_struct%hessian(JSTART+Jmomentum,ISTART+Imomentum) &
                             +d2AIJ*DENSEJI
-                    else
-                       if (Imomentum == Jmomentum) then
+                    ELSE
+                       IF (Imomentum == Jmomentum) THEN
                           quick_qm_struct%hessian(JSTART+Jmomentum,ISTART+Imomentum) = &
                                quick_qm_struct%hessian(JSTART+Jmomentum,ISTART+Imomentum) &
                                +2.d0*d2AIJ*DENSEJI
-                       ELSEIF (Jmomentum > Imomentum) then
+                       ELSEIF (Jmomentum > Imomentum) THEN
                           quick_qm_struct%hessian(JSTART+Jmomentum,ISTART+Imomentum) = &
                                quick_qm_struct%hessian(JSTART+Jmomentum,ISTART+Imomentum) &
                                +d2AIJ*DENSEJI
-                       else
+                       ELSE
                           quick_qm_struct%hessian(ISTART+Imomentum,JSTART+Jmomentum) = &
                                quick_qm_struct%hessian(ISTART+Imomentum,JSTART+Jmomentum) &
                                +d2AIJ*DENSEJI
-                       endif
-                    endif
+                       ENDIF
+                    ENDIF
 
                     ! Now close the Jmomentum and Imomentum loops.
 
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
 
-           endif
-        enddo
-     enddo
-  enddo
+           ENDIF
+        ENDDO
+     ENDDO
+  ENDDO
 
 
   ! 5)  The 2nd derivative of the 4center 2e- terms with respect to X times
@@ -1462,25 +1462,25 @@ subroutine HFHessian
   ! the exchange and correlation integrals.)
 
 
-  do I=1,nbasis
+  DO I=1,nbasis
      ! Set some variables to reduce access time for some of the more
      ! used quantities.
 
      DENSEII=quick_qm_struct%dense(I,I)
-     if (quick_method%unrst) DENSEII=DENSEII+quick_qm_struct%denseb(I,I)
+     IF (quick_method%unrst) DENSEII=DENSEII+quick_qm_struct%denseb(I,I)
 
      ! Neglect all the (ii|ii) integrals, as they move with the core.
 
-     do J=I+1,nbasis
+     DO J=I+1,nbasis
         ! Set some variables to reduce access time for some of the more
         ! used quantities. (AGAIN)
 
         DENSEJI=quick_qm_struct%dense(J,I)
         DENSEJJ=quick_qm_struct%dense(J,J)
-        if (quick_method%unrst) then
+        IF (quick_method%unrst) THEN
            DENSEJI=DENSEJI+quick_qm_struct%denseb(J,I)
            DENSEJJ=DENSEJJ+quick_qm_struct%denseb(J,J)
-        endif
+        ENDIF
 
         ! Find  all the (ii|jj) integrals.
 
@@ -1502,18 +1502,18 @@ subroutine HFHessian
         constant =(1.5d0*DENSEJI*DENSEJI-0.50d0*DENSEJJ*DENSEII)
         call hess2elec(I,J,I,J,constant)
 
-        do K=J+1,nbasis
+        DO K=J+1,nbasis
            ! Set some variables to reduce access time for some of the more
            ! used quantities. (AGAIN)
 
            DENSEKI=quick_qm_struct%dense(K,I)
            DENSEKJ=quick_qm_struct%dense(K,J)
            DENSEKK=quick_qm_struct%dense(K,K)
-           if (quick_method%unrst) then
+           IF (quick_method%unrst) THEN
               DENSEKI=DENSEKI+quick_qm_struct%denseb(K,I)
               DENSEKJ=DENSEKJ+quick_qm_struct%denseb(K,J)
               DENSEKK=DENSEKK+quick_qm_struct%denseb(K,K)
-           endif
+           ENDIF
 
            ! Find all the (ij|ik) integrals where j>i,k>j
 
@@ -1534,27 +1534,27 @@ subroutine HFHessian
 
            constant = (2.d0*DENSEKJ*DENSEII-DENSEJI*DENSEKI)
            call hess2elec(I,I,J,K,constant)
-        enddo
+        ENDDO
 
-        do K=I+1,nbasis-1
+        DO K=I+1,nbasis-1
            DENSEKI=quick_qm_struct%dense(K,I)
            DENSEKJ=quick_qm_struct%dense(K,J)
            DENSEKK=quick_qm_struct%dense(K,K)
-           if (quick_method%unrst) then
+           IF (quick_method%unrst) THEN
               DENSEKI=DENSEKI+quick_qm_struct%denseb(K,I)
               DENSEKJ=DENSEKJ+quick_qm_struct%denseb(K,J)
               DENSEKK=DENSEKK+quick_qm_struct%denseb(K,K)
-           endif
+           ENDIF
 
-           do L=K+1,nbasis
+           DO L=K+1,nbasis
               DENSELJ=quick_qm_struct%dense(L,J)
               DENSELI=quick_qm_struct%dense(L,I)
               DENSELK=quick_qm_struct%dense(L,K)
-              if (quick_method%unrst) then
+              IF (quick_method%unrst) THEN
                  DENSELJ=DENSELJ+quick_qm_struct%denseb(L,J)
                  DENSELI=DENSELI+quick_qm_struct%denseb(L,I)
                  DENSELK=DENSELK+quick_qm_struct%denseb(L,K)
-              endif
+              ENDIF
 
               ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
               ! can be equal.
@@ -1563,16 +1563,16 @@ subroutine HFHessian
                    -DENSELI*DENSEKJ)
               call hess2elec(I,J,K,L,constant)
 
-           enddo
-        enddo
-     enddo
-  enddo
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
 
-  !  do I=1,natom*3
-  !     do J=I,natom*3
+  !  DO I=1,natom*3
+  !     DO J=I,natom*3
   !        print *,'INTEGRALS',HESSIAN(J,I)
-  !     enddo
-  !  enddo
+  !     ENDDO
+  !  ENDDO
 
 
   ! At this point we have all the second derivatives of the energy
@@ -1605,22 +1605,22 @@ subroutine HFHessian
 
   ! Since we have to consider spin, set up quick_qm_struct%cob and EB if this is RHF.
 
-  if ( .not. quick_method%unrst) then
-     do I=1,nbasis
+  IF ( .NOT. quick_method%unrst) THEN
+     DO I=1,nbasis
         quick_qm_struct%EB(I)=quick_qm_struct%E(I)
-        do J=1,nbasis
+        DO J=1,nbasis
            quick_qm_struct%cob(J,I)=quick_qm_struct%co(J,I)
-        enddo
-     enddo
-  endif
+        ENDDO
+     ENDDO
+  ENDIF
 
   ! Blank out the CPHFA array.
 
-  if (quick_method%unrst) then
+  IF (quick_method%unrst) THEN
      idimA = (nbasis-quick_molspec%nelec)*quick_molspec%nelec + (nbasis-quick_molspec%nelecB)*quick_molspec%nelecB
-  else
+  ELSE
      idimA = 2*(nbasis-(quick_molspec%nelec/2))*(quick_molspec%nelec/2)
-  endif
+  ENDIF
   
 !  allocate(CPHFA(idimA,idimA))
 !  allocate(CPHFB(idimA,natom*3))
@@ -1629,67 +1629,67 @@ subroutine HFHessian
   allocate(BU(idimA))
 
 
-  do I=1,idimA
-     do J=1,idimA
+  DO I=1,idimA
+     DO J=1,idimA
         quick_qm_struct%cphfa(J,I)=0.d0
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! We now pass all the nonredundant AO repulsion integrals to a subroutine.
   ! Note that this series of calls is not well commented, but is exactly the
   ! same order as is found in hfenergy or hfgrad.
 
   call cpu_time(t1)
-  do I=1,nbasis
+  DO I=1,nbasis
      call formCPHFA(I,I,I,I)
-     do J=I+1,nbasis
+     DO J=I+1,nbasis
         call formCPHFA(I,I,J,J)
         call formCPHFA(I,J,J,J)
         call formCPHFA(I,I,I,J)
         call formCPHFA(I,J,I,J)
-        do K=J+1,nbasis
+        DO K=J+1,nbasis
            call formCPHFA(I,J,I,K)
            call formCPHFA(I,J,K,K)
            call formCPHFA(I,K,J,J)
            call formCPHFA(I,I,J,K)
-        enddo
-        do K=I+1,nbasis-1
-           do L=K+1,nbasis
+        ENDDO
+        DO K=I+1,nbasis-1
+           DO L=K+1,nbasis
               call formCPHFA(I,J,K,L)
-         enddo
-        enddo
-     enddo
-  enddo
+         ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
   ! At this point, CPHFA(ai,bj) = 2(ai|bj)-(aj|bi)-(ab|ij)
   ! We need to go through and divide by E(I)-E(A) (or EB(I)-EB(A))
 
-  if (quick_method%unrst) then
+  IF (quick_method%unrst) THEN
      lastAocc = quick_molspec%nelec
      lastBocc = quick_molspec%nelecb
-  else
+  ELSE
      lastAocc = quick_molspec%nelec/2
      lastBocc = lastAocc
-  endif
+  ENDIF
   iBetastart = lastAocc*(nbasis-lastAocc)
 
-  do iAvirt = lastAocc+1,nbasis
-     do iAocc = 1,lastAocc
+  DO iAvirt = lastAocc+1,nbasis
+     DO iAocc = 1,lastAocc
         iaCPHFA = (iAvirt-lastAocc-1)*lastAocc + iAocc
         denom = quick_qm_struct%E(iAocc)-quick_qm_struct%E(iAvirt)
-        do jbCPHFA = 1,idimA
+        DO jbCPHFA = 1,idimA
            quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) = quick_qm_struct%cphfa(iaCPHFA,jbCPHFA)/denom
-        enddo
-     enddo
-  enddo
-  do iBvirt = lastBocc+1,nbasis
-     do iBocc = 1,lastBocc
+        ENDDO
+     ENDDO
+  ENDDO
+  DO iBvirt = lastBocc+1,nbasis
+     DO iBocc = 1,lastBocc
         iaCPHFA = (iBvirt-lastBocc-1)*lastBocc + iBocc+iBetastart
         denom = quick_qm_struct%EB(iBocc)-quick_qm_struct%EB(iBvirt)
-        do jbCPHFA = 1,idimA
+        DO jbCPHFA = 1,idimA
            quick_qm_struct%cphfa(iaCPHFA,jbCPHFA) = quick_qm_struct%cphfa(iaCPHFA,jbCPHFA)/denom
-        enddo
-     enddo
-  enddo
+        ENDDO
+     ENDDO
+  ENDDO
   call cpu_time(t2)
   !  print *,'FORM1',T2-T1
 
@@ -1698,11 +1698,11 @@ subroutine HFHessian
   ! each possible nuclear perturbation.  Thus the array is organized with
   ! CPHFB(occ-virtual pair, dX)  This is done in a subroutine.
 
-  do I=1,natom*3
-     do J=1,idimA
+  DO I=1,natom*3
+     DO J=1,idimA
         quick_qm_struct%cphfb(J,I)=0.d0
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   call formCPHFB
   call cpu_time(t3)
@@ -1714,40 +1714,40 @@ subroutine HFHessian
   ! Now we are going to solve the CPHF  equation.
 
 
-  do IdX=1,natom*3
+  DO IdX=1,natom*3
 
      ! To solve the CPHF equations we are going to need the transpose of A many
      ! times.  Place it  in array W.
 
-     do I=1,idimA
-        do J=1,idimA
+     DO I=1,idimA
+        DO J=1,idimA
            W(J,I) = quick_qm_struct%cphfa(I,J)
-        enddo
-     enddo
+        ENDDO
+     ENDDO
      
      ! Place the correct column of CPHFB in B0.  Also, set BU to BO.
 
-     do J=1,idimA
+     DO J=1,idimA
         B0(J) = quick_qm_struct%cphfb(J,IDX)
         BU(J) = quick_qm_struct%cphfb(J,IDX)
-     enddo
+     ENDDO
 
      ! Solve the equation. BU = (Sum over i=0,N) A^i BO.  This section assumes
      ! on first pass that CPHFA contains the actual A Array, W contain
      ! Transpose[CPHFA].
      change=1.D10
      iBUform=0
-     do WHILE (change.gt.1.D-10)
+     DO WHILE (change.gt.1.D-10)
         iBUform=iBUform+1
         change=-1.d0
-        do I=1,idimA
+        DO I=1,idimA
            element = 0.0D0
-           do K=1,idimA
+           DO K=1,idimA
               element = element + W(K,I)*B0(K)
-           enddo
+           ENDDO
            change=max(change,dabs(element))
            BU(I)=BU(I)+element
-        enddo
+        ENDDO
 
         ! At this point the have formed the iBUformth BU array.
         ! If it hasn't converged,
@@ -1756,28 +1756,28 @@ subroutine HFHessian
         ! by A and storing it in the CPHFfile, then transposing the file onto W.
 
 
-        if (change > 1.D-10) then
+        IF (change > 1.D-10) THEN
            open(iCPHFfile,file=CPHFfilename,status='unknown')
-           do I=1,idimA
-              do J=1,idimA
+           DO I=1,idimA
+              DO J=1,idimA
                  W2IJ = 0.0D0
-                 do K=1,idimA
+                 DO K=1,idimA
                     W2IJ = W2IJ + W(K,I)*quick_qm_struct%cphfa(K,J)
-                 enddo
+                 ENDDO
                  write (iCPHFfile,'(E30.20)') W2IJ
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            close  (iCPHFfile)
            open(iCPHFfile,file=CPHFfilename,status='unknown')
-           do I=1,idimA
-              do J=1,idimA
+           DO I=1,idimA
+              DO J=1,idimA
                  read (iCPHFfile,'(E30.20)') W(J,I)
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            close(iCPHFfile)
-        endif
+        ENDIF
         
-     enddo
+     ENDDO
 
      ! BU is now filled with the u(ai) values need to for the first derivative
      ! of the density matrix and the first derivative of the energy weighted
@@ -1794,18 +1794,18 @@ subroutine HFHessian
      call hfdmxderuse(IDX)
 
      call Ewtdmxder(IDX)
-  enddo
+  ENDDO
 
   ! At this point some of the elements above the diagonal.  Sum those into
   ! below the diagonal and then set the whol thing to be symmetric.
 
-  do I=1,natom*3
-     do J=I+1,natom*3
+  DO I=1,natom*3
+     DO J=I+1,natom*3
         quick_qm_struct%hessian(I,J) = quick_qm_struct%hessian(J,I)
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-end subroutine hfhessian
+END subroutine hfhessian
 
 
 ! Ed Brothers. November 5, 2002.
@@ -1839,7 +1839,7 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
   same = same .and. iB.eq.iC
   same = same .and. iC.eq.iD
 
-  if (same) return
+  IF (same) return
 
   iAstart = (iA-1)*3
   iBstart = (iB-1)*3
@@ -1849,16 +1849,16 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
   ! The itype2 array was added because if Ibas=Jbas, the code raises two
   ! angular momentums instead of one.
 
-  do Imomentum=1,3
+  DO Imomentum=1,3
      itype2(Imomentum,1) = itype(Imomentum,Ibas)
      itype2(Imomentum,2) = itype(Imomentum,Jbas)
      itype2(Imomentum,3) = itype(Imomentum,IIbas)
      itype2(Imomentum,4) = itype(Imomentum,JJbas)
-  enddo
+  ENDDO
 
   ! The first thing to calculate is the d2/dXA elements of the hessian.
 
-  do Imomentum=1,3
+  DO Imomentum=1,3
      D2I = 0.d0
      D2J = 0.d0
      D2II = 0.d0
@@ -1867,10 +1867,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
      ! Ibas' center first.
 
      itype2(Imomentum,1) = itype2(Imomentum,1)+2
-     do Icon=1,ncontract(Ibas)
-        do Jcon=1,ncontract(Jbas)
-           do IIcon=1,ncontract(IIbas)
-              do JJcon=1,ncontract(JJbas)
+     DO Icon=1,ncontract(Ibas)
+        DO Jcon=1,ncontract(Jbas)
+           DO IIcon=1,ncontract(IIbas)
+              DO JJcon=1,ncontract(JJbas)
                  d2I = d2I + 4.d0*aexp(Icon,Ibas)*aexp(Icon,Ibas) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -1884,16 +1884,16 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
      itype2(Imomentum,1) = itype2(Imomentum,1)-2
 
-     do Icon=1,ncontract(Ibas)
-        do Jcon=1,ncontract(Jbas)
-           do IIcon=1,ncontract(IIbas)
-              do JJcon=1,ncontract(JJbas)
+     DO Icon=1,ncontract(Ibas)
+        DO Jcon=1,ncontract(Jbas)
+           DO IIcon=1,ncontract(IIbas)
+              DO JJcon=1,ncontract(JJbas)
                  d2I = d2I - 2.d0*aexp(Icon,Ibas) &
                       *(1.d0+2.d0*dble(itype2(Imomentum,1))) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -1908,20 +1908,20 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
 
 
-     if (itype2(Imomentum,1) >= 2) then
+     IF (itype2(Imomentum,1) >= 2) THEN
         const = dble(itype2(Imomentum,1)) &
              *dble(itype2(Imomentum,1)-1)
         itype2(Imomentum,1) = itype2(Imomentum,1)-2
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2I = d2I + const* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -1935,12 +1935,12 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,1) = itype2(Imomentum,1)+2
-     endif
+     ENDIF
      quick_qm_struct%hessian(iASTART+Imomentum,iASTART+Imomentum) = &
           quick_qm_struct%hessian(iASTART+Imomentum,iASTART+Imomentum) &
           +d2I*coeff
@@ -1948,10 +1948,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
      ! Jbas' center.
 
      itype2(Imomentum,2) = itype2(Imomentum,2)+2
-     do Icon=1,ncontract(Ibas)
-        do Jcon=1,ncontract(Jbas)
-           do IIcon=1,ncontract(IIbas)
-              do JJcon=1,ncontract(JJbas)
+     DO Icon=1,ncontract(Ibas)
+        DO Jcon=1,ncontract(Jbas)
+           DO IIcon=1,ncontract(IIbas)
+              DO JJcon=1,ncontract(JJbas)
                  d2J = d2J + 4.d0*aexp(Jcon,Jbas)*aexp(Jcon,Jbas) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -1965,16 +1965,16 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
      itype2(Imomentum,2) = itype2(Imomentum,2)-2
 
-     do Icon=1,ncontract(Ibas)
-        do Jcon=1,ncontract(Jbas)
-           do IIcon=1,ncontract(IIbas)
-              do JJcon=1,ncontract(JJbas)
+     DO Icon=1,ncontract(Ibas)
+        DO Jcon=1,ncontract(Jbas)
+           DO IIcon=1,ncontract(IIbas)
+              DO JJcon=1,ncontract(JJbas)
                  d2J = d2J - 2.d0*aexp(Jcon,Jbas) &
                       *(1.d0+2.d0*dble(itype2(Imomentum,2))) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -1989,20 +1989,20 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
 
 
-     if (itype2(Imomentum,2) >= 2) then
+     IF (itype2(Imomentum,2) >= 2) THEN
         const = dble(itype2(Imomentum,2)) &
              *dble(itype2(Imomentum,2)-1)
         itype2(Imomentum,2) = itype2(Imomentum,2)-2
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2J = d2J + const* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2016,22 +2016,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,2) = itype2(Imomentum,2)+2
-     endif
+     ENDIF
      quick_qm_struct%hessian(iBSTART+Imomentum,iBSTART+Imomentum) = &
           quick_qm_struct%hessian(iBSTART+Imomentum,iBSTART+Imomentum) &
           +d2J*coeff
      ! IIbas' center.
 
      itype2(Imomentum,3) = itype2(Imomentum,3)+2
-     do Icon=1,ncontract(Ibas)
-        do Jcon=1,ncontract(Jbas)
-           do IIcon=1,ncontract(IIbas)
-              do JJcon=1,ncontract(JJbas)
+     DO Icon=1,ncontract(Ibas)
+        DO Jcon=1,ncontract(Jbas)
+           DO IIcon=1,ncontract(IIbas)
+              DO JJcon=1,ncontract(JJbas)
                  d2II = d2II + 4.d0*aexp(IIcon,IIbas)*aexp(IIcon,IIbas) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2045,16 +2045,16 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
      itype2(Imomentum,3) = itype2(Imomentum,3)-2
 
-     do Icon=1,ncontract(Ibas)
-        do Jcon=1,ncontract(Jbas)
-           do IIcon=1,ncontract(IIbas)
-              do JJcon=1,ncontract(JJbas)
+     DO Icon=1,ncontract(Ibas)
+        DO Jcon=1,ncontract(Jbas)
+           DO IIcon=1,ncontract(IIbas)
+              DO JJcon=1,ncontract(JJbas)
                  d2II = d2II - 2.d0*aexp(IIcon,IIbas) &
                       *(1.d0+2.d0*dble(itype2(Imomentum,3))) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -2069,20 +2069,20 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
 
 
-     if (itype2(Imomentum,3) >= 2) then
+     IF (itype2(Imomentum,3) >= 2) THEN
         const = dble(itype2(Imomentum,3)) &
              *dble(itype2(Imomentum,3)-1)
         itype2(Imomentum,3) = itype2(Imomentum,3)-2
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2II = d2II + const* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2096,12 +2096,12 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,3) = itype2(Imomentum,3)+2
-     endif
+     ENDIF
      quick_qm_struct%hessian(iCSTART+Imomentum,iCSTART+Imomentum) = &
           quick_qm_struct%hessian(iCSTART+Imomentum,iCSTART+Imomentum) &
           +d2II*coeff
@@ -2109,10 +2109,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
      ! JJbas' center.
 
      itype2(Imomentum,4) = itype2(Imomentum,4)+2
-     do Icon=1,ncontract(Ibas)
-        do Jcon=1,ncontract(Jbas)
-           do IIcon=1,ncontract(IIbas)
-              do JJcon=1,ncontract(JJbas)
+     DO Icon=1,ncontract(Ibas)
+        DO Jcon=1,ncontract(Jbas)
+           DO IIcon=1,ncontract(IIbas)
+              DO JJcon=1,ncontract(JJbas)
                  d2JJ = d2JJ + 4.d0*aexp(JJcon,JJbas)*aexp(JJcon,JJbas) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2126,16 +2126,16 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
      itype2(Imomentum,4) = itype2(Imomentum,4)-2
 
-     do Icon=1,ncontract(Ibas)
-        do Jcon=1,ncontract(Jbas)
-           do IIcon=1,ncontract(IIbas)
-              do JJcon=1,ncontract(JJbas)
+     DO Icon=1,ncontract(Ibas)
+        DO Jcon=1,ncontract(Jbas)
+           DO IIcon=1,ncontract(IIbas)
+              DO JJcon=1,ncontract(JJbas)
                  d2JJ = d2JJ - 2.d0*aexp(JJcon,JJbas) &
                       *(1.d0+2.d0*dble(itype2(Imomentum,4))) &
                       *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -2150,20 +2150,20 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
 
 
-     if (itype2(Imomentum,4) >= 2) then
+     IF (itype2(Imomentum,4) >= 2) THEN
         const = dble(itype2(Imomentum,4)) &
              *dble(itype2(Imomentum,4)-1)
         itype2(Imomentum,4) = itype2(Imomentum,4)-2
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2JJ = d2JJ + const* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2177,12 +2177,12 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,4) = itype2(Imomentum,4)+2
-     endif
+     ENDIF
      quick_qm_struct%hessian(iDSTART+Imomentum,iDSTART+Imomentum) = &
           quick_qm_struct%hessian(iDSTART+Imomentum,iDSTART+Imomentum) &
           +d2JJ*coeff
@@ -2190,7 +2190,7 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
 
      ! Now do the d^2E/dXAdXB type integrals.
 
-     do Jmomentum=Imomentum+1,3
+     DO Jmomentum=Imomentum+1,3
         d2I=0.d0
         d2J=0.d0
         d2II=0.d0
@@ -2200,10 +2200,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
 
         itype2(Imomentum,1) = itype2(Imomentum,1)+1
         itype2(Jmomentum,1) = itype2(Jmomentum,1)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2I = d2I + 4.d0*aexp(Icon,Ibas)*aexp(Icon,Ibas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2217,21 +2217,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,1) = itype2(Imomentum,1)-1
         itype2(Jmomentum,1) = itype2(Jmomentum,1)-1
 
-        if (itype2(Imomentum,1) /= 0) then
+        IF (itype2(Imomentum,1) /= 0) THEN
            const=dble(itype2(Imomentum,1))
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,1) = itype2(Jmomentum,1)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2I = d2I - 2.d0*aexp(Icon,Ibas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2245,22 +2245,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,1) = itype2(Jmomentum,1)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,1) /= 0) then
+        IF (itype2(Jmomentum,1) /= 0) THEN
            const=dble(itype2(Jmomentum,1))
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,1) = itype2(Jmomentum,1)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2I = d2I - 2.d0*aexp(Icon,Ibas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2274,22 +2274,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,1) = itype2(Jmomentum,1)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,1) /= 0 .and. itype2(Imomentum,1) /= 0) then
+        IF (itype2(Jmomentum,1) /= 0 .AND. itype2(Imomentum,1) /= 0) THEN
            const=dble(itype2(Jmomentum,1)*itype2(Imomentum,1))
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,1) = itype2(Jmomentum,1)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2I = d2I +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2303,13 +2303,13 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,1) = itype2(Jmomentum,1)+1
-        endif
+        ENDIF
 
         quick_qm_struct%hessian(iASTART+Jmomentum,iASTART+Imomentum) = &
              quick_qm_struct%hessian(iASTART+Jmomentum,iASTART+Imomentum) &
@@ -2319,10 +2319,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
 
         itype2(Imomentum,2) = itype2(Imomentum,2)+1
         itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2J = d2J + 4.d0*aexp(Jcon,Jbas)*aexp(Jcon,Jbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2336,21 +2336,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,2) = itype2(Imomentum,2)-1
         itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
 
-        if (itype2(Imomentum,2) /= 0) then
+        IF (itype2(Imomentum,2) /= 0) THEN
            const=dble(itype2(Imomentum,2))
            itype2(Imomentum,2) = itype2(Imomentum,2)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2J = d2J - 2.d0*aexp(Jcon,Jbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2364,22 +2364,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,2) = itype2(Imomentum,2)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,2) /= 0) then
+        IF (itype2(Jmomentum,2) /= 0) THEN
            const=dble(itype2(Jmomentum,2))
            itype2(Imomentum,2) = itype2(Imomentum,2)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2J = d2J - 2.d0*aexp(Jcon,Jbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2393,22 +2393,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,2) = itype2(Imomentum,2)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,2) /= 0 .and. itype2(Imomentum,2) /= 0) then
+        IF (itype2(Jmomentum,2) /= 0 .AND. itype2(Imomentum,2) /= 0) THEN
            const=dble(itype2(Jmomentum,2)*itype2(Imomentum,2))
            itype2(Imomentum,2) = itype2(Imomentum,2)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2J = d2J +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2422,27 +2422,27 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,2) = itype2(Imomentum,2)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        endif
+        ENDIF
 
         quick_qm_struct%hessian(iBSTART+Jmomentum,iBSTART+Imomentum) = &
              quick_qm_struct%hessian(iBSTART+Jmomentum,iBSTART+Imomentum) &
              +d2J*coeff
 
 
-        ! do IIbas
+        ! Do IIbas
 
         itype2(Imomentum,3) = itype2(Imomentum,3)+1
         itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2II = d2II + 4.d0*aexp(IIcon,IIbas)*aexp(IIcon,IIbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2456,21 +2456,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,3) = itype2(Imomentum,3)-1
         itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
 
-        if (itype2(Imomentum,3) /= 0) then
+        IF (itype2(Imomentum,3) /= 0) THEN
            const=dble(itype2(Imomentum,3))
            itype2(Imomentum,3) = itype2(Imomentum,3)-1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2II = d2II - 2.d0*aexp(IIcon,IIbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2484,22 +2484,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,3) = itype2(Imomentum,3)+1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,3) /= 0) then
+        IF (itype2(Jmomentum,3) /= 0) THEN
            const=dble(itype2(Jmomentum,3))
            itype2(Imomentum,3) = itype2(Imomentum,3)+1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2II = d2II - 2.d0*aexp(IIcon,IIbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2513,22 +2513,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,3) = itype2(Imomentum,3)-1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,3) /= 0 .and. itype2(Imomentum,3) /= 0) then
+        IF (itype2(Jmomentum,3) /= 0 .AND. itype2(Imomentum,3) /= 0) THEN
            const=dble(itype2(Jmomentum,3)*itype2(Imomentum,3))
            itype2(Imomentum,3) = itype2(Imomentum,3)-1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2II = d2II +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2542,13 +2542,13 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,3) = itype2(Imomentum,3)+1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-        endif
+        ENDIF
 
         quick_qm_struct%hessian(iCSTART+Jmomentum,iCSTART+Imomentum) = &
              quick_qm_struct%hessian(iCSTART+Jmomentum,iCSTART+Imomentum) &
@@ -2558,10 +2558,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
 
         itype2(Imomentum,4) = itype2(Imomentum,4)+1
         itype2(Jmomentum,4) = itype2(Jmomentum,4)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2JJ = d2JJ + 4.d0*aexp(JJcon,JJbas)*aexp(JJcon,JJbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2575,21 +2575,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,4) = itype2(Imomentum,4)-1
         itype2(Jmomentum,4) = itype2(Jmomentum,4)-1
 
-        if (itype2(Imomentum,4) /= 0) then
+        IF (itype2(Imomentum,4) /= 0) THEN
            const=dble(itype2(Imomentum,4))
            itype2(Imomentum,4) = itype2(Imomentum,4)-1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2JJ = d2JJ - 2.d0*aexp(JJcon,JJbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2603,22 +2603,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,4) = itype2(Imomentum,4)+1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,4) /= 0) then
+        IF (itype2(Jmomentum,4) /= 0) THEN
            const=dble(itype2(Jmomentum,4))
            itype2(Imomentum,4) = itype2(Imomentum,4)+1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2JJ= d2JJ - 2.d0*aexp(JJcon,JJbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2632,22 +2632,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,4) = itype2(Imomentum,4)-1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,4) /= 0 .and. itype2(Imomentum,4) /= 0) then
+        IF (itype2(Jmomentum,4) /= 0 .AND. itype2(Imomentum,4) /= 0) THEN
            const=dble(itype2(Jmomentum,4)*itype2(Imomentum,4))
            itype2(Imomentum,4) = itype2(Imomentum,4)-1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2JJ = d2JJ +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2661,36 +2661,36 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,4) = itype2(Imomentum,4)+1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)+1
-        endif
+        ENDIF
 
         quick_qm_struct%hessian(iDSTART+Jmomentum,iDSTART+Imomentum) = &
              quick_qm_struct%hessian(iDSTART+Jmomentum,iDSTART+Imomentum) &
              +d2JJ*coeff
 
-     enddo
+     ENDDO
 
      ! We have just closed the Jmomentum loop.
      ! Now we need to calculate the d2E/dX1dY2 type terms.  This requires 6
      ! different combinations.
 
-     do Jmomentum=1,3
+     DO Jmomentum=1,3
 
-        ! do the Ibas with Jbas first.
+        ! Do the Ibas with Jbas first.
 
         d2XY = 0.d0
 
         itype2(Imomentum,1) = itype2(Imomentum,1)+1
         itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2XY = d2XY + 4.d0*aexp(Icon,Ibas)*aexp(Jcon,Jbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2704,21 +2704,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,1) = itype2(Imomentum,1)-1
         itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
 
-        if (itype2(Imomentum,1) /= 0) then
+        IF (itype2(Imomentum,1) /= 0) THEN
            const=dble(itype2(Imomentum,1))
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(Jcon,Jbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2732,22 +2732,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,2) /= 0) then
+        IF (itype2(Jmomentum,2) /= 0) THEN
            const=dble(itype2(Jmomentum,2))
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(Icon,Ibas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2761,22 +2761,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,2) /= 0 .and. itype2(Imomentum,1) /= 0) then
+        IF (itype2(Jmomentum,2) /= 0 .AND. itype2(Imomentum,1) /= 0) THEN
            const=dble(itype2(Jmomentum,2)*itype2(Imomentum,1))
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2790,38 +2790,38 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        endif
-        if (iA /= iB) then
-           if (iB > iA) then
+        ENDIF
+        IF (iA /= iB) THEN
+           IF (iB > iA) THEN
               quick_qm_struct%hessian(iBSTART+Jmomentum,iASTART+Imomentum) = &
                    quick_qm_struct%hessian(iBSTART+Jmomentum,iASTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iASTART+Imomentum,iBSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iASTART+Imomentum,iBSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        else
-           if (Imomentum == Jmomentum) then
+           ENDIF
+        ELSE
+           IF (Imomentum == Jmomentum) THEN
               quick_qm_struct%hessian(iBSTART+Jmomentum,iASTART+Imomentum) = &
                    quick_qm_struct%hessian(iBSTART+Jmomentum,iASTART+Imomentum) &
                    +2.d0*d2XY*coeff
-           ELSEIF (Jmomentum > Imomentum) then
+           ELSEIF (Jmomentum > Imomentum) THEN
               quick_qm_struct%hessian(iBSTART+Jmomentum,iASTART+Imomentum) = &
                    quick_qm_struct%hessian(iBSTART+Jmomentum,iASTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iASTART+Imomentum,iBSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iASTART+Imomentum,iBSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        endif
+           ENDIF
+        ENDIF
 
         ! Ibas with IIbas.
 
@@ -2829,10 +2829,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
 
         itype2(Imomentum,1) = itype2(Imomentum,1)+1
         itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2XY = d2XY + 4.d0*aexp(Icon,Ibas)*aexp(IIcon,IIbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2846,21 +2846,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,1) = itype2(Imomentum,1)-1
         itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
 
-        if (itype2(Imomentum,1) /= 0) then
+        IF (itype2(Imomentum,1) /= 0) THEN
            const=dble(itype2(Imomentum,1))
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(IIcon,IIbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2874,22 +2874,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,3) /= 0) then
+        IF (itype2(Jmomentum,3) /= 0) THEN
            const=dble(itype2(Jmomentum,3))
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(Icon,Ibas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2903,22 +2903,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,3) /= 0 .and. itype2(Imomentum,1) /= 0) then
+        IF (itype2(Jmomentum,3) /= 0 .AND. itype2(Imomentum,1) /= 0) THEN
            const=dble(itype2(Jmomentum,3)*itype2(Imomentum,1))
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2932,38 +2932,38 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-        endif
-        if (iA /= iC) then
-           if (iC > iA) then
+        ENDIF
+        IF (iA /= iC) THEN
+           IF (iC > iA) THEN
               quick_qm_struct%hessian(iCSTART+Jmomentum,iASTART+Imomentum) = &
                    quick_qm_struct%hessian(iCSTART+Jmomentum,iASTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iASTART+Imomentum,iCSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iASTART+Imomentum,iCSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        else
-           if (Imomentum == Jmomentum) then
+           ENDIF
+        ELSE
+           IF (Imomentum == Jmomentum) THEN
               quick_qm_struct%hessian(iCSTART+Jmomentum,iASTART+Imomentum) = &
                    quick_qm_struct%hessian(iCSTART+Jmomentum,iASTART+Imomentum) &
                    +2.d0*d2XY*coeff
-           ELSEIF (Jmomentum > Imomentum) then
+           ELSEIF (Jmomentum > Imomentum) THEN
               quick_qm_struct%hessian(iCSTART+Jmomentum,iASTART+Imomentum) = &
                    quick_qm_struct%hessian(iCSTART+Jmomentum,iASTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iASTART+Imomentum,iCSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iASTART+Imomentum,iCSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        endif
+           ENDIF
+        ENDIF
 
         ! Ibas with JJbas.
 
@@ -2971,10 +2971,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
 
         itype2(Imomentum,1) = itype2(Imomentum,1)+1
         itype2(Jmomentum,4) = itype2(Jmomentum,4)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2XY = d2XY + 4.d0*aexp(Icon,Ibas)*aexp(JJcon,JJbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -2988,21 +2988,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,1) = itype2(Imomentum,1)-1
         itype2(Jmomentum,4) = itype2(Jmomentum,4)-1
 
-        if (itype2(Imomentum,1) /= 0) then
+        IF (itype2(Imomentum,1) /= 0) THEN
            const=dble(itype2(Imomentum,1))
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(JJcon,JJbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3016,22 +3016,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,4) /= 0) then
+        IF (itype2(Jmomentum,4) /= 0) THEN
            const=dble(itype2(Jmomentum,4))
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(Icon,Ibas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3045,22 +3045,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,4) /= 0 .and. itype2(Imomentum,1) /= 0) then
+        IF (itype2(Jmomentum,4) /= 0 .AND. itype2(Imomentum,1) /= 0) THEN
            const=dble(itype2(Jmomentum,4)*itype2(Imomentum,1))
            itype2(Imomentum,1) = itype2(Imomentum,1)-1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3074,38 +3074,38 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,1) = itype2(Imomentum,1)+1
            itype2(Jmomentum,4) = itype2(Jmomentum,4)+1
-        endif
-        if (iA /= iD) then
-           if (iD > iA) then
+        ENDIF
+        IF (iA /= iD) THEN
+           IF (iD > iA) THEN
               quick_qm_struct%hessian(iDSTART+Jmomentum,iASTART+Imomentum) = &
                    quick_qm_struct%hessian(iDSTART+Jmomentum,iASTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iASTART+Imomentum,iDSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iASTART+Imomentum,iDSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        else
-           if (Imomentum == Jmomentum) then
+           ENDIF
+        ELSE
+           IF (Imomentum == Jmomentum) THEN
               quick_qm_struct%hessian(iDSTART+Jmomentum,iASTART+Imomentum) = &
                    quick_qm_struct%hessian(iDSTART+Jmomentum,iASTART+Imomentum) &
                    +2.d0*d2XY*coeff
-           ELSEIF (Jmomentum > Imomentum) then
+           ELSEIF (Jmomentum > Imomentum) THEN
               quick_qm_struct%hessian(iDSTART+Jmomentum,iASTART+Imomentum) = &
                    quick_qm_struct%hessian(iDSTART+Jmomentum,iASTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iASTART+Imomentum,iDSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iASTART+Imomentum,iDSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        endif
+           ENDIF
+        ENDIF
 
         ! IIbas with Jbas.
 
@@ -3113,10 +3113,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
 
         itype2(Imomentum,3) = itype2(Imomentum,3)+1
         itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2XY = d2XY + 4.d0*aexp(IIcon,IIbas)*aexp(Jcon,Jbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3130,21 +3130,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,3) = itype2(Imomentum,3)-1
         itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
 
-        if (itype2(Imomentum,3) /= 0) then
+        IF (itype2(Imomentum,3) /= 0) THEN
            const=dble(itype2(Imomentum,3))
            itype2(Imomentum,3) = itype2(Imomentum,3)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(Jcon,Jbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3158,22 +3158,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,3) = itype2(Imomentum,3)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,2) /= 0) then
+        IF (itype2(Jmomentum,2) /= 0) THEN
            const=dble(itype2(Jmomentum,2))
            itype2(Imomentum,3) = itype2(Imomentum,3)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(IIcon,IIbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3187,22 +3187,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,3) = itype2(Imomentum,3)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,2) /= 0 .and. itype2(Imomentum,3) /= 0) then
+        IF (itype2(Jmomentum,2) /= 0 .AND. itype2(Imomentum,3) /= 0) THEN
            const=dble(itype2(Jmomentum,2)*itype2(Imomentum,3))
            itype2(Imomentum,3) = itype2(Imomentum,3)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3216,38 +3216,38 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,3) = itype2(Imomentum,3)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        endif
-        if (iC /= iB) then
-           if (iB > iC) then
+        ENDIF
+        IF (iC /= iB) THEN
+           IF (iB > iC) THEN
               quick_qm_struct%hessian(iBSTART+Jmomentum,iCSTART+Imomentum) = &
                    quick_qm_struct%hessian(iBSTART+Jmomentum,iCSTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iCSTART+Imomentum,iBSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iCSTART+Imomentum,iBSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        else
-           if (Imomentum == Jmomentum) then
+           ENDIF
+        ELSE
+           IF (Imomentum == Jmomentum) THEN
               quick_qm_struct%hessian(iBSTART+Jmomentum,iCSTART+Imomentum) = &
                    quick_qm_struct%hessian(iBSTART+Jmomentum,iCSTART+Imomentum) &
                    +2.d0*d2XY*coeff
-           ELSEIF (Jmomentum > Imomentum) then
+           ELSEIF (Jmomentum > Imomentum) THEN
               quick_qm_struct%hessian(iBSTART+Jmomentum,iCSTART+Imomentum) = &
                    quick_qm_struct%hessian(iBSTART+Jmomentum,iCSTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iCSTART+Imomentum,iBSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iCSTART+Imomentum,iBSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        endif
+           ENDIF
+        ENDIF
 
         ! JJbas with Jbas.
 
@@ -3255,10 +3255,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
 
         itype2(Imomentum,4) = itype2(Imomentum,4)+1
         itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2XY = d2XY + 4.d0*aexp(JJcon,JJbas)*aexp(Jcon,Jbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3272,21 +3272,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,4) = itype2(Imomentum,4)-1
         itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
 
-        if (itype2(Imomentum,4) /= 0) then
+        IF (itype2(Imomentum,4) /= 0) THEN
            const=dble(itype2(Imomentum,4))
            itype2(Imomentum,4) = itype2(Imomentum,4)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(Jcon,Jbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3300,22 +3300,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,4) = itype2(Imomentum,4)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,2) /= 0) then
+        IF (itype2(Jmomentum,2) /= 0) THEN
            const=dble(itype2(Jmomentum,2))
            itype2(Imomentum,4) = itype2(Imomentum,4)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(JJcon,JJbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3329,22 +3329,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,4) = itype2(Imomentum,4)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,2) /= 0 .and. itype2(Imomentum,4) /= 0) then
+        IF (itype2(Jmomentum,2) /= 0 .AND. itype2(Imomentum,4) /= 0) THEN
            const=dble(itype2(Jmomentum,2)*itype2(Imomentum,4))
            itype2(Imomentum,4) = itype2(Imomentum,4)-1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3358,38 +3358,38 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,4) = itype2(Imomentum,4)+1
            itype2(Jmomentum,2) = itype2(Jmomentum,2)+1
-        endif
-        if (iD /= iB) then
-           if (iB > iD) then
+        ENDIF
+        IF (iD /= iB) THEN
+           IF (iB > iD) THEN
               quick_qm_struct%hessian(iBSTART+Jmomentum,iDSTART+Imomentum) = &
                    quick_qm_struct%hessian(iBSTART+Jmomentum,iDSTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iDSTART+Imomentum,iBSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iDSTART+Imomentum,iBSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        else
-           if (Imomentum == Jmomentum) then
+           ENDIF
+        ELSE
+           IF (Imomentum == Jmomentum) THEN
               quick_qm_struct%hessian(iBSTART+Jmomentum,iDSTART+Imomentum) = &
                    quick_qm_struct%hessian(iBSTART+Jmomentum,iDSTART+Imomentum) &
                    +2.d0*d2XY*coeff
-           ELSEIF (Jmomentum > Imomentum) then
+           ELSEIF (Jmomentum > Imomentum) THEN
               quick_qm_struct%hessian(iBSTART+Jmomentum,iDSTART+Imomentum) = &
                    quick_qm_struct%hessian(iBSTART+Jmomentum,iDSTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iDSTART+Imomentum,iBSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iDSTART+Imomentum,iBSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        endif
+           ENDIF
+        ENDIF
 
         ! JJbas with IIbas.
 
@@ -3397,10 +3397,10 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
 
         itype2(Imomentum,4) = itype2(Imomentum,4)+1
         itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-        do Icon=1,ncontract(Ibas)
-           do Jcon=1,ncontract(Jbas)
-              do IIcon=1,ncontract(IIbas)
-                 do JJcon=1,ncontract(JJbas)
+        DO Icon=1,ncontract(Ibas)
+           DO Jcon=1,ncontract(Jbas)
+              DO IIcon=1,ncontract(IIbas)
+                 DO JJcon=1,ncontract(JJbas)
                     d2XY = d2XY + 4.d0*aexp(JJcon,JJbas)*aexp(IIcon,IIbas) &
                          *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3414,21 +3414,21 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                          xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         itype2(Imomentum,4) = itype2(Imomentum,4)-1
         itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
 
-        if (itype2(Imomentum,4) /= 0) then
+        IF (itype2(Imomentum,4) /= 0) THEN
            const=dble(itype2(Imomentum,4))
            itype2(Imomentum,4) = itype2(Imomentum,4)-1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(IIcon,IIbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3442,22 +3442,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,4) = itype2(Imomentum,4)+1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,3) /= 0) then
+        IF (itype2(Jmomentum,3) /= 0) THEN
            const=dble(itype2(Jmomentum,3))
            itype2(Imomentum,4) = itype2(Imomentum,4)+1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY - 2.d0*aexp(JJcon,JJbas)*const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3471,22 +3471,22 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,4) = itype2(Imomentum,4)-1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-        endif
+        ENDIF
 
-        if (itype2(Jmomentum,3) /= 0 .and. itype2(Imomentum,4) /= 0) then
+        IF (itype2(Jmomentum,3) /= 0 .AND. itype2(Imomentum,4) /= 0) THEN
            const=dble(itype2(Jmomentum,3)*itype2(Imomentum,4))
            itype2(Imomentum,4) = itype2(Imomentum,4)-1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)-1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
-                 do IIcon=1,ncontract(IIbas)
-                    do JJcon=1,ncontract(JJbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
+                 DO IIcon=1,ncontract(IIbas)
+                    DO JJcon=1,ncontract(JJbas)
                        d2XY = d2XY +const &
                             *dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas) &
@@ -3500,41 +3500,41 @@ subroutine hess2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                             xyz(1,iB), xyz(2,iB),xyz(3,iB), &
                             xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                             xyz(1,iD), xyz(2,iD),xyz(3,iD))
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            itype2(Imomentum,4) = itype2(Imomentum,4)+1
            itype2(Jmomentum,3) = itype2(Jmomentum,3)+1
-        endif
-        if (iD /= iC) then
-           if (iC > iD) then
+        ENDIF
+        IF (iD /= iC) THEN
+           IF (iC > iD) THEN
               quick_qm_struct%hessian(iCSTART+Jmomentum,iDSTART+Imomentum) = &
                    quick_qm_struct%hessian(iCSTART+Jmomentum,iDSTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iDSTART+Imomentum,iCSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iDSTART+Imomentum,iCSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        else
-           if (Imomentum == Jmomentum) then
+           ENDIF
+        ELSE
+           IF (Imomentum == Jmomentum) THEN
               quick_qm_struct%hessian(iCSTART+Jmomentum,iDSTART+Imomentum) = &
                    quick_qm_struct%hessian(iCSTART+Jmomentum,iDSTART+Imomentum) &
                    +2.d0*d2XY*coeff
-           ELSEIF (Jmomentum > Imomentum) then
+           ELSEIF (Jmomentum > Imomentum) THEN
               quick_qm_struct%hessian(iCSTART+Jmomentum,iDSTART+Imomentum) = &
                    quick_qm_struct%hessian(iCSTART+Jmomentum,iDSTART+Imomentum) &
                    +d2XY*coeff
-           else
+           ELSE
               quick_qm_struct%hessian(iDSTART+Imomentum,iCSTART+Jmomentum) = &
                    quick_qm_struct%hessian(iDSTART+Imomentum,iCSTART+Jmomentum) &
                    +d2XY*coeff
-           endif
-        endif
+           ENDIF
+        ENDIF
 
-     enddo
-  enddo
+     ENDDO
+  ENDDO
   return
 end subroutine hess2elec
 ! Ed Brothers. December 12, 2002.
@@ -3561,31 +3561,31 @@ subroutine hfdmxderuse(IDX)
   ! Note that for the two and three encer integrals, DENSEJI etc contains
   ! the density derivatives.
 
-  do Iatm=1,natom*3
+  DO Iatm=1,natom*3
      GRADIENT2(iatm)=0.d0
-  enddo
+  ENDDO
 
 
   ! 1)  The derivative of the 1 electron kinetic energy term ij times
   ! the density matrix derivative element ij.
 
-  do Ibas=1,nbasis
+  DO Ibas=1,nbasis
      ISTART = (quick_basis%ncenter(Ibas)-1) *3
-     do Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
+     DO Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
         JSTART = (quick_basis%ncenter(Jbas)-1) *3
         DENSEJI = quick_scratch%hold(Jbas,Ibas)+quick_scratch%hold2(Jbas,Ibas)
 
         ! We have selected our two basis functions, now loop over angular momentum.
 
-        do Imomentum=1,3
+        DO Imomentum=1,3
            dKEI = 0.d0
            dKEJ = 0.d0
 
-           ! do the Ibas derivatives first.
+           ! Do the Ibas derivatives first.
 
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  dKEI = dKEI + 2.d0*aexp(Icon,Ibas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3594,13 +3594,13 @@ subroutine hfdmxderuse(IDX)
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-           if (itype(Imomentum,Ibas) /= 0) then
+           IF (itype(Imomentum,Ibas) /= 0) THEN
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dKEI = dKEI - dble(itype(Imomentum,Ibas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3609,18 +3609,18 @@ subroutine hfdmxderuse(IDX)
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           endif
+           ENDIF
            GRADIENT2(ISTART+Imomentum) = GRADIENT2(ISTART+Imomentum) &
                 +dKeI*DENSEJI*2.d0
 
            ! Now do the Jbas derivatives.
 
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  dKEJ = dKEJ + 2.d0*aexp(Jcon,Jbas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3629,13 +3629,13 @@ subroutine hfdmxderuse(IDX)
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-           if (itype(Imomentum,Jbas) /= 0) then
+           IF (itype(Imomentum,Jbas) /= 0) THEN
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dKEJ = dKEJ - dble(itype(Imomentum,Jbas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *ekinetic(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3644,15 +3644,15 @@ subroutine hfdmxderuse(IDX)
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           endif
+           ENDIF
            GRADIENT2(JSTART+Imomentum) = GRADIENT2(JSTART+Imomentum) &
                 +dKEJ*DENSEJI*2.d0
-        enddo
-     enddo
-  enddo
+        ENDDO
+     ENDDO
+  ENDDO
 
 
   ! 2)  The derivative of the 1 electron nuclear attraction term ij times
@@ -3660,30 +3660,30 @@ subroutine hfdmxderuse(IDX)
 
   ! Please note that these are the three center terms.
 
-  do Ibas=1,nbasis
+  DO Ibas=1,nbasis
      iA=quick_basis%ncenter(Ibas)
      ISTART = (iA-1)*3
 
-     do Jbas=Ibas,nbasis
+     DO Jbas=Ibas,nbasis
         iB = quick_basis%ncenter(Jbas)
         JSTART = (iB-1)*3
 
-        do iC = 1,natom
+        DO iC = 1,natom
            iCSTART = (iC-1)*3
 
            ! As before, if all terms are on the same atom, they move with the
            ! atom and the dreivative is zero.
 
-           if (iA == iC .and. iB == iC) then
+           IF (iA == iC .AND. iB == iC) THEN
               continue
-           else
+           ELSE
               DENSEJI=quick_scratch%hold(Jbas,Ibas)+quick_scratch%hold2(Jbas,Ibas)
 
 
               ! If Ibas=Jbas, the term only shows up once in the energy, otherwise
               ! it shows up twice. This is not an issue with the 2-center terms above.
 
-              if (Ibas /= Jbas) DENSEJI=2.d0*DENSEJI
+              IF (Ibas /= Jbas) DENSEJI=2.d0*DENSEJI
 
 
               dNAIX = 0.d0
@@ -3696,10 +3696,10 @@ subroutine hfdmxderuse(IDX)
               dNACY = 0.d0
               dNACZ = 0.d0
 
-              ! do the Ibas derivatives.
+              ! Do the Ibas derivatives.
 
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dNAIX = dNAIX + 2.d0*aexp(Icon,Ibas)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3725,13 +3725,13 @@ subroutine hfdmxderuse(IDX)
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                          xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
 
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
 
 
-              if (itype(1,Ibas) /= 0) then
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+              IF (itype(1,Ibas) /= 0) THEN
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        dNAIX= dNAIX - dble(itype(1,Ibas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3740,12 +3740,12 @@ subroutine hfdmxderuse(IDX)
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
-                    enddo
-                 enddo
-              endif
-              if (itype(2,Ibas) /= 0) then
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                    ENDDO
+                 ENDDO
+              ENDIF
+              IF (itype(2,Ibas) /= 0) THEN
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        dNAIY= dNAIY - dble(itype(2,Ibas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3754,12 +3754,12 @@ subroutine hfdmxderuse(IDX)
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
-                    enddo
-                 enddo
-              endif
-              if (itype(3,Ibas) /= 0) then
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                    ENDDO
+                 ENDDO
+              ENDIF
+              IF (itype(3,Ibas) /= 0) THEN
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        dNAIZ= dNAIZ - dble(itype(3,Ibas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3768,14 +3768,14 @@ subroutine hfdmxderuse(IDX)
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
-                    enddo
-                 enddo
-              endif
+                    ENDDO
+                 ENDDO
+              ENDIF
 
-              ! do the Jbas derivatives.
+              ! Do the Jbas derivatives.
 
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dNAJX = dNAJX + 2.d0*aexp(Jcon,Jbas)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3800,12 +3800,12 @@ subroutine hfdmxderuse(IDX)
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                          xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
 
-              if (itype(1,Jbas) /= 0) then
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+              IF (itype(1,Jbas) /= 0) THEN
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        dNAJX= dNAJX - dble(itype(1,Jbas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3814,12 +3814,12 @@ subroutine hfdmxderuse(IDX)
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
-                    enddo
-                 enddo
-              endif
-              if (itype(2,Jbas) /= 0) then
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                    ENDDO
+                 ENDDO
+              ENDIF
+              IF (itype(2,Jbas) /= 0) THEN
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        dNAJY= dNAJY - dble(itype(2,Jbas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3828,12 +3828,12 @@ subroutine hfdmxderuse(IDX)
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
-                    enddo
-                 enddo
-              endif
-              if (itype(3,Jbas) /= 0) then
-                 do Icon=1,ncontract(Ibas)
-                    do Jcon=1,ncontract(Jbas)
+                    ENDDO
+                 ENDDO
+              ENDIF
+              IF (itype(3,Jbas) /= 0) THEN
+                 DO Icon=1,ncontract(Ibas)
+                    DO Jcon=1,ncontract(Jbas)
                        dNAJZ= dNAJZ - dble(itype(3,Jbas))* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *attraction(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -3842,15 +3842,15 @@ subroutine hfdmxderuse(IDX)
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
-                    enddo
-                 enddo
-              endif
+                    ENDDO
+                 ENDDO
+              ENDIF
 
               ! Now do the derivative with respect to the atom the basis functions
               ! are attracted to.
 
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dNACX= dNACX + dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                          itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
@@ -3875,8 +3875,8 @@ subroutine hfdmxderuse(IDX)
                          xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                          xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                          xyz(1,iC),xyz(2,iC),xyz(3,iC), quick_molspec%chg(iC))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
 
               ! Now add these into the GRADIENT2.
 
@@ -3898,10 +3898,10 @@ subroutine hfdmxderuse(IDX)
                    +dNACY*DENSEJI
               Gradient2(ICSTART+3) = Gradient2(ICSTART+3) &
                    +dNACZ*DENSEJI
-           endif
-        enddo
-     enddo
-  enddo
+           ENDIF
+        ENDDO
+     ENDDO
+  ENDDO
 
 
 
@@ -3911,10 +3911,10 @@ subroutine hfdmxderuse(IDX)
   ! the exchange and correlation integrals.
 
   ! START HERE
-  do I=1,nbasis
+  DO I=1,nbasis
      ! Neglect all the (ii|ii) integrals, as they move with the core.
 
-     do J=I+1,nbasis
+     DO J=I+1,nbasis
 
         ! Find  all the (ii|jj) integrals.
         call graddmx2elec(I,I,J,J,GRADIENT2)
@@ -3928,7 +3928,7 @@ subroutine hfdmxderuse(IDX)
         ! Find all the (ij|ij) integrals
         call graddmx2elec(I,J,I,J,GRADIENT2)
 
-        do K=J+1,nbasis
+        DO K=J+1,nbasis
 
            ! Find all the (ij|ik) integrals where j>i,k>j
            call graddmx2elec(I,J,I,K,GRADIENT2)
@@ -3942,25 +3942,25 @@ subroutine hfdmxderuse(IDX)
            ! Find all the (ii|jk) integrals where j>i, k>j.
            call graddmx2elec(I,I,J,K,GRADIENT2)
 
-        enddo
+        ENDDO
 
-        do K=I+1,nbasis-1
+        DO K=I+1,nbasis-1
 
-           do L=K+1,nbasis
+           DO L=K+1,nbasis
 
               ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
               ! can be equal.
 
               call graddmx2elec(I,J,K,L,GRADIENT2)
 
-           enddo
-        enddo
-     enddo
-  enddo
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
 
-  do I=1,natom*3
+  DO I=1,natom*3
      quick_qm_struct%hessian(I,idX) = quick_qm_struct%hessian(I,idX)+Gradient2(I)
-  enddo
+  ENDDO
 
   return
 end subroutine hfdmxderuse
@@ -3998,7 +3998,7 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
   same = same .and. iB.eq.iC
   same = same .and. iC.eq.iD
 
-  if (same) return
+  IF (same) return
 
   iAstart = (iA-1)*3
   iBstart = (iB-1)*3
@@ -4008,26 +4008,26 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
   ! The itype2 array was added because if Ibas=Jbas, the code raises two
   ! angular momentums instead of one.
 
-  do Imomentum=1,3
+  DO Imomentum=1,3
      itype2(Imomentum,1) = itype(Imomentum,Ibas)
      itype2(Imomentum,2) = itype(Imomentum,Jbas)
      itype2(Imomentum,3) = itype(Imomentum,IIbas)
      itype2(Imomentum,4) = itype(Imomentum,JJbas)
-  enddo
+  ENDDO
 
   ! We have to calculate 12 quantities in this subprogram: the gradient in the
   ! X,Y, and Z directions for the 4 atom A,B,C,D.
 
-  do Imomentum=1,3
+  DO Imomentum=1,3
      Agrad=0.d0
      Bgrad=0.d0
      Cgrad=0.d0
      Dgrad=0.d0
 
-     do Icon = 1, ncontract(Ibas)
-        do Jcon = 1, ncontract(Jbas)
-           do IIcon = 1, ncontract(IIbas)
-              do JJcon = 1, ncontract(JJbas)
+     DO Icon = 1, ncontract(Ibas)
+        DO Jcon = 1, ncontract(Jbas)
+           DO IIcon = 1, ncontract(IIbas)
+              DO JJcon = 1, ncontract(JJbas)
                  cntrctcoeff = dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)
 
@@ -4045,7 +4045,7 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,1) = itype2(Imomentum,1)-1
 
-                 if (itype2(Imomentum,1) /= 0) then
+                 IF (itype2(Imomentum,1) /= 0) THEN
                     itype2(Imomentum,1) = itype2(Imomentum,1)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -4060,7 +4060,7 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,1) = itype2(Imomentum,1)+1
                     Agrad = Agrad-dble(itype2(Imomentum,1))*temp
-                 endif
+                 ENDIF
 
                  itype2(Imomentum,2) = itype2(Imomentum,2)+1
                  Bgrad = Bgrad+2.d0*aexp(Jcon,Jbas)*cntrctcoeff* &
@@ -4075,7 +4075,7 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,2) = itype2(Imomentum,2)-1
-                 if (itype2(Imomentum,2) /= 0) then
+                 IF (itype2(Imomentum,2) /= 0) THEN
                     itype2(Imomentum,2) = itype2(Imomentum,2)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -4090,7 +4090,7 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,2) = itype2(Imomentum,2)+1
                     Bgrad = Bgrad-dble(itype2(Imomentum,2))*temp
-                 endif
+                 ENDIF
 
 
                  itype2(Imomentum,3) = itype2(Imomentum,3)+1
@@ -4106,7 +4106,7 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,3) = itype2(Imomentum,3)-1
-                 if (itype2(Imomentum,3) /= 0) then
+                 IF (itype2(Imomentum,3) /= 0) THEN
                     itype2(Imomentum,3) = itype2(Imomentum,3)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -4121,7 +4121,7 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,3) = itype2(Imomentum,3)+1
                     Cgrad = Cgrad-dble(itype2(Imomentum,3))*temp
-                 endif
+                 ENDIF
 
                  !                        itype2(Imomentum,4) = itype2(Imomentum,4)+1
                  !                        Dgrad = Dgrad+2.d0*aexp(JJcon,JJbas)*cntrctcoeff* &
@@ -4136,7 +4136,7 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                  !                        xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                  !                        xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  !                        itype2(Imomentum,4) = itype2(Imomentum,4)-1
-                 !                        if (itype2(Imomentum,4) /= 0) then
+                 !                        IF (itype2(Imomentum,4) /= 0) THEN
                  !                            itype2(Imomentum,4) = itype2(Imomentum,4)-1
                  !                            temp = cntrctcoeff* &
                  !                            repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -4151,11 +4151,11 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
                  !                            xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  !                            itype2(Imomentum,4) = itype2(Imomentum,4)+1
                  !                            Dgrad = Dgrad-dble(itype2(Imomentum,4))*temp
-                 !                        endif
-              enddo
-           enddo
-        enddo
-     enddo
+                 !                        ENDIF
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
 
      ! Now we have the 4 gradients in a direction, e.g. the X gradient for
      ! atom A,B,C, and D.  Now add it into the gradient time the passed
@@ -4170,7 +4170,7 @@ subroutine grad2elec(Ibas,Jbas,IIbas,JJbas,coeff)
      quick_qm_struct%gradient(iDSTART+imomentum) = quick_qm_struct%gradient(iDSTART+imomentum) &
           !        DGrad*coeff
           -AGrad*coeff-BGrad*coeff-CGrad*coeff
-  enddo
+  ENDDO
 
 
   return
@@ -4210,26 +4210,26 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
   ! The itype2 array was added because if Ibas=Jbas, the code raises two
   ! angular momentums instead of one.
 
-  do Imomentum=1,3
+  DO Imomentum=1,3
      itype2(Imomentum,1) = itype(Imomentum,Ibas)
      itype2(Imomentum,2) = itype(Imomentum,Jbas)
      itype2(Imomentum,3) = itype(Imomentum,IIbas)
      itype2(Imomentum,4) = itype(Imomentum,JJbas)
-  enddo
+  ENDDO
 
   ! We have to calculate 12 quantities in this subprogram: the gradient in the
   ! X,Y, and Z directions for the 4 atom A,B,C,D.
 
-  do Imomentum=1,3
+  DO Imomentum=1,3
      Agrad=0.d0
      Bgrad=0.d0
      Cgrad=0.d0
      Dgrad=0.d0
 
-     do Icon = 1, ncontract(Ibas)
-        do Jcon = 1, ncontract(Jbas)
-           do IIcon = 1, ncontract(IIbas)
-              do JJcon = 1, ncontract(JJbas)
+     DO Icon = 1, ncontract(Ibas)
+        DO Jcon = 1, ncontract(Jbas)
+           DO IIcon = 1, ncontract(IIbas)
+              DO JJcon = 1, ncontract(JJbas)
                  cntrctcoeff = dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)
 
@@ -4247,7 +4247,7 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,1) = itype2(Imomentum,1)-1
 
-                 if (itype2(Imomentum,1) /= 0) then
+                 IF (itype2(Imomentum,1) /= 0) THEN
                     itype2(Imomentum,1) = itype2(Imomentum,1)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -4262,7 +4262,7 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,1) = itype2(Imomentum,1)+1
                     Agrad = Agrad-dble(itype2(Imomentum,1))*temp
-                 endif
+                 ENDIF
 
                  itype2(Imomentum,2) = itype2(Imomentum,2)+1
                  Bgrad = Bgrad+2.d0*aexp(Jcon,Jbas)*cntrctcoeff* &
@@ -4277,7 +4277,7 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,2) = itype2(Imomentum,2)-1
-                 if (itype2(Imomentum,2) /= 0) then
+                 IF (itype2(Imomentum,2) /= 0) THEN
                     itype2(Imomentum,2) = itype2(Imomentum,2)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -4292,7 +4292,7 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,2) = itype2(Imomentum,2)+1
                     Bgrad = Bgrad-dble(itype2(Imomentum,2))*temp
-                 endif
+                 ENDIF
 
 
                  itype2(Imomentum,3) = itype2(Imomentum,3)+1
@@ -4308,7 +4308,7 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,3) = itype2(Imomentum,3)-1
-                 if (itype2(Imomentum,3) /= 0) then
+                 IF (itype2(Imomentum,3) /= 0) THEN
                     itype2(Imomentum,3) = itype2(Imomentum,3)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -4323,7 +4323,7 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,3) = itype2(Imomentum,3)+1
                     Cgrad = Cgrad-dble(itype2(Imomentum,3))*temp
-                 endif
+                 ENDIF
 
                  itype2(Imomentum,4) = itype2(Imomentum,4)+1
                  Dgrad = Dgrad+2.d0*aexp(JJcon,JJbas)*cntrctcoeff* &
@@ -4338,7 +4338,7 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,4) = itype2(Imomentum,4)-1
-                 if (itype2(Imomentum,4) /= 0) then
+                 IF (itype2(Imomentum,4) /= 0) THEN
                     itype2(Imomentum,4) = itype2(Imomentum,4)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -4353,11 +4353,11 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,4) = itype2(Imomentum,4)+1
                     Dgrad = Dgrad-dble(itype2(Imomentum,4))*temp
-                 endif
-              enddo
-           enddo
-        enddo
-     enddo
+                 ENDIF
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
      ! Now we have the 4 gradients in a direction, e.g. the X gradient for
      ! atom A,B,C, and D.  Now add it into the gradient time the passed
      ! coefficient.
@@ -4366,22 +4366,22 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
      deriv(2,imomentum) = Bgrad
      deriv(3,imomentum) = Cgrad
      deriv(4,imomentum) = Dgrad
-  enddo
+  ENDDO
 
 
   ! Now check to see if any of the centers are redundant, starting from
   ! the end of the array.
 
-  do J=4,2,-1
-     do I=J-1,1,-1
-        if (icenter(I) == icenter(J) .and. icenter(J) > 0) then
-           do K=1,3
+  DO J=4,2,-1
+     DO I=J-1,1,-1
+        IF (icenter(I) == icenter(J) .AND. icenter(J) > 0) THEN
+           DO K=1,3
               deriv(I,K) = deriv(J,K) + deriv(I,K)
-           enddo
+           ENDDO
            icenter(J) = 0
-        endif
-     enddo
-  enddo
+        ENDIF
+     ENDDO
+  ENDDO
 
   ! Now we need to examine the symmetry of the integral.
   ! For an integral (ij|kl):
@@ -4430,29 +4430,29 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
 
   ! Now we check for redundancy.
 
-  do Icheck=1,8
-     if (isame(1,Icheck) /= 0) then
-        do Jcheck=Icheck+1,8
-           if (isame(1,Jcheck) /= 0) then
+  DO Icheck=1,8
+     IF (isame(1,Icheck) /= 0) THEN
+        DO Jcheck=Icheck+1,8
+           IF (isame(1,Jcheck) /= 0) THEN
               same = isame(1,Icheck).eq.isame(1,Jcheck)
               same = same.and.isame(2,Icheck).eq.isame(2,Jcheck)
               same = same.and.isame(3,Icheck).eq.isame(3,Jcheck)
               same = same.and.isame(4,Icheck).eq.isame(4,Jcheck)
-              if (same) then
-                 do Iblank=1,4
+              IF (same) THEN
+                 DO Iblank=1,4
                     isame(Iblank,Jcheck)=0
-                 enddo
-              endif
-           endif
-        enddo
-     endif
-  enddo
+                 ENDDO
+              ENDIF
+           ENDIF
+        ENDDO
+     ENDIF
+  ENDDO
 
   ! Now we add it into gradient2.
 
-  do Iatm = 1,4
-     if (icenter(Iatm) /= 0) then
-        do Imomentum=1,3
+  DO Iatm = 1,4
+     IF (icenter(Iatm) /= 0) THEN
+        DO Imomentum=1,3
            ISTART = (icenter(iatm)-1)*3+Imomentum
            currderiv=deriv(Iatm,Imomentum)
 
@@ -4461,28 +4461,28 @@ subroutine graddmx2elec(Ibas,Jbas,IIbas,JJbas,GRADIENT2)
            ! integral symmetries to find the constant to multiply the integral
            ! derivative times.
 
-           do Isym = 1,8
-              if (isame(1,ISYM) /= 0) then
+           DO Isym = 1,8
+              IF (isame(1,ISYM) /= 0) THEN
                  iA = isame(1,ISYM)
                  iB = isame(2,ISYM)
                  iC = isame(3,ISYM)
                  iD = isame(4,ISYM)
-                 if (quick_method%unrst) then
+                 IF (quick_method%unrst) THEN
                     coeff = (quick_qm_struct%dense(iC,iD) + quick_qm_struct%denseb(iC,iD)) * &
                          (quick_scratch%hold(iA,iB) + quick_scratch%hold2(iA,iB))
                     coeff = coeff - (quick_scratch%hold(iA,iC)*quick_qm_struct%dense(iB,iD))
                     coeff = coeff - (quick_scratch%hold2(iA,iC)*quick_qm_struct%denseb(iB,iD))
-                 else
+                 ELSE
                     coeff = quick_qm_struct%dense(iC,iD) *(quick_scratch%hold(iA,iB) + quick_scratch%hold2(iA,iB))
                     coeff = coeff - (quick_scratch%hold(iA,iC)*.5d0*quick_qm_struct%dense(iB,iD))
                     coeff = coeff - (quick_scratch%hold2(iA,iC)*.5d0*quick_qm_struct%dense(iB,iD))
-                 endif
+                 ENDIF
                  GRADIENT2(ISTART)=GRADIENT2(ISTART) + currderiv*coeff
-              endif
-           enddo
-        enddo
-     endif
-  enddo
+              ENDIF
+           ENDDO
+        ENDDO
+     ENDIF
+  ENDDO
 
   return
 end subroutine graddmx2elec
@@ -4518,39 +4518,39 @@ subroutine dmxderiv(IDX,BU)
 
   ! First we blank out the arrays.
 
-  do Ibas=1,nbasis
-     do Jbas=1,nbasis
+  DO Ibas=1,nbasis
+     DO Jbas=1,nbasis
         quick_scratch%hold(Jbas,Ibas)=0.d0
-     enddo
-  enddo
-  do Ibas=1,nbasis
-     do Jbas=1,nbasis
+     ENDDO
+  ENDDO
+  DO Ibas=1,nbasis
+     DO Jbas=1,nbasis
         quick_scratch%hold2(Jbas,Ibas)=0.d0
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! We also need to find out from IDX which atom we are moving and in
   ! which direction.
 
   Imomentum=mod(idx,3)
-  if (Imomentum == 0) then
+  IF (Imomentum == 0) THEN
      Iatom=IDX/3
      Imomentum = 3
-  else
+  ELSE
      Iatom = (IDX-Imomentum)/3 + 1
-  endif
+  ENDIF
 
 
   ! Now we need to find out where the alpha and beta occupied/virtual
   ! lines are.
 
-  if (quick_method%unrst) then
+  IF (quick_method%unrst) THEN
      lastAocc = quick_molspec%nelec
      lastBocc = quick_molspec%nelecb
-  else
+  ELSE
      lastAocc = quick_molspec%nelec/2
      lastBocc = lastAocc
-  endif
+  ENDIF
   iBetastart = lastAocc*(nbasis-lastAocc)
 
   ! In the case of r and s both being occupied (call them k and l)
@@ -4560,10 +4560,10 @@ subroutine dmxderiv(IDX,BU)
   ! Thus we calculate this and add it to the density matrix derivative.
 
 
-  ! do the alpha first.
+  ! Do the alpha first.
 
-  do iAocc = 1,lastAocc
-     do iAocc2 = 1,lastAocc
+  DO iAocc = 1,lastAocc
+     DO iAocc2 = 1,lastAocc
 
         ! K and L are selected.  IDX gave us atom and direction of perturbation.
 
@@ -4573,13 +4573,13 @@ subroutine dmxderiv(IDX,BU)
         ! This actually calculates the Skl
 
         Skl  = 0.d0
-        do Kbas = quick_basis%first_basis_function(Iatom),quick_basis%last_basis_function(Iatom)
-           do Lbas = 1,nbasis
-              if (Lbas < quick_basis%first_basis_function(Iatom) .OR. Lbas > quick_basis%last_basis_function(Iatom)) then
+        DO Kbas = quick_basis%first_basis_function(Iatom),quick_basis%last_basis_function(Iatom)
+           DO Lbas = 1,nbasis
+              IF (Lbas < quick_basis%first_basis_function(Iatom) .OR. Lbas > quick_basis%last_basis_function(Iatom)) THEN
                  dSK=0.d0
                  itype(Imomentum,Kbas) = itype(Imomentum,Kbas)+1
-                 do Kcon=1,ncontract(Kbas)
-                    do Lcon=1,ncontract(Lbas)
+                 DO Kcon=1,ncontract(Kbas)
+                    DO Lcon=1,ncontract(Lbas)
                        dSK = dSK + 2.d0*aexp(Kcon,Kbas)* &
                             dcoeff(Lcon,Lbas)*dcoeff(Kcon,Kbas) &
                             *overlap(aexp(Lcon,Lbas),aexp(Kcon,Kbas), &
@@ -4588,13 +4588,13 @@ subroutine dmxderiv(IDX,BU)
                             xyz(1,quick_basis%ncenter(Lbas)),xyz(2,quick_basis%ncenter(Lbas)), &
                             xyz(3,quick_basis%ncenter(Lbas)),xyz(1,quick_basis%ncenter(Kbas)), &
                             xyz(2,quick_basis%ncenter(Kbas)),xyz(3,quick_basis%ncenter(Kbas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Kbas) = itype(Imomentum,Kbas)-1
-                 if (itype(Imomentum,Kbas) /= 0) then
+                 IF (itype(Imomentum,Kbas) /= 0) THEN
                     itype(Imomentum,Kbas) = itype(Imomentum,Kbas)-1
-                    do Kcon=1,ncontract(Kbas)
-                       do Lcon=1,ncontract(Lbas)
+                    DO Kcon=1,ncontract(Kbas)
+                       DO Lcon=1,ncontract(Lbas)
                           dSK = dSK - dble(itype(Imomentum,Kbas)+1)* &
                                dcoeff(Lcon,Lbas)*dcoeff(Kcon,Kbas) &
                                *overlap(aexp(Lcon,Lbas),aexp(Kcon,Kbas), &
@@ -4603,46 +4603,46 @@ subroutine dmxderiv(IDX,BU)
                                xyz(1,quick_basis%ncenter(Lbas)),xyz(2,quick_basis%ncenter(Lbas)), &
                                xyz(3,quick_basis%ncenter(Lbas)),xyz(1,quick_basis%ncenter(Kbas)), &
                                xyz(2,quick_basis%ncenter(Kbas)),xyz(3,quick_basis%ncenter(Kbas)))
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     itype(Imomentum,Kbas) = itype(Imomentum,Kbas)+1
-                 endif
+                 ENDIF
                  Skl=Skl+dSK*(quick_qm_struct%co(Kbas,iAocc)*quick_qm_struct%co(Lbas,iAocc2) + &
                       quick_qm_struct%co(Lbas,iAocc)*quick_qm_struct%co(Kbas,iAocc2))
-              endif
-           enddo
-        enddo
+              ENDIF
+           ENDDO
+        ENDDO
 
         ! Now that we have Skl, we need to add it into the HOLD array, i.e.
         ! the density matrix derivative.
 
-        do Ibas=1,nbasis
-           do Jbas=Ibas,nbasis
+        DO Ibas=1,nbasis
+           DO Jbas=Ibas,nbasis
               quick_scratch%hold(Jbas,Ibas)= quick_scratch%hold(Jbas,Ibas)-.5d0*Skl* &
                    (quick_qm_struct%co(Jbas,iAocc)*quick_qm_struct%co(Ibas,iAocc2) + &
                    quick_qm_struct%co(Jbas,iAocc2)*quick_qm_struct%co(Ibas,iAocc))
-           enddo
-        enddo
-     enddo
-  enddo
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
 
   ! Now we need to repeat the whole process for the beta kl pairs.
 
 
-  do iBocc = 1,lastBocc
-     do iBocc2 = 1,lastBocc
+  DO iBocc = 1,lastBocc
+     DO iBocc2 = 1,lastBocc
         ! Now we loop over basis functions.  Note that Ibas functions are always
         ! on center Iatom, and the Jbas functions are always not on that center.
         ! This actually calculates the Skl
 
         Skl  = 0.d0
-        do Kbas = quick_basis%first_basis_function(Iatom),quick_basis%last_basis_function(Iatom)
-           do Lbas = 1,nbasis
-              if (Lbas < quick_basis%first_basis_function(Iatom) .OR. Lbas > quick_basis%last_basis_function(Iatom)) then
+        DO Kbas = quick_basis%first_basis_function(Iatom),quick_basis%last_basis_function(Iatom)
+           DO Lbas = 1,nbasis
+              IF (Lbas < quick_basis%first_basis_function(Iatom) .OR. Lbas > quick_basis%last_basis_function(Iatom)) THEN
                  dSK=0.d0
                  itype(Imomentum,Kbas) = itype(Imomentum,Kbas)+1
-                 do Kcon=1,ncontract(Kbas)
-                    do Lcon=1,ncontract(Lbas)
+                 DO Kcon=1,ncontract(Kbas)
+                    DO Lcon=1,ncontract(Lbas)
                        dSK = dSK + 2.d0*aexp(Kcon,Kbas)* &
                             dcoeff(Lcon,Lbas)*dcoeff(Kcon,Kbas) &
                             *overlap(aexp(Lcon,Lbas),aexp(Kcon,Kbas), &
@@ -4651,13 +4651,13 @@ subroutine dmxderiv(IDX,BU)
                             xyz(1,quick_basis%ncenter(Lbas)),xyz(2,quick_basis%ncenter(Lbas)), &
                             xyz(3,quick_basis%ncenter(Lbas)),xyz(1,quick_basis%ncenter(Kbas)), &
                             xyz(2,quick_basis%ncenter(Kbas)),xyz(3,quick_basis%ncenter(Kbas)))
-                    enddo
-                 enddo
+                    ENDDO
+                 ENDDO
                  itype(Imomentum,Kbas) = itype(Imomentum,Kbas)-1
-                 if (itype(Imomentum,Kbas) /= 0) then
+                 IF (itype(Imomentum,Kbas) /= 0) THEN
                     itype(Imomentum,Kbas) = itype(Imomentum,Kbas)-1
-                    do Kcon=1,ncontract(Kbas)
-                       do Lcon=1,ncontract(Lbas)
+                    DO Kcon=1,ncontract(Kbas)
+                       DO Lcon=1,ncontract(Lbas)
                           dSK = dSK - dble(itype(Imomentum,Kbas)+1)* &
                                dcoeff(Lcon,Lbas)*dcoeff(Kcon,Kbas) &
                                *overlap(aexp(Lcon,Lbas),aexp(Kcon,Kbas), &
@@ -4666,29 +4666,29 @@ subroutine dmxderiv(IDX,BU)
                                xyz(1,quick_basis%ncenter(Lbas)),xyz(2,quick_basis%ncenter(Lbas)), &
                                xyz(3,quick_basis%ncenter(Lbas)),xyz(1,quick_basis%ncenter(Kbas)), &
                                xyz(2,quick_basis%ncenter(Kbas)),xyz(3,quick_basis%ncenter(Kbas)))
-                       enddo
-                    enddo
+                       ENDDO
+                    ENDDO
                     itype(Imomentum,Kbas) = itype(Imomentum,Kbas)+1
-                 endif
+                 ENDIF
                  Skl=Skl+dSK*(quick_qm_struct%cob(Kbas,iBocc)*quick_qm_struct%cob(Lbas,iBocc2) + &
                       quick_qm_struct%cob(Lbas,iBocc)*quick_qm_struct%cob(Kbas,iBocc2))
-              endif
-           enddo
-        enddo
+              ENDIF
+           ENDDO
+        ENDDO
 
         ! Now that we have Skl, we need to add it into the HOLD2 array, i.e.
         ! the Beta density matrix derivative.
 
-        do Ibas=1,nbasis
-           do Jbas=Ibas,nbasis
+        DO Ibas=1,nbasis
+           DO Jbas=Ibas,nbasis
               quick_scratch%hold2(Jbas,Ibas)= quick_scratch%hold2(Jbas,Ibas)-.5d0*Skl* &
                    (quick_qm_struct%cob(Jbas,iBocc)*quick_qm_struct%cob(Ibas,iBocc2) + &
                    quick_qm_struct%cob(Jbas,iBocc2)*quick_qm_struct%cob(Ibas,iBocc))
-           enddo
-        enddo
+           ENDDO
+        ENDDO
 
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
 
   ! At this point we have done the occupied-occupied section.  Now do the
@@ -4698,8 +4698,8 @@ subroutine dmxderiv(IDX,BU)
 
   ! Alpha first.
 
-  do iAvirt = lastAocc+1,nbasis
-     do iAocc = 1,lastAocc
+  DO iAvirt = lastAocc+1,nbasis
+     DO iAocc = 1,lastAocc
 
         ! iAvirt and iAocc form an ai pair.  Find it's location.
 
@@ -4707,19 +4707,19 @@ subroutine dmxderiv(IDX,BU)
 
         ! Now add this into the dmx derivative.
 
-        do Ibas=1,nbasis
-           do Jbas=Ibas,nbasis
+        DO Ibas=1,nbasis
+           DO Jbas=Ibas,nbasis
               quick_scratch%hold(Jbas,Ibas)= quick_scratch%hold(Jbas,Ibas)+BU(iaCPHF)* &
                    (quick_qm_struct%co(Ibas,iAocc)*quick_qm_struct%co(Jbas,iAvirt)+ &
                    quick_qm_struct%co(Ibas,iAvirt)*quick_qm_struct%co(Jbas,iAocc))
-           enddo
-        enddo
-     enddo
-  enddo
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
 
   ! Now Beta.
-  do iBvirt = lastBocc+1,nbasis
-     do iBocc = 1,lastBocc
+  DO iBvirt = lastBocc+1,nbasis
+     DO iBocc = 1,lastBocc
 
         ! iBvirt and iBocc form an ai pair.  Find it's location.
 
@@ -4727,24 +4727,24 @@ subroutine dmxderiv(IDX,BU)
 
         ! Now add this into the dmx derivative.
 
-        do Ibas=1,nbasis
-           do Jbas=Ibas,nbasis
+        DO Ibas=1,nbasis
+           DO Jbas=Ibas,nbasis
               quick_scratch%hold2(Jbas,Ibas)= quick_scratch%hold2(Jbas,Ibas)+BU(iaCPHF)* &
                    (quick_qm_struct%cob(Ibas,iBocc)*quick_qm_struct%cob(Jbas,iBvirt)+ &
                    quick_qm_struct%cob(Ibas,iBvirt)*quick_qm_struct%cob(Jbas,iBocc))
-           enddo
-        enddo
-     enddo
-  enddo
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
 
   ! Now copy the lower diagonal to the upper diagonal.
 
-  do I=1,nbasis
-     do J=I+1,nbasis
+  DO I=1,nbasis
+     DO J=I+1,nbasis
         quick_scratch%hold(I,J) =  quick_scratch%hold(J,I)
         quick_scratch%hold2(I,J) =  quick_scratch%hold2(J,I)
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   return
 end subroutine dmxderiv
@@ -4799,9 +4799,9 @@ double precision function electricfld(a,b,i,j,k,ii,jj,kk, &
   call FmT(Maxm,U,aux)
   constant = overlap(a,b,0,0,0,0,0,0,Ax,Ay,Az,Bx,By,Bz) &
        * 2.d0 * (g/Pi)**0.5d0
-  do L = 0,maxm
+  DO L = 0,maxm
      aux(L) = aux(L)*constant
-  enddo
+  ENDDO
 
   ! At this point all the auxillary integrals have been calculated.
   ! It is now time to decompase the attraction integral to it's
@@ -4838,61 +4838,61 @@ subroutine ewtdmxder(IDX)
   ! First we are going to do something sloppy.  If this is a restricted run
   ! split DENSE into DENSE and quick_qm_struct%denseb.
 
-  if ( .not. quick_method%unrst) then
-     do I=1,nbasis
-        do J=1,nbasis
+  IF ( .NOT. quick_method%unrst) THEN
+     DO I=1,nbasis
+        DO J=1,nbasis
            quick_qm_struct%denseb(J,I) = .5d0*quick_qm_struct%dense(J,I)
            quick_qm_struct%dense(J,I) = .5d0*quick_qm_struct%dense(J,I)
-        enddo
-     enddo
-  endif
+        ENDDO
+     ENDDO
+  ENDIF
 
   ! Now get the alpha operator matrix and start building the first derivative
   ! of the energy weighted density matrix.
 
   call uhfoperatorA
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         tempIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            tempIJ = tempIJ + quick_qm_struct%o(K,I)*quick_scratch%hold(K,J)
-        enddo
+        ENDDO
         temp(I,J) = tempIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         ewtdmxIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            ewtdmxIJ = ewtdmxIJ + quick_qm_struct%dense(K,J)*temp(K,I)
-        enddo
+        ENDDO
         ewtdmx(I,J) = ewtdmxIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! ewtdmx now contains ALPHA(DENSE.OPERATOR.DENSEx)
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         tempIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            tempIJ = tempIJ + quick_qm_struct%o(K,I)*quick_qm_struct%dense(K,J)
-        enddo
+        ENDDO
         temp(I,J) = tempIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         ewtdmxIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            ewtdmxIJ = ewtdmxIJ + quick_scratch%hold(K,J)*temp(K,I)
-        enddo
+        ENDDO
         ewtdmx(I,J) = ewtdmx(I,J)+ewtdmxIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! ewtdmx now contains ALPHA(DENSE.OPERATOR.DENSEx)
   ! +ALPHA(DENSEx.OPERATOR.DENSE)
@@ -4901,49 +4901,49 @@ subroutine ewtdmxder(IDX)
 
   call uhfoperatorB
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         tempIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            tempIJ = tempIJ + quick_qm_struct%o(K,I)*quick_scratch%hold2(K,J)
-        enddo
+        ENDDO
         temp(I,J) = tempIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         ewtdmxIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            ewtdmxIJ = ewtdmxIJ + quick_qm_struct%denseb(K,J)*temp(K,I)
-        enddo
+        ENDDO
         ewtdmx(I,J) = ewtdmx(I,J)+ewtdmxIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! ewtdmx now contains ALPHA(DENSE.OPERATOR.DENSEx)
   ! +ALPHA(DENSEx.OPERATOR.DENSE)
   ! +BETA(DENSE.OPERATOR.DENSEx)
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         tempIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            tempIJ = tempIJ + quick_qm_struct%o(K,I)*quick_qm_struct%denseb(K,J)
-        enddo
+        ENDDO
         temp(I,J) = tempIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         ewtdmxIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            ewtdmxIJ = ewtdmxIJ + quick_scratch%hold2(K,J)*temp(K,I)
-        enddo
+        ENDDO
         ewtdmx(I,J) = ewtdmx(I,J)+ewtdmxIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
 
   ! ewtdmx now contains ALPHA(DENSE.OPERATOR.DENSEx)
@@ -4955,25 +4955,25 @@ subroutine ewtdmxder(IDX)
 
   call duhfoperatorA(IDX)
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         tempIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            tempIJ = tempIJ + quick_qm_struct%o(K,I)*quick_qm_struct%dense(K,J)
-        enddo
+        ENDDO
         temp(I,J) = tempIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         ewtdmxIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            ewtdmxIJ = ewtdmxIJ + quick_qm_struct%dense(K,J)*temp(K,I)
-        enddo
+        ENDDO
         ewtdmx(I,J) = ewtdmx(I,J)+ewtdmxIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! ewtdmx now contains ALPHA(DENSE.OPERATOR.DENSEx)
   ! +ALPHA(DENSEx.OPERATOR.DENSE)
@@ -4983,25 +4983,25 @@ subroutine ewtdmxder(IDX)
 
 
   call duhfoperatorB(IDX)
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         tempIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            tempIJ = tempIJ + quick_qm_struct%o(K,I)*quick_qm_struct%denseb(K,J)
-        enddo
+        ENDDO
         temp(I,J) = tempIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         ewtdmxIJ = 0.0D0
-        do K=1,nbasis
+        DO K=1,nbasis
            ewtdmxIJ = ewtdmxIJ + quick_qm_struct%denseb(K,J)*temp(K,I)
-        enddo
+        ENDDO
         ewtdmx(I,J) = ewtdmx(I,J)+ewtdmxIJ
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! ewtdmx now contains ALPHA(DENSE.OPERATOR.DENSEx)
   ! +ALPHA(DENSEx.OPERATOR.DENSE)
@@ -5014,23 +5014,23 @@ subroutine ewtdmxder(IDX)
   ! Now we use it with the derivative of the overlap element to form the
   ! final hessian.
 
-  do Ibas=1,nbasis
+  DO Ibas=1,nbasis
      ISTART = (quick_basis%ncenter(Ibas)-1) *3
-     do Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
+     DO Jbas=quick_basis%last_basis_function(quick_basis%ncenter(IBAS))+1,nbasis
         JSTART = (quick_basis%ncenter(Jbas)-1) *3
         DENSEJI = quick_qm_struct%dense(Jbas,Ibas)
 
         ! We have selected our two basis functions, now loop over angular momentum.
 
-        do Imomentum=1,3
+        DO Imomentum=1,3
            dSI = 0.d0
            dSJ =0.d0
 
-           ! do the Ibas derivatives first.
+           ! Do the Ibas derivatives first.
 
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  dSI = dSI + 2.d0*aexp(Icon,Ibas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -5039,13 +5039,13 @@ subroutine ewtdmxder(IDX)
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-           if (itype(Imomentum,Ibas) /= 0) then
+           IF (itype(Imomentum,Ibas) /= 0) THEN
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dSI = dSI - dble(itype(Imomentum,Ibas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -5054,18 +5054,18 @@ subroutine ewtdmxder(IDX)
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-           endif
+           ENDIF
            quick_qm_struct%hessian(ISTART+Imomentum,IDX)=quick_qm_struct%hessian(ISTART+Imomentum,IDX) &
                 -2.d0*dSI*ewtdmx(Jbas,Ibas)
 
            ! Now do the Jbas derivatives.
 
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           do Icon=1,ncontract(Ibas)
-              do Jcon=1,ncontract(Jbas)
+           DO Icon=1,ncontract(Ibas)
+              DO Jcon=1,ncontract(Jbas)
                  dSJ = dSJ + 2.d0*aexp(Jcon,Jbas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                       *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -5074,13 +5074,13 @@ subroutine ewtdmxder(IDX)
                       xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-              enddo
-           enddo
+              ENDDO
+           ENDDO
            itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-           if (itype(Imomentum,Jbas) /= 0) then
+           IF (itype(Imomentum,Jbas) /= 0) THEN
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-              do Icon=1,ncontract(Ibas)
-                 do Jcon=1,ncontract(Jbas)
+              DO Icon=1,ncontract(Ibas)
+                 DO Jcon=1,ncontract(Jbas)
                     dSJ = dSJ - dble(itype(Imomentum,Jbas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *overlap(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
@@ -5089,28 +5089,28 @@ subroutine ewtdmxder(IDX)
                          xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
-                 enddo
-              enddo
+                 ENDDO
+              ENDDO
               itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-           endif
+           ENDIF
            quick_qm_struct%hessian(JSTART+Imomentum,IDX)=quick_qm_struct%hessian(JSTART+Imomentum,IDX) &
                 -2.d0*dSJ*ewtdmx(Jbas,Ibas)
-        enddo
-     enddo
-  enddo
+        ENDDO
+     ENDDO
+  ENDDO
 
 
   ! Before returning, if this is a restricted run, reform the density matrix.
 
-  if ( .not. quick_method%unrst) then
-     do I=1,nbasis
-        do J=1,nbasis
+  IF ( .NOT. quick_method%unrst) THEN
+     DO I=1,nbasis
+        DO J=1,nbasis
            quick_qm_struct%dense(J,I) = 2.d0*quick_qm_struct%dense(J,I)
-        enddo
-     enddo
-  endif
+        ENDDO
+     ENDDO
+  ENDIF
 
-end subroutine ewtdmxder
+END subroutine ewtdmxder
 
 
 
@@ -5133,28 +5133,28 @@ subroutine duhfoperatora(IDX)
 
   ! Blank out the array.
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         quick_qm_struct%o(J,I)=0.d0
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! The first thing to do is find the atom and direction of the perturbation.
 
   Imomentum=mod(idx,3)
-  if (Imomentum == 0) then
+  IF (Imomentum == 0) THEN
      Iatom=IDX/3
      Imomentum = 3
-  else
+  ELSE
      Iatom = (IDX-Imomentum)/3 + 1
-  endif
+  ENDIF
 
   ! We need to take the derivative of the one electron portion of the
   ! Hamiltonian.
 
-  do Ibas=1,nbasis
+  DO Ibas=1,nbasis
      IonMove = quick_basis%ncenter(Ibas).eq.Iatom
-     do Jbas = Ibas,nbasis
+     DO Jbas = Ibas,nbasis
         JonMove = quick_basis%ncenter(Jbas).eq.Iatom
 
         ! If I is on Iatom (the moving atom) and J is not, the derivative  of
@@ -5162,9 +5162,9 @@ subroutine duhfoperatora(IDX)
 
         dJI=0.d0
 
-        if (IonMove .and. .not. Jonmove) then
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
+        IF (IonMove .AND. .NOT. Jonmove) THEN
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
                  dJI = dJI + 2.d0*aexp(Icon,Ibas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -5175,7 +5175,7 @@ subroutine duhfoperatora(IDX)
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-                 if (itype(Imomentum,Ibas) /= 0) then
+                 IF (itype(Imomentum,Ibas) /= 0) THEN
                     itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
                     dJI = dJI - dble(itype(Imomentum,Ibas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -5186,17 +5186,17 @@ subroutine duhfoperatora(IDX)
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                     itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-                 endif
-              enddo
-           enddo
-        endif
+                 ENDIF
+              ENDDO
+           ENDDO
+        ENDIF
 
         ! If J is on Iatom (the moving atom) and I is not, the derivative  of
         ! the kinetic energy is non-zero.
 
-        if (JonMove .and. .not. Ionmove) then
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
+        IF (JonMove .AND. .NOT. Ionmove) THEN
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
                  dJI = dJI + 2.d0*aexp(Jcon,Jbas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -5207,7 +5207,7 @@ subroutine duhfoperatora(IDX)
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-                 if (itype(Imomentum,Jbas) /= 0) then
+                 IF (itype(Imomentum,Jbas) /= 0) THEN
                     itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
                     dJI = dJI - dble(itype(Imomentum,Jbas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -5218,35 +5218,35 @@ subroutine duhfoperatora(IDX)
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                     itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-                 endif
-              enddo
-           enddo
-        endif
+                 ENDIF
+              ENDDO
+           ENDDO
+        ENDIF
 
 
-        do iCatom=1,natom
+        DO iCatom=1,natom
            ConMove = iCatom.eq.Iatom
 
            ! Check to see if they are all on Iatom.  If they are, skip this.
            ! Also check to see if none are.
 
-           if (IonMove .and. JonMove .and. ConMove) then
+           IF (IonMove .AND. JonMove .AND. ConMove) THEN
               continue
-           ELSEIF ( .not. IonMove .and. .not. JonMove .and. .not. ConMove) then
+           ELSEIF ( .NOT. IonMove .AND. .NOT. JonMove .AND. .NOT. ConMove) THEN
               continue
-           else
+           ELSE
 
               ! Note that for the moving atom we use igrad instead of itype.  This is
               ! because if Ibas=Jbas, we end up modifying both itype(Ibas) and itype(Jbas)
               ! instead of just one.  This only comes into play for moving atoms with
               ! basis functions on them.
 
-              if (IonMOVE) then
-                 do I=1,3
+              IF (IonMOVE) THEN
+                 DO I=1,3
                     igrad(I) = itype(I,Ibas)
-                 enddo
-                 do Icon=1,ncontract(ibas)
-                    do Jcon=1,ncontract(jbas)
+                 ENDDO
+                 DO Icon=1,ncontract(ibas)
+                    DO Jcon=1,ncontract(jbas)
                        igrad(Imomentum) = igrad(Imomentum)+1
                        dJI = dJI + 2.d0*aexp(Icon,Ibas)* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
@@ -5259,7 +5259,7 @@ subroutine duhfoperatora(IDX)
                             xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom), &
                             quick_molspec%chg(iCatom))
                        igrad(Imomentum) = igrad(Imomentum)-1
-                       if (itype(Imomentum,Ibas) /= 0) then
+                       IF (itype(Imomentum,Ibas) /= 0) THEN
                           igrad(Imomentum) = igrad(Imomentum)-1
                           dJI = dJI - dble(igrad(Imomentum)+1)* &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
@@ -5272,17 +5272,17 @@ subroutine duhfoperatora(IDX)
                                xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom), &
                                quick_molspec%chg(iCatom))
                           igrad(Imomentum) = igrad(Imomentum)+1
-                       endif
-                    enddo
-                 enddo
-              endif
+                       ENDIF
+                    ENDDO
+                 ENDDO
+              ENDIF
 
-              if (JonMOVE) then
-                 do I=1,3
+              IF (JonMOVE) THEN
+                 DO I=1,3
                     igrad(I) = itype(I,Jbas)
-                 enddo
-                 do Icon=1,ncontract(ibas)
-                    do Jcon=1,ncontract(jbas)
+                 ENDDO
+                 DO Icon=1,ncontract(ibas)
+                    DO Jcon=1,ncontract(jbas)
                        igrad(Imomentum) = igrad(Imomentum)+1
                        dJI = dJI + 2.d0*aexp(Jcon,Jbas)* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
@@ -5295,7 +5295,7 @@ subroutine duhfoperatora(IDX)
                             xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom), &
                             quick_molspec%chg(iCatom))
                        igrad(Imomentum) = igrad(Imomentum)-1
-                       if (itype(Imomentum,Jbas) /= 0) then
+                       IF (itype(Imomentum,Jbas) /= 0) THEN
                           igrad(Imomentum) = igrad(Imomentum)-1
                           dJI = dJI - dble(igrad(Imomentum)+1)* &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
@@ -5308,25 +5308,25 @@ subroutine duhfoperatora(IDX)
                                xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom), &
                                quick_molspec%chg(iCatom))
                           igrad(Imomentum) = igrad(Imomentum)+1
-                       endif
-                    enddo
-                 enddo
-              endif
+                       ENDIF
+                    ENDDO
+                 ENDDO
+              ENDIF
 
               ! We still have one more part to the derivative of the one center terms.
               ! If two basis functions are attracted to Iatom, the perturbation of
               ! Iatom is a non zero derivative.
 
-              if (ConMove) then
-                 do I=1,3
+              IF (ConMove) THEN
+                 DO I=1,3
                     igrad(I)=0
-                 enddo
+                 ENDDO
                  igrad(imomentum)=1
 
                  iA = quick_basis%ncenter(Ibas)
                  iB = quick_basis%ncenter(Jbas)
-                 do Icon=1,ncontract(ibas)
-                    do Jcon=1,ncontract(jbas)
+                 DO Icon=1,ncontract(ibas)
+                    DO Jcon=1,ncontract(jbas)
                        dJI =dJI +dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                             itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
@@ -5335,21 +5335,21 @@ subroutine duhfoperatora(IDX)
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom),quick_molspec%chg(iCAtom))
-                    enddo
-                 enddo
-              endif
-           endif
-        enddo
+                    ENDDO
+                 ENDDO
+              ENDIF
+           ENDIF
+        ENDDO
         quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas) + dJI
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! The previous two terms are the one electron part of the Fock matrix.
   ! The next two terms define the two electron part.
 
   ! First we are going to loop over the repulsion and exchange integrals
   ! with the derivative of the density matrix.
-  do I=1,nbasis
+  DO I=1,nbasis
      ! Set some variables to reduce access time for some of the more
      ! used quantities.
 
@@ -5362,16 +5362,16 @@ subroutine duhfoperatora(IDX)
      DENSEII=quick_scratch%hold(I,I) + quick_scratch%hold2(I,I)
      DENSEIIX=quick_scratch%hold(I,I)
 
-     ! do all the (ii|ii) integrals.
+     ! DO all the (ii|ii) integrals.
      Ibas=I
      Jbas=I
      IIbas=I
      JJbas=I
      repint=0.d0
-     do Icon=1,ncontract(ibas)
-        do Jcon=1,ncontract(jbas)
-           do IIcon=1,ncontract(iibas)
-              do JJcon=1,ncontract(jjbas)
+     DO Icon=1,ncontract(ibas)
+        DO Jcon=1,ncontract(jbas)
+           DO IIcon=1,ncontract(iibas)
+              DO JJcon=1,ncontract(jjbas)
                  repint = repint+ &
                       dcoeff(Icon,Ibas)*dcoeff(Jcon,Jbas) &
                       *dcoeff(IIcon,IIbas)*dcoeff(JJcon,JJbas)* &
@@ -5380,14 +5380,14 @@ subroutine duhfoperatora(IDX)
                       itype1I,itype2I,itype3I,itype1I,itype2I,itype3I, &
                       itype1I,itype2I,itype3I,itype1I,itype2I,itype3I, &
                       xI,yI,zI,xI,yI,zI,xI,yI,zI,xI,yI,zI))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
      quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEII*repint
      quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEIIX*repint
 
-     do J=I+1,nbasis
+     DO J=I+1,nbasis
         ! Set some variables to reduce access time for some of the more
         ! used quantities. (AGAIN)
 
@@ -5408,10 +5408,10 @@ subroutine duhfoperatora(IDX)
         IIbas=J
         JJbas=J
         repint=0.d0
-        do Icon=1,ncontract(ibas)
-           do Jcon=1,ncontract(jbas)
-              do IIcon=1,ncontract(iibas)
-                 do JJcon=1,ncontract(jjbas)
+        DO Icon=1,ncontract(ibas)
+           DO Jcon=1,ncontract(jbas)
+              DO IIcon=1,ncontract(iibas)
+                 DO JJcon=1,ncontract(jjbas)
                     repint = repint+ &
                          dcoeff(Icon,Ibas)*dcoeff(Jcon,Jbas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -5420,10 +5420,10 @@ subroutine duhfoperatora(IDX)
                          itype1I,itype2I,itype3I,itype1I,itype2I,itype3I, &
                          itype1J,itype2J,itype3J,itype1J,itype2J,itype3J, &
                          xI,yI,zI,xI,yI,zI,xJ,yJ,zJ,xJ,yJ,zJ))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEJJ*repint
         quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+DENSEII*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
@@ -5434,10 +5434,10 @@ subroutine duhfoperatora(IDX)
         IIbas=J
         JJbas=J
         repint=0.d0
-        do Icon=1,ncontract(ibas)
-           do Jcon=1,ncontract(jbas)
-              do IIcon=1,ncontract(iibas)
-                 do JJcon=1,ncontract(jjbas)
+        DO Icon=1,ncontract(ibas)
+           DO Jcon=1,ncontract(jbas)
+              DO IIcon=1,ncontract(iibas)
+                 DO JJcon=1,ncontract(jjbas)
                     repint = repint+ &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -5447,10 +5447,10 @@ subroutine duhfoperatora(IDX)
                          itype1J,itype2J,itype3J,itype1J,itype2J,itype3J, &
                          xI,yI,zI,xJ,yJ,zJ,xJ,yJ,zJ,xJ,yJ,zJ))
 
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEJJ*repint
         quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEJI*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJJX*repint
@@ -5462,10 +5462,10 @@ subroutine duhfoperatora(IDX)
         iiBAS=i
         JJbas=J
         repint=0.d0
-        do Icon=1,ncontract(ibas)
-           do Jcon=1,ncontract(jbas)
-              do IIcon=1,ncontract(iibas)
-                 do JJcon=1,ncontract(jjbas)
+        DO Icon=1,ncontract(ibas)
+           DO Jcon=1,ncontract(jbas)
+              DO IIcon=1,ncontract(iibas)
+                 DO JJcon=1,ncontract(jjbas)
                     repint = repint+ &
                          dcoeff(Icon,Ibas)*dcoeff(Jcon,Jbas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -5475,10 +5475,10 @@ subroutine duhfoperatora(IDX)
                          itype1I,itype2I,itype3I,itype1J,itype2J,itype3J, &
                          xI,yI,zI,xI,yI,zI,xI,yI,zI,xJ,yJ,zJ))
 
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEII*repint
         quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEJI*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEIIX*repint
@@ -5489,10 +5489,10 @@ subroutine duhfoperatora(IDX)
         IIbas=I
         JJbas=J
         repint=0.d0
-        do Icon=1,ncontract(ibas)
-           do Jcon=1,ncontract(jbas)
-              do IIcon=1,ncontract(iibas)
-                 do JJcon=1,ncontract(jjbas)
+        DO Icon=1,ncontract(ibas)
+           DO Jcon=1,ncontract(jbas)
+              DO IIcon=1,ncontract(iibas)
+                 DO JJcon=1,ncontract(jjbas)
                     repint = repint+ &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -5502,16 +5502,16 @@ subroutine duhfoperatora(IDX)
                          itype1I,itype2I,itype3I,itype1J,itype2J,itype3J, &
                          xI,yI,zI,xJ,yJ,zJ,xI,yI,zI,xJ,yJ,zJ))
 
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEJI*repint
         quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)-DENSEIIX*repint
         quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEJJX*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
 
-        do K=J+1,nbasis
+        DO K=J+1,nbasis
            ! Set some variables to reduce access time for some of the more
            ! used quantities. (AGAIN)
 
@@ -5534,10 +5534,10 @@ subroutine duhfoperatora(IDX)
            IIbas=I
            JJbas=K
            repint=0.d0
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
-                 do IIcon=1,ncontract(iibas)
-                    do JJcon=1,ncontract(jjbas)
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
+                 DO IIcon=1,ncontract(iibas)
+                    DO JJcon=1,ncontract(jjbas)
                        repint = repint+ &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -5547,10 +5547,10 @@ subroutine duhfoperatora(IDX)
                             itype1I,itype2I,itype3I,itype1K,itype2K,itype3K, &
                             xI,yI,zI,xJ,yJ,zJ,xI,yI,zI,xK,yK,zK))
 
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEKI*repint
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+2.d0*DENSEJI*repint
            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-2.d0*DENSEKJX*repint
@@ -5564,10 +5564,10 @@ subroutine duhfoperatora(IDX)
            IIbas=K
            JJbas=K
            repint=0.d0
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
-                 do IIcon=1,ncontract(iibas)
-                    do JJcon=1,ncontract(jjbas)
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
+                 DO IIcon=1,ncontract(iibas)
+                    DO JJcon=1,ncontract(jjbas)
                        repint = repint+ &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -5577,10 +5577,10 @@ subroutine duhfoperatora(IDX)
                             itype1K,itype2K,itype3K,itype1K,itype2K,itype3K, &
                             xI,yI,zI,xJ,yJ,zJ,xK,yK,zK,xK,yK,zK))
 
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEKK*repint
            quick_qm_struct%o(K,K) = quick_qm_struct%o(K,K)+2.d0*DENSEJI*repint
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEKJX*repint
@@ -5592,10 +5592,10 @@ subroutine duhfoperatora(IDX)
            IIbas=J
            JJbas=J
            repint=0.d0
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
-                 do IIcon=1,ncontract(iibas)
-                    do JJcon=1,ncontract(jjbas)
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
+                 DO IIcon=1,ncontract(iibas)
+                    DO JJcon=1,ncontract(jjbas)
                        repint = repint+ &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -5605,10 +5605,10 @@ subroutine duhfoperatora(IDX)
                             itype1J,itype2J,itype3J,itype1J,itype2J,itype3J, &
                             xI,yI,zI,xK,yK,zK,xJ,yJ,zJ,xJ,yJ,zJ))
 
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+DENSEJJ*repint
            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEKI*repint
            quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSEJIX*repint
@@ -5620,10 +5620,10 @@ subroutine duhfoperatora(IDX)
            IIbas=J
            JJbas=K
            repint=0.d0
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
-                 do IIcon=1,ncontract(iibas)
-                    do JJcon=1,ncontract(jjbas)
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
+                 DO IIcon=1,ncontract(iibas)
+                    DO JJcon=1,ncontract(jjbas)
                        repint = repint+ &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -5633,17 +5633,17 @@ subroutine duhfoperatora(IDX)
                             itype1J,itype2J,itype3J,itype1K,itype2K,itype3K, &
                             xI,yI,zI,xI,yI,zI,xJ,yJ,zJ,xK,yK,zK))
 
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)+DENSEII*repint
            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEKJ*repint
            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKIX*repint
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEJIX*repint
-        enddo
+        ENDDO
 
-        do K=I+1,nbasis-1
+        DO K=I+1,nbasis-1
            xK = xyz(1,quick_basis%ncenter(K))
            yK = xyz(2,quick_basis%ncenter(K))
            zK = xyz(3,quick_basis%ncenter(K))
@@ -5657,7 +5657,7 @@ subroutine duhfoperatora(IDX)
            DENSEKJX=quick_scratch%hold( K,J)
            DENSEKKX=quick_scratch%hold( K,K)
 
-           do L=K+1,nbasis
+           DO L=K+1,nbasis
               xL = xyz(1,quick_basis%ncenter(L))
               yL = xyz(2,quick_basis%ncenter(L))
               zL = xyz(3,quick_basis%ncenter(L))
@@ -5679,10 +5679,10 @@ subroutine duhfoperatora(IDX)
               IIbas=K
               JJbas=L
               repint=0.d0
-              do Icon=1,ncontract(ibas)
-                 do Jcon=1,ncontract(jbas)
-                    do IIcon=1,ncontract(iibas)
-                       do JJcon=1,ncontract(jjbas)
+              DO Icon=1,ncontract(ibas)
+                 DO Jcon=1,ncontract(jbas)
+                    DO IIcon=1,ncontract(iibas)
+                       DO JJcon=1,ncontract(jjbas)
                           repint = repint+ &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -5693,37 +5693,37 @@ subroutine duhfoperatora(IDX)
                                xI,yI,zI,xJ,yJ,zJ,xK,yK,zK,xL,yL,zL))
 
 
-                       enddo
-                    enddo
-                 enddo
-              enddo
+                       ENDDO
+                    ENDDO
+                 ENDDO
+              ENDDO
               quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSELK*repint
               quick_qm_struct%o(L,K) = quick_qm_struct%o(L,K)+2.d0*DENSEJI*repint
               quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSELJX*repint
               quick_qm_struct%o(L,I) = quick_qm_struct%o(L,I)-DENSEKJX*repint
-              if (J == K) then
+              IF (J == K) THEN
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-2.d0*DENSELIX*repint
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
                  quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
-              ELSEIF (J == L) then
+              ELSEIF (J == L) THEN
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-2.d0*DENSEKIX*repint
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
                  quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
-              else
+              ELSE
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
                  quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
                  quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
-              endif
-           enddo
-        enddo
-     enddo
-  enddo
+              ENDIF
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
 
   ! Now we are going to loop over the derivatives of the repulsion and exchange
   ! integrals with the regular density matrix.
 
-  do I=1,nbasis
+  DO I=1,nbasis
      ! Set some variables to reduce access time for some of the more
      ! used quantities.
 
@@ -5738,7 +5738,7 @@ subroutine duhfoperatora(IDX)
 
      ! Skip the (ii|ii) integralas, as they move with the core.
 
-     do J=I+1,nbasis
+     DO J=I+1,nbasis
         ! Set some variables to reduce access time for some of the more
         ! used quantities. (AGAIN)
 
@@ -5800,7 +5800,7 @@ subroutine duhfoperatora(IDX)
         quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEJJX*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
 
-        do K=J+1,nbasis
+        DO K=J+1,nbasis
            ! Set some variables to reduce access time for some of the more
            ! used quantities. (AGAIN)
 
@@ -5866,9 +5866,9 @@ subroutine duhfoperatora(IDX)
            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEKJ*repint
            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKIX*repint
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEJIX*repint
-        enddo
+        ENDDO
 
-        do K=I+1,nbasis-1
+        DO K=I+1,nbasis-1
            xK = xyz(1,quick_basis%ncenter(K))
            yK = xyz(2,quick_basis%ncenter(K))
            zK = xyz(3,quick_basis%ncenter(K))
@@ -5882,7 +5882,7 @@ subroutine duhfoperatora(IDX)
            DENSEKJX=quick_qm_struct%dense(K,J)
            DENSEKKX=quick_qm_struct%dense(K,K)
 
-           do L=K+1,nbasis
+           DO L=K+1,nbasis
               xL = xyz(1,quick_basis%ncenter(L))
               yL = xyz(2,quick_basis%ncenter(L))
               zL = xyz(3,quick_basis%ncenter(L))
@@ -5909,32 +5909,32 @@ subroutine duhfoperatora(IDX)
               quick_qm_struct%o(L,K) = quick_qm_struct%o(L,K)+2.d0*DENSEJI*repint
               quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSELJX*repint
               quick_qm_struct%o(L,I) = quick_qm_struct%o(L,I)-DENSEKJX*repint
-              if (J == K) then
+              IF (J == K) THEN
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-2.d0*DENSELIX*repint
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
                  quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
-              ELSEIF (J == L) then
+              ELSEIF (J == L) THEN
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-2.d0*DENSEKIX*repint
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
                  quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
-              else
+              ELSE
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
                  quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
                  quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
-              endif
-           enddo
-        enddo
-     enddo
-  enddo
+              ENDIF
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
 
-  do Ibas=1,nbasis
-     do Jbas=Ibas+1,nbasis
+  DO Ibas=1,nbasis
+     DO Jbas=Ibas+1,nbasis
         quick_qm_struct%o(Ibas,Jbas) = quick_qm_struct%o(Jbas,Ibas)
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-end subroutine duhfoperatora
+END subroutine duhfoperatora
 
 
 ! CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
@@ -5956,37 +5956,37 @@ subroutine duhfoperatorb(IDX)
 
   ! Blank out the array.
 
-  do I=1,nbasis
-     do J=1,nbasis
+  DO I=1,nbasis
+     DO J=1,nbasis
         quick_qm_struct%o(J,I)=0.d0
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! The first thing to do is find the atom and direction of the perturbation.
 
   Imomentum=mod(idx,3)
-  if (Imomentum == 0) then
+  IF (Imomentum == 0) THEN
      Iatom=IDX/3
      Imomentum = 3
-  else
+  ELSE
      Iatom = (IDX-Imomentum)/3 + 1
-  endif
+  ENDIF
 
   ! We need to take the derivative of the one electron portion of the
   ! Hamiltonian.
 
-  do Ibas=1,nbasis
+  DO Ibas=1,nbasis
      IonMove = quick_basis%ncenter(Ibas).eq.Iatom
-     do Jbas = Ibas,nbasis
+     DO Jbas = Ibas,nbasis
         JonMove = quick_basis%ncenter(Jbas).eq.Iatom
 
         ! If I is on Iatom (the moving atom) and J is not, the derivative  of
         ! the kinetic energy is non-zero.
 
         dJI=0.d0
-        if (IonMove .and. .not. Jonmove) then
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
+        IF (IonMove .AND. .NOT. Jonmove) THEN
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
                  dJI = dJI + 2.d0*aexp(Icon,Ibas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -5997,7 +5997,7 @@ subroutine duhfoperatorb(IDX)
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                  itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
-                 if (itype(Imomentum,Ibas) /= 0) then
+                 IF (itype(Imomentum,Ibas) /= 0) THEN
                     itype(Imomentum,Ibas) = itype(Imomentum,Ibas)-1
                     dJI = dJI - dble(itype(Imomentum,Ibas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -6008,17 +6008,17 @@ subroutine duhfoperatorb(IDX)
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                     itype(Imomentum,Ibas) = itype(Imomentum,Ibas)+1
-                 endif
-              enddo
-           enddo
-        endif
+                 ENDIF
+              ENDDO
+           ENDDO
+        ENDIF
 
         ! If J is on Iatom (the moving atom) and I is not, the derivative  of
         ! the kinetic energy is non-zero.
 
-        if (JonMove .and. .not. Ionmove) then
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
+        IF (JonMove .AND. .NOT. Ionmove) THEN
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
                  dJI = dJI + 2.d0*aexp(Jcon,Jbas)* &
                       dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -6029,7 +6029,7 @@ subroutine duhfoperatorb(IDX)
                       xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                       xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                  itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
-                 if (itype(Imomentum,Jbas) /= 0) then
+                 IF (itype(Imomentum,Jbas) /= 0) THEN
                     itype(Imomentum,Jbas) = itype(Imomentum,Jbas)-1
                     dJI = dJI - dble(itype(Imomentum,Jbas)+1)* &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
@@ -6040,34 +6040,34 @@ subroutine duhfoperatorb(IDX)
                          xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                          xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
                     itype(Imomentum,Jbas) = itype(Imomentum,Jbas)+1
-                 endif
-              enddo
-           enddo
-        endif
+                 ENDIF
+              ENDDO
+           ENDDO
+        ENDIF
 
 
-        do iCatom=1,natom
+        DO iCatom=1,natom
            ConMove = iCatom.eq.Iatom
 
            ! Check to see if they are all on Iatom.  If they are, skip this.
            ! Also check to see if none are.
 
-           if (IonMove .and. JonMove .and. ConMove) then
+           IF (IonMove .AND. JonMove .AND. ConMove) THEN
               continue
-           ELSEIF ( .not. IonMove .and. .not. JonMove .and. .not. ConMove) then
+           ELSEIF ( .NOT. IonMove .AND. .NOT. JonMove .AND. .NOT. ConMove) THEN
               continue
-           else
+           ELSE
               ! Note that for the moving atom we use igrad instead of itype.  This is
               ! because if Ibas=Jbas, we end up modifying both itype(Ibas) and itype(Jbas)
               ! instead of just one.  This only comes into play for moving atoms with
               ! basis functions on them.
 
-              if (IonMOVE) then
-                 do I=1,3
+              IF (IonMOVE) THEN
+                 DO I=1,3
                     igrad(I) = itype(I,Ibas)
-                 enddo
-                 do Icon=1,ncontract(ibas)
-                    do Jcon=1,ncontract(jbas)
+                 ENDDO
+                 DO Icon=1,ncontract(ibas)
+                    DO Jcon=1,ncontract(jbas)
                        igrad(Imomentum) = igrad(Imomentum)+1
                        dJI = dJI + 2.d0*aexp(Icon,Ibas)* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
@@ -6080,7 +6080,7 @@ subroutine duhfoperatorb(IDX)
                             xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom), &
                             quick_molspec%chg(iCatom))
                        igrad(Imomentum) = igrad(Imomentum)-1
-                       if (itype(Imomentum,Ibas) /= 0) then
+                       IF (itype(Imomentum,Ibas) /= 0) THEN
                           igrad(Imomentum) = igrad(Imomentum)-1
                           dJI = dJI - dble(igrad(Imomentum)+1)* &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
@@ -6093,17 +6093,17 @@ subroutine duhfoperatorb(IDX)
                                xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom), &
                                quick_molspec%chg(iCatom))
                           igrad(Imomentum) = igrad(Imomentum)+1
-                       endif
-                    enddo
-                 enddo
-              endif
+                       ENDIF
+                    ENDDO
+                 ENDDO
+              ENDIF
 
-              if (JonMOVE) then
-                 do I=1,3
+              IF (JonMOVE) THEN
+                 DO I=1,3
                     igrad(I) = itype(I,Jbas)
-                 enddo
-                 do Icon=1,ncontract(ibas)
-                    do Jcon=1,ncontract(jbas)
+                 ENDDO
+                 DO Icon=1,ncontract(ibas)
+                    DO Jcon=1,ncontract(jbas)
                        igrad(Imomentum) = igrad(Imomentum)+1
                        dJI = dJI + 2.d0*aexp(Jcon,Jbas)* &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
@@ -6116,7 +6116,7 @@ subroutine duhfoperatorb(IDX)
                             xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom), &
                             quick_molspec%chg(iCatom))
                        igrad(Imomentum) = igrad(Imomentum)-1
-                       if (itype(Imomentum,Jbas) /= 0) then
+                       IF (itype(Imomentum,Jbas) /= 0) THEN
                           igrad(Imomentum) = igrad(Imomentum)-1
                           dJI = dJI - dble(igrad(Imomentum)+1)* &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas)* &
@@ -6129,25 +6129,25 @@ subroutine duhfoperatorb(IDX)
                                xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom), &
                                quick_molspec%chg(iCatom))
                           igrad(Imomentum) = igrad(Imomentum)+1
-                       endif
-                    enddo
-                 enddo
-              endif
+                       ENDIF
+                    ENDDO
+                 ENDDO
+              ENDIF
 
               ! We still have one more part to the derivative of the one center terms.
               ! If two basis functions are attracted to Iatom, the perturbation of
               ! Iatom is a non zero derivative.
 
-              if (ConMove) then
-                 do I=1,3
+              IF (ConMove) THEN
+                 DO I=1,3
                     igrad(I)=0
-                 enddo
+                 ENDDO
                  igrad(imomentum)=1
 
                  iA = quick_basis%ncenter(Ibas)
                  iB = quick_basis%ncenter(Jbas)
-                 do Icon=1,ncontract(ibas)
-                    do Jcon=1,ncontract(jbas)
+                 DO Icon=1,ncontract(ibas)
+                    DO Jcon=1,ncontract(jbas)
                        dJI =dJI +dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *electricfld(aexp(Jcon,Jbas),aexp(Icon,Ibas), &
                             itype(1,Jbas),itype(2,Jbas),itype(3,Jbas), &
@@ -6156,19 +6156,19 @@ subroutine duhfoperatorb(IDX)
                             xyz(1,iB),xyz(2,iB),xyz(3,iB), &
                             xyz(1,iA),xyz(2,iA),xyz(3,iA), &
                             xyz(1,iCatom),xyz(2,iCatom),xyz(3,iCatom),quick_molspec%chg(iCAtom))
-                    enddo
-                 enddo
-              endif
-           endif
-        enddo
+                    ENDDO
+                 ENDDO
+              ENDIF
+           ENDIF
+        ENDDO
         quick_qm_struct%o(Jbas,Ibas)=quick_qm_struct%o(Jbas,Ibas) + dJI
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
   ! The previous two terms are the one electron part of the Fock matrix.
   ! The next two terms define the two electron part.
 
-  do I=1,nbasis
+  DO I=1,nbasis
 
      ! Set some variables to reduce access time for some of the more
      ! used quantities.
@@ -6182,16 +6182,16 @@ subroutine duhfoperatorb(IDX)
      DENSEII=quick_scratch%hold( I,I) + quick_scratch%hold2( I,I)
      DENSEIIX=quick_scratch%hold2( I,I)
 
-     ! do all the (ii|ii) integrals.
+     ! DO all the (ii|ii) integrals.
      Ibas=I
      Jbas=I
      IIbas=I
      JJbas=I
      repint=0.d0
-     do Icon=1,ncontract(ibas)
-        do Jcon=1,ncontract(jbas)
-           do IIcon=1,ncontract(iibas)
-              do JJcon=1,ncontract(jjbas)
+     DO Icon=1,ncontract(ibas)
+        DO Jcon=1,ncontract(jbas)
+           DO IIcon=1,ncontract(iibas)
+              DO JJcon=1,ncontract(jjbas)
                  repint = repint+ &
                       dcoeff(Icon,Ibas)*dcoeff(Jcon,Jbas) &
                       *dcoeff(IIcon,IIbas)*dcoeff(JJcon,JJbas)* &
@@ -6200,14 +6200,14 @@ subroutine duhfoperatorb(IDX)
                       itype1I,itype2I,itype3I,itype1I,itype2I,itype3I, &
                       itype1I,itype2I,itype3I,itype1I,itype2I,itype3I, &
                       xI,yI,zI,xI,yI,zI,xI,yI,zI,xI,yI,zI))
-              enddo
-           enddo
-        enddo
-     enddo
+              ENDDO
+           ENDDO
+        ENDDO
+     ENDDO
      quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEII*repint
      quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEIIX*repint
 
-     do J=I+1,nbasis
+     DO J=I+1,nbasis
         ! Set some variables to reduce access time for some of the more
         ! used quantities. (AGAIN)
 
@@ -6228,10 +6228,10 @@ subroutine duhfoperatorb(IDX)
         IIbas=J
         JJbas=J
         repint=0.d0
-        do Icon=1,ncontract(ibas)
-           do Jcon=1,ncontract(jbas)
-              do IIcon=1,ncontract(iibas)
-                 do JJcon=1,ncontract(jjbas)
+        DO Icon=1,ncontract(ibas)
+           DO Jcon=1,ncontract(jbas)
+              DO IIcon=1,ncontract(iibas)
+                 DO JJcon=1,ncontract(jjbas)
                     repint = repint+ &
                          dcoeff(Icon,Ibas)*dcoeff(Jcon,Jbas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -6240,10 +6240,10 @@ subroutine duhfoperatorb(IDX)
                          itype1I,itype2I,itype3I,itype1I,itype2I,itype3I, &
                          itype1J,itype2J,itype3J,itype1J,itype2J,itype3J, &
                          xI,yI,zI,xI,yI,zI,xJ,yJ,zJ,xJ,yJ,zJ))
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+DENSEJJ*repint
         quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+DENSEII*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
@@ -6254,10 +6254,10 @@ subroutine duhfoperatorb(IDX)
         IIbas=J
         JJbas=J
         repint=0.d0
-        do Icon=1,ncontract(ibas)
-           do Jcon=1,ncontract(jbas)
-              do IIcon=1,ncontract(iibas)
-                 do JJcon=1,ncontract(jjbas)
+        DO Icon=1,ncontract(ibas)
+           DO Jcon=1,ncontract(jbas)
+              DO IIcon=1,ncontract(iibas)
+                 DO JJcon=1,ncontract(jjbas)
                     repint = repint+ &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -6267,10 +6267,10 @@ subroutine duhfoperatorb(IDX)
                          itype1J,itype2J,itype3J,itype1J,itype2J,itype3J, &
                          xI,yI,zI,xJ,yJ,zJ,xJ,yJ,zJ,xJ,yJ,zJ))
 
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEJJ*repint
         quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEJI*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJJX*repint
@@ -6282,10 +6282,10 @@ subroutine duhfoperatorb(IDX)
         iiBAS=i
         JJbas=J
         repint=0.d0
-        do Icon=1,ncontract(ibas)
-           do Jcon=1,ncontract(jbas)
-              do IIcon=1,ncontract(iibas)
-                 do JJcon=1,ncontract(jjbas)
+        DO Icon=1,ncontract(ibas)
+           DO Jcon=1,ncontract(jbas)
+              DO IIcon=1,ncontract(iibas)
+                 DO JJcon=1,ncontract(jjbas)
                     repint = repint+ &
                          dcoeff(Icon,Ibas)*dcoeff(Jcon,Jbas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -6295,10 +6295,10 @@ subroutine duhfoperatorb(IDX)
                          itype1I,itype2I,itype3I,itype1J,itype2J,itype3J, &
                          xI,yI,zI,xI,yI,zI,xI,yI,zI,xJ,yJ,zJ))
 
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEII*repint
         quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEJI*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEIIX*repint
@@ -6309,10 +6309,10 @@ subroutine duhfoperatorb(IDX)
         IIbas=I
         JJbas=J
         repint=0.d0
-        do Icon=1,ncontract(ibas)
-           do Jcon=1,ncontract(jbas)
-              do IIcon=1,ncontract(iibas)
-                 do JJcon=1,ncontract(jjbas)
+        DO Icon=1,ncontract(ibas)
+           DO Jcon=1,ncontract(jbas)
+              DO IIcon=1,ncontract(iibas)
+                 DO JJcon=1,ncontract(jjbas)
                     repint = repint+ &
                          dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                          *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -6322,16 +6322,16 @@ subroutine duhfoperatorb(IDX)
                          itype1I,itype2I,itype3I,itype1J,itype2J,itype3J, &
                          xI,yI,zI,xJ,yJ,zJ,xI,yI,zI,xJ,yJ,zJ))
 
-                 enddo
-              enddo
-           enddo
-        enddo
+                 ENDDO
+              ENDDO
+           ENDDO
+        ENDDO
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEJI*repint
         quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)-DENSEIIX*repint
         quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEJJX*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
 
-        do K=J+1,nbasis
+        DO K=J+1,nbasis
            ! Set some variables to reduce access time for some of the more
            ! used quantities. (AGAIN)
 
@@ -6354,10 +6354,10 @@ subroutine duhfoperatorb(IDX)
            IIbas=I
            JJbas=K
            repint=0.d0
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
-                 do IIcon=1,ncontract(iibas)
-                    do JJcon=1,ncontract(jjbas)
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
+                 DO IIcon=1,ncontract(iibas)
+                    DO JJcon=1,ncontract(jjbas)
                        repint = repint+ &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -6367,10 +6367,10 @@ subroutine duhfoperatorb(IDX)
                             itype1I,itype2I,itype3I,itype1K,itype2K,itype3K, &
                             xI,yI,zI,xJ,yJ,zJ,xI,yI,zI,xK,yK,zK))
 
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSEKI*repint
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+2.d0*DENSEJI*repint
            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-2.d0*DENSEKJX*repint
@@ -6384,10 +6384,10 @@ subroutine duhfoperatorb(IDX)
            IIbas=K
            JJbas=K
            repint=0.d0
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
-                 do IIcon=1,ncontract(iibas)
-                    do JJcon=1,ncontract(jjbas)
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
+                 DO IIcon=1,ncontract(iibas)
+                    DO JJcon=1,ncontract(jjbas)
                        repint = repint+ &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -6397,10 +6397,10 @@ subroutine duhfoperatorb(IDX)
                             itype1K,itype2K,itype3K,itype1K,itype2K,itype3K, &
                             xI,yI,zI,xJ,yJ,zJ,xK,yK,zK,xK,yK,zK))
 
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+DENSEKK*repint
            quick_qm_struct%o(K,K) = quick_qm_struct%o(K,K)+2.d0*DENSEJI*repint
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEKJX*repint
@@ -6412,10 +6412,10 @@ subroutine duhfoperatorb(IDX)
            IIbas=J
            JJbas=J
            repint=0.d0
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
-                 do IIcon=1,ncontract(iibas)
-                    do JJcon=1,ncontract(jjbas)
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
+                 DO IIcon=1,ncontract(iibas)
+                    DO JJcon=1,ncontract(jjbas)
                        repint = repint+ &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -6425,10 +6425,10 @@ subroutine duhfoperatorb(IDX)
                             itype1J,itype2J,itype3J,itype1J,itype2J,itype3J, &
                             xI,yI,zI,xK,yK,zK,xJ,yJ,zJ,xJ,yJ,zJ))
 
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)+DENSEJJ*repint
            quick_qm_struct%o(J,J) = quick_qm_struct%o(J,J)+2.d0*DENSEKI*repint
            quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSEJIX*repint
@@ -6440,10 +6440,10 @@ subroutine duhfoperatorb(IDX)
            IIbas=J
            JJbas=K
            repint=0.d0
-           do Icon=1,ncontract(ibas)
-              do Jcon=1,ncontract(jbas)
-                 do IIcon=1,ncontract(iibas)
-                    do JJcon=1,ncontract(jjbas)
+           DO Icon=1,ncontract(ibas)
+              DO Jcon=1,ncontract(jbas)
+                 DO IIcon=1,ncontract(iibas)
+                    DO JJcon=1,ncontract(jjbas)
                        repint = repint+ &
                             dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                             *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -6453,17 +6453,17 @@ subroutine duhfoperatorb(IDX)
                             itype1J,itype2J,itype3J,itype1K,itype2K,itype3K, &
                             xI,yI,zI,xI,yI,zI,xJ,yJ,zJ,xK,yK,zK))
 
-                    enddo
-                 enddo
-              enddo
-           enddo
+                    ENDDO
+                 ENDDO
+              ENDDO
+           ENDDO
            quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)+DENSEII*repint
            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEKJ*repint
            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKIX*repint
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEJIX*repint
-        enddo
+        ENDDO
 
-        do K=I+1,nbasis-1
+        DO K=I+1,nbasis-1
            xK = xyz(1,quick_basis%ncenter(K))
            yK = xyz(2,quick_basis%ncenter(K))
            zK = xyz(3,quick_basis%ncenter(K))
@@ -6477,7 +6477,7 @@ subroutine duhfoperatorb(IDX)
            DENSEKJX=quick_scratch%hold2( K,J)
            DENSEKKX=quick_scratch%hold2( K,K)
 
-           do L=K+1,nbasis
+           DO L=K+1,nbasis
               xL = xyz(1,quick_basis%ncenter(L))
               yL = xyz(2,quick_basis%ncenter(L))
               zL = xyz(3,quick_basis%ncenter(L))
@@ -6499,10 +6499,10 @@ subroutine duhfoperatorb(IDX)
               IIbas=K
               JJbas=L
               repint=0.d0
-              do Icon=1,ncontract(ibas)
-                 do Jcon=1,ncontract(jbas)
-                    do IIcon=1,ncontract(iibas)
-                       do JJcon=1,ncontract(jjbas)
+              DO Icon=1,ncontract(ibas)
+                 DO Jcon=1,ncontract(jbas)
+                    DO IIcon=1,ncontract(iibas)
+                       DO JJcon=1,ncontract(jjbas)
                           repint = repint+ &
                                dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                                *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)* &
@@ -6513,37 +6513,37 @@ subroutine duhfoperatorb(IDX)
                                xI,yI,zI,xJ,yJ,zJ,xK,yK,zK,xL,yL,zL))
 
 
-                       enddo
-                    enddo
-                 enddo
-              enddo
+                       ENDDO
+                    ENDDO
+                 ENDDO
+              ENDDO
               quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)+2.d0*DENSELK*repint
               quick_qm_struct%o(L,K) = quick_qm_struct%o(L,K)+2.d0*DENSEJI*repint
               quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSELJX*repint
               quick_qm_struct%o(L,I) = quick_qm_struct%o(L,I)-DENSEKJX*repint
-              if (J == K) then
+              IF (J == K) THEN
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-2.d0*DENSELIX*repint
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
                  quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
-              ELSEIF (J == L) then
+              ELSEIF (J == L) THEN
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-2.d0*DENSEKIX*repint
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
                  quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
-              else
+              ELSE
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
                  quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
                  quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
-              endif
-           enddo
-        enddo
-     enddo
-  enddo
+              ENDIF
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
 
   ! Now we are going to loop over the derivatives of the repulsion and exchange
   ! integrals with the regular density matrix.
 
-  do I=1,nbasis
+  DO I=1,nbasis
      ! Set some variables to reduce access time for some of the more
      ! used quantities.
 
@@ -6558,7 +6558,7 @@ subroutine duhfoperatorb(IDX)
 
      ! Skip the (ii|ii) integrals, as they move with the core.
 
-     do J=I+1,nbasis
+     DO J=I+1,nbasis
         ! Set some variables to reduce access time for some of the more
         ! used quantities. (AGAIN)
 
@@ -6619,7 +6619,7 @@ subroutine duhfoperatorb(IDX)
         quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)-DENSEJJX*repint
         quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEJIX*repint
 
-        do K=J+1,nbasis
+        DO K=J+1,nbasis
            ! Set some variables to reduce access time for some of the more
            ! used quantities. (AGAIN)
 
@@ -6685,9 +6685,9 @@ subroutine duhfoperatorb(IDX)
            quick_qm_struct%o(I,I) = quick_qm_struct%o(I,I)+2.d0*DENSEKJ*repint
            quick_qm_struct%o(J,I) = quick_qm_struct%o(J,I)-DENSEKIX*repint
            quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSEJIX*repint
-        enddo
+        ENDDO
 
-        do K=I+1,nbasis-1
+        DO K=I+1,nbasis-1
            xK = xyz(1,quick_basis%ncenter(K))
            yK = xyz(2,quick_basis%ncenter(K))
            zK = xyz(3,quick_basis%ncenter(K))
@@ -6701,7 +6701,7 @@ subroutine duhfoperatorb(IDX)
            DENSEKJX=quick_qm_struct%denseb(K,J)
            DENSEKKX=quick_qm_struct%denseb(K,K)
 
-           do L=K+1,nbasis
+           DO L=K+1,nbasis
               xL = xyz(1,quick_basis%ncenter(L))
               yL = xyz(2,quick_basis%ncenter(L))
               zL = xyz(3,quick_basis%ncenter(L))
@@ -6728,31 +6728,31 @@ subroutine duhfoperatorb(IDX)
               quick_qm_struct%o(L,K) = quick_qm_struct%o(L,K)+2.d0*DENSEJI*repint
               quick_qm_struct%o(K,I) = quick_qm_struct%o(K,I)-DENSELJX*repint
               quick_qm_struct%o(L,I) = quick_qm_struct%o(L,I)-DENSEKJX*repint
-              if (J == K) then
+              IF (J == K) THEN
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-2.d0*DENSELIX*repint
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
                  quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
-              ELSEIF (J == L) then
+              ELSEIF (J == L) THEN
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-2.d0*DENSEKIX*repint
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
                  quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
-              else
+              ELSE
                  quick_qm_struct%o(J,K) = quick_qm_struct%o(J,K)-DENSELIX*repint
                  quick_qm_struct%o(J,L) = quick_qm_struct%o(J,L)-DENSEKIX*repint
                  quick_qm_struct%o(K,J) = quick_qm_struct%o(K,J)-DENSELIX*repint
                  quick_qm_struct%o(L,J) = quick_qm_struct%o(L,J)-DENSEKIX*repint
-              endif
-           enddo
-        enddo
-     enddo
-  enddo
-  do Ibas=1,nbasis
-     do Jbas=Ibas+1,nbasis
+              ENDIF
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
+  DO Ibas=1,nbasis
+     DO Jbas=Ibas+1,nbasis
         quick_qm_struct%o(Ibas,Jbas) = quick_qm_struct%o(Jbas,Ibas)
-     enddo
-  enddo
+     ENDDO
+  ENDDO
 
-end subroutine duhfoperatorb
+END subroutine duhfoperatorb
 
 
 
@@ -6784,7 +6784,7 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
   same = same .and. iB.eq.iC
   same = same .and. iC.eq.iD
 
-  if (same) return
+  IF (same) return
 
   ! Now check to see if any of the functions are on center iatom.  If none
   ! are, return.
@@ -6794,7 +6794,7 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
   doit = doit .or. iC.eq.Iatom
   doit = doit .or. iD.eq.Iatom
 
-  if ( .not. doit) return
+  IF ( .NOT. doit) return
 
   Agrad=0.d0
   Bgrad=0.d0
@@ -6804,26 +6804,26 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
   ! The itype2 array was added because if Ibas=Jbas, the code raises two
   ! angular momentums instead of one.
 
-  do Icopy=1,3
+  DO Icopy=1,3
      itype2(Icopy,1) = itype(Icopy,Ibas)
      itype2(Icopy,2) = itype(Icopy,Jbas)
      itype2(Icopy,3) = itype(Icopy,IIbas)
      itype2(Icopy,4) = itype(Icopy,JJbas)
-  enddo
+  ENDDO
 
   ! This is again a modification of grad2elec, but we are only looking at
   ! mone atom and one direction.  Check each atom to see if we need it.
 
-  do Icon = 1, ncontract(Ibas)
-     do Jcon = 1, ncontract(Jbas)
-        do IIcon = 1, ncontract(IIbas)
-           do JJcon = 1, ncontract(JJbas)
+  DO Icon = 1, ncontract(Ibas)
+     DO Jcon = 1, ncontract(Jbas)
+        DO IIcon = 1, ncontract(IIbas)
+           DO JJcon = 1, ncontract(JJbas)
               cntrctcoeff = dcoeff(Jcon,Jbas)*dcoeff(Icon,Ibas) &
                    *dcoeff(JJcon,JJbas)*dcoeff(IIcon,IIbas)
 
               doit = iA.eq.iatom
 
-              if (doit) then
+              IF (doit) THEN
                  itype2(Imomentum,1) = itype2(Imomentum,1)+1
                  Agrad = Agrad+2.d0*aexp(Icon,Ibas)*cntrctcoeff* &
                       repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -6838,7 +6838,7 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,1) = itype2(Imomentum,1)-1
 
-                 if (itype2(Imomentum,1) /= 0) then
+                 IF (itype2(Imomentum,1) /= 0) THEN
                     itype2(Imomentum,1) = itype2(Imomentum,1)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -6853,12 +6853,12 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,1) = itype2(Imomentum,1)+1
                     Agrad = Agrad-dble(itype2(Imomentum,1))*temp
-                 endif
-              endif
+                 ENDIF
+              ENDIF
 
               doit = iB.eq.iatom
 
-              if (doit) then
+              IF (doit) THEN
                  itype2(Imomentum,2) = itype2(Imomentum,2)+1
                  Bgrad = Bgrad+2.d0*aexp(Jcon,Jbas)*cntrctcoeff* &
                       repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -6872,7 +6872,7 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,2) = itype2(Imomentum,2)-1
-                 if (itype2(Imomentum,2) /= 0) then
+                 IF (itype2(Imomentum,2) /= 0) THEN
                     itype2(Imomentum,2) = itype2(Imomentum,2)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -6887,12 +6887,12 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,2) = itype2(Imomentum,2)+1
                     Bgrad = Bgrad-dble(itype2(Imomentum,2))*temp
-                 endif
-              endif
+                 ENDIF
+              ENDIF
 
               doit = iC.eq.iAtom
 
-              if (doit) then
+              IF (doit) THEN
 
                  itype2(Imomentum,3) = itype2(Imomentum,3)+1
                  Cgrad = Cgrad+2.d0*aexp(IIcon,IIbas)*cntrctcoeff* &
@@ -6907,7 +6907,7 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,3) = itype2(Imomentum,3)-1
-                 if (itype2(Imomentum,3) /= 0) then
+                 IF (itype2(Imomentum,3) /= 0) THEN
                     itype2(Imomentum,3) = itype2(Imomentum,3)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -6922,12 +6922,12 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,3) = itype2(Imomentum,3)+1
                     Cgrad = Cgrad-dble(itype2(Imomentum,3))*temp
-                 endif
-              endif
+                 ENDIF
+              ENDIF
 
               doit = iD.eq.iatom
 
-              if (doit) then
+              IF (doit) THEN
 
                  itype2(Imomentum,4) = itype2(Imomentum,4)+1
                  Dgrad = Dgrad+2.d0*aexp(JJcon,JJbas)*cntrctcoeff* &
@@ -6942,7 +6942,7 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
                       xyz(1,iC), xyz(2,iC),xyz(3,iC), &
                       xyz(1,iD), xyz(2,iD),xyz(3,iD))
                  itype2(Imomentum,4) = itype2(Imomentum,4)-1
-                 if (itype2(Imomentum,4) /= 0) then
+                 IF (itype2(Imomentum,4) /= 0) THEN
                     itype2(Imomentum,4) = itype2(Imomentum,4)-1
                     temp = cntrctcoeff* &
                          repulsion_prim(aexp(Icon,Ibas),aexp(Jcon,Jbas), &
@@ -6957,12 +6957,12 @@ subroutine move1twoe(Ibas,Jbas,IIbas,JJbas,Iatom,Imomentum,repint)
                          xyz(1,iD), xyz(2,iD),xyz(3,iD))
                     itype2(Imomentum,4) = itype2(Imomentum,4)+1
                     Dgrad = Dgrad-dble(itype2(Imomentum,4))*temp
-                 endif
-              endif
-           enddo
-        enddo
-     enddo
-  enddo
+                 ENDIF
+              ENDIF
+           ENDDO
+        ENDDO
+     ENDDO
+  ENDDO
 
   repint = Agrad+Bgrad+Cgrad+Dgrad
 
@@ -6987,54 +6987,54 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
   ! Check to see if the integral has become just the nuclear attraction
   ! integral.
 
-  if (idx+idy+idz == 0) then
+  IF (idx+idy+idz == 0) THEN
      elctfldrec = attrecurse(i,j,k,ii,jj,kk,m,aux,Ax,Ay, &
           Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g)
 
      ! If it hasn't, check to see if it has become a simple integral over s
      ! functions.
 
-  ELSEIF (i+j+k+ii+jj+kk == 0) then
-     if (idx == 2) then
+  ELSEIF (i+j+k+ii+jj+kk == 0) THEN
+     IF (idx == 2) THEN
         elctfldrec = -2.d0*g*attrecurse(i,j,k,ii,jj,kk, &
              m+1,aux,Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g) &
              +4.d0*g*g*(Px-Cx)*(Px-Cx)*attrecurse(i,j,k,ii,jj,kk, &
              m+2,aux,Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g)
-     ELSEIF (idy == 2) then
+     ELSEIF (idy == 2) THEN
         elctfldrec = -2.d0*g*attrecurse(i,j,k,ii,jj,kk, &
              m+1,aux,Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g) &
              +4.d0*g*g*(Py-Cy)*(Py-Cy)*attrecurse(i,j,k,ii,jj,kk, &
              m+2,aux,Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g)
-     ELSEIF (idz == 2) then
+     ELSEIF (idz == 2) THEN
         elctfldrec = -2.d0*g*attrecurse(i,j,k,ii,jj,kk, &
              m+1,aux,Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g) &
              +4.d0*g*g*(Pz-Cz)*(Pz-Cz)*attrecurse(i,j,k,ii,jj,kk, &
              m+2,aux,Ax,Ay,Az,Bx,By,Bz,Cx,Cy,Cz,Px,Py,Pz,g)
-     ELSEIF (idx == 1 .and. idy == 1) then
+     ELSEIF (idx == 1 .AND. idy == 1) THEN
         elctfldrec = 4.d0*g*g*(Px-Cx)*(Py-Cy)* &
              attrecurse(i,j,k,ii,jj,kk,m+2,aux,Ax,Ay,Az,Bx,By,Bz, &
              Cx,Cy,Cz,Px,Py,Pz,g)
-     ELSEIF (idx == 1 .and. idz == 1) then
+     ELSEIF (idx == 1 .AND. idz == 1) THEN
         elctfldrec = 4.d0*g*g*(Px-Cx)*(Pz-Cz)* &
              attrecurse(i,j,k,ii,jj,kk,m+2,aux,Ax,Ay,Az,Bx,By,Bz, &
              Cx,Cy,Cz,Px,Py,Pz,g)
-     ELSEIF (idy == 1 .and. idz == 1) then
+     ELSEIF (idy == 1 .AND. idz == 1) THEN
         elctfldrec = 4.d0*g*g*(Py-Cy)*(Pz-Cz)* &
              attrecurse(i,j,k,ii,jj,kk,m+2,aux,Ax,Ay,Az,Bx,By,Bz, &
              Cx,Cy,Cz,Px,Py,Pz,g)
-     ELSEIF (idx == 1) then
+     ELSEIF (idx == 1) THEN
         elctfldrec = 2.d0*g*(Px-Cx)* &
              attrecurse(i,j,k,ii,jj,kk,m+1,aux,Ax,Ay,Az,Bx,By,Bz, &
              Cx,Cy,Cz,Px,Py,Pz,g)
-     ELSEIF (idy == 1) then
+     ELSEIF (idy == 1) THEN
         elctfldrec = 2.d0*g*(Py-Cy)* &
              attrecurse(i,j,k,ii,jj,kk,m+1,aux,Ax,Ay,Az,Bx,By,Bz, &
              Cx,Cy,Cz,Px,Py,Pz,g)
-     ELSEIF (idz == 1) then
+     ELSEIF (idz == 1) THEN
         elctfldrec = 2.d0*g*(Pz-Cz)* &
              attrecurse(i,j,k,ii,jj,kk,m+1,aux,Ax,Ay,Az,Bx,By,Bz, &
              Cx,Cy,Cz,Px,Py,Pz,g)
-     endif
+     ENDIF
 
      ! Otherwise, use the recusion relation from Obara and Saika.  The first
      ! step is to find the lowest nonzero angular momentum exponent.  This is
@@ -7043,7 +7043,7 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
      ! exponents. This therefore reorders the atoms and sets the exponent
      ! to be reduced.
 
-  else
+  ELSE
      iexponents(1) = i
      iexponents(2) = j
      iexponents(3) = k
@@ -7058,20 +7058,20 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
      center(12)= Pz
      ilownum=300
      ilowex=300
-     do L=1,6
-        if (iexponents(L) < ilowex .and. iexponents(L) /= 0) then
+     DO L=1,6
+        IF (iexponents(L) < ilowex .AND. iexponents(L) /= 0) THEN
            ilowex=iexponents(L)
            ilownum=L
-        endif
-     enddo
-     if (ilownum <= 3) then
+        ENDIF
+     ENDDO
+     IF (ilownum <= 3) THEN
         center(1)=Ax
         center(2)=Ay
         center(3)=Az
         center(4)=Bx
         center(5)=By
         center(6)=Bz
-     else
+     ELSE
         center(4)=Ax
         center(5)=Ay
         center(6)=Az
@@ -7085,7 +7085,7 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
         iexponents(2) = jj
         iexponents(3) = kk
         ilownum = ilownum - 3
-     endif
+     ENDIF
 
      ! The first step is lowering the orbital exponent by one.
 
@@ -7096,7 +7096,7 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
 
      elctfldrec = 0.d0
      PA = center(9+ilownum)-center(ilownum)
-     if (PA /= 0) elctfldrec  = elctfldrec  + PA * &
+     IF (PA /= 0) elctfldrec  = elctfldrec  + PA * &
           elctfldrecurse(iexponents(1),iexponents(2), &
           iexponents(3),iexponents(4), &
           iexponents(5),iexponents(6), &
@@ -7107,7 +7107,7 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
           center(10),center(11),center(12),g)
 
      PC = center(9+ilownum)-center(6+ilownum)
-     if (PC /= 0) elctfldrec  = elctfldrec  - PC * &
+     IF (PC /= 0) elctfldrec  = elctfldrec  - PC * &
           elctfldrecurse(iexponents(1),iexponents(2), &
           iexponents(3),iexponents(4), &
           iexponents(5),iexponents(6), &
@@ -7123,7 +7123,7 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
      ! (s|1/rc|px), and the following term does not arise, as the x expoent
      ! on A is zero.
 
-     if (iexponents(ilownum) /= 0) then
+     IF (iexponents(ilownum) /= 0) THEN
         coeff = dble(iexponents(ilownum))/(2.d0*g)
         iexponents(ilownum) = iexponents(ilownum)-1
         elctfldrec  = elctfldrec  + coeff*( &
@@ -7145,7 +7145,7 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
              center(10),center(11),center(12),g) &
              )
         iexponents(ilownum) = iexponents(ilownum)+1
-     endif
+     ENDIF
 
      ! The next two terms only arise is the angual momentum of the dimension
      ! of A that has already been lowered is not zero in B.  If a
@@ -7153,7 +7153,7 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
      ! (s|1/rc|px), and the following term does arise, as the x exponent on
      ! B is 1.
 
-     if (iexponents(ilownum+3) /= 0) then
+     IF (iexponents(ilownum+3) /= 0) THEN
         coeff = dble(iexponents(ilownum+3))/(2.d0*g)
         iexponents(ilownum+3) = iexponents(ilownum+3)-1
         elctfldrec = elctfldrec + coeff*( &
@@ -7175,13 +7175,13 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
              center(10),center(11),center(12),g) &
              )
         iexponents(ilownum+3) = iexponents(ilownum+3)+1
-     endif
+     ENDIF
 
      ! Finally there is a lowering of the derivative term, which only occurs
      ! if the angular momentum being lowered in this step corresponds to the
      ! derivative direction.
 
-     if (ilownum == 1 .and. idx > 0) then
+     IF (ilownum == 1 .AND. idx > 0) THEN
         elctfldrec = elctfldrec + dble(idx)* &
              elctfldrecurse(iexponents(1),iexponents(2), &
              iexponents(3),iexponents(4), &
@@ -7191,7 +7191,7 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
              center(4),center(5),center(6), &
              center(7),center(8),center(9), &
              center(10),center(11),center(12),g)
-     ELSEIF (ilownum == 2 .and. idy > 0) then
+     ELSEIF (ilownum == 2 .AND. idy > 0) THEN
         elctfldrec = elctfldrec + dble(idy)* &
              elctfldrecurse(iexponents(1),iexponents(2), &
              iexponents(3),iexponents(4), &
@@ -7201,7 +7201,7 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
              center(4),center(5),center(6), &
              center(7),center(8),center(9), &
              center(10),center(11),center(12),g)
-     ELSEIF (ilownum == 3 .and. idz > 0) then
+     ELSEIF (ilownum == 3 .AND. idz > 0) THEN
         elctfldrec = elctfldrec + dble(idz)* &
              elctfldrecurse(iexponents(1),iexponents(2), &
              iexponents(3),iexponents(4), &
@@ -7211,8 +7211,8 @@ double precision recursive function elctfldrecurse(i,j,k,ii,jj,kk, &
              center(4),center(5),center(6), &
              center(7),center(8),center(9), &
              center(10),center(11),center(12),g)
-     endif
-  endif
+     ENDIF
+  ENDIF
 
 
   return
@@ -7273,12 +7273,12 @@ end function elctfldrecurse
 ! FLAG FOR WHETHER OR NOT TO COMPUTE EIGENVALUES:
 
 
-    if(NDIM == 1)then
+    IF(NDIM == 1)THEN
         EVAL1(1) = A(1,1)
         IDEGEN1(1) = 1
         EVEC1(1,1) = 1.0D0
         RETURN
-    endif
+    ENDIF
 
 ! TRIDIAGONALIZE THE MATRIX A.  THIS WILL OVERWRITE THE DIAGONAL
 ! AND SUBDIAGONAL OF A WITH THE TRIDIAGONALIZED VERSION.  THE
@@ -7290,24 +7290,24 @@ end function elctfldrecurse
 ! COMPUTE NORM OF TRIDIAGONAL MATRIX FROM THE "LARGEST" COLUMN.
 
     ANORM = ABS(A(1,1)) + ABS(A(2,1))
-    if(NDIM > 2)then
-        do 20 I=2,NDIM-1
+    IF(NDIM > 2)THEN
+        DO 20 I=2,NDIM-1
             AICOL = ABS(A(I-1,I)) + ABS(A(I,I)) + ABS(A(I+1,I))
             ANORM = MAX(ANORM,AICOL)
-        20 enddo
-    endif
+        20 ENDDO
+    ENDIF
     ANCOL = ABS(A(NDIM-1,NDIM)) + ABS(A(NDIM,NDIM))
     ANORM = MAX(ANORM,ANCOL)
 
 ! GET EIGENVALUES AND DEGENERACIES OF THE TRIDIAGONAL MATRIX A.
-! if THE CALLING ROUTINE HAS NOT SUPPLIED A TOLERANCE FACTOR FOR
+! IF THE CALLING ROUTINE HAS NOT SUPPLIED A TOLERANCE FACTOR FOR
 ! OFF-DIAGONAL ENTRIES IN THE QR ITERATION, A DEFAULT OF 1.0D-8
 ! WILL BE USED.
 
     TOLTMP = TOLERA
-    if(TOLTMP <= 0.0D0) TOLTMP = 1.0D-8
+    IF(TOLTMP <= 0.0D0) TOLTMP = 1.0D-8
     CALL hessEIGVAL(NDIM,A,V,TOLTMP,ANORM,EVAL1,IERROR)
-    if(IERROR /= 0) RETURN
+    IF(IERROR /= 0) RETURN
 
 ! DETERMINE DEGENERACIES OF EIGENVALUES.
 
@@ -7315,7 +7315,7 @@ end function elctfldrecurse
 
 ! GET EIGENVECTORS OF TRIDIAGONALIZED VERSION OF A.
 
-    if(NEVEC1 <= 0) RETURN
+    IF(NEVEC1 <= 0) RETURN
     CALL hessEIGVEC(NDIM,NEVEC1,A,V,TOLTMP,ANORM,EVAL1,IDEGEN1,EVEC1)
 
 ! PREMULTIPLY EVEC1 BY THE HOUSEHOLDER MATRIX USED TO TRIDIAGONALIZE
@@ -7323,35 +7323,35 @@ end function elctfldrecurse
 ! THOSE OF THE ORIGINAL MATRIX A.  SEE SUBROUTINE TRIDI FOR
 ! STORAGE OF HOUSEHOLDER TRANSFORMATION.
 
-    if(NDIM > 2)then
-        do 30 K=1,NDIM-2
+    IF(NDIM > 2)THEN
+        DO 30 K=1,NDIM-2
             V(1,K) = A(K+2,K)
-        30 enddo
+        30 ENDDO
     
     ! SWAP STORAGE SO THAT THE EXPENSIVE TRIPLE LOOP BELOW DOESN'T
     ! HAVE TO JUMP ACROSS COLUMNS TO GET ENTRIES OF A.
     
-        do 50 I=2,NDIM
-            do 40 J=1,I-1
+        DO 50 I=2,NDIM
+            DO 40 J=1,I-1
                 A(I,J) = A(J,I)
-            40 enddo
-        50 enddo
-        do 160 J=1,NEVEC1
-            do 140 M=2,NDIM-1
+            40 ENDDO
+        50 ENDDO
+        DO 160 J=1,NEVEC1
+            DO 140 M=2,NDIM-1
                 K = NDIM - M
                 BETAH = V(1,K)
-                if(ABS(BETAH) < 1.0D-50) CONTINUE !GO TO 140
+                IF(ABS(BETAH) < 1.0D-50) CONTINUE !GO TO 140
                 SUM = 0.0D0
-                do 100 I=K+1,NDIM
+                DO 100 I=K+1,NDIM
                     SUM = SUM + A(I,K)*EVEC1(I,J)
-                100 enddo
+                100 ENDDO
                 BSUM = BETAH*SUM
-                do 120 I=K+1,NDIM
+                DO 120 I=K+1,NDIM
                     EVEC1(I,J) = EVEC1(I,J) - A(I,K)*BSUM
-                120 enddo
-            140 enddo
-        160 enddo
-    endif
+                120 ENDDO
+            140 ENDDO
+        160 ENDDO
+    ENDIF
     RETURN
     end SUBROUTINE hessDIAG
 
@@ -7376,16 +7376,16 @@ end function elctfldrecurse
 ! DIMENSION A(NDIM,*),V(3,*)
     DIMENSION A(natom*3,natom*3),V(3,natom*3)
 
-! THRESH WILL BE USED AS A THRESHOLD TO DETERMINE if A VALUE SHOULD
+! THRESH WILL BE USED AS A THRESHOLD TO DETERMINE IF A VALUE SHOULD
 ! BE CONSIDERED TO BE ZERO.  THIS CAN BE CHANGED BY THE USER.
 
     THRESH = 1.0D-50
 
-! if A IS 2 BY 2 OR SMALLER, then IT IS ALREADY TRIDIAGONAL -- NO
+! IF A IS 2 BY 2 OR SMALLER, THEN IT IS ALREADY TRIDIAGONAL -- NO
 ! NEED TO CONTINUE.
 
-    if(NDIM <= 2) GO TO 1000
-    do 500 K=1,NDIM-2
+    IF(NDIM <= 2) GO TO 1000
+    DO 500 K=1,NDIM-2
     
     ! DETERMINE THE VECTOR V USED IN THE HOUSEHOLDER TRANSFORMATION P.
     ! FOR EACH VALUE OF K THE HOUSEHOLDER MATRIX P IS DEFINED AS:
@@ -7393,17 +7393,17 @@ end function elctfldrecurse
     ! P = I - BETAH*V*V'
     
     
-    ! CONSTRUCT A HOUSEHOLDER TRANSFORMATION ONLY if THERE IS A NONZERO
+    ! CONSTRUCT A HOUSEHOLDER TRANSFORMATION ONLY IF THERE IS A NONZERO
     ! OFF-DIAGONAL ELEMENT BELOW A(K,K).
     
         ALPHA2 = 0.0D0
-        do 60 I=K+1,NDIM
+        DO 60 I=K+1,NDIM
             V(1,I) = A(I,K)
             ALPHA2 = ALPHA2 + V(1,I)**2
-        60 enddo
+        60 ENDDO
         APTEMP = ALPHA2 - V(1,K+1)**2
         ALPHA = DSQRT(ALPHA2)
-        if(ALPHA >= THRESH)then
+        IF(ALPHA >= THRESH)THEN
             BETAH = 1.0D0/(ALPHA*(ALPHA + ABS(V(1,K+1))))
             SGN = SIGN(1.0D0,V(1,K+1))
             V(1,K+1) = V(1,K+1) + SGN*ALPHA
@@ -7421,51 +7421,51 @@ end function elctfldrecurse
         
             DOT12 = 0.0D0
             BHALF = BETAH*0.5D0
-            do 220 I=K+1,NDIM
+            DO 220 I=K+1,NDIM
                 SUM = 0.0D0
-                do 100 J=K+1,I
+                DO 100 J=K+1,I
                     SUM = SUM + A(I,J)*V(1,J)
-                100 enddo
-                if(I < NDIM)then
-                    do 180 J=I+1,NDIM
+                100 ENDDO
+                IF(I < NDIM)THEN
+                    DO 180 J=I+1,NDIM
                     
                     ! AN UPPER TRIANGULAR ENTRY OF A WILL BE REQUIRED.  MUST USE
                     ! THE SYMMETRIC ENTRY IN THE LOWER TRIANGULAR PART OF A.
                     
                         SUM = SUM + A(J,I)*V(1,J)
-                    180 enddo
-                endif
+                    180 ENDDO
+                ENDIF
                 V(2,I) = BETAH*SUM
                 DOT12 = DOT12 + V(1,I)*V(2,I)
-            220 enddo
+            220 ENDDO
             BH12 = BHALF*DOT12
-            do 300 I=K+1,NDIM
+            DO 300 I=K+1,NDIM
                 V(2,I) = V(2,I) - BH12*V(1,I)
-            300 enddo
-            do 350 J=K+1,NDIM
-                do 310 I=J,NDIM
+            300 ENDDO
+            DO 350 J=K+1,NDIM
+                DO 310 I=J,NDIM
                     A(I,J) = A(I,J) - V(1,I)*V(2,J) - V(2,I)*V(1,J)
-                310 enddo
+                310 ENDDO
             
             ! STORE V(1,J) ABOVE THE DIAGONAL IN ROW K OF A
             
                 A(K,J) = V(1,J)
-            350 enddo
+            350 ENDDO
         
         ! STORE BETAH BELOW THE SUBDIAGONAL OF A.
         
             A(K+2,K) = BETAH
-        else
+        ELSE
         
         ! NO HOUSEHOLDER TRANSFORMATION IS NECESSARY BECAUSE THE OFF-
         ! DIAGONALS ARE ALL ESSENTIALLY ZERO.
         
             A(K+2,K) = 0.0D0
-            do 460 J=K+1,NDIM
+            DO 460 J=K+1,NDIM
                 A(K,J) = 0.0D0
-            460 enddo
-        endif
-    500 enddo
+            460 ENDDO
+        ENDIF
+    500 ENDDO
     1000 RETURN
     end SUBROUTINE hessTRIDI
 
@@ -7489,7 +7489,7 @@ end function elctfldrecurse
 ! RETURNED:
 
 ! EVAL1   = EIGENVALUES OF A IN ASCENDING ORDER.
-! IERROR = 1 if QR ITERATION DID NOT CONVERGE; 0 OTHERWISE.
+! IERROR = 1 IF QR ITERATION DID NOT CONVERGE; 0 OTHERWISE.
 
 ! PROGRAMMED BY S. L. DIXON.
 
@@ -7511,12 +7511,12 @@ end function elctfldrecurse
 
     EVAL1(1) = A(1,1)
     BETAH(1,1) = A(2,1)
-    if(NDIM > 2)then
-        do 50 I=2,NDIM-1
+    IF(NDIM > 2)THEN
+        DO 50 I=2,NDIM-1
             EVAL1(I) = A(I,I)
             BETAH(1,I) = A(I+1,I)
-        50 enddo
-    endif
+        50 ENDDO
+    ENDIF
     EVAL1(NDIM) = A(NDIM,NDIM)
 
 ! EACH QR ITERATION WILL OPERATE ON THE UNREDUCED TRIDIAGONAL
@@ -7531,51 +7531,51 @@ end function elctfldrecurse
 ! (N,N).  I.E., SEARCH UPWARD FOR A BETAH THAT IS ZERO.
 
     80 KUPPER = N-L
-    do 100 K=1,KUPPER
+    DO 100 K=1,KUPPER
         I = N-K
-        if(ABS(BETAH(1,I)) <= EPSLON)then
+        IF(ABS(BETAH(1,I)) <= EPSLON)THEN
             L = I+1
             GO TO 150
-        endif
-    100 enddo
+        ENDIF
+    100 ENDDO
 
-! if WE GET TO THE NEXT STATEMENT, then THERE ARE NO ZERO OFF-DIAGONALS
+! IF WE GET TO THE NEXT STATEMENT, THEN THERE ARE NO ZERO OFF-DIAGONALS
 ! FOR THE SUBMATRIX WITH UPPER LEFT A(L,L) AND LOWER RIGHT A(N,N).
-! WE CAN STILL GET EIGENVALUES if THE MATRIX IS 2 BY 2 OR 1 BY 1.
-! OTHERWISE, do ANOTHER QR ITERATION PROVIDED ITMAX CYCLES HAVE
+! WE CAN STILL GET EIGENVALUES IF THE MATRIX IS 2 BY 2 OR 1 BY 1.
+! OTHERWISE, DO ANOTHER QR ITERATION PROVIDED ITMAX CYCLES HAVE
 ! NOT OCCURRED.
 
-    if(L == N .OR. L == N-1)then
+    IF(L == N .OR. L == N-1)THEN
         GO TO 150
-    else
-        if(ITER == ITMAX)then
+    ELSE
+        IF(ITER == ITMAX)THEN
             IERROR = 1
             GO TO 1000
-        else
+        ELSE
             GO TO 200
-        endif
-    endif
+        ENDIF
+    ENDIF
 
-! if WE GET TO 150 then A(L,L-1) IS ZERO AND THE UNREDUCED SUBMATRIX
+! IF WE GET TO 150 THEN A(L,L-1) IS ZERO AND THE UNREDUCED SUBMATRIX
 ! HAS UPPER LEFT AT A(L,L) AND LOWER RIGHT AT A(N,N).  WE CAN
-! EXTRACT ONE EIGENVALUE if THIS MATRIX IS 1 BY 1 AND 2 EIGENVALUES
-! if IT IS 2 BY 2.
+! EXTRACT ONE EIGENVALUE IF THIS MATRIX IS 1 BY 1 AND 2 EIGENVALUES
+! IF IT IS 2 BY 2.
 
-    150 if(L == N)then
+    150 IF(L == N)THEN
     
-    ! IT'S A 1 BY 1 AND EVAL1(N) IS AN EIGENVALUE.  if L=2 OR 1 WE ARE
+    ! IT'S A 1 BY 1 AND EVAL1(N) IS AN EIGENVALUE.  IF L=2 OR 1 WE ARE
     ! DONE.  OTHERWISE, UPDATE N, RESET L AND ITER, AND REPEAT THE
     ! SEARCH.
     
-        if(L <= 2)then
+        IF(L <= 2)THEN
             GO TO 500
-        else
+        ELSE
             N = L-1
             L = 1
             ITER = 0
             GO TO 80
-        endif
-    ELSEIF(L == N-1)then
+        ENDIF
+    ELSEIF(L == N-1)THEN
     
     ! THE UNREDUCED SUBMATRIX IS A 2 BY 2.  OVERWRITE EVAL1(N-1)
     ! AND EVAL1(N) WITH THE EIGENVALUES OF THE LOWER RIGHT 2 BY 2.
@@ -7584,33 +7584,33 @@ end function elctfldrecurse
         ROOT1 = BTERM*0.5D0
         ROOT2 = ROOT1
         DISCR = BTERM**2 - 4.0D0*(EVAL1(N-1)*EVAL1(N)-BETAH(1,N-1)**2)
-        if(DISCR > 0.0D0)then
+        IF(DISCR > 0.0D0)THEN
             D = DSQRT(DISCR)*0.5D0
             ROOT1 = ROOT1 - D
             ROOT2 = ROOT2 + D
-        endif
+        ENDIF
         EVAL1(N-1) = ROOT1
         EVAL1(N) = ROOT2
     
-    ! SEE if WE ARE DONE.  if NOT, RESET N, L, AND ITER AND LOOK
+    ! SEE IF WE ARE DONE.  IF NOT, RESET N, L, AND ITER AND LOOK
     ! FOR NEXT UNREDUCED SUBMATRIX.
     
-        if(L <= 2)then
+        IF(L <= 2)THEN
             GO TO 500
-        else
+        ELSE
             N = L-1
             L = 1
             ITER = 0
             GO TO 80
-        endif
-    else
+        ENDIF
+    ELSE
     
     ! AN EIGENVALUE WAS FOUND AND THE NEW UNREDUCED MATRIX LIMITS
-    ! N AND L ARE SET.  do A QR ITERATION ON NEW MATRIX.
+    ! N AND L ARE SET.  DO A QR ITERATION ON NEW MATRIX.
     
         ITER = 0
         GO TO 200
-    endif
+    ENDIF
 
 ! QR ITERATION BEGINS HERE.
 
@@ -7621,7 +7621,7 @@ end function elctfldrecurse
 
     D = (EVAL1(N-1) - EVAL1(N))*0.5D0
     SIGND = 1.0D0
-    if(D < 0.0D0) SIGND = -1.0D0
+    IF(D < 0.0D0) SIGND = -1.0D0
     SHIFT = EVAL1(N) + D - SIGND*DSQRT(D*D + BETAH(1,N-1)**2)
     P = EVAL1(L) - SHIFT
     R = BETAH(1,L)
@@ -7630,11 +7630,11 @@ end function elctfldrecurse
 
 ! OVERWRITE A WITH Q'*A*Q.
 
-    do 250 K=L,N-1
+    DO 250 K=L,N-1
         D = DSQRT(P*P + R*R)
         C = P/D
         S = R/D
-        if(K /= L) BETAH(1,K-1) = D
+        IF(K /= L) BETAH(1,K-1) = D
         CC = C*C
         SS = 1.0D0 - CC
         CS = C*S
@@ -7645,29 +7645,29 @@ end function elctfldrecurse
         T = SS*T - CSW + CC*AK1
         R = S*BETAH(1,K+1)
         W = C*BETAH(1,K+1)
-    250 enddo
+    250 ENDDO
     BETAH(1,N-1) = P
     EVAL1(N) = T
 
-! GO BACK AND SEE if L AND N NEED TO BE UPDATED.
+! GO BACK AND SEE IF L AND N NEED TO BE UPDATED.
 
     GO TO 80
 
 ! SORT EIGENVALUES IN ASCENDING ALGEBRAIC ORDER.
 
-    500 do 600 I=2,NDIM
+    500 DO 600 I=2,NDIM
         JMAX = NDIM-I+1
         ISORT = 0
-        do 550 J=1,JMAX
-            if(EVAL1(J) > EVAL1(J+1))then
+        DO 550 J=1,JMAX
+            IF(EVAL1(J) > EVAL1(J+1))THEN
                 ETEMP = EVAL1(J)
                 EVAL1(J) = EVAL1(J+1)
                 EVAL1(J+1) = ETEMP
                 ISORT = 1
-            endif
-        550 enddo
-        if(ISORT == 0) GO TO 1000
-    600 enddo
+            ENDIF
+        550 ENDDO
+        IF(ISORT == 0) GO TO 1000
+    600 ENDDO
     1000 RETURN
     end SUBROUTINE hessEIGVAL
 
@@ -7700,46 +7700,46 @@ end function elctfldrecurse
 
     DTOLER = MAX(ANORM*DSQRT(TOLERA),1.0D-8)
     NSAME = 1
-    do 200 I=2,NDIM
+    DO 200 I=2,NDIM
         DIFF = ABS(EVAL1(I-1) - EVAL1(I))
-        if(DIFF <= DTOLER)then
+        IF(DIFF <= DTOLER)THEN
         
         ! EIGENVALUES I-1 AND I ARE DEGENERATE.
         
             NSAME = NSAME + 1
-            if(I == NDIM)then
+            IF(I == NDIM)THEN
             
             ! WE'VE COME TO THE LAST REQUESTED EIGENVALUE, AND IT'S TIME
             ! TO ASSIGN DEGENERACIES FOR THE BLOCK ENDING WITH THE ITH
             ! EIGENVALUE.
             
-                do 100 J=I-NSAME+1,I
+                DO 100 J=I-NSAME+1,I
                     IDEGEN1(J) = NSAME
-                100 enddo
-            endif
+                100 ENDDO
+            ENDIF
         
-        ! GO TO THE NEXT EIGENVALUE (if THERE ARE ANY LEFT) AND SEE if
+        ! GO TO THE NEXT EIGENVALUE (IF THERE ARE ANY LEFT) AND SEE IF
         ! IT'S DEGENERATE WITH THE NSAME EIGENVALUES WE'VE ALREADY
         ! FOUND.
         
             GO TO 200
-        else
+        ELSE
         
         ! EITHER EIGENVALUE I-1 IS NONDEGENERATE OR IT'S THE LAST
         ! EIGENVALUE IN A DEGENERATE BLOCK.  CORRESPONDINGLY, ASSIGN THE
         ! PROPER DEGENERACY TO I-1 OR TO EACH EIGENVALUE IN THE BLOCK.
         
-            do 150 J=I-NSAME,I-1
+            DO 150 J=I-NSAME,I-1
                 IDEGEN1(J) = NSAME
-            150 enddo
+            150 ENDDO
             NSAME = 1
         
-        ! if I=NDIM then IT MUST BE THE CASE THAT THIS LAST EIGENVALUE
+        ! IF I=NDIM THEN IT MUST BE THE CASE THAT THIS LAST EIGENVALUE
         ! IS NONDEGENERATE.
         
-            if(I == NDIM) IDEGEN1(I) = 1
-        endif
-    200 enddo
+            IF(I == NDIM) IDEGEN1(I) = 1
+        ENDIF
+    200 ENDDO
     RETURN
     end SUBROUTINE hessDEGEN
 
@@ -7778,7 +7778,7 @@ end function elctfldrecurse
     LOGICAL :: ORTH
     IRAND = 13876532
 
-! COMPUTE THRESHOLD EPSLON WHICH WILL BE USED if THE INVERSE ITERATION
+! COMPUTE THRESHOLD EPSLON WHICH WILL BE USED IF THE INVERSE ITERATION
 ! MATRIX IS SINGULAR.
 
     EPSLON = ANORM*TOLERA
@@ -7794,23 +7794,23 @@ end function elctfldrecurse
     NFAIL = 0
     NPRTRB = 0
 
-! do ONE ITERATION FOR EACH EIGENVECTOR.
+! DO ONE ITERATION FOR EACH EIGENVECTOR.
 
     40 ORTH = .TRUE.
     NDEGEN = 0
     MSTART = IVECT
-    do 380 M=MSTART,NEVEC1
-        if(IDEGEN1(M) > 1) NDEGEN = NDEGEN + 1
+    DO 380 M=MSTART,NEVEC1
+        IF(IDEGEN1(M) > 1) NDEGEN = NDEGEN + 1
         Z = EVAL1(M)
     
-    ! if THE INVERSE ITERATION HAS FAILED TWICE DUE TO NON-ORTHOGONALITY
+    ! IF THE INVERSE ITERATION HAS FAILED TWICE DUE TO NON-ORTHOGONALITY
     ! OF DEGENERATE EIGENVECTORS, PERTURB THE EIGENVALUE BY A SMALL
     ! AMOUNT.
     
-        if(NFAIL >= 2)then
+        IF(NFAIL >= 2)THEN
             NPRTRB = NPRTRB + 1
             Z = Z + 0.001D0*DBLE(NPRTRB)*TOLERA
-        endif
+        ENDIF
     
     ! STORE THE TRIDIAGONAL ENTRIES OF THE INVERSE ITERATION MATRIX IN
     ! THE 3 BY NDIM WORKSPACE AWORK.
@@ -7818,36 +7818,36 @@ end function elctfldrecurse
         AWORK(1,1) = 0.0D0
         AWORK(2,1) = A(1,1) - Z
         AWORK(3,1) = A(2,1)
-        if(NDIM > 2)then
-            do 80 I=2,NDIM-1
+        IF(NDIM > 2)THEN
+            DO 80 I=2,NDIM-1
                 AWORK(1,I) = A(I,I-1)
                 AWORK(2,I) = A(I,I) - Z
                 AWORK(3,I) = A(I+1,I)
-            80 enddo
-        endif
+            80 ENDDO
+        ENDIF
         AWORK(1,NDIM) = A(NDIM,NDIM-1)
         AWORK(2,NDIM) = A(NDIM,NDIM) - Z
         AWORK(3,NDIM) = 0.0D0
     
     ! ASSIGN INVERSE ITERATION VECTOR FROM RANDOM NUMBERS.
     
-        do 120 I=1,NDIM
+        DO 120 I=1,NDIM
             CALL RANDOM(IRAND,RNDOM)
             RNDOM = 2.0D0*(RNDOM - 0.5D0)
             EVEC1(I,M) = RNDOM*TOLERA
-        120 enddo
+        120 ENDDO
     
     ! CARRY OUT FORWARD GAUSSIAN ELIMINATION WITH ROW PIVOTING
     ! ON THE INVERSE ITERATION MATRIX.
     
-        do 160 K=1,NDIM-1
+        DO 160 K=1,NDIM-1
             ADIAG = ABS(AWORK(2,K))
             ASUB = ABS(AWORK(1,K+1))
-            if(ADIAG >= ASUB)then
+            IF(ADIAG >= ASUB)THEN
             
             ! USE PIVOTAL ELEMENT FROM ROW K.
             
-                if(AWORK(2,K) == 0.0D0) AWORK(2,K) = EPSLON
+                IF(AWORK(2,K) == 0.0D0) AWORK(2,K) = EPSLON
                 T = AWORK(1,K+1)/AWORK(2,K)
                 AWORK(1,K+1) = 0.0D0
                 AWORK(2,K+1) = AWORK(2,K+1) - T*AWORK(3,K)
@@ -7862,11 +7862,11 @@ end function elctfldrecurse
             ! OPERATE ON VECTOR AS WELL.
             
                 EVEC1(K+1,M) = EVEC1(K+1,M) - T*EVEC1(K,M)
-            else
+            ELSE
             
             ! USE PIVOTAL ELEMENT FROM ROW K+1 AND SWAP ROWS K AND K+1.
             
-                if(AWORK(1,K+1) == 0.0D0) AWORK(1,K+1) = EPSLON
+                IF(AWORK(1,K+1) == 0.0D0) AWORK(1,K+1) = EPSLON
                 T = AWORK(2,K)/AWORK(1,K+1)
                 ATEMP = AWORK(3,K) - T*AWORK(2,K+1)
                 AWORK(1,K) = AWORK(1,K+1)
@@ -7881,46 +7881,46 @@ end function elctfldrecurse
                 ETEMP = EVEC1(K+1,M)
                 EVEC1(K+1,M) = EVEC1(K,M) - ETEMP*T
                 EVEC1(K,M) = ETEMP
-            endif
-        160 enddo
+            ENDIF
+        160 ENDDO
     
     ! FORWARD ELIMINATION COMPLETE.  BACK SUBSTITUTE TO GET SOLUTION.
     ! OVERWRITE COLUMN M OF EVEC1 WITH SOLUTION.
     
-        if(AWORK(2,NDIM) == 0.0D0) AWORK(2,NDIM) = EPSLON
+        IF(AWORK(2,NDIM) == 0.0D0) AWORK(2,NDIM) = EPSLON
         EVEC1(NDIM,M) = EVEC1(NDIM,M)/AWORK(2,NDIM)
         ETEMP = EVEC1(NDIM-1,M) - AWORK(2,NDIM-1)*EVEC1(NDIM,M)
         EVEC1(NDIM-1,M) = ETEMP/AWORK(1,NDIM-1)
         ENORM = EVEC1(NDIM,M)**2 + EVEC1(NDIM-1,M)**2
-        if(NDIM > 2)then
+        IF(NDIM > 2)THEN
         
         ! CAUTION: PROBLEM LOOP FOR SOME IBM RS/6000 COMPILERS.  VALUE
         ! OF K CAN GET LOST WHEN OPTIMIZE FLAG IS USED.
         
-            do 200 L=1,NDIM-2
+            DO 200 L=1,NDIM-2
                 K = NDIM-L-1
                 ETEMP = EVEC1(K,M) - AWORK(2,K)*EVEC1(K+1,M) &
                 - AWORK(3,K)*EVEC1(K+2,M)
                 EVEC1(K,M) = ETEMP/AWORK(1,K)
                 ENORM = ENORM + EVEC1(K,M)**2
-            200 enddo
-        endif
+            200 ENDDO
+        ENDIF
         EINV = 1.0D0/DSQRT(ENORM)
     
     ! NORMALIZE EIGENVECTOR.
     
-        do 240 I=1,NDIM
+        DO 240 I=1,NDIM
             EVEC1(I,M) = EVEC1(I,M)*EINV
-        240 enddo
+        240 ENDDO
     
-    ! if WE HAVE COME TO THE END OF A DEGENERATE BLOCK OF EIGENVECTORS,
+    ! IF WE HAVE COME TO THE END OF A DEGENERATE BLOCK OF EIGENVECTORS,
     ! ORTHOGONALIZE THE BLOCK.
     
-        if(NDEGEN > 1)then
-            if(NDEGEN == IDEGEN1(M) .OR. M == NEVEC1)then
+        IF(NDEGEN > 1)THEN
+            IF(NDEGEN == IDEGEN1(M) .OR. M == NEVEC1)THEN
                 JSTART = M-NDEGEN+1
                 CALL hessORTHOG(NDIM,NDEGEN,JSTART,EVEC1,ORTH)
-                if(ORTH)then
+                IF(ORTH)THEN
                     NFAIL = 0
                     NPRTRB = 0
                 
@@ -7929,7 +7929,7 @@ end function elctfldrecurse
                 
                     IVECT = IVECT + NDEGEN
                     NDEGEN = 0
-                else
+                ELSE
                 
                 ! THE BLOCK IS APPARENTLY NOT LINEARLY INDEPENDENT.  GO BACK
                 ! AND REPEAT THE INVERSE ITERATION FOR THESE VECTORS.  AFTER
@@ -7938,14 +7938,14 @@ end function elctfldrecurse
                 
                     NFAIL = NFAIL + 1
                     GO TO 40
-                endif
-            endif
-        endif
+                ENDIF
+            ENDIF
+        ENDIF
     
-    ! THE CURRENT EIGENVECTOR SHOULD BE OKAY if IT IS NONDEGENERATE.
+    ! THE CURRENT EIGENVECTOR SHOULD BE OKAY IF IT IS NONDEGENERATE.
     
-        if(IDEGEN1(M) == 1) IVECT = IVECT + 1
-    380 enddo
+        IF(IDEGEN1(M) == 1) IVECT = IVECT + 1
+    380 ENDDO
     RETURN
     end SUBROUTINE hessEIGVEC
 
@@ -7957,7 +7957,7 @@ end function elctfldrecurse
 ! INDEPENDENT, NORMALIZED VECTORS IN THE ARRAY VECT.  THE VECTORS
 ! SHOULD BE STORED COLUMNWISE, STARTING IN COLUMN JSTART.  VECT IS
 ! OVERWRITTEN WITH THE ORTHONORMAL SET.  ALL VECTORS ARE NDIM BY 1.
-! ORTH IS RETURNED WITH A VALUE OF .TRUE. if THE SET WAS LINEARLY
+! ORTH IS RETURNED WITH A VALUE OF .TRUE. IF THE SET WAS LINEARLY
 ! INDEPENDENT AND .FALSE. OTHERWISE.
 
 ! PROGRAMMED BY S. L. DIXON.
@@ -7975,42 +7975,42 @@ end function elctfldrecurse
 ! BEGIN ORTHOGONALIZATION.
 
     JSTOP = JSTART + NVECT - 1
-    do 120 J=JSTART,JSTOP
-        if(J > JSTART)then
+    DO 120 J=JSTART,JSTOP
+        IF(J > JSTART)THEN
         
         ! SUBTRACT OFF COMPONENTS OF PREVIOUSLY DETERMINED ORTHOGONAL
         ! VECTORS FROM THE VECTOR IN COLUMN J.
         
-            do 60 JPREV=JSTART,J-1
+            DO 60 JPREV=JSTART,J-1
                 DOT = 0.0D0
-                do 20 I=1,NDIM
+                DO 20 I=1,NDIM
                     DOT = DOT + VECT(I,JPREV)*VECT(I,J)
-                20 enddo
-                do 40 I=1,NDIM
+                20 ENDDO
+                DO 40 I=1,NDIM
                     VECT(I,J) = VECT(I,J) - DOT*VECT(I,JPREV)
-                40 enddo
-            60 enddo
-        endif
+                40 ENDDO
+            60 ENDDO
+        ENDIF
     
     ! NORMALIZE COLUMN J.
     
         VJNORM = 0.0D0
-        do 80 I=1,NDIM
+        DO 80 I=1,NDIM
             VJNORM = VJNORM + VECT(I,J)**2
-        80 enddo
+        80 ENDDO
         VJNORM = DSQRT(VJNORM)
     
-    ! if THE NORM OF THIS VECTOR IS TOO SMALL then THE VECTORS ARE
+    ! IF THE NORM OF THIS VECTOR IS TOO SMALL THEN THE VECTORS ARE
     ! NOT LINEARLY INDEPENDENT.
     
-        if(VJNORM < ORTEST)then
+        IF(VJNORM < ORTEST)THEN
             ORTH = .FALSE.
             GO TO 1000
-        endif
-        do 100 I=1,NDIM
+        ENDIF
+        DO 100 I=1,NDIM
             VECT(I,J) = VECT(I,J)/VJNORM
-        100 enddo
-    120 enddo
+        100 ENDDO
+    120 ENDDO
     1000 RETURN
     end SUBROUTINE hessORTHOG
 
@@ -8018,7 +8018,7 @@ end function elctfldrecurse
 subroutine PriHessian(io,n,mat,fm) ! format: f(x.y) x>7 sugg 12.5,12.7,14.9
   implicit none
   integer j,jj,n,io,n5,nf,x,y,ini,ifi,k,i,iatom,imom
-  double precision mat(n,n)
+  real*8 mat(n,n)
   character fm*(*),ch,fm2*10
   character*40 fmt1,fmt2,fmt3,fmt4
   character(len=1) cartsym(3)

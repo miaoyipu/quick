@@ -52,9 +52,22 @@ static FILE *debugFile;
 #ifdef DEBUG
 #define PRINTDEBUG(s) \
 {\
-    printf("FILE:%10s, LINE:%5d DATE: %s TIME:%s DEBUG: %s. \n", __FILE__,__LINE__,__DATE__,__TIME__,s );\
+    printf("FILE:%15s, LINE:%5d DATE: %s TIME:%s DEBUG : %s. \n", __FILE__,__LINE__,__DATE__,__TIME__,s );\
 }
+
+#define PRINTUSINGTIME(s,time)\
+{\
+    printf("TIME:%15s, LINE:%5d DATE: %s TIME:%s TIMING:%20s ======= %f ms =======.\n", __FILE__, __LINE__, __DATE__,__TIME__,s,time);\
+}
+
+#define PRINTMEM(s,a) \
+{\
+printf("MEM :%15s, LINE:%5d DATE: %s TIME:%s MEM   : %10s %lli\n", __FILE__,__LINE__,__DATE__,__TIME__,s,a);\
+}
+
 #endif
+
+
 
 
 #ifdef TEST
@@ -100,7 +113,7 @@ static const int SM_2X_THREADS_PER_BLOCK    =   512;
 
 
 // Energy Scale
-static const QUICKDouble OSCALE                  = (QUICKDouble)1E8;
+static const QUICKDouble OSCALE                  = (QUICKDouble)1E16;
 static const QUICKDouble ONEOVEROSCALE           = (QUICKDouble)1.0 / OSCALE;
 static const QUICKDouble ONEOVEROSCALESQUARED    = (QUICKDouble)1.0 / (OSCALE * OSCALE);
 

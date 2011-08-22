@@ -14,7 +14,7 @@
 subroutine PriCol(io,n,mat,c1,c2,fm) ! format: f(x.y) x>7 sugg 12.5,12.7,14.9
   implicit none
   integer i,j,jj,n,io,c1,c2,n5,nf,nc,x,y,k
-  double precision mat(n,n)
+  real*8 mat(n,n)
   character fm*(*),ch,fm2*10
   character*40 fmt1,fmt2,fmt3,fmt4
 

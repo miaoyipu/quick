@@ -6,6 +6,10 @@
 !	Copyright 2011 University of Florida. All rights reserved.
 !
 
+!------------------------------------------------------------
+! iatoimp
+!------------------------------------------------------------
+
 subroutine iatoimp(str, istart, lstr, integ, ierror)
 
   implicit double precision(a-h,o-z)
@@ -19,7 +23,7 @@ subroutine iatoimp(str, istart, lstr, integ, ierror)
   do i=istart,nstr
      ch = str(i:i)
      call whatis1i(ch, int)
-     if ( .not. int) goto 20
+     if ( .NOT. int) goto 20
   enddo
 20 lstr = i-1
   if (lstr == 0) return

@@ -5,9 +5,9 @@
     use allmod
     implicit double precision(a-h,o-z)
 
-    ! Given a point in space, this function calculates the value of basis
-    ! function I and the value of its cartesian derivatives in all three
-    ! derivatives.
+! Given a point in space, this function calculates the value of basis
+! function I and the value of its cartesian derivatives in all three
+! derivatives.
 
     x1=(gridx-xyz(1,quick_basis%ncenter(Iphi)))
     y1=(gridy-xyz(2,quick_basis%ncenter(Iphi)))
@@ -60,9 +60,12 @@
         do Icon=1,ncontract(IPhi)
             temp = dcoeff(Icon,IPhi)*DExp((-aexp(Icon,IPhi))*rsquared)
             Phi=Phi+temp
-            dphidx=dphidx+temp*(-2.d0*(aexp(Icon,IPhi))*x1iplus1+xtype*x1imin1)
-            dphidy=dphidy+temp*(-2.d0*(aexp(Icon,IPhi))*y1iplus1+ytype*y1imin1)
-            dphidz=dphidz+temp*(-2.d0*(aexp(Icon,IPhi))*z1iplus1+ztype*z1imin1)
+            dphidx=dphidx+temp*(-2.d0*(aexp(Icon,IPhi))*x1iplus1 &
+            +xtype*x1imin1)
+            dphidy=dphidy+temp*(-2.d0*(aexp(Icon,IPhi))*y1iplus1 &
+            +ytype*y1imin1)
+            dphidz=dphidz+temp*(-2.d0*(aexp(Icon,IPhi))*z1iplus1 &
+            +ztype*z1imin1)
         enddo
         Phi=phi*x1i*y1i*z1i
  

@@ -7,7 +7,6 @@
 
     logical :: done,failed
     integer :: nelec,nelecb
-    double precision :: V2(3,nbasis)
     done = .false.
     
     nelec = quick_molspec%nelec
@@ -56,7 +55,7 @@
     done=jscf.ge.quick_method%iscf
 
     do WHILE (.not.done)
-        if (quick_method%diisscf .and. PRMS < 1.D-1) call uelectdiis(jscf,PRMS)
+        if (quick_method%diisscf .AND. PRMS < 1.D-1) call uelectdiis(jscf,PRMS)
         call cpu_time(t1)
         jscf=jscf+1
 
@@ -298,7 +297,7 @@
         & 11x,F12.6)') (quick_qm_struct%E(nelec+1) - quick_qm_struct%E(nelec))*27.2116d0
         if (quick_method%prtgap) write (ioutfile,'("BETA HOMO-LUMO GAP (EV)  =", &
         & 11x,F12.6)') (quick_qm_struct%EB(nelecb+1) - quick_qm_struct%EB(nelecb))*27.2116d0
-        if (PRMS < quick_method%pmaxrms .and. pchange < quick_method%pmaxrms*100.d0)then
+        if (PRMS < quick_method%pmaxrms .AND. pchange < quick_method%pmaxrms*100.d0)then
             write (ioutfile,'("CONVERGED!!!!!")')
             done=.true.
         elseif(jscf >= quick_method%iscf) then
@@ -331,4 +330,4 @@
         endif
     enddo
 
-    end subroutine uscf
+    END subroutine uscf

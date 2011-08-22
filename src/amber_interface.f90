@@ -159,7 +159,7 @@ subroutine qm2_quick_energy(escf,scf_mchg)
     !------------------END MPI/ALL NODES---------------------------------    
 
     !allocate essential variables
-    if (quick_first_call) call alloc(quick_molspec)
+    if (quick_first_call) call allocate_atoms()
 
 !*****************************************************************
 ! 2. Next step is to read job and initial guess
@@ -225,22 +225,22 @@ subroutine qm2_quick_energy(escf,scf_mchg)
         enddo
     enddo
   
-    if (analgrad) then
-           !            if (UNRST) then
-           !                if (HF) call uhfgrad
-           !                if (DFT) call uDFTgrad
-           !                if (SEDFT) call uSEDFTgrad
-           !            else
-           if (HF) then
+    IF (analgrad) THEN
+           !            IF (UNRST) THEN
+           !                IF (HF) call uhfgrad
+           !                IF (DFT) call uDFTgrad
+           !                IF (SEDFT) call uSEDFTgrad
+           !            ELSE
+           IF (HF) then
                 if (bMPI) then
                     call mpi_hfgrad
                 else
                     call hfgrad
                 endif
            endif
-           !                if (DFT) call DFTgrad
-           !                if (SEDFT) call SEDFTgrad
-           !            endif
+           !                IF (DFT) call DFTgrad
+           !                IF (SEDFT) call SEDFTgrad
+           !            ENDIF
 
     endif
         

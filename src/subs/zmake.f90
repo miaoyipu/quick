@@ -32,45 +32,45 @@
 
 ! Initialize the z-matrix values if they have not been filled already.
 
-    do J=1,natom
-        do I=1,3
+    DO J=1,natom
+        DO I=1,3
             zmat(i,j)=0.d0
             izmat(i,j)=0
             ioptions(i,j)=0
-        enddo
-    enddo
+        ENDDO
+    ENDDO
 
 ! Calculate distance from atom 1 to atom J.
 
-    do 10 J=2,natom
-        do 20 I=1,3
+    DO 10 J=2,natom
+        DO 20 I=1,3
             r=r+(xyz(i,j)-xyz(i,1))**2
-        20 enddo
+        20 ENDDO
         zmat(1,j)=sqrt(r)*0.5291772083d0
         izmat(1,j)=K
         ioptions(1,j)=1
         r=0.d0
-    10 enddo
+    10 ENDDO
 
 ! Calculate angle j-1-2  This is the angle used in the z-matrix.
 
-    do 30 J=3,natom
+    DO 30 J=3,natom
         call bndang(L,K,J,angle)
         zmat(2,j)=angle
         izmat(2,j)=L
         ioptions(2,j)=1
         angle=0.d0
-    30 enddo
+    30 ENDDO
 
 ! Calculate dihderal 1-2-3-j.
 
-    do 40 J=4,natom
+    DO 40 J=4,natom
         call dihedr(xyz,J,K,L,M,DIH)
         zmat(3,j)=dih
         izmat(3,j)=M
         ioptions(3,j)=1
         dih=0.d0
-    40 enddo
+    40 ENDDO
 
     write(ioutfile,*) ' '
     write(ioutfile,*) 'Z-MATRIX:'
@@ -81,7 +81,7 @@
     4X,'(ANGSTROMS)',4X,'(DEGREES)',7X,'(DEGREES)'/5X,'I', &
     17X,'I-NA',9X,'I-NA-NB',8X,'I-NA-NB-NC',6X,'NA',3X,'NB', &
     3X,'NC'/)
-    do I=1,NATOM
+    DO I=1,NATOM
         IAT = quick_molspec%iattype(I)
         ZTEMP(1) = ZMAT(1,I)
         ZTEMP(2) = ZMAT(2,I)*DEGREE
@@ -90,17 +90,17 @@
     ! KEEP DIHEDRAL IN RANGE -180 TO +180
     
         ABSZ = ABS(ZTEMP(3))
-        if(ABSZ > 180.0D0)then
+        IF(ABSZ > 180.0D0)THEN
             ZTEMP(3) = ZTEMP(3) - SIGN(360.0D0,ZTEMP(3))
-        endif
+        ENDIF
     
         WRITE(IOUTfile,60) I,SYMBOL(IAT),(ZTEMP(J),IOPTions(J,I),J=1,3) &
         ,(IZMAT(J,I),J=1,3)
         60 FORMAT(1X,I5,6X,A2,5X,F9.5,2X,I1,2X,F10.5,2X,I1,3X,F10.5,2X, &
         I1,2X,3I5)
-    enddo
+    ENDDO
     call PrtAct(ioutfile,"End Zmake conversion")
 
-    end subroutine zmake
+    END subroutine zmake
 
 

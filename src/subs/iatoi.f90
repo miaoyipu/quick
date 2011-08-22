@@ -22,7 +22,7 @@ subroutine iatoi(str, istart, lstr, integ, ierror)
   do i=istart,nstr
      ch = str(i:i)
      call whatis2(ch, int, min)
-     if ( .not. int) goto 20
+     if ( .NOT. int) goto 20
   enddo
 20 lstr = i-1
   if (lstr == 0) return

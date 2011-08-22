@@ -9,7 +9,6 @@
 
 #include "gpu_info.h"
 #include "../config.h"
-#include "gpu_common.h"
 #include "stdio.h"
 
 // CUDA-C includes
@@ -25,10 +24,9 @@ extern "C" void gpu_get_device_info_(int* gpu_dev_count, int* gpu_dev_id,int* gp
     
     *gpu_dev_id = 0;  // currently one single GPU is supported
     cuda_error = cudaGetDeviceCount(gpu_dev_count);
-    PRINTERROR(cuda_error,"cudaGetDeviceCount gpu_get_device_info failed!");
     if (*gpu_dev_count == 0) 
     {
-        printf("NO CUDA DEVICE FOUNDED \n");
+        printf("NO CUDA DEVICE FOUNDED");
         cudaThreadExit();
         exit(-1);
     }

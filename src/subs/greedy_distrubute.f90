@@ -58,6 +58,13 @@
         enddo
     enddo
 
+    
+!    do i=0,node-1
+!       write(*,*) "I=",i,node_jtot(i),node_jn(i)
+!       do jn=1,node_jn(i)
+!           write(*,*) i,jn,node_j(i,jn)
+!       enddo
+!   enddo
     end subroutine greedy_distrubute
     
     

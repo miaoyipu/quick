@@ -1,24 +1,12 @@
 #include "config.h"
-!
-!	finalize.f90
-!	new_quick
-!
-!	Created by Yipu Miao on 3/4/11.
-!	Copyright 2011 University of Florida. All rights reserved.
-!
-!   subroutine inventory:
-!       deallocate_calculated
-!       deallocateall
-!       finalize
-
+! Xiao HE deallocate 07/17/2007
+! Ken Ayers 05/26/04
+! Subroutines for allocation of the various matricies in quick
+! These routines are not the ideal way to deal with allocation of
+! variables.  Large sized arrays should only be allocated when
+! they are needed.  Eventually someone will deal with this.
 
 Subroutine deallocate_calculated
-!   Xiao HE deallocate 07/17/2007
-!   Ken Ayers 05/26/04
-!   Subroutines for allocation of the various matricies in quick
-!   These routines are not the ideal way to deal with allocation of
-!   variables.  Large sized arrays should only be allocated when
-!   they are needed.  Eventually someone will deal with this.
   use allmod
   deallocate(Yxiao)
   deallocate(Yxiaotemp)
@@ -27,10 +15,20 @@ Subroutine deallocate_calculated
   deallocate(attraxiaoopt)
   deallocate(Ycutoff)
   deallocate(cutmatrix)
+  deallocate(allerror)
+  deallocate(alloperator)
+
+  deallocate(KLMN)
+  deallocate(cons)
+  deallocate(gccoeff)
+  deallocate(gcexpo)
+
   deallocate(sigrad2)
-  
+  deallocate(V2)
+  deallocate(Uxiao)
+
   call dealloc(quick_scratch)
-  call dealloc(quick_basis)
+  call deallocate_quick_basis(quick_basis)
 
   deallocate(itype)
   deallocate(ncontract)

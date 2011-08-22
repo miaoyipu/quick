@@ -247,7 +247,7 @@ module quick_calculated_module
         integer nelecb
         
         type (quick_qm_struct_type) self
-        nullify(self%nbasis)
+        
         ! those matrices is necessary for all calculation or the basic of other calculation
         deallocate(self%s)
         deallocate(self%x)
@@ -403,7 +403,7 @@ module quick_calculated_module
         call zeroMatrix(self%denseOld,nbasis)
         
         call zeroVec(self%E,nbasis)
-        call zeroiVec(self%iDegen,nbasis)        
+        call zeroVec(self%iDegen,nbasis)        
         call zeroVec(self%Mulliken,natom)        
         call zeroVec(self%Lowdin,natom)
                 

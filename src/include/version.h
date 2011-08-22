@@ -6,6 +6,6 @@
 ! Copyright 2011 University of Florida. All rights reserved.
 !
 
-    character(len=4) :: ver = "0.06beta16"
-    character(len=8) :: date = "June 12 2011"
+    character(len=4) :: ver = "0.07"
+    character(len=8) :: date = "Mar 2011"
 
