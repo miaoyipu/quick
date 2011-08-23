@@ -14,7 +14,6 @@ Subroutine FmT(MaxM,X,vals)
   implicit double precision (a-h,o-z)
   double precision, dimension(0:20) :: vals
 
-  !    PIE4 = 7.85398163397448d-01
   PIE4 = PI/4.0d0
   XINV = 1.d0/X
   E = exp(-X)

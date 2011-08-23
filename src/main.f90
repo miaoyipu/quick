@@ -23,46 +23,12 @@
 !  University of Florida, Gainesville, FL, 2010
 !************************************************************************
 !
-! Update Log:
-! -2011-2-16  YIPU MIAO Add method module and try to convert the progs into OO.
-! -2010-12-1  YIPU MIAO Add freq and hessian matrix calculation. But is broken from last author.
-!                       not support MPI
-! -2010-11-10 YIPU MIAO Complete MPI for MP2, only valid for HF MP2,not valid for Divcon MP2.
-!                       Optimize code
-! -2010-11-14 YIPU MIAO Add paralle option for HF and Divcon, valid for 1e,2e and 
-!                       diag(divcon only) part
-! -2010-7-27  YIPU MIAO add elimination step, improve accuracy. kill some bugs.
-! -2010-7-23  YIPU MIAO first final version. Divcon works. Some tests are done. 
-!                       But still buggy, especially the convergence problem.
-! -2010-7-14  YIPU MIAO add HF SCF calculation. Divcon is partly work, but under test.
-! -2010-5-24  YIPU MIAO add keyword "atombasis“ and "residuebasis" to specify fragment method. 
-!                       if it's residue based, pdb file is needed, while atom based, no pdb file is needed
-! -2010-5-21  YIPU MIAO new quick can now read pdb file as input. But hasn't reach the calculation part.
-! -2010.5.15  YIPU MIAO Reorganize quick program. Ready to eliminate Xiao's personal variables.
-! 
-! -           XIOA HE   FOR + function , tighten cutoff
-!                       MULTIPOLE one-electron only upto P orbital
-!                       ifMM should be earlier than MFCC
-! -           XIAO HE   Clean up main.f90 and right order to call scf.f90 and electdiisdc.f90 and 
-!                       xdivided.f90, weird thing when I comment the read(9999)
-! -           XIAO HE   be careful of HF=.true. and DFT=.true.
-! -           Xiao HE   change these 3 subroutines for high efficiency of gradient
-!                       ifort   -g -O3 -pg -traceback -c        hfgrad.f90
-!                       ifort   -g -O3 -pg -traceback -c       2eshellopt.f90
-!                       ifort   -g -O3 -pg -traceback -c       hrrsubopt.f90
-! -           Xiao HE   change allocate(Xcoeff(jbasis,jbasis,0:3,0:3))
-!**************************************************************************
-!
-
     program quick
     
     use allMod
     use divPB_Private, only: initialize_DivPBVars
-    implicit none
 
-#ifdef CUDA    
-    double precision,external :: a
-#endif
+    implicit none
 
 #ifdef MPI
     include 'mpif.h'
@@ -70,8 +36,9 @@
 
     logical :: failed = .false.         ! flag to indicates SCF fail or OPT fail 
     integer :: ierr                     ! return error info
-    integer :: i,j
-
+    integer :: i,j,k
+    double precision t1_t, t2_t
+    common /timer/ t1_t, t2_t
     !------------------------------------------------------------------
     ! 1. The first thing that must be done is to initialize and prepare files
     !------------------------------------------------------------------
@@ -108,7 +75,9 @@
 #ifdef CUDA
     !------------------- CUDA -------------------------------------------
     ! startup cuda device
+    call gpu_startup()
     call gpu_set_device(0)
+    call gpu_init()
     
     ! write cuda information
     if(master) call gpu_write_info(iOutFile)
@@ -125,7 +94,8 @@
     call read_Job_and_Atom()
 
     !allocate essential variables
-    call allocate_atoms()
+    call alloc(quick_molspec)
+    if (quick_method%MFCC) call allocate_MFCC()
     
     ! Then do inital guess
     call cpu_time(timer_begin%TIniGuess)
@@ -139,12 +109,17 @@
 !       call getmolmfcc
     endif
     
-    call cpu_time(timer_end%TIniGuess)
-
+    
     !------------------------------------------------------------------
     ! 3. Read Molecule Structure
     !-----------------------------------------------------------------
     call getMol()
+#ifdef CUDA
+    call gpu_setup(natom,nbasis, quick_molspec%nElec, quick_molspec%imult, &
+                   quick_molspec%molchg, quick_molspec%iAtomType)
+    call gpu_upload_xyz(xyz)
+    call gpu_upload_atom_and_chg(quick_molspec%iattype, quick_molspec%chg)
+#endif
 
     !------------------------------------------------------------------
     ! 4. SCF single point calculation. DFT if wanted. If it is OPT job
@@ -165,8 +140,25 @@
 !        call getEnergy(failed)
 !      endif
 !   else
-        call g2eshell
-        call schwarzoff
+        call g2eshell   ! pre-calculate 2 indices coeffecient to save time
+        call schwarzoff ! pre-calculate schwarz cutoff criteria
+    endif
+
+#ifdef CUDA    
+    call gpu_upload_basis(nshell, nprim, jshell, jbasis, maxcontract, &
+    ncontract, itype, aexp, dcoeff, &
+    quick_basis%first_basis_function, quick_basis%last_basis_function, & 
+    quick_basis%first_shell_basis_function, quick_basis%last_shell_basis_function, &
+    quick_basis%ncenter, quick_basis%kstart, quick_basis%katom, &
+    quick_basis%ktype, quick_basis%kprim, quick_basis%kshell,quick_basis%Ksumtype, &
+    quick_basis%Qnumber, quick_basis%Qstart, quick_basis%Qfinal, quick_basis%Qsbasis, quick_basis%Qfbasis, &
+    quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
+    
+    call gpu_upload_cutoff_matrix(Ycutoff, cutPrim)
+#endif
+
+    call cpu_time(timer_end%TIniGuess)
+    if (.not.quick_method%opt) then
         call getEnergy(failed)
     endif
 
@@ -217,21 +209,21 @@
 
     ! 6.c Freqency calculation and mode analysis
     ! note the analytical calculation is broken and needs to be fixed
-    IF (quick_method%freq) THEN
+    if (quick_method%freq) then
         call calcHessian(failed)
-        IF (failed) call quick_exit(iOutFile,1)     ! If Hessian matrix fails
+        if (failed) call quick_exit(iOutFile,1)     ! If Hessian matrix fails
         call frequency
-    ENDIF
+    endif
 
     ! 6.d clean spin for unrestricted calculation
     ! If this is an unrestricted calculation, check out the S^2 value to
     ! see if this is a reasonable wave function.  If not, modify it.
     
-!    IF (quick_method%unrst) THEN
-!        IF (quick_method%debug) call debugCleanSpin
-!        IF (quick_method%unrst) call spinclean
-!        IF (quick_method%debug) call debugCleanSpin
-!    ENDIF
+!    if (quick_method%unrst) then
+!        if (quick_method%debug) call debugCleanSpin
+!        if (quick_method%unrst) call spinclean
+!        if (quick_method%debug) call debugCleanSpin
+!    endif
 
     if (master) then
         
@@ -247,8 +239,11 @@
     ! an optimization job, we now have the optimized geometry.
 
     !-----------------------------------------------------------------
-    ! 8.The final job is to output energy and many other infos
+    ! 7.The final job is to output energy and many other infos
     !-----------------------------------------------------------------
+#ifdef CUDA
+    call gpu_shutdown()
+#endif
     call finalize(iOutFile,0)
     
 

@@ -43,3 +43,27 @@ subroutine zeroMatrix2(O,n1,n2)
     
     return
 end subroutine
+
+subroutine zeroiMatrix(O,n)
+    integer i,j,n
+    integer O(n,n)
+    
+    do i=1,n
+        do j=1,n
+            O(i,j)=0
+        enddo
+    enddo
+    
+    return
+end subroutine
+
+subroutine zeroiVec(V,n)
+    integer n,i
+    integer V(n)
+    
+    do i=1,n
+        V(i)=0
+    enddo
+    
+    return
+end subroutine

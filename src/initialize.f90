@@ -92,22 +92,3 @@ subroutine outputCopyright(io,ierr)
    return
 
 end subroutine outputCopyright
-
-
-subroutine allocate_atoms
-   ! Ken Ayers 05/26/04
-
-   ! This subroutine is to allocate matricies that will be used.
-   ! Subroutines for allocation of the various matricies in quick
-   ! These routines are not the ideal way to deal with allocation of
-   ! variables.  Large sized arrays should only be allocated when
-   ! they are needed.  Eventually someone will deal with this.
-   use quick_molspec_module
-   use quick_basis_module
-   use quick_method_module
-   implicit none
-
-   call alloc(quick_molspec)
-   if (quick_method%MFCC) call allocate_MFCC()
-
-end subroutine allocate_atoms

@@ -1,4 +1,4 @@
-HF  maxdiis=2 cutoff=1.234e-9 scf=100 energy zmake NCYC=1000  BASIS=6-31g
+debug HF  maxdiis=2 cutoff=1.234e-9 scf=100 energy zmake NCYC=1000  BASIS=6-31g
 
 H           0.3032      -0.4940       0.0000
 H          -0.3032      -0.9088       0.0000

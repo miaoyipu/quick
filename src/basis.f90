@@ -20,9 +20,8 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
    logical :: isatom
    integer, dimension(0:92)  :: kcontract,kbasis
    logical, dimension(0:92)  :: atmbs,atmbs2
-   integer :: maxcontract
    
-   real*8 AA(6),BB(6),CC(6)
+   double precision AA(6),BB(6),CC(6)
    integer natomstart,natomfinal,nbasisstart,nbasisfinal
    double precision, allocatable, dimension(:) :: aex,gcs,gcp,gcd,gcf,gcg
 #ifdef MPI
@@ -38,8 +37,7 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
       ! * Read the Effective Core Potentials (ECPs), modify the atomic charges
       !   and the total number of electrons (readecp)
       if (quick_method%ecp)    call readecp
-
-      open(ibasisfile,file=basisfilename,status='old')
+      call quick_open(ibasisfile,basisfilename,'O','F','W',.true.)
       iofile = 0
       nshell = 0
       nbasis = 0
@@ -55,7 +53,7 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
       ! parse the file and find the sizes of things to allocate them in memory
       do while (iofile  == 0 )
          read(ibasisfile,'(A80)',iostat=iofile) line
-         read(line,*,iostat=io) atom,ii
+           read(line,*,iostat=io) atom,ii
          if (io == 0 .and. ii == 0) then
             isatom = .true.
             do i=1,92
@@ -276,8 +274,8 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
    !  allocate(Yxiaotemp(10,10,0:4))
    allocate(Ycutoff(nshell,nshell))
    allocate(cutmatrix(nshell,nshell))
-   allocate(allerror(quick_method%maxdiisscf,nbasis,nbasis))
-   allocate(alloperator(quick_method%maxdiisscf,nbasis,nbasis))
+!   allocate(allerror(quick_method%maxdiisscf,nbasis,nbasis))
+!   allocate(alloperator(quick_method%maxdiisscf,nbasis,nbasis))
    !  allocate(debug1(nbasis,nbasis))
    !  allocate(debug2(nbasis,nbasis))
    ! allocate(CPMEM(10,10,0:4))
@@ -292,10 +290,10 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
 !   allocate(Qsbasis(nshell,0:3))
 !   allocate(Qfbasis(nshell,0:3))
 !   allocate(quick_basis%ksumtype(nshell+1))
-   allocate(KLMN(3,nbasis))
-   allocate(cons(nbasis))
-   allocate(gccoeff(6,nbasis))
-   allocate(gcexpo(6,nbasis))
+!   allocate(KLMN(3,nbasis))
+!   allocate(cons(nbasis))
+!   allocate(gccoeff(6,nbasis))
+!   allocate(gcexpo(6,nbasis))
 !   allocate(gcexpomin(nshell))
    
    allocate(aex(nprim ))
@@ -348,7 +346,7 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
    allocate(ncontract(nbasis))
    
    
-   call allocate_quick_basis(quick_basis,natom,nshell,nbasis)
+   call alloc(quick_basis,natom,nshell,nbasis)
    
    do ixiao=1,nshell
       quick_basis%gcexpomin(ixiao)=99999.0d0
@@ -360,10 +358,9 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
    ! various arrays that depend on the # of basis functions
 
    call allocate_quick_gridpoints(nbasis)
-   allocate(V2(3,nbasis))
+!   allocate(V2(3,nbasis))
 
    ! xiao He may reconsider this
-   allocate(Uxiao(nbasis,nbasis))
    call alloc(quick_scratch,nbasis)
 
    ! do this the stupid way for now
@@ -372,8 +369,15 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
    Ninitial=0
    do i=1,nbasis
       do j=1,3
-         KLMN(j,i)=0
+         quick_basis%KLMN(j,i)=0
       enddo
+   enddo
+   
+   do i = 1,nshell
+        do j = 0,3
+            quick_basis%Qsbasis(i,j) = 0
+            quick_basis%Qfbasis(i,j) = 0
+        enddo
    enddo
 
    !====== MPI/MASTER ====================
@@ -406,7 +410,7 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
                            quick_basis%Qfbasis(jshell,0)=0
                            quick_basis%ksumtype(jshell)=Ninitial+1
                            Ninitial=Ninitial+1
-                           cons(Ninitial)=1.0d0
+                           quick_basis%cons(Ninitial)=1.0d0
                            if (quick_method%ecp) then
                               kmin(jshell)=1
                               kmax(jshell)=1
@@ -418,13 +422,13 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
                               aex(jbasis)=AA(k)
                               gcs(jbasis)=BB(k)
                               jbasis = jbasis+1
-                              gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),0,0,0)
-                              gcexpo(k,Ninitial)=AA(k)
+                              quick_basis%gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),0,0,0)
+                              quick_basis%gcexpo(k,Ninitial)=AA(k)
                               if(quick_basis%gcexpomin(jshell).gt.AA(k))quick_basis%gcexpomin(jshell)=AA(k)
                            enddo
-                           xnewtemp=xnewnorm(0,0,0,iprim,gccoeff(1:iprim,Ninitial),gcexpo(1:iprim,Ninitial))
+                           xnewtemp=xnewnorm(0,0,0,iprim,quick_basis%gccoeff(1:iprim,Ninitial),quick_basis%gcexpo(1:iprim,Ninitial))
                            do k=1,iprim
-                              gccoeff(k,Ninitial)=xnewtemp*gccoeff(k,Ninitial)
+                              quick_basis%gccoeff(k,Ninitial)=xnewtemp*quick_basis%gccoeff(k,Ninitial)
                            enddo
                            jshell = jshell+1
                            elseif (shell == 'P') then
@@ -451,18 +455,18 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
                            end if
                            do jjj=1,3
                               Ninitial=Ninitial+1
-                              cons(Ninitial)=1.0d0
-                              KLMN(JJJ,Ninitial)=1
+                              quick_basis%cons(Ninitial)=1.0d0
+                              quick_basis%KLMN(JJJ,Ninitial)=1
                               do k=1,iprim
-                                 gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),1,0,0)
-                                 gcexpo(k,Ninitial)=AA(k)
+                                 quick_basis%gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),1,0,0)
+                                 quick_basis%gcexpo(k,Ninitial)=AA(k)
                                  if(quick_basis%gcexpomin(jshell).gt.AA(k))quick_basis%gcexpomin(jshell)=AA(k)
                               enddo
                            enddo
-                           xnewtemp=xnewnorm(1,0,0,iprim,gccoeff(:,Ninitial),gcexpo(:,Ninitial))
+                           xnewtemp=xnewnorm(1,0,0,iprim,quick_basis%gccoeff(:,Ninitial),quick_basis%gcexpo(:,Ninitial))
                            do iitemp=Ninitial-2,Ninitial
                               do k=1,iprim
-                                 gccoeff(k,iitemp)=xnewtemp*gccoeff(k,iitemp)
+                                 quick_basis%gccoeff(k,iitemp)=xnewtemp*quick_basis%gccoeff(k,iitemp)
                               enddo
                            enddo
 
@@ -482,8 +486,8 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
                            quick_basis%ksumtype(jshell)=Ninitial+1
                            !                 do jjj=1,3
                            !                   Ninitial=Ninitial+1
-                           !                   cons(Ninitial)=1.0d0
-                           !                   KLMN(JJJ,Ninitial)=1
+                           !                   quick_basis%cons(Ninitial)=1.0d0
+                           !                   quick_basis%KLMN(JJJ,Ninitial)=1
                            !                 enddo
                            do k=1,iprim
                               read(ibasisfile,'(A80)',iostat=iofile) line
@@ -495,31 +499,31 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
                               jbasis = jbasis+1
                            enddo
                            Ninitial=Ninitial+1
-                           cons(Ninitial)=1.0d0
+                           quick_basis%cons(Ninitial)=1.0d0
                            do k=1,iprim
-                              gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),0,0,0)
-                              gcexpo(k,Ninitial)=AA(k)
+                              quick_basis%gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),0,0,0)
+                              quick_basis%gcexpo(k,Ninitial)=AA(k)
                               if(quick_basis%gcexpomin(jshell).gt.AA(k))quick_basis%gcexpomin(jshell)=AA(k)
                            enddo
-                           xnewtemp=xnewnorm(0,0,0,iprim,gccoeff(1:iprim,Ninitial),gcexpo(1:iprim,Ninitial))
+                           xnewtemp=xnewnorm(0,0,0,iprim,quick_basis%gccoeff(1:iprim,Ninitial),quick_basis%gcexpo(1:iprim,Ninitial))
                            do k=1,iprim
-                              gccoeff(k,Ninitial)=xnewtemp*gccoeff(k,Ninitial)
+                              quick_basis%gccoeff(k,Ninitial)=xnewtemp*quick_basis%gccoeff(k,Ninitial)
                            enddo
 
                            do jjj=1,3
                               Ninitial=Ninitial+1
-                              cons(Ninitial)=1.0d0
-                              KLMN(JJJ,Ninitial)=1
+                              quick_basis%cons(Ninitial)=1.0d0
+                              quick_basis%KLMN(JJJ,Ninitial)=1
                               do k=1,iprim
-                                 gccoeff(k,Ninitial)=CC(k)*xnorm(AA(k),1,0,0)
-                                 gcexpo(k,Ninitial)=AA(k)
+                                 quick_basis%gccoeff(k,Ninitial)=CC(k)*xnorm(AA(k),1,0,0)
+                                 quick_basis%gcexpo(k,Ninitial)=AA(k)
                                  if(quick_basis%gcexpomin(jshell).gt.AA(k))quick_basis%gcexpomin(jshell)=AA(k)
                               enddo
                            enddo
-                           xnewtemp=xnewnorm(1,0,0,iprim,gccoeff(1:iprim,Ninitial),gcexpo(1:iprim,Ninitial))
+                           xnewtemp=xnewnorm(1,0,0,iprim,quick_basis%gccoeff(1:iprim,Ninitial),quick_basis%gcexpo(1:iprim,Ninitial))
                            do iitemp=Ninitial-2,Ninitial
                               do k=1,iprim
-                                 gccoeff(k,iitemp)=xnewtemp*gccoeff(k,iitemp)
+                                 quick_basis%gccoeff(k,iitemp)=xnewtemp*quick_basis%gccoeff(k,iitemp)
                               enddo
                            enddo
 
@@ -546,32 +550,32 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
                            do JJJ=1,6
                               Ninitial=Ninitial+1
                               if(JJJ.EQ.1)then
-                                 KLMN(1,Ninitial)=2
-                                 CONS(Ninitial)=1.0D0
+                                 quick_basis%KLMN(1,Ninitial)=2
+                                 quick_basis%cons(Ninitial)=1.0D0
                                  elseif(JJJ.EQ.2)then
-                                 KLMN(1,Ninitial)=1
-                                 KLMN(2,Ninitial)=1
-                                 CONS(Ninitial)=dsqrt(3.0d0)
+                                 quick_basis%KLMN(1,Ninitial)=1
+                                 quick_basis%KLMN(2,Ninitial)=1
+                                 quick_basis%cons(Ninitial)=dsqrt(3.0d0)
                                  elseif(JJJ.EQ.3)then
-                                 KLMN(2,Ninitial)=2
-                                 CONS(Ninitial)=1.0D0
+                                 quick_basis%KLMN(2,Ninitial)=2
+                                 quick_basis%cons(Ninitial)=1.0D0
                                  elseif(JJJ.EQ.4)then
-                                 KLMN(1,Ninitial)=1
-                                 KLMN(3,Ninitial)=1
-                                 CONS(Ninitial)=dsqrt(3.0d0)
+                                 quick_basis%KLMN(1,Ninitial)=1
+                                 quick_basis%KLMN(3,Ninitial)=1
+                                 quick_basis%cons(Ninitial)=dsqrt(3.0d0)
                                  elseif(JJJ.EQ.5)then
-                                 KLMN(2,Ninitial)=1
-                                 KLMN(3,Ninitial)=1
-                                 CONS(Ninitial)=dsqrt(3.0d0)
+                                 quick_basis%KLMN(2,Ninitial)=1
+                                 quick_basis%KLMN(3,Ninitial)=1
+                                 quick_basis%cons(Ninitial)=dsqrt(3.0d0)
                                  elseif(JJJ.EQ.6)then
-                                 KLMN(3,Ninitial)=2
-                                 CONS(Ninitial)=1.0d0
+                                 quick_basis%KLMN(3,Ninitial)=2
+                                 quick_basis%cons(Ninitial)=1.0d0
                               endif
 
                               do k=1,iprim
-                                 gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),KLMN(1,Ninitial), &
-                                            KLMN(2,Ninitial),KLMN(3,Ninitial))
-                                 gcexpo(k,Ninitial)=AA(k)
+                                 quick_basis%gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),quick_basis%KLMN(1,Ninitial), &
+                                            quick_basis%KLMN(2,Ninitial),quick_basis%KLMN(3,Ninitial))
+                                 quick_basis%gcexpo(k,Ninitial)=AA(k)
                                  if(quick_basis%gcexpomin(jshell).gt.AA(k))quick_basis%gcexpomin(jshell)=AA(k)
                               enddo
                            enddo
@@ -580,16 +584,16 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
                               kmax(jshell)=10
                               ktypecp(jshell)=3
                            end if
-                           xnewtemp=xnewnorm(2,0,0,iprim,gccoeff(:,Ninitial-3),gcexpo(:,Ninitial-3))
+                           xnewtemp=xnewnorm(2,0,0,iprim,quick_basis%gccoeff(:,Ninitial-3),quick_basis%gcexpo(:,Ninitial-3))
                            do iitemp=Ninitial-5,Ninitial-3
                               do k=1,iprim
-                                 gccoeff(k,iitemp)=xnewtemp*gccoeff(k,iitemp)
+                                 quick_basis%gccoeff(k,iitemp)=xnewtemp*quick_basis%gccoeff(k,iitemp)
                               enddo
                            enddo
-                           xnewtemp=xnewnorm(1,1,0,iprim,gccoeff(:,Ninitial),gcexpo(:,Ninitial))
+                           xnewtemp=xnewnorm(1,1,0,iprim,quick_basis%gccoeff(:,Ninitial),quick_basis%gcexpo(:,Ninitial))
                            do iitemp=Ninitial-2,Ninitial
                               do k=1,iprim
-                                 gccoeff(k,iitemp)=xnewtemp*gccoeff(k,iitemp)
+                                 quick_basis%gccoeff(k,iitemp)=xnewtemp*quick_basis%gccoeff(k,iitemp)
                               enddo
                            enddo
 
@@ -616,48 +620,48 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
                            do JJJ=1,10
                               Ninitial=Ninitial+1
                               if(JJJ.EQ.1)then
-                                 KLMN(1,Ninitial)=3
-                                 CONS(Ninitial)=1.0D0
+                                 quick_basis%KLMN(1,Ninitial)=3
+                                 quick_basis%cons(Ninitial)=1.0D0
                                  elseif(JJJ.EQ.2)then
-                                 KLMN(1,Ninitial)=2
-                                 KLMN(2,Ninitial)=1
-                                 CONS(Ninitial)=dsqrt(5.0d0)
+                                 quick_basis%KLMN(1,Ninitial)=2
+                                 quick_basis%KLMN(2,Ninitial)=1
+                                 quick_basis%cons(Ninitial)=dsqrt(5.0d0)
                                  elseif(JJJ.EQ.3)then
-                                 KLMN(1,Ninitial)=1
-                                 KLMN(2,Ninitial)=2
-                                 CONS(Ninitial)=dsqrt(5.0d0)
+                                 quick_basis%KLMN(1,Ninitial)=1
+                                 quick_basis%KLMN(2,Ninitial)=2
+                                 quick_basis%cons(Ninitial)=dsqrt(5.0d0)
                                  elseif(JJJ.EQ.4)then
-                                 KLMN(2,Ninitial)=3
-                                 CONS(Ninitial)=1.0d0
+                                 quick_basis%KLMN(2,Ninitial)=3
+                                 quick_basis%cons(Ninitial)=1.0d0
                                  elseif(JJJ.EQ.5)then
-                                 KLMN(1,Ninitial)=2
-                                 KLMN(3,Ninitial)=1
-                                 CONS(Ninitial)=dsqrt(5.0d0)
+                                 quick_basis%KLMN(1,Ninitial)=2
+                                 quick_basis%KLMN(3,Ninitial)=1
+                                 quick_basis%cons(Ninitial)=dsqrt(5.0d0)
                                  elseif(JJJ.EQ.6)then
-                                 KLMN(1,Ninitial)=1
-                                 KLMN(2,Ninitial)=1
-                                 KLMN(3,Ninitial)=1
-                                 CONS(Ninitial)=dsqrt(5.0d0)*dsqrt(3.0d0)
+                                 quick_basis%KLMN(1,Ninitial)=1
+                                 quick_basis%KLMN(2,Ninitial)=1
+                                 quick_basis%KLMN(3,Ninitial)=1
+                                 quick_basis%cons(Ninitial)=dsqrt(5.0d0)*dsqrt(3.0d0)
                                  elseif(JJJ.EQ.7)then
-                                 KLMN(2,Ninitial)=2
-                                 KLMN(3,Ninitial)=1
-                                 CONS(Ninitial)=dsqrt(5.0d0)
+                                 quick_basis%KLMN(2,Ninitial)=2
+                                 quick_basis%KLMN(3,Ninitial)=1
+                                 quick_basis%cons(Ninitial)=dsqrt(5.0d0)
                                  elseif(JJJ.EQ.8)then
-                                 KLMN(1,Ninitial)=1
-                                 KLMN(3,Ninitial)=2
-                                 CONS(Ninitial)=dsqrt(5.0d0)
+                                 quick_basis%KLMN(1,Ninitial)=1
+                                 quick_basis%KLMN(3,Ninitial)=2
+                                 quick_basis%cons(Ninitial)=dsqrt(5.0d0)
                                  elseif(JJJ.EQ.9)then
-                                 KLMN(2,Ninitial)=1
-                                 KLMN(3,Ninitial)=2
-                                 CONS(Ninitial)=dsqrt(5.0d0)
+                                 quick_basis%KLMN(2,Ninitial)=1
+                                 quick_basis%KLMN(3,Ninitial)=2
+                                 quick_basis%cons(Ninitial)=dsqrt(5.0d0)
                                  elseif(JJJ.EQ.10)then
-                                 KLMN(3,Ninitial)=3
-                                 CONS(Ninitial)=1.0d0
+                                 quick_basis%KLMN(3,Ninitial)=3
+                                 quick_basis%cons(Ninitial)=1.0d0
                               endif
                               do k=1,iprim
-                                 gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),KLMN(1,Ninitial), &
-                                        KLMN(2,Ninitial),KLMN(3,Ninitial))
-                                 gcexpo(k,Ninitial)=AA(k)
+                                 quick_basis%gccoeff(k,Ninitial)=BB(k)*xnorm(AA(k),quick_basis%KLMN(1,Ninitial), &
+                                        quick_basis%KLMN(2,Ninitial),quick_basis%KLMN(3,Ninitial))
+                                 quick_basis%gcexpo(k,Ninitial)=AA(k)
                                  if(quick_basis%gcexpomin(jshell).gt.AA(k))quick_basis%gcexpomin(jshell)=AA(k)
                               enddo
                            enddo
@@ -775,7 +779,6 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
    endif
    !======== END MPI/ALL NODES ================
 #endif
-
 
    allocate(aexp(maxcontract,nbasis))
    allocate(dcoeff(maxcontract,nbasis))

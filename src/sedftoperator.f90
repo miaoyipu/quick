@@ -628,5 +628,5 @@
         enddo
     enddo
 
-    END subroutine sedftoperator
+    end subroutine sedftoperator
 

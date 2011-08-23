@@ -28,7 +28,7 @@ module quick_scratch_module
     
     type (quick_scratch_type) quick_scratch
     
-    double precision, dimension(:,:), allocatable :: V2,Uxiao  !,hold,hold2
+!    double precision, dimension(:,:), allocatable :: V2  !,hold,hold2
     
     interface alloc
         module procedure allocate_quick_scratch

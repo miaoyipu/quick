@@ -1,21 +1,25 @@
 #include "config.h"
-!*******************************************************
-! subroutine inventory:
-!   hfoperator
-!   hfoperatordc
-!   hfoperatordelta
-!   hfoperatordeltadc
-!   mpi_hfoperator
-!   mpi_hfoperatordc
-!*******************************************************
+!
+!	getMol.f90
+!	new_quick
+!
+!	Created by Yipu Miao on 3/4/11.
+!	Copyright 2011 University of Florida. All rights reserved.
+!
+!   subroutine inventory:
+!       hfoperator
+!       hfoperatordc
+!       hfoperatordelta
+!       hfoperatordeltadc
+!       mpi_hfoperator
+!       mpi_hfoperatordc
 
 !-------------------------------------------------------
 ! hfoperator
 !-------------------------------------------------------
 ! 11/14/2010 Yipu Miao: Clean up code with the integration of
-! some subroutines
-! Ed Brothers. November 27, 2001
-! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
+!                       some subroutines
+! 11/27/2001 Ed Brothers: written the code
 !-------------------------------------------------------
 
 subroutine hfoperator(oneElecO)
@@ -30,57 +34,72 @@ subroutine hfoperator(oneElecO)
    !-------------------------------------------------------
    use allmod
    use quick_gaussian_class_module
-   implicit double precision(a-h,o-z)
+   implicit none
 
 
-   real*8 testtmp,cutoffTest,oneElecO(nbasis,nbasis)
+   double precision oneElecO(nbasis,nbasis)
    integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
-
-   real*8 fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
-   real*8 fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
-
-   !=================================================================
+   
+   !-----------------------------------------------------------------
    ! Step 1. evaluate 1e integrals
    !-----------------------------------------------------------------
-   ! fetch 1e-integral from 1st time
-   !-----------------------------------------------------------------
 
+   ! fetch 1e-integral from 1st time
    call copyDMat(oneElecO,quick_qm_struct%o,nbasis)
-   !-----------------------------------------------------------------
+
    ! Now calculate kinetic and attraction energy first.
-   !-----------------------------------------------------------------
    if (quick_method%printEnergy) call get1eEnergy()
 
-   !-----------------------------------------------------------------
    ! Alessandro GENONI 03/21/2007
    ! Sum the ECP integrals to the partial Fock matrix
-   !-----------------------------------------------------------------
    if (quick_method%ecp) call ecpoperator()
 
-   !=================================================================
+   !-----------------------------------------------------------------
    ! Step 2. evaluate 2e integrals
    !-----------------------------------------------------------------
+
    ! The previous two terms are the one electron part of the Fock matrix.
    ! The next two terms define the two electron part.
-   !-----------------------------------------------------------------
-
    ! Delta density matrix cutoff
    call densityCutoff()
 
-   !------------------------------------------------------------------
+   call cpu_time(timer_begin%T2e)  ! Terminate the timer for 2e-integrals
+
+#ifdef CUDA
+   if (quick_method%bCUDA) then
+      call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
+                  quick_qm_struct%vec,quick_qm_struct%dense)
+      call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
+      call gpu_get2e(quick_qm_struct%o);
+   else
+#endif
+
    ! Schwartz cutoff is implemented here. (ab|cd)**2<=(ab|ab)*(cd|cd)
    ! Reference: Strout DL and Scuseria JCP 102(1995),8448.
-   !------------------------------------------------------------------
    do II=1,jshell
-      call get2e()
+      call get2e(II)
    enddo
+
+#ifdef CUDA
+   endif
+#endif
 
    ! Remember the operator is symmetry
    call copySym(quick_qm_struct%o,nbasis)
 
+
+   ! Operator matrix
+!   write(ioutfile,'("OPERATOR MATRIX FOR CYCLE")')
+!   call PriSym(iOutFile,nbasis,quick_qm_struct%o,'f14.8')
+   
    ! Give the energy, E=1/2*sigma[i,j](Pij*(Fji+Hcoreji))
    if(quick_method%printEnergy) call get2eEnergy()
+   
+   
+   call cpu_time(timer_end%T2e)  ! Terminate the timer for 2e-integrals
+   timer_cumer%T2e=timer_cumer%T2e+timer_end%T2e-timer_begin%T2e ! add the time to cumer
+
    return
 
 end subroutine hfoperator
@@ -97,12 +116,12 @@ subroutine hfoperatordelta
    use quick_gaussian_class_module
    implicit double precision(a-h,o-z)
 
-   real*8 cutoffTest,testtmp
+   double precision cutoffTest,testtmp
    integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
-   real*8 fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
-   real*8 fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
 
    ! The purpose of this subroutine is to form the operator matrix
    ! for a full Hartree-Fock calculation, i.e. the Fock matrix.  The
@@ -203,19 +222,19 @@ subroutine hfoperatordelta
    do II=1,jshell
       do JJ=II,jshell
          Testtmp=Ycutoff(II,JJ)
-         tbd1=quick_basis%gcexpomin(II)+quick_basis%gcexpomin(JJ)
+!         tbd1=quick_basis%gcexpomin(II)+quick_basis%gcexpomin(JJ)
          !      call multipolepair(II,JJ,xyz(1,katom(II)),xyz(2,katom(II)),xyz(3,katom(II)), &
                !      xyz(1,katom(JJ)),xyz(2,katom(JJ)),xyz(3,katom(JJ)),fmmonearrayfirst)
          do KK=II,jshell
             do LL=KK,jshell
-               tbd2=quick_basis%gcexpomin(KK)+quick_basis%gcexpomin(LL)
+!               tbd2=quick_basis%gcexpomin(KK)+quick_basis%gcexpomin(LL)
                !          Nxiao1=Nxiao1+1
                testCutoff = TESTtmp*Ycutoff(KK,LL)
-               If(testCutoff.gt.quick_method%integralCutoff)then
+               if(testCutoff.gt.quick_method%integralCutoff)then
                   DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                         cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
                   cutoffTest=testCutoff*DNmax
-                  If(cutoffTest.gt.quick_method%integralCutoff)then
+                  if(cutoffTest.gt.quick_method%integralCutoff)then
                      call shell
                   endif
                endif
@@ -252,12 +271,12 @@ subroutine hfoperatordeltadc
    use quick_gaussian_class_module
    implicit double precision(a-h,o-z)
 
-   real*8 cutoffTest,testtmp
+   double precision cutoffTest,testtmp
    integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
-   real*8 fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
-   real*8 fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
 
    ! The purpose of this subroutine is to form the operator matrix
    ! for a full Hartree-Fock calculation, i.e. the Fock matrix.  The
@@ -370,15 +389,15 @@ subroutine hfoperatordeltadc
    do II=1,jshell
       do JJ=II,jshell
          Testtmp=Ycutoff(II,JJ)
-         tbd1=quick_basis%gcexpomin(II)+quick_basis%gcexpomin(JJ)
+!         tbd1=quick_basis%gcexpomin(II)+quick_basis%gcexpomin(JJ)
          do KK=II,jshell
             do LL=KK,jshell
-               tbd2=quick_basis%gcexpomin(KK)+quick_basis%gcexpomin(LL)
+!               tbd2=quick_basis%gcexpomin(KK)+quick_basis%gcexpomin(LL)
                testCutoff = TESTtmp*Ycutoff(KK,LL)
-               If(testCutoff.gt.quick_method%integralCutoff)then
+               if(testCutoff.gt.quick_method%integralCutoff)then
                   DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                         cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
-                  If((dcconnect(II,JJ).eq.1.and.(4.0d0*cutmatrix(KK,LL)*testCutoff).gt.quick_method%integralCutoff) &
+                  if((dcconnect(II,JJ).eq.1.and.(4.0d0*cutmatrix(KK,LL)*testCutoff).gt.quick_method%integralCutoff) &
                         .or.(dcconnect(KK,LL).eq.1.and.(4.0d0*cutmatrix(II,JJ)*testCutoff).gt.quick_method%integralCutoff) &
                         .or.(dcconnect(II,KK).eq.1.and.(cutmatrix(JJ,LL)*testCutoff).gt.quick_method%integralCutoff) &
                         .or.(dcconnect(LL,II).eq.1.and.(cutmatrix(JJ,KK)*testCutoff).gt.quick_method%integralCutoff) &
@@ -428,12 +447,12 @@ subroutine hfoperatordc(oneElecO)
    use quick_gaussian_class_module
    implicit double precision(a-h,o-z)
 
-   real*8 cutoffTest,testtmp,oneElecO(nbasis,nbasis)
+   double precision cutoffTest,testtmp,oneElecO(nbasis,nbasis)
    integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
-   real*8 fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
-   real*8 fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
 
    !---------------------------------------------------------------------
    ! This subroutine is to form hf operator with div-and-con
@@ -517,19 +536,19 @@ subroutine mpi_hfoperator(oneElecO)
    implicit double precision(a-h,o-z)
 
    include "mpif.h"
-   real*8 testtmp,cutoffTest,oneElecO(nbasis,nbasis)
+   double precision testtmp,cutoffTest,oneElecO(nbasis,nbasis)
    integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    double precision,allocatable:: temp2d(:,:)
 
-   real*8 fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
-   real*8 fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
 
 
    allocate(temp2d(nbasis,nbasis))
 
    !------- MPI/MASTER -------------------
-   If(MASTER) then
+   if(MASTER) then
       call copyDMat(oneElecO,quick_qm_struct%o,nbasis)
       !-----------------------------------------------------------------
       ! Now calculate 1e-Energy
@@ -586,7 +605,7 @@ subroutine mpi_hfoperator(oneElecO)
    !------------------------------------------------------------------
    do i=1,mpi_jshelln(mpirank)
       ii=mpi_jshell(mpirank,i)
-      call get2e
+      call get2e(II)
    enddo
 
    ! After evaluation of 2e integrals, we can communicate every node so
@@ -646,13 +665,13 @@ subroutine mpi_hfoperatordc(oneElecO)
    implicit double precision(a-h,o-z)
 
    include "mpif.h"
-   real*8 testtmp,cutoffTest,oneElecO(nbasis,nbasis)
+   double precision testtmp,cutoffTest,oneElecO(nbasis,nbasis)
    integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    double precision,allocatable:: temp2d(:,:)
 
-   real*8 fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
-   real*8 fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
+   double precision fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
    !-------------------------------------------------------
    ! The purpose of this subroutine is to form the operator matrix
    ! for a full Hartree-Fock calculation, i.e. the Fock matrix.  The
@@ -680,7 +699,7 @@ subroutine mpi_hfoperatordc(oneElecO)
    !-----------------------------------------------------------------
 
    !------- MPI/MASTER -------------------
-   If(MASTER) then
+   if(MASTER) then
       call copyDMat(oneElecO,quick_qm_struct%o,nbasis)
       !-----------------------------------------------------------------
       ! Now calculate 1e-Energy
@@ -792,41 +811,52 @@ end subroutine mpi_hfoperatordc
 !------------------------------------------------
 ! get2e
 !------------------------------------------------
-subroutine get2e
+#ifdef CUDA
+    subroutine get2e(II)
+#else
+    subroutine get2e(II_arg)
+#endif
+
+
    !------------------------------------------------
    ! This subroutine is to get 2e integral
    !------------------------------------------------
    use allmod
    implicit double precision(a-h,o-z)
-   real*8 testtmp,cutoffTest
+   double precision testtmp,cutoffTest
+#ifdef CUDA
+   integer II,JJ,KK,LL
+#else   
+   integer II_arg
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
+#endif
 
-   call cpu_time(timer_begin%t2e) !Trigger the timer for 2e-integrals
+#ifndef CUDA
+   II = II_arg
+#endif
+   do JJ = II,jshell
+      do KK = II,jshell
+         do LL = KK,jshell
+            DNmax =  max(4.0d0*cutmatrix(II,JJ), &
+                         4.0d0*cutmatrix(KK,LL), &
+                         cutmatrix(II,LL), & 
+                         cutmatrix(II,KK), &
+                         cutmatrix(JJ,KK), &
+                         cutmatrix(JJ,LL))
 
-   do JJ=II,jshell
-      Testtmp=Ycutoff(II,JJ)
-      tbd1=quick_basis%gcexpomin(II)+quick_basis%gcexpomin(JJ)
-      do KK=II,jshell
-         do LL=KK,jshell
-            tbd2=quick_basis%gcexpomin(KK)+quick_basis%gcexpomin(LL)
-            cutoffTest = TESTtmp*Ycutoff(KK,LL)
-            If(cutoffTest.gt.quick_method%integralCutoff)then
-               DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL),cutmatrix(II,LL), &
-                     cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
-               cutoffTest=cutoffTest*DNmax
-               If(cutoffTest.gt.quick_method%integralCutoff)then
-                  call shell
-               endif
-            endif
+            ! (IJ|KL)^2<=(II|JJ)*(KK|LL) if smaller than cutoff criteria, then 
+            ! ignore the calculation to save computation time
+            if ( (Ycutoff(II,JJ)*Ycutoff(KK,LL)        .gt. quick_method%integralCutoff).and. &
+                 (Ycutoff(II,JJ)*Ycutoff(KK,LL)*DNmax  .gt. quick_method%integralCutoff)) &
+#ifdef CUDA
+                 call shell(II,JJ,KK,LL)
+#else
+                 call shell
+#endif
          enddo
       enddo
    enddo
-
-   call cpu_time(timer_end%T2e)  ! Terminate the timer for 2e-integrals
-   timer_cumer%T2e=timer_cumer%T2e+timer_end%T2e-timer_begin%T2e ! add the time to cumer
-
 end subroutine get2e
-
 
 !------------------------------------------------
 ! get2edc
@@ -837,22 +867,22 @@ subroutine get2edc
    !------------------------------------------------
    use allmod
    implicit double precision(a-h,o-z)
-   real*8 testtmp,cutoffTest
+   double precision testtmp,cutoffTest
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 
    call cpu_time(timer_begin%t2e) !Trigger the timer for 2e-integrals
 
    do JJ=II,jshell
       Testtmp=Ycutoff(II,JJ)
-      tbd1=quick_basis%gcexpomin(II)+quick_basis%gcexpomin(JJ)
+!      tbd1=quick_basis%gcexpomin(II)+quick_basis%gcexpomin(JJ)
       do KK=II,jshell
          do LL=KK,jshell
-            tbd2=quick_basis%gcexpomin(KK)+quick_basis%gcexpomin(LL)
+!            tbd2=quick_basis%gcexpomin(KK)+quick_basis%gcexpomin(LL)
             testCutoff = TESTtmp*Ycutoff(KK,LL)
-            If(testCutoff.gt.quick_method%integralCutoff)then
+            if(testCutoff.gt.quick_method%integralCutoff)then
                DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                      cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
-               If((dcconnect(II,JJ).eq.1.and.(4.0d0*cutmatrix(KK,LL)*testCutoff).gt.quick_method%integralCutoff) &
+               if((dcconnect(II,JJ).eq.1.and.(4.0d0*cutmatrix(KK,LL)*testCutoff).gt.quick_method%integralCutoff) &
                      .or.(dcconnect(KK,LL).eq.1.and.(4.0d0*cutmatrix(II,JJ)*testCutoff).gt.quick_method%integralCutoff) &
                      .or.(dcconnect(II,KK).eq.1.and.(cutmatrix(JJ,LL)*testCutoff).gt.quick_method%integralCutoff) &
                      .or.(dcconnect(LL,II).eq.1.and.(cutmatrix(JJ,KK)*testCutoff).gt.quick_method%integralCutoff) &
@@ -889,27 +919,3 @@ subroutine get2eEnergy()
    call cpu_time(timer_end%TE)  ! Terminate the timer for energy
    timer_cumer%TE=timer_cumer%TE+timer_end%TE-timer_begin%TE ! add the time to cumer
 end subroutine get2eEnergy
-
-
-
-!------------------------------------------------
-! densityCutoff
-!------------------------------------------------
-subroutine densityCutoff
-   !------------------------------------------------
-   ! This subroutine is to cutoff delta density
-   !------------------------------------------------
-   use allmod
-   implicit double precision(a-h,o-z)
-   common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
-
-   do II=1,jshell
-      do JJ=II,jshell
-         DNtemp=0.0d0
-         call DNscreen(II,JJ,DNtemp)
-         Cutmatrix(II,JJ)=DNtemp
-         Cutmatrix(JJ,II)=DNtemp
-      enddo
-   enddo
-
-end subroutine densityCutoff

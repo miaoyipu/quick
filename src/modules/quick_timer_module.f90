@@ -44,10 +44,10 @@ module quick_timer_module
         double precision:: TGrad=0.0d0
     end type quick_timer_cumer
 
-    type (quick_timer) timer_begin
-    type (quick_timer) timer_end
-    type (quick_timer_cumer) timer_cumer
-    type (quick_timer_cumer) MPI_timer_cumer
+    type (quick_timer),save:: timer_begin
+    type (quick_timer),save:: timer_end
+    type (quick_timer_cumer),save:: timer_cumer
+    type (quick_timer_cumer),save:: MPI_timer_cumer
     
     contains
     
@@ -101,7 +101,7 @@ module quick_timer_module
             endif
 
             ! Dipole Timing
-            write (io,'(6x,"DIPOLE TIME        =",F16.9,"( ",F5.2,"%)")') timer_end%TDip-timer_begin%TDip, &
+            write (io,'("DIPOLE TIME        =",F16.9,"( ",F5.2,"%)")') timer_end%TDip-timer_begin%TDip, &
                 (timer_end%TDip-timer_begin%TDip)/(timer_end%TTotal-timer_begin%TTotal)*100
             ! Grad Timing
             if (quick_method%opt) then

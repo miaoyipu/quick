@@ -14,7 +14,7 @@ subroutine whatis1(this, float)
   ithis = ichar(this)
   i0 = ichar('0')
   i9 = ichar('9')
-  if ((ithis >= i0) .AND. (ithis <= i9)) then
+  if ((ithis >= i0) .and. (ithis <= i9)) then
      float = .true.
   elseif (this == '.') then
      float = .true.
@@ -57,7 +57,7 @@ subroutine whatis1i(this, int)
      ithis = ichar(this)
      i0 = ichar('0')
      i9 = ichar('9')
-     if ((ithis >= i0) .AND. (ithis <= i9)) int = .TRUE. 
+     if ((ithis >= i0) .and. (ithis <= i9)) int = .TRUE. 
   endif
 
 end subroutine whatis1i
@@ -82,7 +82,7 @@ subroutine whatis2(this, int, min)
      ithis = ichar(this)
      i0 = ichar('0')
      i9 = ichar('9')
-     if ((ithis >= i0) .AND. (ithis <= i9)) int = .TRUE. 
+     if ((ithis >= i0) .and. (ithis <= i9)) int = .TRUE. 
   endif
 
 end subroutine whatis2
@@ -133,10 +133,10 @@ subroutine whatis7(this,char,num,parl,parr,comma,eq,white)
      izz = ichar('Z')
      i0 = ichar('0')
      i9 = ichar('9')
-     if (((ithis >= ia) .AND. (ithis <= iz)) .OR. &
-          ((ithis >= iaa) .AND. (ithis <= izz))) then
+     if (((ithis >= ia) .and. (ithis <= iz)) .OR. &
+          ((ithis >= iaa) .and. (ithis <= izz))) then
         char = .true.
-     elseif ((ithis >= i0) .AND. (ithis <= i9)) then
+     elseif ((ithis >= i0) .and. (ithis <= i9)) then
         num = .true.
      else
         white = .true.

@@ -1,13 +1,11 @@
 #include "config.h"
-!*******************************************************
-! scf(failed)
-!-------------------------------------------------------
+
 ! Ed Brothers. November 27, 2001
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
-!-------------------------------------------------------
-! this subroutine is to do scf job for restricted system
-!
 subroutine scf(failed)
+    !-------------------------------------------------------
+    ! this subroutine is to do scf job for restricted system
+    !-------------------------------------------------------
    use allmod
    implicit double precision(a-h,o-z)
 
@@ -25,51 +23,36 @@ subroutine scf(failed)
    ! 6)  Check for convergence.
    !-----------------------------------------------------------------
 
-   !-----------------------------------------------------------------
    ! Each location in the code that the step is occurring will be marked.
    ! The cycles stop when prms  is less than pmaxrms or when the maximum
    ! number of scfcycles has been reached.
-   !-----------------------------------------------------------------
 
    jscf=0
 
-   !-----------------------------------------------------------------
+
    ! Alessandro GENONI 03/21/2007
    ! ECP integrals computation exploiting Alexander V. Mitin Subroutine
    ! Note: the integrals are stored in the array ecp_int that corresponds
    !       to the lower triangular matrix of the ECP integrals
-   !-----------------------------------------------------------------
-   if (quick_method%ecp) then
-      call ecpint
-   end if
+   if (quick_method%ecp) call ecpint
 
    if (quick_method%diisscf .and. .not. quick_method%divcon) call electdiis(jscf)       ! normal scf
    if (quick_method%diisscf .and. quick_method%divcon) call electdiisdc(jscf,PRMS)     ! div & con scf
 
    jscf=jscf+1
    failed = failed.and.(jscf.gt.quick_method%iscf)
+   if (quick_method%debug)  call debug_SCF(jscf)
    
-   if (quick_method%debug)  call debug_SCF()
    return
 
 end subroutine scf
 
-!*******************************************************
-! electdii.f90
-!-------------------------------------------------------
-! this subroutine is to do dii calculation
-! electdiis is normal one
-! electdiis is the div & con one
-!
-!
-!*******************************************************
 ! electdiis
 !-------------------------------------------------------
 ! 11/02/2010 Yipu Miao: Add paralle option for HF calculation
-!
 subroutine electdiis(jscf)
    use allmod
-   implicit double precision(a-h,o-z)
+   implicit none
 
 #ifdef MPI
    include "mpif.h"
@@ -83,16 +66,21 @@ subroutine electdiis(jscf)
    integer :: IDIISfinal,iidiis,current_diis
    integer :: lsolerr = 0
    
-   double precision:: oldEnergy=0.0d0,E1e ! energy for last iteriation, and 1e-energy
+   double precision :: BIJ,DENSEJI,errormax,OJK,temp
+   double precision :: Sum2Mat,rms
+   integer :: I,J,K,L,IERROR
    
-   double precision:: PRMS,PCHANGE
-   double precision:: oneElecO(nbasis,nbasis)
-   double precision:: B(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
-   double precision:: BSAVE(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
-   double precision:: BCOPY(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
-   double precision:: W(quick_method%maxdiisscf+1)
-   double precision:: COEFF(quick_method%maxdiisscf+1)
-   double precision:: RHS(quick_method%maxdiisscf+1)
+   double precision :: oldEnergy=0.0d0,E1e ! energy for last iteriation, and 1e-energy   
+   double precision :: PRMS,PCHANGE, V2(3,nbasis)
+   double precision :: oneElecO(nbasis,nbasis)
+   double precision :: B(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
+   double precision :: BSAVE(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
+   double precision :: BCOPY(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
+   double precision :: W(quick_method%maxdiisscf+1)
+   double precision :: COEFF(quick_method%maxdiisscf+1)
+   double precision :: RHS(quick_method%maxdiisscf+1)
+   double precision :: allerror(quick_method%maxdiisscf,nbasis,nbasis)
+   double precision :: alloperator(quick_method%maxdiisscf,nbasis,nbasis)
 
    !---------------------------------------------------------------------------
    ! The purpose of this subroutine is to utilize Pulay's accelerated
@@ -102,20 +90,20 @@ subroutine electdiis(jscf)
    ! The step in the procedure are:
    ! 1)  Form the operator matrix for step i, O(i).
    ! 2)  Form error matrix for step i.
-   ! e(i) = ODS - Sdo
+   ! e(i) = ODS - SDO
    ! 3)  Move e to an orthogonal basis.  e'(i) = Transpose[X] .e(i). X
    ! 4)  Store the e'(I) and O(i)
    ! 5)  Form matrix B, which is:
-   ! _                                                 _
-   ! |                                                   |
-   ! |  B(1,1)      B(1,2)     . . .     B(1,J)      -1  |
-   ! |  B(2,1)      B(2,2)     . . .     B(2,J)      -1  |
-   ! |  .            .                     .          .  |
+   !      _                                                 _
+   !     |                                                   |
+   !     |  B(1,1)      B(1,2)     . . .     B(1,J)      -1  |
+   !     |  B(2,1)      B(2,2)     . . .     B(2,J)      -1  |
+   !     |  .            .                     .          .  |
    ! B = |  .            .                     .          .  |
-   ! |  .            .                     .          .  |
-   ! |  B(I,1)      B(I,2)     . . .     B(I,J)      -1  |
-   ! | -1            -1        . . .      -1          0  |
-   ! |_                                                 _|
+   !     |  .            .                     .          .  |
+   !     |  B(I,1)      B(I,2)     . . .     B(I,J)      -1  |
+   !     | -1            -1        . . .      -1          0  |
+   !     |_                                                 _|
    ! Where B(i,j) = Trace(e(i) Transpose(e(j)) )
    ! 6)  Solve B*COEFF = RHS which is:
    ! _                                             _  _  _     _  _
@@ -256,7 +244,7 @@ subroutine electdiis(jscf)
          quick_scratch%hold=MATMUL(quick_qm_struct%dense,quick_qm_struct%s)
          allerror(iidiis,1:nbasis,1:nbasis)=MATMUL(quick_qm_struct%o,quick_scratch%hold)
          
-         ! Calculate D O. then calculate S (DO) and subtract that from the allerror matrix.
+         ! Calculate D O. then calculate S (do) and subtract that from the allerror matrix.
          ! This means we now have the e(i) matrix.
          ! allerror=ODS-SDO
          quick_scratch%hold=MATMUL(quick_qm_struct%dense,quick_qm_struct%o)
@@ -484,7 +472,7 @@ subroutine electdiis(jscf)
             endif
             oldEnergy=quick_qm_struct%Eel+quick_qm_struct%Ecore
          endif
-         
+         write(*,*) quick_qm_struct%Eel
          write (ioutfile,'(F10.3,4x)',advance="no") timer_end%TSCF-timer_begin%TSCF
          write (ioutfile,'(I2,4x,F8.2,2x,F8.2,2x)',advance="no") current_diis,timer_end%TDII-timer_begin%TDII, &
                timer_end%TOp-timer_begin%TOp
@@ -698,7 +686,7 @@ subroutine electdiisdc(jscf,PRMS)
          call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseOld,nbasis)
 
 
-         if(quick_method%debug) call debugElecdii()
+         if(quick_method%debug) call debugElecdii(jscf)
 
 
          !--------------------------------------------
@@ -916,7 +904,7 @@ subroutine electdiisdc(jscf,PRMS)
       !------ END MPI/ALL NODES --------------------
 
       if(quick_method%MP2)then
-         Do itt=1,np
+         do itt=1,np
             natt=0
             do k=1,nbasisdc(itt)
                if (evaldcsub(itt,k).lt.efermi(1)) then
@@ -924,7 +912,7 @@ subroutine electdiisdc(jscf,PRMS)
                endif
             enddo
             nelecmp2sub(itt)=natt*2
-         Enddo
+         enddo
       endif
 
       !---------- MPI/MASTER ----------------------
@@ -1009,7 +997,7 @@ subroutine fermiSCF(efermi,jscf)
    implicit double precision(a-h,o-z)
    logical fermidone
    integer jscf
-   real*8 :: efermi(10)
+   double precision :: efermi(10)
 
    ! Boltzmann constant in eV/Kelvin:
    boltz = 8.617335408d0*0.00001d0/27.2116d0

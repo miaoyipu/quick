@@ -98,9 +98,13 @@ module quick_method_module
         double precision :: gradMaxCrt     = .00045d0 ! max gradient change
         double precision :: gNormCrt      = .00030d0 ! gradient normalization
         
+#ifdef CUDA
+        logical :: bCUDA                ! if CUDA is used here
+#endif        
+        
     end type quick_method_type
     
-    type (quick_method_type) quick_method
+    type (quick_method_type),save :: quick_method
     
     interface print
         module procedure print_quick_method
@@ -536,6 +540,9 @@ module quick_method_module
             self%gNormCrt       = .00030d0 ! gradient normalization
             self%gridSpacing    = 0.1
             self%lapgridspacing = 0.1
+#ifdef CUDA
+            self%bCUDA  = .false.
+#endif            
             
         end subroutine init_quick_method
         
@@ -569,7 +576,7 @@ module quick_method_module
             endif
 
             ! OPT not available for other DFT except BLYP            
-            if(self%DFT.and. self%OPT .and. (.NOT. self%BLYP))then
+            if(self%DFT.and. self%OPT .and. (.not. self%BLYP))then
                 call PrtWrn(io,"GEOMETRY OPTIMIZATION is only available with HF, DFT/BLYP" )
                 self%OPT = .false.
             endif
