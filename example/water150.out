@@ -23,15 +23,35 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Fri Aug 19 18:06:04 2011
+ TASK STARTS ON: Tue Aug 23 21:58:02 2011
  INPUT FILE:     water150.in
  OUTPUT FILE:    water150.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GTX 580
+| CUDA DEVICE PM              :       16
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
+| CUDA DEVICE MEMORY SIZE (MB):     1535
+| SUPPORTING CUDA VERSION     :      2.0
+|--------------------------------------------
+
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF  MAXDIIS=2 CUTOFF=1.234E-9 SCF=100 ENERGY ZMAKE NCYC=1000  BASIS=6-31G                                                                                                                               
+KEYWORD=HF  MAXDIIS=2 CUTOFF=1.234E-9 SCF=100 ENERGY ZMAKE NCYC=1000  BASIS=6-311G                                                                                                                              
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
@@ -48,8 +68,8 @@ KEYWORD=HF  MAXDIIS=2 CUTOFF=1.234E-9 SCF=100 ENERGY ZMAKE NCYC=1000  BASIS=6-31
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
-| BASIS SET = 6-31G
-| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
+| BASIS SET = 6-311G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-311G
 
  @ Finish reading job
 
@@ -58,27 +78,27 @@ KEYWORD=HF  MAXDIIS=2 CUTOFF=1.234E-9 SCF=100 ENERGY ZMAKE NCYC=1000  BASIS=6-31
 
  For Atom Kind =    1
  ELEMENT = H 
-BASIS FUNCTIONS =    2
+BASIS FUNCTIONS =    3
 
  @ Begin Energy Calculation
 
 
 SCF CYCLE      =        1      TIME      =     0.00
-RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
+RMS CHANGE     = 0.161914E+00  MAX CHANGE= 0.265833E+00
 
 SCF CYCLE      =        2      TIME      =     0.00
-RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
+RMS CHANGE     = 0.125926E-01  MAX CHANGE= 0.289320E-01
 
 SCF CYCLE      =        3      TIME      =   0.00
-DIIS CYCLE     =        1      MAX ERROR = 0.543720E-02
-RMS CHANGE     = 0.492246E-02  MAX CHANGE= 0.776945E-02
+DIIS CYCLE     =        1      MAX ERROR = 0.370617E-02
+RMS CHANGE     = 0.249894E-02  MAX CHANGE= 0.590787E-02
 
-SCF CYCLE      =        4      TIME      =   0.00
-DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
-RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
+SCF CYCLE      =        4      TIME      =   0.01
+DIIS CYCLE     =        2      MAX ERROR = 0.660675E-03
+RMS CHANGE     = 0.629876E-03  MAX CHANGE= 0.149586E-02
 
 SCF CYCLE      =        5      TIME      =     0.00
-RMS CHANGE     = 0.142040E-10  MAX CHANGE= 0.224882E-10
+RMS CHANGE     = 0.247494E-04  MAX CHANGE= 0.478636E-04
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -252,9 +272,9 @@ TOTAL ENERGY         =     0.000000000
     H          -0.3032     -42.9088      12.0000
 
 ============== BASIS INFOS ==============
-| BASIS FUNCTIONS =  300
-| NSHELL =  300 NPRIM  =  600
-| JSHELL =  300 JBASIS =  600
+| BASIS FUNCTIONS =  450
+| NSHELL =  450 NPRIM  =  750
+| JSHELL =  450 JBASIS =  750
 
 
  @ End Reading Mol Info 

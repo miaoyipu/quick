@@ -1708,9 +1708,10 @@ subroutine get1e(oneElecO)
    ! to oneElecO so we don't need to calculate it repeatly for
    ! every scf cycle
    !------------------------------------------------
-
+#ifdef MPI
    if ((.not.bMPI).or.(nbasis.le.MIN_1E_MPI_BASIS)) then
-      if (master) then
+#endif
+     if (master) then
          !=================================================================
          ! Step 1. evaluate 1e integrals
          !-----------------------------------------------------------------
@@ -1738,8 +1739,8 @@ subroutine get1e(oneElecO)
          call copySym(quick_qm_struct%o,nbasis)
          call CopyDMat(quick_qm_struct%o,oneElecO,nbasis)
       endif
-   else
 #ifdef MPI
+   else
       !------- MPI/ ALL NODES -------------------
 
       !=================================================================
@@ -1797,10 +1798,8 @@ subroutine get1e(oneElecO)
          call copyDMat(quick_qm_struct%o,oneElecO,nbasis)
       endif
       !------- END MPI/ALL NODES ------------
-#endif
-
    endif
-
+#endif
 end subroutine get1e
 
 ! Ed Brothers. October 23, 2001

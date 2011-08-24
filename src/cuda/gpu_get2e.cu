@@ -589,49 +589,86 @@ __device__ int total(int a)
 __global__ void 
 get2e_kernel()
 {
-    int aa;
-    aa = 0;
-
     unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
-    int ii,jj,kk,ll;
     int totalThreads = blockDim.x*gridDim.x;
-
-    int jshell = devSim.jshell;
-    unsigned long int totalInt = total(jshell);
+    /*
+     int jshell = devSim.jshell;
+     unsigned long int totalInt = total(jshell);
+     int myInt = (int)totalInt / totalThreads;
+     if ((totalInt - myInt*totalThreads)> offside) myInt++;
+     
+     unsigned long int currentInt = offside;
+     for (int i = 1; i <= myInt; i++) {
+     
+     int ii = (int)(sqrt(sqrt((double)(totalInt-currentInt-1)*8)));
+     
+     if (total(ii) <= (totalInt-currentInt-1)) ii++;
+     
+     int d = totalInt-currentInt;
+     d = total(ii)-d;
+     
+     int a2 = ii*(ii+1)/2;
+     
+     int jj = d / a2;
+     d = d % a2;
+     ii = jshell-ii+1;
+     jj = ii+jj;
+     
+     int kk = (int)sqrt((double)(d*2));
+     if (d>=(kk*(kk+1)/2)) kk++;
+     int ll = kk*(kk+1)/2-d;
+     kk = jshell-kk+1;
+     ll = jshell-ll+1;
+     
+     gpu_shell(ii,jj,kk,ll);
+     
+     currentInt += totalThreads;
+     }
+     */
+    int jshell = devSim.Qshell*devSim.Qshell;
+    unsigned long int totalInt = jshell*jshell;
     int myInt = (int)totalInt / totalThreads;
     if ((totalInt - myInt*totalThreads)> offside) myInt++;
-
-    unsigned long int currentInt = offside;
-    for (int i = 1; i <= myInt; i++) {
-
-        int ii = (int)(sqrt(sqrt((double)(totalInt-currentInt-1)*8)));
-
-        if (total(ii) <= (totalInt-currentInt-1)) ii++;
-
-        int d = totalInt-currentInt;
-        d = total(ii)-d;
-
-        int a2 = ii*(ii+1)/2;
-
-        int jj = d / a2;
-        d = d % a2;
-        ii = jshell-ii+1;
-        jj = ii+jj;
-
-        int kk = (int)sqrt((double)(d*2));
-        if (d>=(kk*(kk+1)/2)) kk++;
-        int ll = kk*(kk+1)/2-d;
-        kk = jshell-kk+1;
-        ll = jshell-ll+1;
-
-        gpu_shell(ii,jj,kk,ll);
-
+    long int currentInt = offside;
+    for (int i = 1; i<=myInt; i++) {
+        
+        /*        int II = (int)currentInt/(jshell*jshell*jshell);
+         int JJ = (int)(currentInt-jshell*jshell*jshell*II)/(jshell*jshell);
+         int KK = (int)(currentInt-jshell*jshell*jshell*II-jshell*jshell*JJ)/(jshell);
+         int LL = (int)(currentInt-jshell*jshell*jshell*II-jshell*jshell*JJ-jshell*KK);
+         */
+        int a = (int) currentInt/jshell;
+//        int b = (int) (currentInt - a*jshell);
+        
+        int II = devSim.sorted_YCutoffIJ[a].x;
+        int JJ = devSim.sorted_YCutoffIJ[a].y;
+        int KK = devSim.sorted_YCutoffIJ[currentInt - a*jshell].x;
+        int LL = devSim.sorted_YCutoffIJ[currentInt - a*jshell].y;        
+        
+        int ii = devSim.sorted_Q[II];
+        int jj = devSim.sorted_Q[JJ];
+        int kk = devSim.sorted_Q[KK];
+        int ll = devSim.sorted_Q[LL];
+        
+        if (ii<=kk && ii<=jj && kk<=ll) {
+            
+            int nshell = devSim.nshell;
+            QUICKDouble DNMax = MAX(MAX(4.0*LOC2(devSim.cutMatrix, ii, jj, nshell, nshell), 4.0*LOC2(devSim.cutMatrix, kk, ll, nshell, nshell)),
+                                    MAX(MAX(LOC2(devSim.cutMatrix, ii, ll, nshell, nshell),     LOC2(devSim.cutMatrix, ii, kk, nshell, nshell)),
+                                        MAX(LOC2(devSim.cutMatrix, jj, kk, nshell, nshell),     LOC2(devSim.cutMatrix, jj, ll, nshell, nshell))));
+            
+            if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.integralCutoff && \
+                (LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell) * DNMax) > devSim.integralCutoff) {
+                
+                iclass(devSim.sorted_Qnumber[II],devSim.sorted_Qnumber[JJ],devSim.sorted_Qnumber[KK],devSim.sorted_Qnumber[LL], ii+1, jj+1, kk+1, ll+1, DNMax);
+                
+            }
+        }
         currentInt += totalThreads;
     }
-
 }
 
-
+/*
 #ifndef TEST
 __device__
 #endif
@@ -682,7 +719,7 @@ void gpu_shell(unsigned int II, unsigned int JJ, unsigned int KK, unsigned int L
     
   	return;
 }
-
+*/
 
 
 __device__ QUICKDouble quick_dsqr(QUICKDouble a)
@@ -697,8 +734,8 @@ __device__
 #endif
 void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax)
 {
-    
-    QUICKDouble sharedGcexpoK[6], sharedGcexpoL[6];
+
+//      QUICKDouble sharedGcexpoK[6], sharedGcexpoL[6];
     
     QUICKDouble RAx, RAy, RAz;
     QUICKDouble RBx, RBy, RBz;
@@ -743,6 +780,11 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
     RDy = LOC2(devSim.xyz, 1 , katomD-1, 3, devSim.natom);
     RDz = LOC2(devSim.xyz, 2 , katomD-1, 3, devSim.natom);
     
+    //        KsumtypeI = devSim.Ksumtype[II-1];
+    //        KsumtypeJ = devSim.Ksumtype[JJ-1];
+    //        KsumtypeK = devSim.Ksumtype[KK-1];
+    //        KsumtypeL = devSim.Ksumtype[LL-1];
+    
     kPrimI = devSim.kprim[II-1];
     kPrimJ = devSim.kprim[JJ-1];
     kPrimK = devSim.kprim[KK-1];
@@ -753,16 +795,12 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
     kStartK = devSim.kstart[KK-1];
     kStartL = devSim.kstart[LL-1];
     
-    for (int i = 0; i<6; i++) {
-        sharedGcexpoK[i]  = LOC2(devSim.gcexpo, i , devSim.Ksumtype[KK-1]-1, 6, devSim.nbasis);
-        sharedGcexpoL[i]  = LOC2(devSim.gcexpo, i , devSim.Ksumtype[LL-1]-1, 6, devSim.nbasis);
-    }
+    
     
     QUICKDouble store[STOREDIM*STOREDIM];
 	memset(store, 0, STOREDIM*STOREDIM*sizeof(QUICKDouble));
     
     for (int JJJ = 0; JJJ < kPrimJ; JJJ++) {
-        QUICKDouble BB = LOC2(devSim.gcexpo, JJJ , devSim.Ksumtype[JJ-1]-1, 6, devSim.nbasis);
         for (int III = 0; III < kPrimI; III++) {
 			/* In the following comments, we have I, J, K, L denote the primitive gaussian function we use, and
              for example, expo(III, ksumtype(II)) stands for the expo for the IIIth primitive guassian function for II shell, 
@@ -774,9 +812,8 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
              ABtemp = -------------------
                       2(expo(I) + expo(J))
              */
-            QUICKDouble AA = LOC2(devSim.gcexpo, III , devSim.Ksumtype[II-1]-1, 6, devSim.nbasis);
-            QUICKDouble AB = 1/ (AA + BB);
-                        
+            QUICKDouble AB = LOC4(devSim.expoSum, III, JJJ, II-1, JJ-1, 6, 6, devSim.jshell, devSim.jshell);
+            
 			/*
                               --->                --->
              ->     expo(I) * xyz (I) + expo(J) * xyz(J)
@@ -791,15 +828,19 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
              ----->   ->  ->
              Ptemp  = P - A
              */            
-            QUICKDouble cutoffPrim = DNMax * LOC2(devSim.cutPrim, kStartI+III-1, kStartJ+JJJ-1, devSim.jbasis, devSim.jbasis);
+             
+             QUICKDouble cutoffPrim = DNMax * LOC2(devSim.cutPrim, kStartI+III-1, kStartJ+JJJ-1, devSim.jbasis, devSim.jbasis);
             
             QUICKDouble X1 = LOC4(devSim.Xcoeff, kStartI+III-1, kStartJ+JJJ-1, I, J, devSim.jbasis, devSim.jbasis, 4, 4);
+            
+            QUICKDouble Px = LOC4(devSim.weightedCenterX, III, JJJ, II-1, JJ-1, 6, 6, devSim.jshell, devSim.jshell);
+            QUICKDouble Py = LOC4(devSim.weightedCenterY, III, JJJ, II-1, JJ-1, 6, 6, devSim.jshell, devSim.jshell);
+            QUICKDouble Pz = LOC4(devSim.weightedCenterZ, III, JJJ, II-1, JJ-1, 6, 6, devSim.jshell, devSim.jshell);
+            
                 
             for (int LLL = 0 ; LLL < kPrimL; LLL++) {
-                QUICKDouble DD = sharedGcexpoL[LLL];
                 for (int KKK = 0; KKK < kPrimK; KKK++) {
-                    QUICKDouble cutoffPrim2 = cutoffPrim * LOC2(devSim.cutPrim, kStartK+KKK-1, kStartL+LLL-1, devSim.jbasis, devSim.jbasis);
-                    if (cutoffPrim2> devSim.primLimit) {
+                    if (cutoffPrim * LOC2(devSim.cutPrim, kStartK+KKK-1, kStartL+LLL-1, devSim.jbasis, devSim.jbasis) > devSim.primLimit) {
                         /*
                          CC = expo(L)
                          DD = expo(K)
@@ -817,10 +858,9 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                                   expo(I)+expo(J)+expo(K)+expo(L)           expo(I)+expo(J)+expo(K)+expo(L)
                          
                          ABCDtemp = 1/2(expo(I)+expo(J)+expo(K)+expo(L))                    
-                         */
-                        QUICKDouble CC = sharedGcexpoK[KKK];
-                        QUICKDouble CD = (QUICKDouble) 1/ (CC + DD);
-                        QUICKDouble ABCD = (QUICKDouble) 1 / (AA+BB+CC+DD);
+                         */                        
+                        QUICKDouble CD = LOC4(devSim.expoSum, KKK, LLL, KK-1, LL-1, 6, 6, devSim.jshell, devSim.jshell);
+                        QUICKDouble ABCD = 1/(AB+CD);
 
                         /*
                          Q' is the weighting center of K and L
@@ -848,113 +888,96 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                          ->  -> 2
                          T = ROU * | P - Q|
                          */
-                        QUICKDouble T = (AA+BB) * (CC+DD) * ABCD * 
-                                        (quick_dsqr((RAx * AA + RBx * BB) * AB - (RCx * CC + RDx * DD) * CD)+
-                                         quick_dsqr((RAy * AA + RBy * BB) * AB - (RCy * CC + RDy * DD) * CD)+
-                                         quick_dsqr((RAz * AA + RBz * BB) * AB - (RCz * CC + RDz * DD) * CD));
+                         
+                        QUICKDouble Qx = LOC4(devSim.weightedCenterX, KKK, LLL, KK-1, LL-1, 6, 6, devSim.jshell, devSim.jshell);
+                        QUICKDouble Qy = LOC4(devSim.weightedCenterY, KKK, LLL, KK-1, LL-1, 6, 6, devSim.jshell, devSim.jshell);
+                        QUICKDouble Qz = LOC4(devSim.weightedCenterZ, KKK, LLL, KK-1, LL-1, 6, 6, devSim.jshell, devSim.jshell);
+                        
+                        QUICKDouble T = AB * CD * ABCD * ( quick_dsqr(Px-Qx) + quick_dsqr(Py-Qy) + quick_dsqr(Pz-Qz));
+
                         
                         QUICKDouble YVerticalTemp[VDIM1*VDIM2*VDIM3];
                         FmT(NABCD, T, YVerticalTemp, sqrt(ABCD));
-
-                        switch (NABCDTYPE) {
-                            // SSSS oribital
-                            case 0:
-                            break;
-                            // PSSS orbital
-                            case 10:
-                            PSSS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx,(RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            break;
-                            // SSPS orbital
-                            case 1:
-                            SSPS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            break;
-                            // PSPS orbital
-                            case 11:
-                            PSSS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            SSPS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            SSPS(1, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            PSPS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*ABCD);
-                            break;
-                            
-                            case 20:
-                            PSSS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            PSSS(1, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            DSSS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*AB, (CC+DD)*ABCD);
-                            break;
-                            case 2:
-                            SSPS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            SSPS(1, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            SSDS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD, 0.5*CD, (AA+BB)*ABCD);
-                            break;
-                            case 21:
-                            SSPS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            
-                            PSSS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            SSPS(1, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            PSPS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*ABCD);
-                            
-                            PSSS(1, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            DSSS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*AB, (CC+DD)*ABCD);
-                            
-                            PSSS(2, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            DSSS(1, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*AB, (CC+DD)*ABCD);
-                            DSPS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD, 0.5*ABCD);
-                            break;
-                            case 12:
-                            SSPS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            
-                            PSSS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            SSPS(1, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            PSPS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*ABCD);
-                            
-                            SSDS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD, 0.5*CD, (AA+BB)*ABCD);
-                            
-                            SSPS(2, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            SSDS(1, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD, 0.5*CD, (AA+BB)*ABCD);
-                            PSDS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*ABCD);
-                            break;
-                            case 22:
-                            SSPS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            
-                            PSSS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            SSPS(1, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            PSPS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*ABCD);
-                            
-                            SSDS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD, 0.5*CD, (AA+BB)*ABCD);
-                            SSPS(2, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            SSDS(1, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD, 0.5*CD, (AA+BB)*ABCD);
-                            PSDS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*ABCD);
-                            
-                            PSSS(1, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            DSSS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*AB, (CC+DD)*ABCD);
-                            PSSS(2, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB);
-                            DSSS(1, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*AB, (CC+DD)*ABCD);
-                            DSPS(0, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD, 0.5*ABCD);
-                            
-                            SSPS(3, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD);
-                            SSDS(2, YVerticalTemp,(RCx * CC + RDx * DD) * CD - RCx,(RCy * CC + RDy * DD) * CD - RCy,(RCz * CC + RDz * DD) * CD - RCz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RCx * CC + RDx * DD) * CD,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RCy * CC + RDy * DD) * CD,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RCz * CC + RDz * DD) * CD, 0.5*CD, (AA+BB)*ABCD);
-                            PSDS(1, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*ABCD);
-                            
-                            PSPS(1, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*ABCD);
-                            DSDS(0, YVerticalTemp, (RAx * AA + RBx * BB) * AB - RAx, (RAy * AA + RBy * BB) * AB - RAy, (RAz * AA + RBz * BB) * AB - RAz,(RAx * AA + RBx * BB + RCx * CC + RDx * DD) * ABCD - (RAx * AA + RBx * BB) * AB,(RAy * AA + RBy * BB + RCy * CC + RDy * DD) * ABCD - (RAy * AA + RBy * BB) * AB,(RAz * AA + RBz * BB + RCz * CC + RDz * DD) * ABCD - (RAz * AA + RBz * BB) * AB, 0.5*ABCD, 0.5*AB, (CC+DD)*ABCD);
-                            break;
-                            
-                            default:
-                            break;
-                        }
                         
+                        if (NABCDTYPE != 0) {
+                            if (NABCDTYPE == 10) {
+                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                            }else if (NABCDTYPE == 1) {
+                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                            }else if(NABCDTYPE == 11) {
+                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                            }else if(NABCDTYPE == 20) {
+                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                            }else if(NABCDTYPE == 2) {
+                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                            }else if(NABCDTYPE == 21) {
+                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                
+                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                
+                                PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                
+                                PSSS(2, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                DSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                DSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5*ABCD);
+                            }else if(NABCDTYPE == 12) {
+                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                
+                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                
+                                SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                
+                                SSPS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                SSDS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                PSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                            }else if(NABCDTYPE == 22) {
+                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                
+                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                
+                                SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                SSPS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                SSDS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                PSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                
+                                PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                PSSS(2, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                DSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                DSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5*ABCD);
+                                
+                                SSPS(3, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                SSDS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                PSDS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                
+                                PSPS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                DSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD, 0.5/AB, CD*ABCD);
+                            }
+                        }
                         
                         /*
                          X2 is the multiplication of four indices normalized coeffecient
                          */
-                        QUICKDouble X2 = X1 * LOC4(devSim.Xcoeff, kStartK+KKK-1, kStartL+LLL-1, K, L, devSim.jbasis, devSim.jbasis, 4, 4);
-                        
+                        QUICKDouble X2 = X1 * LOC4(devSim.Xcoeff, kStartK+KKK-1, kStartL+LLL-1, K, L, devSim.jbasis, devSim.jbasis, 4, 4);                    
                         for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
                             for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
                                 LOC2(store, j-1, i-1, STOREDIM, STOREDIM) += X2 * LOC3(YVerticalTemp, j-1,i-1,0, VDIM1, VDIM2, VDIM3);
                             }
                         }
-                        
                     }   
                 }
             }
@@ -1360,7 +1383,7 @@ void vertical(int NABCDTYPE, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUI
               QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,\
               QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
               QUICKDouble ABCDtemp,QUICKDouble ABtemp,QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom)
-{/*
+{
     switch (NABCDTYPE) {
         // SSSS oribital
         case 0:
@@ -1380,7 +1403,6 @@ void vertical(int NABCDTYPE, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUI
         SSPS(1, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
         PSPS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp);
         break;
-        
         case 20:
         PSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
         PSSS(1, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
@@ -1447,7 +1469,7 @@ void vertical(int NABCDTYPE, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUI
         default:
         break;
     }
-	return;*/
+	return;
 }
 
 #ifndef TEST

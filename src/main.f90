@@ -20,14 +20,9 @@
 !
 !  Cite this work as:
 !  Miao,Y.: He, X.: Ayers,K; Brothers, E.: Merz,K. M. QUICK
-!  University of Florida, Gainesville, FL, 32611
+!  University of Florida, Gainesville, FL, 2010
 !************************************************************************
 !
-#ifdef CUDA
-! If cuda part is used, pleas add following as citation:
-!  Miao, Y: Merz, K.M. QUICK.CUDA
-!  University of FLorida, Gainesville, FL, 32611
-#endif
     program quick
     
     use allMod
@@ -158,9 +153,11 @@
     quick_basis%ktype, quick_basis%kprim, quick_basis%kshell,quick_basis%Ksumtype, &
     quick_basis%Qnumber, quick_basis%Qstart, quick_basis%Qfinal, quick_basis%Qsbasis, quick_basis%Qfbasis, &
     quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
+    
+    call gpu_upload_cutoff_matrix(Ycutoff, cutPrim)
 #endif
 
-call cpu_time(timer_end%TIniGuess)
+    call cpu_time(timer_end%TIniGuess)
     if (.not.quick_method%opt) then
         call getEnergy(failed)
     endif

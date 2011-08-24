@@ -23,35 +23,15 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Mon Aug 15 13:44:44 2011
+ TASK STARTS ON: Tue Aug 23 22:52:19 2011
  INPUT FILE:     water16.in
  OUTPUT FILE:    water16.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
-|------------ CUDA INFORMATION ---------------
-|  CUDA version of Quick in use
-|  Implemented by
-|                      Yipu Miao (Florida)
-|  CAUTION: CUDA Quick is currently experimental
-|           and you may at risk to use it. Be sure
-|           to check result carelly. Advise or 
-|           bug report are welcome.
-|---------------------------------------------
-
-|------------ GPU INFORMATION ---------------
-| CUDA ENABLED DEVICE         :        1
-| CUDA DEVICE IN USE          :        0
-| CUDA DEVICE NAME            : GeForce GTX 580
-| CUDA DEVICE PM              :       16
-| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
-| CUDA DEVICE MEMORY SIZE (MB):     1535
-| SUPPORTING CUDA VERSION     :      2.0
-|--------------------------------------------
-
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF BASIS=STO-3G ENERGY                                                                                                                                                                                  
+KEYWORD=HF BASIS=3-21G ENERGY                                                                                                                                                                                   
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
@@ -67,8 +47,8 @@ KEYWORD=HF BASIS=STO-3G ENERGY
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
-| BASIS SET = STO-3G
-| BASIS FILE = /home/miao/Workspace/new_quick/basis/STO-3G
+| BASIS SET = 3-21G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/3-21G
 
  @ Finish reading job
 
@@ -77,16 +57,40 @@ KEYWORD=HF BASIS=STO-3G ENERGY
 
  For Atom Kind =    1
  ELEMENT = O 
-BASIS FUNCTIONS =    5
+BASIS FUNCTIONS =    9
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.02
-RMS CHANGE     = 0.238978E+00  MAX CHANGE= 0.504578E+00
+SCF CYCLE      =        1      TIME      =     0.01
+RMS CHANGE     = 0.140799E+00  MAX CHANGE= 0.694611E+00
 
-SCF CYCLE      =        2      TIME      =     0.02
-RMS CHANGE     = 0.307220E-10  MAX CHANGE= 0.827385E-10
+SCF CYCLE      =        2      TIME      =     0.01
+RMS CHANGE     = 0.583170E-01  MAX CHANGE= 0.207265E+00
+
+SCF CYCLE      =        3      TIME      =   0.02
+DIIS CYCLE     =        1      MAX ERROR = 0.264535E-01
+RMS CHANGE     = 0.234899E-02  MAX CHANGE= 0.951712E-02
+
+SCF CYCLE      =        4      TIME      =   0.01
+DIIS CYCLE     =        2      MAX ERROR = 0.461752E-02
+RMS CHANGE     = 0.836540E-03  MAX CHANGE= 0.447586E-02
+
+SCF CYCLE      =        5      TIME      =   0.01
+DIIS CYCLE     =        3      MAX ERROR = 0.105621E-02
+RMS CHANGE     = 0.253035E-03  MAX CHANGE= 0.133740E-02
+
+SCF CYCLE      =        6      TIME      =   0.02
+DIIS CYCLE     =        4      MAX ERROR = 0.426481E-03
+RMS CHANGE     = 0.243520E-03  MAX CHANGE= 0.137571E-02
+
+SCF CYCLE      =        7      TIME      =   0.01
+DIIS CYCLE     =        5      MAX ERROR = 0.524416E-05
+RMS CHANGE     = 0.265555E-05  MAX CHANGE= 0.146751E-04
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =        8      TIME      =     0.01
+RMS CHANGE     = 0.257220E-06  MAX CHANGE= 0.141208E-05
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -96,13 +100,28 @@ TOTAL ENERGY         =     0.000000000
 
  For Atom Kind =    2
  ELEMENT = H 
-BASIS FUNCTIONS =    1
+BASIS FUNCTIONS =    2
 
  @ Begin Energy Calculation
 
 
 SCF CYCLE      =        1      TIME      =     0.00
-RMS CHANGE     = 0.100000E-07  MAX CHANGE= 0.100000E-07
+RMS CHANGE     = 0.259048E+00  MAX CHANGE= 0.328842E+00
+
+SCF CYCLE      =        2      TIME      =     0.00
+RMS CHANGE     = 0.215450E-01  MAX CHANGE= 0.344128E-01
+
+SCF CYCLE      =        3      TIME      =   0.00
+DIIS CYCLE     =        1      MAX ERROR = 0.821860E-02
+RMS CHANGE     = 0.670443E-02  MAX CHANGE= 0.107533E-01
+
+SCF CYCLE      =        4      TIME      =   0.00
+DIIS CYCLE     =        2      MAX ERROR = 0.253372E-02
+RMS CHANGE     = 0.299815E-02  MAX CHANGE= 0.481365E-02
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        5      TIME      =     0.00
+RMS CHANGE     = 0.681095E-10  MAX CHANGE= 0.109382E-09
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -174,9 +193,9 @@ TOTAL ENERGY         =     0.000000000
     H           1.3161       1.6222       2.3217
 
 ============== BASIS INFOS ==============
-| BASIS FUNCTIONS =  112
-| NSHELL =   64 NPRIM  =  192
-| JSHELL =   64 JBASIS =  192
+| BASIS FUNCTIONS =  208
+| NSHELL =  112 NPRIM  =  192
+| JSHELL =  112 JBASIS =  192
 
 
  @ End Reading Mol Info 
@@ -188,19 +207,19 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1  -1196.568241663      ------         6.530     1        0.03      6.50      0.01    0.1604E+01  0.7271E-01  0.8473E+00
-  2  -1198.938264796  0.237002E+01       7.310     2        0.03      7.28      0.02    0.2258E+00  0.1646E-01  0.3119E+00
-  3  -1199.504649312  0.566385E+00       7.320     3        0.04      7.28      0.01    0.3315E-01  0.3608E-02  0.5062E-01
-  4  -1199.530588336  0.259390E-01       7.350     4        0.04      7.31      0.02    0.9274E-02  0.2132E-02  0.2852E-01
-  5  -1199.535238768  0.465043E-02       7.350     5        0.04      7.31      0.01    0.2032E-02  0.4243E-03  0.6294E-02
-  6  -1199.535395878  0.157110E-03       7.360     6        0.04      7.32      0.02    0.2758E-03  0.4198E-04  0.6763E-03
+  1  -1210.017981128      ------        12.600     1        0.26     12.34      0.09    0.1589E+01  0.2606E-01  0.4700E+00
+  2  -1209.199128091  -.818853E+00      18.150     2        0.26     17.89      0.09    0.2454E+00  0.5523E-02  0.1236E+00
+  3  -1209.603899441  0.404771E+00      18.290     3        0.26     18.03      0.09    0.1041E+00  0.1869E-02  0.4117E-01
+  4  -1209.671325042  0.674256E-01      18.230     4        0.27     17.96      0.09    0.2658E-01  0.9598E-03  0.1619E-01
+  5  -1209.680559627  0.923458E-02      18.220     5        0.26     17.95      0.09    0.4745E-02  0.3938E-03  0.7143E-02
+  6  -1209.681383872  0.824245E-03      18.210     6        0.27     17.94      0.09    0.1122E-02  0.6485E-04  0.1207E-02
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   6 CYLCES
- MAX ERROR = 0.275760E-03   RMS CHANGE = 0.419799E-04   MAX CHANGE = 0.676315E-03
+ MAX ERROR = 0.112191E-02   RMS CHANGE = 0.648477E-04   MAX CHANGE = 0.120748E-02
  -----------------------------------------------
-ELECTRONIC ENERGY    = -2713.024309809
+ELECTRONIC ENERGY    = -2723.170297803
 CORE_CORE REPULSION  =  1513.488913932
-TOTAL ENERGY         = -1199.535395878
+TOTAL ENERGY         = -1209.681383872
 
  @ End Energy calculation
 
@@ -209,59 +228,59 @@ TOTAL ENERGY         = -1199.535395878
 
     ATOMIC CHARGES
    ATOM          MULLIKEN            LOWDIN
-   O             -0.3984            -0.2826
-   O             -0.3850            -0.2700
-   O             -0.3999            -0.2848
-   O             -0.3912            -0.2760
-   O             -0.3951            -0.2796
-   O             -0.3870            -0.2724
-   O             -0.3897            -0.2747
-   O             -0.3974            -0.2814
-   O             -0.3889            -0.2740
-   O             -0.3899            -0.2750
-   O             -0.3843            -0.2693
-   O             -0.3955            -0.2801
-   O             -0.3900            -0.2748
-   O             -0.3923            -0.2773
-   O             -0.3860            -0.2708
-   O             -0.3936            -0.2782
-   H              0.1990             0.1408
-   H              0.1988             0.1409
-   H              0.1970             0.1391
-   H              0.1859             0.1294
-   H              0.2015             0.1431
-   H              0.1994             0.1415
-   H              0.1976             0.1403
-   H              0.1940             0.1366
-   H              0.1977             0.1399
-   H              0.1941             0.1366
-   H              0.1992             0.1412
-   H              0.1885             0.1318
-   H              0.1968             0.1388
-   H              0.1954             0.1377
-   H              0.1933             0.1360
-   H              0.1993             0.1415
-   H              0.1993             0.1412
-   H              0.1951             0.1375
-   H              0.1927             0.1354
-   H              0.1931             0.1359
-   H              0.1969             0.1392
-   H              0.2026             0.1443
-   H              0.1865             0.1299
-   H              0.1970             0.1394
-   H              0.1974             0.1396
-   H              0.1947             0.1375
-   H              0.1970             0.1390
-   H              0.1945             0.1370
-   H              0.1969             0.1394
-   H              0.2019             0.1433
-   H              0.1864             0.1299
-   H              0.1945             0.1372
+   O             -0.7915            -0.5029
+   O             -0.7651            -0.4848
+   O             -0.7984            -0.5065
+   O             -0.7802            -0.4947
+   O             -0.7901            -0.5024
+   O             -0.7733            -0.4926
+   O             -0.7766            -0.4940
+   O             -0.7872            -0.4965
+   O             -0.7754            -0.4925
+   O             -0.7758            -0.4937
+   O             -0.7606            -0.4799
+   O             -0.7874            -0.5013
+   O             -0.7760            -0.4897
+   O             -0.7801            -0.4947
+   O             -0.7647            -0.4847
+   O             -0.7852            -0.4988
+   H              0.3944             0.2507
+   H              0.3873             0.2436
+   H              0.3889             0.2464
+   H              0.3789             0.2437
+   H              0.3967             0.2519
+   H              0.3951             0.2496
+   H              0.3936             0.2468
+   H              0.3897             0.2476
+   H              0.3922             0.2487
+   H              0.3866             0.2449
+   H              0.3917             0.2481
+   H              0.3745             0.2372
+   H              0.3877             0.2456
+   H              0.3896             0.2467
+   H              0.3836             0.2425
+   H              0.3934             0.2492
+   H              0.3974             0.2523
+   H              0.3838             0.2416
+   H              0.3870             0.2462
+   H              0.3840             0.2433
+   H              0.3951             0.2512
+   H              0.4015             0.2552
+   H              0.3815             0.2459
+   H              0.3924             0.2481
+   H              0.3965             0.2514
+   H              0.3903             0.2472
+   H              0.3916             0.2489
+   H              0.3883             0.2463
+   H              0.3873             0.2454
+   H              0.3961             0.2509
+   H              0.3805             0.2447
+   H              0.3904             0.2479
    TOTAL         0.0000             0.0000
 
     DIPOLE (DEBYE)
       X         Y         Z        TOTAL
-    0.9318    0.0745   -2.3105    2.4924
+    1.4341   -0.0673   -3.4162    3.7056
 
  @ End Charge and Dipole Calculation
 
@@ -269,19 +288,19 @@ TOTAL ENERGY         = -1199.535395878
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     0.450000000(  1.01%)
-TOTAL SCF TIME     =    43.720000000( 97.68%)
-      TOTAL OP TIME      =    43.500000000( 97.18%)
-            TOTAL 1e TIME      =     0.500000000(  1.12%)
-            TOTAL 2e TIME      =    43.000000000( 96.07%)
+INITIAL GUESS TIME =     0.230000000(  0.22%)
+TOTAL SCF TIME     =   104.190000000( 99.24%)
+      TOTAL OP TIME      =   102.600000000( 97.72%)
+            TOTAL 1e TIME      =     0.490000000(  0.47%)
+            TOTAL 2e TIME      =   102.110000000( 97.26%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     0.220000000(  0.49%)
-            TOTAL DIAG TIME    =     0.090000000(  0.20%)
-DIPOLE TIME        =     0.160000000(  0.36%)
-TOTAL TIME         =    44.760000000
+      TOTAL DII TIME     =     1.580000000(  1.50%)
+            TOTAL DIAG TIME    =     0.540000000(  0.51%)
+DIPOLE TIME        =     0.380000000(  0.36%)
+TOTAL TIME         =   104.990000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes 44.8 seconds.
+ Job cpu time:  0 days  0 hours  1 minutes 45.0 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Mon Aug 15 13:45:29 2011
+ Normal Terminatation. Task Finished on: Tue Aug 23 22:54:04 2011

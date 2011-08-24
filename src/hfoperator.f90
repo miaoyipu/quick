@@ -70,8 +70,7 @@ subroutine hfoperator(oneElecO)
    if (quick_method%bCUDA) then
       call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
                   quick_qm_struct%vec,quick_qm_struct%dense)
-      call gpu_upload_cutoff(cutmatrix, Ycutoff, quick_method%integralCutoff, &
-                  cutPrim, quick_method%primLimit)
+      call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
       call gpu_get2e(quick_qm_struct%o);
    else
 #endif
