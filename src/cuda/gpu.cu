@@ -291,10 +291,11 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
      //       }
         }
     }    
-    /*
+    
     bool flag = true;
     int2 temp; 
     
+    /*
     for (int i = 0; i < a - 1; i ++)
     {
         flag = true;
@@ -467,16 +468,16 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     gpu -> gpu_sim.jbasis                   =   *jbasis;
     gpu -> gpu_sim.maxcontract              =   *maxcontract;
 
-    gpu -> gpu_basis -> ncontract                   =   new cuda_buffer_type<int>(ncontract, gpu->nbasis);
-    gpu -> gpu_basis -> itype                       =   new cuda_buffer_type<int>(itype, 3, gpu->nbasis);
-    gpu -> gpu_basis -> aexp                        =   new cuda_buffer_type<QUICKDouble>(aexp, gpu->gpu_basis->maxcontract, gpu->nbasis);
-    gpu -> gpu_basis -> dcoeff                      =   new cuda_buffer_type<QUICKDouble>(dcoeff, gpu->gpu_basis->maxcontract, gpu->nbasis);
+    gpu -> gpu_basis -> ncontract                   =   new cuda_buffer_type<int>(ncontract, 1);//gpu->nbasis);
+    gpu -> gpu_basis -> itype                       =   new cuda_buffer_type<int>(itype, 1);//3, gpu->nbasis);
+    gpu -> gpu_basis -> aexp                        =   new cuda_buffer_type<QUICKDouble>(aexp, 1);//gpu->gpu_basis->maxcontract, gpu->nbasis);
+    gpu -> gpu_basis -> dcoeff                      =   new cuda_buffer_type<QUICKDouble>(dcoeff, 1);//gpu->gpu_basis->maxcontract, gpu->nbasis);
 
-    gpu -> gpu_basis -> first_basis_function        =   new cuda_buffer_type<int>(first_basis_function, gpu->natom);
-    gpu -> gpu_basis -> last_basis_function         =   new cuda_buffer_type<int>(last_basis_function,  gpu->natom);
+    gpu -> gpu_basis -> first_basis_function        =   new cuda_buffer_type<int>(first_basis_function, 1);//gpu->natom);
+    gpu -> gpu_basis -> last_basis_function         =   new cuda_buffer_type<int>(last_basis_function,  1);//gpu->natom);
 
-    gpu -> gpu_basis -> first_shell_basis_function  =   new cuda_buffer_type<int>(first_shell_basis_function, gpu->gpu_basis->nshell);
-    gpu -> gpu_basis -> last_shell_basis_function   =   new cuda_buffer_type<int>(last_shell_basis_function,  gpu->gpu_basis->nshell);
+    gpu -> gpu_basis -> first_shell_basis_function  =   new cuda_buffer_type<int>(first_shell_basis_function, 1);//gpu->gpu_basis->nshell);
+    gpu -> gpu_basis -> last_shell_basis_function   =   new cuda_buffer_type<int>(last_shell_basis_function,  1);//gpu->gpu_basis->nshell);
     gpu -> gpu_basis -> ncenter                     =   new cuda_buffer_type<int>(ncenter,                    gpu->gpu_basis->nbasis);
 
     gpu -> gpu_basis -> kstart                      =   new cuda_buffer_type<int>(kstart,   gpu->gpu_basis->nshell);

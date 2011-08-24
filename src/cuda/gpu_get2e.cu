@@ -638,12 +638,12 @@ get2e_kernel()
          int LL = (int)(currentInt-jshell*jshell*jshell*II-jshell*jshell*JJ-jshell*KK);
          */
         int a = (int) currentInt/jshell;
-        int b = (int) (currentInt - a*jshell);
+//        int b = (int) (currentInt - a*jshell);
         
         int II = devSim.sorted_YCutoffIJ[a].x;
         int JJ = devSim.sorted_YCutoffIJ[a].y;
-        int KK = devSim.sorted_YCutoffIJ[b].x;
-        int LL = devSim.sorted_YCutoffIJ[b].y;        
+        int KK = devSim.sorted_YCutoffIJ[currentInt - a*jshell].x;
+        int LL = devSim.sorted_YCutoffIJ[currentInt - a*jshell].y;        
         
         int ii = devSim.sorted_Q[II];
         int jj = devSim.sorted_Q[JJ];
