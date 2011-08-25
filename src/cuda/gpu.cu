@@ -55,14 +55,14 @@ extern "C" void gpu_init_(void)
     }
     
     cudaGetDeviceProperties(&deviceProp, gpu->gpu_dev_id);
-//    if ( (deviceProp.major >=2) || ((deviceProp.major == 1) && (deviceProp.minor == 3))) 
+    if ( (deviceProp.major >=2) || ((deviceProp.major == 1) && (deviceProp.minor == 3))) 
         device = gpu->gpu_dev_id;
-/*    else {
+    else {
         printf("SELECT GPU HAS CUDA SUPPORTING VERSION UNDER 1.3. EXITING. \n");
-        cudaThreadExit;
+        cudaThreadExit();
         exit(-1);
     }
-  */ 
+   
     if (device == -1) {
         printf("NO CUDA 1.3 SUPPORTED GPU IS FOUND\n");
         gpu_shutdown_();
@@ -76,7 +76,6 @@ extern "C" void gpu_init_(void)
     gpu->blocks = deviceProp.multiProcessorCount;
     if (deviceProp.major ==1) {
         switch (deviceProp.minor) {
-/*
             case 0:
             case 1:
             case 2:
@@ -85,7 +84,6 @@ extern "C" void gpu_init_(void)
                 gpu_shutdown_();
                 exit(-1);
                 break;
-*/
             default:
                 gpu -> sm_version         =   SM_13;
                 gpu -> threadsPerBlock    =   SM_13_THREADS_PER_BLOCK;
@@ -180,13 +178,15 @@ extern "C" void gpu_upload_xyz_(QUICKDouble* atom_xyz)
 #endif
 
     PRINTDEBUG("BEGIN TO UPLOAD COORDINATES")
-    gpu -> xyz = new cuda_buffer_type<QUICKDouble>(atom_xyz, 3, gpu->natom);
-    gpu -> gpu_basis -> xyz = new cuda_buffer_type<QUICKDouble>(atom_xyz, 3, gpu->natom);
+//    gpu -> gpu_basis -> xyz = new cuda_buffer_type<QUICKDouble>(atom_xyz, 3, gpu->natom);
+//	gpu -> gpu_basis -> xyz ->Upload();
     gpu -> gpu_calculated -> distance = new cuda_buffer_type<QUICKDouble>(gpu->natom, gpu->natom);
-    gpu -> xyz -> Upload();
 
-	gpu -> gpu_basis -> xyz ->Upload();
-    gpu -> gpu_sim.xyz =  gpu -> gpu_basis -> xyz -> _devData;
+    gpu -> xyz = new cuda_buffer_type<QUICKDouble>(atom_xyz, 3, gpu->natom);
+    gpu -> xyz -> Upload();
+    
+
+    gpu -> gpu_sim.xyz =  gpu -> xyz -> _devData;
 
 #ifdef DEBUG
     cudaEventRecord(end, 0);
@@ -219,6 +219,11 @@ extern "C" void gpu_upload_atom_and_chg_(int* atom, QUICKDouble* atom_chg)
     PRINTDEBUG("COMPLETE UPLOADING ATOM AND CHARGE")
 }
 
+
+//-----------------------------------------------
+//  upload cutoff criteria, will update every 
+//  interation
+//-----------------------------------------------
 extern "C" void gpu_upload_cutoff_(QUICKDouble* cutMatrix, QUICKDouble* integralCutoff,QUICKDouble* primLimit)
 {
 
@@ -255,6 +260,11 @@ extern "C" void gpu_upload_cutoff_(QUICKDouble* cutMatrix, QUICKDouble* integral
     PRINTDEBUG("COMPLETE UPLOADING CUTOFF")
 }
 
+
+//-----------------------------------------------
+//  upload cutoff matrix, only update at first
+//  interation
+//-----------------------------------------------
 extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutPrim)
 {
 
@@ -274,7 +284,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     gpu -> gpu_cutoff -> YCutoff    -> Upload();
     gpu -> gpu_cutoff -> cutPrim    -> Upload();
     
-    gpu -> gpu_cutoff -> sqrQshell  = (gpu -> gpu_basis -> Qshell) * (gpu -> gpu_basis -> Qshell);
+    gpu -> gpu_cutoff -> sqrQshell  = (gpu -> gpu_basis -> Qshell) * (gpu -> gpu_basis -> Qshell + 1) / 2;
     gpu -> gpu_cutoff -> sorted_YCutoffIJ = new cuda_buffer_type<int2>(gpu->gpu_cutoff->sqrQshell);
     
     
@@ -283,7 +293,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     
     /* sort Ycutoff for SS type*/
     for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
-        for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
+        for (int j = i; j<gpu->gpu_basis->Qshell; j++) {
        //     if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == 0 && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == 0) {
                 gpu->gpu_cutoff->sorted_YCutoffIJ->_hostData[a].x = i;
                 gpu->gpu_cutoff->sorted_YCutoffIJ->_hostData[a].y = j;
@@ -295,7 +305,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     bool flag = true;
     int2 temp; 
     
-    /*
+    
     for (int i = 0; i < a - 1; i ++)
     {
         flag = true;
@@ -313,10 +323,9 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
         
         if (flag == true)
         break;
-        
-    }*/
+    }
     
-    
+/*    
     printf("SS = %i\n",a);
     for (int i = 0; i<a; i++) {
         printf("%i %i %i %f Q=%i %i %i %i\n", i, \
@@ -328,7 +337,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
         gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ->_hostData[i].x], \
         gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ->_hostData[i].y]);
     }
-    
+  */  
     gpu -> gpu_cutoff -> sorted_YCutoffIJ -> Upload();
     gpu -> gpu_sim.sqrQshell        = gpu -> gpu_cutoff -> sqrQshell;
     gpu -> gpu_sim.YCutoff          = gpu -> gpu_cutoff -> YCutoff -> _devData;
@@ -351,11 +360,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
 }
 
 //-----------------------------------------------
-//  upload calculated information,
-//  o is the operator matrix,
-//  co is the coeffecient matrix,
-//  vec is the eigenvector matrix
-//  dense it the density matrix.
+//  upload calculated information
 //-----------------------------------------------
 extern "C" void gpu_upload_calculated_(QUICKDouble* o, QUICKDouble* co, QUICKDouble* vec, QUICKDouble* dense)
 {
@@ -372,32 +377,35 @@ extern "C" void gpu_upload_calculated_(QUICKDouble* o, QUICKDouble* co, QUICKDou
     gpu -> gpu_calculated -> o        =   new cuda_buffer_type<QUICKDouble>(o,      gpu->nbasis, gpu->nbasis);
     gpu -> gpu_calculated -> dense    =   new cuda_buffer_type<QUICKDouble>(dense,  gpu->nbasis, gpu->nbasis);
     gpu -> gpu_calculated -> oULL     =   new cuda_buffer_type<QUICKULL>(gpu->nbasis, gpu->nbasis);
-    gpu -> gpu_calculated -> o        -> Upload();
-    gpu -> gpu_calculated -> dense    -> Upload();
     
-//    gpu -> gpu_calculated -> co       =   new cuda_buffer_type<QUICKDouble>(co,     gpu->nbasis, gpu->nbasis);
-//    gpu -> gpu_calculated -> vec      =   new cuda_buffer_type<QUICKDouble>(vec,    gpu->nbasis, gpu->nbasis);
-//    gpu -> gpu_calculated -> co       -> Upload();
-//    gpu -> gpu_calculated -> vec      -> Upload();
     
-//    gpu -> gpu_sim.co                =  gpu -> gpu_calculated -> co -> _devData;
-//    gpu -> gpu_sim.vec               =  gpu -> gpu_calculated -> vec -> _devData;
-
+    /*
+        oULL is the unsigned long long int type of O matrix. The reason to do so is because 
+        Atomic Operator for CUDA 2.0 is only available for integer. So for double precision type, 
+        an comprimise way is to multiple a very large number (OSCALE), first and divided it
+        after atomic operator.
+     */
     for (int i = 0; i<gpu->nbasis; i++) {
         for (int j = 0; j<gpu->nbasis; j++) {
-            QUICKULL valUII = (QUICKULL) (fabs ( LOC2( gpu->gpu_calculated->o->_hostData, i, j, gpu->nbasis, gpu->nbasis)*OSCALE + \
-                                                 (QUICKDouble)0.5));
+            QUICKULL valUII = (QUICKULL) (fabs ( LOC2( gpu->gpu_calculated->o->_hostData, i, j, gpu->nbasis, gpu->nbasis)*OSCALE + (QUICKDouble)0.5));
+
             if (LOC2( gpu->gpu_calculated->o->_hostData, i, j, gpu->nbasis, gpu->nbasis)<(QUICKDouble)0.0)
-            valUII = 0ull - valUII;
-            LOC2( gpu->gpu_calculated->oULL->_hostData, i, j, gpu->nbasis, gpu->nbasis) = valUII;
+            {
+                valUII = 0ull - valUII;
+            }
             
+            LOC2( gpu->gpu_calculated->oULL->_hostData, i, j, gpu->nbasis, gpu->nbasis) = valUII;
         }
     }
+    
+    gpu -> gpu_calculated -> o        -> Upload();
+    gpu -> gpu_calculated -> dense    -> Upload();
     gpu -> gpu_calculated -> oULL     -> Upload();
     
     gpu -> gpu_sim.o                 =  gpu -> gpu_calculated -> o -> _devData;
     gpu -> gpu_sim.dense             =  gpu -> gpu_calculated -> dense -> _devData;
     gpu -> gpu_sim.oULL              =  gpu -> gpu_calculated -> oULL -> _devData;
+    
     
 #ifdef DEBUG
     cudaEventRecord(end, 0);
@@ -411,25 +419,6 @@ extern "C" void gpu_upload_calculated_(QUICKDouble* o, QUICKDouble* co, QUICKDou
 
     PRINTDEBUG("COMPLETE UPLOADING O MATRIX")
 }
-
-/*
-//-----------------------------------------------
-//  upload calculated information,
-//  o is the operator matrix,
-//  co is the coeffecient matrix,
-//  vec is the eigenvector matrix
-//  dense it the density matrix.
-//-----------------------------------------------
-extern "C" void gpu_download_o_matrix_(QUICKDouble* o)
-{
-    PRINTDEBUG("BEGIN TO UPLOAD O MATRIX")
-    
-    gpu -> gpu_calculated -> o        -> Download(o);
-    
-    PRINTDEBUG("COMPLETE UPLOADING O MATRIX")
-}
-*/
-
 
 //-----------------------------------------------
 //  upload basis set information
@@ -468,6 +457,7 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     gpu -> gpu_sim.jbasis                   =   *jbasis;
     gpu -> gpu_sim.maxcontract              =   *maxcontract;
 
+/*
     gpu -> gpu_basis -> ncontract                   =   new cuda_buffer_type<int>(ncontract, 1);//gpu->nbasis);
     gpu -> gpu_basis -> itype                       =   new cuda_buffer_type<int>(itype, 1);//3, gpu->nbasis);
     gpu -> gpu_basis -> aexp                        =   new cuda_buffer_type<QUICKDouble>(aexp, 1);//gpu->gpu_basis->maxcontract, gpu->nbasis);
@@ -479,12 +469,12 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     gpu -> gpu_basis -> first_shell_basis_function  =   new cuda_buffer_type<int>(first_shell_basis_function, 1);//gpu->gpu_basis->nshell);
     gpu -> gpu_basis -> last_shell_basis_function   =   new cuda_buffer_type<int>(last_shell_basis_function,  1);//gpu->gpu_basis->nshell);
     gpu -> gpu_basis -> ncenter                     =   new cuda_buffer_type<int>(ncenter,                    gpu->gpu_basis->nbasis);
-
+*/
     gpu -> gpu_basis -> kstart                      =   new cuda_buffer_type<int>(kstart,   gpu->gpu_basis->nshell);
     gpu -> gpu_basis -> katom                       =   new cuda_buffer_type<int>(katom,    gpu->gpu_basis->nshell);
-    gpu -> gpu_basis -> ktype                       =   new cuda_buffer_type<int>(ktype,    gpu->gpu_basis->nshell);
+//    gpu -> gpu_basis -> ktype                       =   new cuda_buffer_type<int>(ktype,    gpu->gpu_basis->nshell);
     gpu -> gpu_basis -> kprim                       =   new cuda_buffer_type<int>(kprim,    gpu->gpu_basis->nshell);
-    gpu -> gpu_basis -> kshell                      =   new cuda_buffer_type<int>(kshell,   93);
+//    gpu -> gpu_basis -> kshell                      =   new cuda_buffer_type<int>(kshell,   93);
     gpu -> gpu_basis -> Ksumtype                    =   new cuda_buffer_type<int>(Ksumtype, gpu->gpu_basis->nshell+1);
 
     gpu -> gpu_basis -> Qnumber                     =   new cuda_buffer_type<int>(Qnumber,  gpu->gpu_basis->nshell);
@@ -523,6 +513,12 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     
     /*
         Now because to sort, sorted_Q stands for the shell no, and sorted_Qnumber is the shell orbital type (or angular momentum).
+        For instance:
+        
+        original: s sp s s s sp s s
+        sorteed : s s  s s s s  s s p p
+        
+        move p orbital to the end of the sequence. so the Qshell stands for the length of sequence after sorting.
      */
     int a = 0;
     for (int i = 0; i<gpu->gpu_basis->nshell; i++) {
@@ -606,7 +602,12 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
                     QUICKDouble II = LOC2(gpu->gpu_basis->gcexpo->_hostData, ii , KsumtypeI-1, 6, gpu->nbasis);
                     QUICKDouble JJ = LOC2(gpu->gpu_basis->gcexpo->_hostData, jj , KsumtypeJ-1, 6, gpu->nbasis);
                     
+                    //expoSum(i,j) = expo(i)+expo(j)
                     LOC4(gpu->gpu_basis->expoSum->_hostData, ii, jj, i, j, 6, 6, gpu->jshell, gpu->jshell) = II + JJ;
+                    
+                    
+                    //        ------------->                 ->          ->
+                    //        weightedCenter(i,j) = (expo(i)*i + expo(j)*j)/(expo(i)+expo(j))
                     LOC4(gpu->gpu_basis->weightedCenterX->_hostData, ii, jj, i, j, 6, 6, gpu->jshell, gpu->jshell) = \
                         (LOC2(gpu->xyz->_hostData, 0, kAtomI-1, 3, gpu->natom) * II + LOC2(gpu->xyz->_hostData, 0, kAtomJ-1, 3, gpu->natom)*JJ)/(II+JJ);
                     LOC4(gpu->gpu_basis->weightedCenterY->_hostData, ii, jj, i, j, 6, 6, gpu->jshell, gpu->jshell) = \
@@ -615,6 +616,7 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
                         (LOC2(gpu->xyz->_hostData, 2, kAtomI-1, 3, gpu->natom) * II + LOC2(gpu->xyz->_hostData, 2, kAtomJ-1, 3, gpu->natom)*JJ)/(II+JJ);
                     
                     
+                    // Xcoeff = exp(-II*JJ/(II+JJ) * DIJ) / (II+JJ) * coeff(i) * coeff(j) * X0
                     QUICKDouble X = exp(-II*JJ/(II+JJ)*DIJ)/(II+JJ);
                     for (int itemp = gpu->gpu_basis->Qstart->_hostData[i]; itemp <= gpu->gpu_basis->Qfinal->_hostData[i]; itemp++) {
                         for (int itemp2 = gpu->gpu_basis->Qstart->_hostData[j]; itemp2 <= gpu->gpu_basis->Qfinal->_hostData[j]; itemp2++) {
@@ -639,17 +641,19 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     gpu -> gpu_sim.sorted_Qnumber               =   gpu -> gpu_basis -> sorted_Qnumber -> _devData;
      
     gpu -> gpu_sim.Xcoeff                       =   gpu -> gpu_basis -> Xcoeff -> _devData;
+/*
     gpu -> gpu_sim.ncontract                    =   gpu -> gpu_basis -> ncontract -> _devData;
     gpu -> gpu_sim.first_basis_function         =   gpu -> gpu_basis -> first_basis_function -> _devData;
     gpu -> gpu_sim.last_basis_function          =   gpu -> gpu_basis -> last_basis_function -> _devData;
     gpu -> gpu_sim.first_shell_basis_function   =   gpu -> gpu_basis -> first_shell_basis_function -> _devData;
     gpu -> gpu_sim.last_shell_basis_function    =   gpu -> gpu_basis -> last_shell_basis_function -> _devData;
     gpu -> gpu_sim.ncenter                      =   gpu -> gpu_basis -> ncenter -> _devData;
+    gpu -> gpu_sim.ktype                        =   gpu -> gpu_basis -> ktype -> _devData;
+    gpu -> gpu_sim.kshell                       =   gpu -> gpu_basis -> kshell -> _devData;
+  */
     gpu -> gpu_sim.kstart                       =   gpu -> gpu_basis -> kstart -> _devData;    
     gpu -> gpu_sim.katom                        =   gpu -> gpu_basis -> katom -> _devData;
-    gpu -> gpu_sim.ktype                        =   gpu -> gpu_basis -> ktype -> _devData;
-    gpu -> gpu_sim.kprim                        =   gpu -> gpu_basis -> kprim -> _devData;
-    gpu -> gpu_sim.kshell                       =   gpu -> gpu_basis -> kshell -> _devData;    
+    gpu -> gpu_sim.kprim                        =   gpu -> gpu_basis -> kprim -> _devData;    
     gpu -> gpu_sim.Ksumtype                     =   gpu -> gpu_basis -> Ksumtype -> _devData;
     gpu -> gpu_sim.Qnumber                      =   gpu -> gpu_basis -> Qnumber -> _devData;
     gpu -> gpu_sim.Qstart                       =   gpu -> gpu_basis -> Qstart -> _devData;
@@ -675,27 +679,18 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
 }
 
 
+//-----------------------------------------------
+//  core part, compute 2-e integrals
+//-----------------------------------------------
 extern "C" void gpu_get2e_(QUICKDouble* o)
 {
     PRINTDEBUG("BEGIN TO RUN GET2E")
+
     upload_sim_to_constant(gpu);
-    
-    
-    
+
     PRINTDEBUG("BEGIN TO RUN KERNEL") 
-#ifndef TEST
+
     get2e(gpu);
-#else
-    for (int i = 1; i<= gpu->gpu_basis->jshell; i++) {
-        for (int j = i; j<= gpu->gpu_basis->jshell; j++) {
-            for (int k = i; k<= gpu->gpu_basis->jshell; k++) {
-                for (int l = k; l<= gpu->gpu_basis->jshell; l++) {
-                    gpu_shell(i,j,k,l);
-                }
-            }
-        }
-    }
-#endif
 
     PRINTDEBUG("COMPLETE KERNEL")
     gpu -> gpu_calculated -> oULL -> Download();
@@ -720,16 +715,10 @@ extern "C" void gpu_get2e_(QUICKDouble* o)
     gpu -> gpu_calculated -> o    -> Download(o);
 
     PRINTDEBUG("DELETE TEMP VARIABLES")
-//	delete gpu->gpu_cutoff->cutMatrix;
-//	delete gpu->gpu_cutoff->YCutoff;
-//	delete gpu->gpu_cutoff->cutPrim;
 	
 	delete gpu->gpu_calculated->o;
-//	delete gpu->gpu_calculated->co;
-//	delete gpu->gpu_calculated->vec;
 	delete gpu->gpu_calculated->dense;
 	delete gpu->gpu_calculated->oULL;
-
 
     PRINTDEBUG("COMPLETE RUNNING GET2E")
 }

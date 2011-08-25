@@ -31,10 +31,9 @@ struct gpu_calculated_type {
     int                             natom;
     int                             nbasis;
     cuda_buffer_type<QUICKDouble>*  o;      // O matrix
-    cuda_buffer_type<QUICKDouble>*  co;     // Coefficient matrix
-    cuda_buffer_type<QUICKDouble>*  vec;    // Eigenvector
     cuda_buffer_type<QUICKDouble>*  dense;  // Density Matrix
-    cuda_buffer_type<QUICKULL>*     oULL;
+    cuda_buffer_type<QUICKULL>*     oULL;   // Unsigned long long int type O matrix
+    
     cuda_buffer_type<QUICKDouble>*  distance;
 };
 
@@ -67,23 +66,26 @@ struct gpu_simulation_type {
     int                             maxcontract;
     int                             Qshell;
     // Gaussian Type function
+    /*
     int*                            ncontract;
     int*                            itype;
     QUICKDouble*                    aexp;
     QUICKDouble*                    dcoeff;
-    
+    */
     // Some more infos about basis function
     QUICKDouble*                    xyz;
+/*
     int*                            first_basis_function;
     int*                            last_basis_function;
     int*                            first_shell_basis_function;
     int*                            last_shell_basis_function;
     int*                            ncenter;
+  */
     int*                            kstart;
     int*                            katom;
-    int*                            ktype;
+//    int*                            ktype;
     int*                            kprim;
-    int*                            kshell;
+//    int*                            kshell;
     int*                            Ksumtype;
     int*                            Qnumber;
     int*                            Qstart;
@@ -99,12 +101,11 @@ struct gpu_simulation_type {
     
     // Some more infos about pre-calculated values
     QUICKDouble*                    o;
-    QUICKDouble*                    co;
-    QUICKDouble*                    vec;
-    QUICKDouble*                    dense;
     QUICKULL*                       oULL;
+    QUICKDouble*                    dense;
+    
     QUICKDouble*                    distance;
-    QUICKDouble*                    Xcoeff;                     // 4-dimension one
+    QUICKDouble*                    Xcoeff;
     QUICKDouble*                    expoSum;
     QUICKDouble*                    weightedCenterX;
     QUICKDouble*                    weightedCenterY;
@@ -130,23 +131,26 @@ struct gpu_basis_type {
     int                             Qshell;
     int                             maxcontract;
     // Gaussian Type function
+/*
     cuda_buffer_type<int>*          ncontract;
     cuda_buffer_type<int>*          itype;
     cuda_buffer_type<QUICKDouble>*  aexp;
     cuda_buffer_type<QUICKDouble>*  dcoeff;
-    
+  */  
     // Some more infos about basis function
+/*
     cuda_buffer_type<QUICKDouble>*  xyz;
     cuda_buffer_type<int>*          first_basis_function;
     cuda_buffer_type<int>*          last_basis_function;
     cuda_buffer_type<int>*          first_shell_basis_function;
     cuda_buffer_type<int>*          last_shell_basis_function;
     cuda_buffer_type<int>*          ncenter;
+  */
     cuda_buffer_type<int>*          kstart;
     cuda_buffer_type<int>*          katom;
-    cuda_buffer_type<int>*          ktype;
+//    cuda_buffer_type<int>*          ktype;
     cuda_buffer_type<int>*          kprim;
-    cuda_buffer_type<int>*          kshell;
+//    cuda_buffer_type<int>*          kshell;
     cuda_buffer_type<int>*          Ksumtype;
     cuda_buffer_type<int>*          Qnumber;
     cuda_buffer_type<int>*          Qstart;

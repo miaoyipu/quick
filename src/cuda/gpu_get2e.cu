@@ -625,7 +625,7 @@ get2e_kernel()
      currentInt += totalThreads;
      }
      */
-    int jshell = devSim.Qshell*devSim.Qshell;
+    int jshell = devSim.Qshell*(devSim.Qshell+1)/2;
     unsigned long int totalInt = jshell*jshell;
     int myInt = (int)totalInt / totalThreads;
     if ((totalInt - myInt*totalThreads)> offside) myInt++;
