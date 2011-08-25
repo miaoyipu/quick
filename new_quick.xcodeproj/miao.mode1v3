@@ -197,7 +197,128 @@
 	<key>Notifications</key>
 	<array/>
 	<key>OpenEditors</key>
-	<array/>
+	<array>
+		<dict>
+			<key>Content</key>
+			<dict>
+				<key>PBXProjectModuleGUID</key>
+				<string>0AC28F8E1405E22D00C62536</string>
+				<key>PBXProjectModuleLabel</key>
+				<string>gpu_get2e.cu</string>
+				<key>PBXSplitModuleInNavigatorKey</key>
+				<dict>
+					<key>Split0</key>
+					<dict>
+						<key>PBXProjectModuleGUID</key>
+						<string>0AC28F8F1405E22D00C62536</string>
+						<key>PBXProjectModuleLabel</key>
+						<string>gpu_get2e.cu</string>
+						<key>_historyCapacity</key>
+						<integer>0</integer>
+						<key>bookmark</key>
+						<string>0AC28F9D1405F2F300C62536</string>
+						<key>history</key>
+						<array>
+							<string>0AC28F9C1405F2F300C62536</string>
+						</array>
+					</dict>
+					<key>SplitCount</key>
+					<string>1</string>
+				</dict>
+				<key>StatusBarVisibility</key>
+				<true/>
+			</dict>
+			<key>Geometry</key>
+			<dict>
+				<key>Frame</key>
+				<string>{{0, 20}, {1336, 887}}</string>
+				<key>PBXModuleWindowStatusBarHidden2</key>
+				<false/>
+				<key>RubberWindowFrame</key>
+				<string>344 100 1336 928 0 0 1680 1028 </string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Content</key>
+			<dict>
+				<key>PBXProjectModuleGUID</key>
+				<string>0AC28F5B1405A70900C62536</string>
+				<key>PBXProjectModuleLabel</key>
+				<string>gpu.cu</string>
+				<key>PBXSplitModuleInNavigatorKey</key>
+				<dict>
+					<key>Split0</key>
+					<dict>
+						<key>PBXProjectModuleGUID</key>
+						<string>0AC28F5C1405A70900C62536</string>
+						<key>PBXProjectModuleLabel</key>
+						<string>gpu.cu</string>
+						<key>_historyCapacity</key>
+						<integer>0</integer>
+						<key>bookmark</key>
+						<string>0AC28F9E1405F2F300C62536</string>
+						<key>history</key>
+						<array>
+							<string>0AC28F8C1405E22D00C62536</string>
+						</array>
+					</dict>
+					<key>SplitCount</key>
+					<string>1</string>
+				</dict>
+				<key>StatusBarVisibility</key>
+				<true/>
+			</dict>
+			<key>Geometry</key>
+			<dict>
+				<key>Frame</key>
+				<string>{{0, 20}, {1292, 887}}</string>
+				<key>PBXModuleWindowStatusBarHidden2</key>
+				<false/>
+				<key>RubberWindowFrame</key>
+				<string>150 100 1292 928 0 0 1680 1028 </string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Content</key>
+			<dict>
+				<key>PBXProjectModuleGUID</key>
+				<string>0AC28F711405AC4400C62536</string>
+				<key>PBXProjectModuleLabel</key>
+				<string>gpu_type.h</string>
+				<key>PBXSplitModuleInNavigatorKey</key>
+				<dict>
+					<key>Split0</key>
+					<dict>
+						<key>PBXProjectModuleGUID</key>
+						<string>0AC28F721405AC4400C62536</string>
+						<key>PBXProjectModuleLabel</key>
+						<string>gpu_type.h</string>
+						<key>_historyCapacity</key>
+						<integer>0</integer>
+						<key>bookmark</key>
+						<string>0AC28F9F1405F2F300C62536</string>
+						<key>history</key>
+						<array>
+							<string>0AC28F801405AFA200C62536</string>
+						</array>
+					</dict>
+					<key>SplitCount</key>
+					<string>1</string>
+				</dict>
+				<key>StatusBarVisibility</key>
+				<true/>
+			</dict>
+			<key>Geometry</key>
+			<dict>
+				<key>Frame</key>
+				<string>{{0, 20}, {1050, 862}}</string>
+				<key>PBXModuleWindowStatusBarHidden2</key>
+				<false/>
+				<key>RubberWindowFrame</key>
+				<string>770 125 1050 903 0 0 1680 1028 </string>
+			</dict>
+		</dict>
+	</array>
 	<key>PerspectiveWidths</key>
 	<array>
 		<integer>-1</integer>
@@ -229,6 +350,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -279,7 +402,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>12</integer>
+									<integer>11</integer>
 									<integer>10</integer>
 									<integer>7</integer>
 									<integer>2</integer>
@@ -322,7 +445,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>hfoperator.f90</string>
+								<string>gpu.cu</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -330,7 +453,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>hfoperator.f90</string>
+										<string>gpu.cu</string>
+										<key>_historyCapacity</key>
+										<integer>0</integer>
+										<key>bookmark</key>
+										<string>0AC28F9B1405F2F300C62536</string>
 										<key>history</key>
 										<array>
 											<string>0A6A126D130EEDF0009B360A</string>
@@ -443,6 +570,7 @@
 											<string>0A01B07013FE1C2300239BA4</string>
 											<string>0A01B07113FE1C2300239BA4</string>
 											<string>0A01B07213FE1C2300239BA4</string>
+											<string>0AC28F571405A6D000C62536</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -464,8 +592,6 @@
 							<string>0pt</string>
 						</dict>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -642,8 +768,12 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>0A26859711A5C240002D1008</string>
+		<string>0AC28F711405AC4400C62536</string>
+		<string>0AC28F5B1405A70900C62536</string>
 		<string>/Users/miao/Workspace/new_quick/new_quick.xcodeproj</string>
+		<string>0AC28F8E1405E22D00C62536</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 100 1680 928 0 0 1680 1028 </string>
@@ -883,7 +1013,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string></string>
+										<string>gpu.cu</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -941,8 +1071,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>0A46F02314030A63005D963A</string>
-				<string>0A46F02414030A63005D963A</string>
+				<string>0AC28F551405A3D100C62536</string>
+				<string>0AC28F561405A3D100C62536</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>
