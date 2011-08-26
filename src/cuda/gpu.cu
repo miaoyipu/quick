@@ -295,13 +295,18 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
         for (int j = i; j<gpu->gpu_basis->Qshell; j++) {
        //     if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == 0 && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == 0) {
+            if (LOC2(YCutoff, i, j, gpu->nshell, gpu->nshell) > 1E-10){\
+//                gpu -> gpu_cutoff -> integralCutoff){
                 gpu->gpu_cutoff->sorted_YCutoffIJ->_hostData[a].x = i;
                 gpu->gpu_cutoff->sorted_YCutoffIJ->_hostData[a].y = j;
                 a++;
+                
+            }
      //       }
         }
     }    
     
+    printf("a = %i, total = %i, pect= %f\n", a, gpu->gpu_basis->Qshell * (gpu->gpu_basis->Qshell+1)/2, (float)a/(gpu->gpu_basis->Qshell*(gpu->gpu_basis->Qshell+1)/2));
     bool flag = true;
     int2 temp; 
     
@@ -324,6 +329,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
         if (flag == true)
         break;
     }
+    gpu->gpu_cutoff->sqrQshell = a;
     
 /*    
     printf("SS = %i\n",a);

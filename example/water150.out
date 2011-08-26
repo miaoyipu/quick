@@ -23,10 +23,30 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Wed Aug 24 23:38:05 2011
+ TASK STARTS ON: Thu Aug 25 15:49:09 2011
  INPUT FILE:     water150.in
  OUTPUT FILE:    water150.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
+
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GTX 580
+| CUDA DEVICE PM              :       16
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
+| CUDA DEVICE MEMORY SIZE (MB):     1535
+| SUPPORTING CUDA VERSION     :      2.0
+|--------------------------------------------
 
  @ Read Job And Atom
 
@@ -266,10 +286,10 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1    -63.774057766      ------        42.180     1        0.89     41.29      0.26    0.1527E+00  0.1956E-01  0.2799E+00
-  2    -84.361006728  0.205869E+02      56.930     2        0.64     56.29      0.26    0.3127E-01  0.1685E-02  0.2237E-01
-  3    -84.452875416  0.918687E-01      56.930     1        0.64     56.28      0.27    0.6908E-03  0.7356E-04  0.8054E-03
-  4    -84.452949355  0.739396E-04      56.950     2        0.65     56.30      0.26    0.9278E-04  0.1580E-04  0.1919E-03
+  1    -63.774057766      ------         1.250     1        0.60      0.65      0.26    0.1527E+00  0.1956E-01  0.2799E+00
+  2    -84.361006728  0.205869E+02       1.700     2        0.63      1.07      0.26    0.3127E-01  0.1685E-02  0.2237E-01
+  3    -84.452875416  0.918687E-01       1.700     1        0.64      1.06      0.26    0.6908E-03  0.7356E-04  0.8054E-03
+  4    -84.452949355  0.739396E-04       1.710     2        0.64      1.07      0.26    0.9278E-04  0.1580E-04  0.1919E-03
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   4 CYLCES
  MAX ERROR = 0.927801E-04   RMS CHANGE = 0.158044E-04   MAX CHANGE = 0.191861E-03
@@ -602,7 +622,7 @@ TOTAL ENERGY         =   -84.452949355
 
     DIPOLE (DEBYE)
       X         Y         Z        TOTAL
-    0.0000    0.0000    0.0000    0.0000
+   -0.0000    0.0000   -0.0000    0.0000
 
  @ End Charge and Dipole Calculation
 
@@ -610,19 +630,19 @@ TOTAL ENERGY         =   -84.452949355
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     0.530000000(  0.24%)
-TOTAL SCF TIME     =   218.780000000( 99.02%)
-      TOTAL OP TIME      =   215.950000000( 97.74%)
-            TOTAL 1e TIME      =     5.790000000(  2.62%)
-            TOTAL 2e TIME      =   210.160000000( 95.12%)
+INITIAL GUESS TIME =     1.610000000( 10.27%)
+TOTAL SCF TIME     =    12.080000000( 77.04%)
+      TOTAL OP TIME      =     9.570000000( 61.03%)
+            TOTAL 1e TIME      =     5.720000000( 36.48%)
+            TOTAL 2e TIME      =     3.840000000( 24.49%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     2.820000000(  1.28%)
-            TOTAL DIAG TIME    =     1.050000000(  0.48%)
-DIPOLE TIME        =     1.150000000(  0.52%)
-TOTAL TIME         =   220.940000000
+      TOTAL DII TIME     =     2.510000000( 16.01%)
+            TOTAL DIAG TIME    =     1.040000000(  6.63%)
+DIPOLE TIME        =     1.150000000(  7.33%)
+TOTAL TIME         =    15.680000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  3 minutes 40.9 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes 15.7 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Wed Aug 24 23:41:46 2011
+ Normal Terminatation. Task Finished on: Thu Aug 25 15:49:25 2011

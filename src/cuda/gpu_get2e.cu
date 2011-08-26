@@ -625,25 +625,25 @@ get2e_kernel()
      currentInt += totalThreads;
      }
      */
-    int jshell = devSim.Qshell*(devSim.Qshell+1)/2;
-    unsigned long int totalInt = jshell*jshell;
-    int myInt = (int)totalInt / totalThreads;
+    QUICKULL jshell = (QUICKULL)devSim.sqrQshell; //devSim.Qshell*(devSim.Qshell+1)/2;
+    QUICKULL totalInt = (QUICKULL)jshell*jshell;
+    QUICKULL myInt = (QUICKULL)totalInt / totalThreads;
     if ((totalInt - myInt*totalThreads)> offside) myInt++;
-    long int currentInt = offside;
-    for (int i = 1; i<=myInt; i++) {
+    QUICKULL currentInt = offside;
+    for (QUICKULL i = 1; i<=myInt; i++) {
         
         /*        int II = (int)currentInt/(jshell*jshell*jshell);
          int JJ = (int)(currentInt-jshell*jshell*jshell*II)/(jshell*jshell);
          int KK = (int)(currentInt-jshell*jshell*jshell*II-jshell*jshell*JJ)/(jshell);
          int LL = (int)(currentInt-jshell*jshell*jshell*II-jshell*jshell*JJ-jshell*KK);
          */
-        int a = (int) currentInt/jshell;
-//        int b = (int) (currentInt - a*jshell);
+        QUICKULL a = (QUICKULL) currentInt/jshell;
+        QUICKULL b = (QUICKULL) (currentInt - a*jshell);
         
         int II = devSim.sorted_YCutoffIJ[a].x;
         int JJ = devSim.sorted_YCutoffIJ[a].y;
-        int KK = devSim.sorted_YCutoffIJ[currentInt - a*jshell].x;
-        int LL = devSim.sorted_YCutoffIJ[currentInt - a*jshell].y;        
+        int KK = devSim.sorted_YCutoffIJ[b].x;
+        int LL = devSim.sorted_YCutoffIJ[b].y;        
         
         int ii = devSim.sorted_Q[II];
         int jj = devSim.sorted_Q[JJ];
