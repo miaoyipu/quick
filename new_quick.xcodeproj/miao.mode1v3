@@ -202,47 +202,7 @@
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
-				<string>0AC28F8E1405E22D00C62536</string>
-				<key>PBXProjectModuleLabel</key>
-				<string>gpu_get2e.cu</string>
-				<key>PBXSplitModuleInNavigatorKey</key>
-				<dict>
-					<key>Split0</key>
-					<dict>
-						<key>PBXProjectModuleGUID</key>
-						<string>0AC28F8F1405E22D00C62536</string>
-						<key>PBXProjectModuleLabel</key>
-						<string>gpu_get2e.cu</string>
-						<key>_historyCapacity</key>
-						<integer>0</integer>
-						<key>bookmark</key>
-						<string>0AC28F9D1405F2F300C62536</string>
-						<key>history</key>
-						<array>
-							<string>0AC28F9C1405F2F300C62536</string>
-						</array>
-					</dict>
-					<key>SplitCount</key>
-					<string>1</string>
-				</dict>
-				<key>StatusBarVisibility</key>
-				<true/>
-			</dict>
-			<key>Geometry</key>
-			<dict>
-				<key>Frame</key>
-				<string>{{0, 20}, {1336, 887}}</string>
-				<key>PBXModuleWindowStatusBarHidden2</key>
-				<false/>
-				<key>RubberWindowFrame</key>
-				<string>344 100 1336 928 0 0 1680 1028 </string>
-			</dict>
-		</dict>
-		<dict>
-			<key>Content</key>
-			<dict>
-				<key>PBXProjectModuleGUID</key>
-				<string>0AC28F5B1405A70900C62536</string>
+				<string>0AC2900C1406D5CD00C62536</string>
 				<key>PBXProjectModuleLabel</key>
 				<string>gpu.cu</string>
 				<key>PBXSplitModuleInNavigatorKey</key>
@@ -250,16 +210,16 @@
 					<key>Split0</key>
 					<dict>
 						<key>PBXProjectModuleGUID</key>
-						<string>0AC28F5C1405A70900C62536</string>
+						<string>0AC2900D1406D5CD00C62536</string>
 						<key>PBXProjectModuleLabel</key>
 						<string>gpu.cu</string>
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>0AC28F9E1405F2F300C62536</string>
+						<string>0AC290301406D8BD00C62536</string>
 						<key>history</key>
 						<array>
-							<string>0AC28F8C1405E22D00C62536</string>
+							<string>0AC290271406D7C600C62536</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -282,6 +242,46 @@
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
+				<string>0AC28FE31406D15A00C62536</string>
+				<key>PBXProjectModuleLabel</key>
+				<string>gpu_get2e.cu</string>
+				<key>PBXSplitModuleInNavigatorKey</key>
+				<dict>
+					<key>Split0</key>
+					<dict>
+						<key>PBXProjectModuleGUID</key>
+						<string>0AC28FE41406D15A00C62536</string>
+						<key>PBXProjectModuleLabel</key>
+						<string>gpu_get2e.cu</string>
+						<key>_historyCapacity</key>
+						<integer>0</integer>
+						<key>bookmark</key>
+						<string>0AC290311406D8BD00C62536</string>
+						<key>history</key>
+						<array>
+							<string>0AC290071406D5B500C62536</string>
+						</array>
+					</dict>
+					<key>SplitCount</key>
+					<string>1</string>
+				</dict>
+				<key>StatusBarVisibility</key>
+				<true/>
+			</dict>
+			<key>Geometry</key>
+			<dict>
+				<key>Frame</key>
+				<string>{{0, 20}, {1336, 887}}</string>
+				<key>PBXModuleWindowStatusBarHidden2</key>
+				<false/>
+				<key>RubberWindowFrame</key>
+				<string>344 100 1336 928 0 0 1680 1028 </string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Content</key>
+			<dict>
+				<key>PBXProjectModuleGUID</key>
 				<string>0AC28F711405AC4400C62536</string>
 				<key>PBXProjectModuleLabel</key>
 				<string>gpu_type.h</string>
@@ -296,7 +296,7 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>0AC28F9F1405F2F300C62536</string>
+						<string>0AC290321406D8BD00C62536</string>
 						<key>history</key>
 						<array>
 							<string>0AC28F801405AFA200C62536</string>
@@ -402,7 +402,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>11</integer>
+									<integer>12</integer>
 									<integer>10</integer>
 									<integer>7</integer>
 									<integer>2</integer>
@@ -457,7 +457,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>0AC28F9B1405F2F300C62536</string>
+										<string>0AC2902F1406D8BD00C62536</string>
 										<key>history</key>
 										<array>
 											<string>0A6A126D130EEDF0009B360A</string>
@@ -771,9 +771,9 @@
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>0A26859711A5C240002D1008</string>
 		<string>0AC28F711405AC4400C62536</string>
-		<string>0AC28F5B1405A70900C62536</string>
+		<string>0AC28FE31406D15A00C62536</string>
 		<string>/Users/miao/Workspace/new_quick/new_quick.xcodeproj</string>
-		<string>0AC28F8E1405E22D00C62536</string>
+		<string>0AC2900C1406D5CD00C62536</string>
 	</array>
 	<key>WindowString</key>
 	<string>0 100 1680 928 0 0 1680 1028 </string>
