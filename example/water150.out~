@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Thu Aug 25 15:42:46 2011
+ TASK STARTS ON: Wed Aug 31 17:26:17 2011
  INPUT FILE:     water150.in
  OUTPUT FILE:    water150.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -286,10 +286,10 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1    -64.284962141      ------         4.710     1        1.97      2.72      0.87    0.1876E+00  0.9479E-02  0.1564E+00
-  2    -84.419089713  0.201341E+02       6.740     2        2.03      4.70      0.87    0.3684E-01  0.1106E-02  0.1595E-01
-  3    -84.535431456  0.116342E+00       6.740     1        2.05      4.68      0.87    0.2568E-02  0.1549E-03  0.2912E-02
-  4    -84.536741893  0.131044E-02       6.710     2        2.05      4.65      0.87    0.3907E-03  0.3146E-04  0.5785E-03
+  1    -64.284962141      ------         8.230     1        1.98      6.24      0.87    0.1876E+00  0.9479E-02  0.1564E+00
+  2    -84.419089713  0.201341E+02      10.080     2        2.04      8.03      0.86    0.3684E-01  0.1106E-02  0.1595E-01
+  3    -84.535431456  0.116342E+00      10.090     1        2.06      8.02      0.86    0.2568E-02  0.1549E-03  0.2912E-02
+  4    -84.536741893  0.131044E-02      10.070     2        2.05      8.01      0.86    0.3907E-03  0.3146E-04  0.5785E-03
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   4 CYLCES
  MAX ERROR = 0.390707E-03   RMS CHANGE = 0.314634E-04   MAX CHANGE = 0.578478E-03
@@ -630,19 +630,19 @@ TOTAL ENERGY         =   -84.536741893
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     5.340000000( 12.05%)
-TOTAL SCF TIME     =    33.670000000( 75.95%)
-      TOTAL OP TIME      =    25.520000000( 57.57%)
-            TOTAL 1e TIME      =     8.770000000( 19.78%)
-            TOTAL 2e TIME      =    16.710000000( 37.69%)
-            TOTAL ENERGY TIME  =     0.020000000(  0.05%)
-      TOTAL DII TIME     =     8.100000000( 18.27%)
-            TOTAL DIAG TIME    =     3.480000000(  7.85%)
-DIPOLE TIME        =     3.580000000(  8.08%)
-TOTAL TIME         =    44.330000000
+INITIAL GUESS TIME =     1.260000000(  2.34%)
+TOTAL SCF TIME     =    47.190000000( 87.73%)
+      TOTAL OP TIME      =    39.020000000( 72.54%)
+            TOTAL 1e TIME      =     8.720000000( 16.21%)
+            TOTAL 2e TIME      =    30.260000000( 56.26%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     8.130000000( 15.11%)
+            TOTAL DIAG TIME    =     3.450000000(  6.41%)
+DIPOLE TIME        =     3.580000000(  6.66%)
+TOTAL TIME         =    53.790000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes 44.3 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes 53.8 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Thu Aug 25 15:43:30 2011
+ Normal Terminatation. Task Finished on: Wed Aug 31 17:27:11 2011

@@ -23,10 +23,30 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Tue Aug 23 22:52:19 2011
+ TASK STARTS ON: Wed Aug 31 17:41:00 2011
  INPUT FILE:     water16.in
  OUTPUT FILE:    water16.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
+
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GTX 580
+| CUDA DEVICE PM              :       16
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
+| CUDA DEVICE MEMORY SIZE (MB):     1535
+| SUPPORTING CUDA VERSION     :      2.0
+|--------------------------------------------
 
  @ Read Job And Atom
 
@@ -62,13 +82,13 @@ BASIS FUNCTIONS =    9
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.01
+SCF CYCLE      =        1      TIME      =     0.00
 RMS CHANGE     = 0.140799E+00  MAX CHANGE= 0.694611E+00
 
-SCF CYCLE      =        2      TIME      =     0.01
+SCF CYCLE      =        2      TIME      =     0.02
 RMS CHANGE     = 0.583170E-01  MAX CHANGE= 0.207265E+00
 
-SCF CYCLE      =        3      TIME      =   0.02
+SCF CYCLE      =        3      TIME      =   0.01
 DIIS CYCLE     =        1      MAX ERROR = 0.264535E-01
 RMS CHANGE     = 0.234899E-02  MAX CHANGE= 0.951712E-02
 
@@ -76,11 +96,11 @@ SCF CYCLE      =        4      TIME      =   0.01
 DIIS CYCLE     =        2      MAX ERROR = 0.461752E-02
 RMS CHANGE     = 0.836540E-03  MAX CHANGE= 0.447586E-02
 
-SCF CYCLE      =        5      TIME      =   0.01
+SCF CYCLE      =        5      TIME      =   0.02
 DIIS CYCLE     =        3      MAX ERROR = 0.105621E-02
 RMS CHANGE     = 0.253035E-03  MAX CHANGE= 0.133740E-02
 
-SCF CYCLE      =        6      TIME      =   0.02
+SCF CYCLE      =        6      TIME      =   0.01
 DIIS CYCLE     =        4      MAX ERROR = 0.426481E-03
 RMS CHANGE     = 0.243520E-03  MAX CHANGE= 0.137571E-02
 
@@ -89,7 +109,7 @@ DIIS CYCLE     =        5      MAX ERROR = 0.524416E-05
 RMS CHANGE     = 0.265555E-05  MAX CHANGE= 0.146751E-04
 PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
-SCF CYCLE      =        8      TIME      =     0.01
+SCF CYCLE      =        8      TIME      =     0.02
 RMS CHANGE     = 0.257220E-06  MAX CHANGE= 0.141208E-05
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
@@ -207,15 +227,15 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1  -1210.017981128      ------        12.600     1        0.26     12.34      0.09    0.1589E+01  0.2606E-01  0.4700E+00
-  2  -1209.199128091  -.818853E+00      18.150     2        0.26     17.89      0.09    0.2454E+00  0.5523E-02  0.1236E+00
-  3  -1209.603899441  0.404771E+00      18.290     3        0.26     18.03      0.09    0.1041E+00  0.1869E-02  0.4117E-01
-  4  -1209.671325042  0.674256E-01      18.230     4        0.27     17.96      0.09    0.2658E-01  0.9598E-03  0.1619E-01
-  5  -1209.680559627  0.923458E-02      18.220     5        0.26     17.95      0.09    0.4745E-02  0.3938E-03  0.7143E-02
-  6  -1209.681383872  0.824245E-03      18.210     6        0.27     17.94      0.09    0.1122E-02  0.6485E-04  0.1207E-02
+  1  -1210.017981128      ------         1.980     1        0.27      1.71      0.09    0.1589E+01  0.2606E-01  0.4700E+00
+  2  -1209.199128091  -.818853E+00       2.500     2        0.28      2.22      0.09    0.2454E+00  0.5523E-02  0.1236E+00
+  3  -1209.603899442  0.404771E+00       2.510     3        0.28      2.23      0.09    0.1041E+00  0.1869E-02  0.4117E-01
+  4  -1209.671325042  0.674256E-01       2.500     4        0.28      2.22      0.09    0.2658E-01  0.9598E-03  0.1619E-01
+  5  -1209.680559627  0.923458E-02       2.510     5        0.28      2.22      0.09    0.4745E-02  0.3938E-03  0.7143E-02
+  6  -1209.681383872  0.824245E-03       2.500     6        0.28      2.22      0.09    0.1122E-02  0.6485E-04  0.1207E-02
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   6 CYLCES
- MAX ERROR = 0.112191E-02   RMS CHANGE = 0.648477E-04   MAX CHANGE = 0.120748E-02
+ MAX ERROR = 0.112191E-02   RMS CHANGE = 0.648478E-04   MAX CHANGE = 0.120748E-02
  -----------------------------------------------
 ELECTRONIC ENERGY    = -2723.170297803
 CORE_CORE REPULSION  =  1513.488913932
@@ -288,19 +308,19 @@ TOTAL ENERGY         = -1209.681383872
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     0.230000000(  0.22%)
-TOTAL SCF TIME     =   104.190000000( 99.24%)
-      TOTAL OP TIME      =   102.600000000( 97.72%)
-            TOTAL 1e TIME      =     0.490000000(  0.47%)
-            TOTAL 2e TIME      =   102.110000000( 97.26%)
+INITIAL GUESS TIME =     1.320000000(  7.67%)
+TOTAL SCF TIME     =    14.980000000( 87.09%)
+      TOTAL OP TIME      =    13.300000000( 77.33%)
+            TOTAL 1e TIME      =     0.480000000(  2.79%)
+            TOTAL 2e TIME      =    12.820000000( 74.53%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     1.580000000(  1.50%)
-            TOTAL DIAG TIME    =     0.540000000(  0.51%)
-DIPOLE TIME        =     0.380000000(  0.36%)
-TOTAL TIME         =   104.990000000
+      TOTAL DII TIME     =     1.670000000(  9.71%)
+            TOTAL DIAG TIME    =     0.540000000(  3.14%)
+DIPOLE TIME        =     0.390000000(  2.27%)
+TOTAL TIME         =    17.200000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  1 minutes 45.0 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes 17.2 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Tue Aug 23 22:54:04 2011
+ Normal Terminatation. Task Finished on: Wed Aug 31 17:41:18 2011

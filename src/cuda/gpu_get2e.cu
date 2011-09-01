@@ -578,65 +578,20 @@ void get2e(_gpu_type gpu)
     
 }
 
-__device__ int total(int a)
-{
-    int e = a*(a+1)/2;
-    int f = e*e + e*(2*a+1)/3;
-    f = f/2;
-    return f;
-}
-
 __global__ void 
 get2e_kernel()
 {
     unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
     int totalThreads = blockDim.x*gridDim.x;
-    /*
-     int jshell = devSim.jshell;
-     unsigned long int totalInt = total(jshell);
-     int myInt = (int)totalInt / totalThreads;
-     if ((totalInt - myInt*totalThreads)> offside) myInt++;
-     
-     unsigned long int currentInt = offside;
-     for (int i = 1; i <= myInt; i++) {
-     
-     int ii = (int)(sqrt(sqrt((double)(totalInt-currentInt-1)*8)));
-     
-     if (total(ii) <= (totalInt-currentInt-1)) ii++;
-     
-     int d = totalInt-currentInt;
-     d = total(ii)-d;
-     
-     int a2 = ii*(ii+1)/2;
-     
-     int jj = d / a2;
-     d = d % a2;
-     ii = jshell-ii+1;
-     jj = ii+jj;
-     
-     int kk = (int)sqrt((double)(d*2));
-     if (d>=(kk*(kk+1)/2)) kk++;
-     int ll = kk*(kk+1)/2-d;
-     kk = jshell-kk+1;
-     ll = jshell-ll+1;
-     
-     gpu_shell(ii,jj,kk,ll);
-     
-     currentInt += totalThreads;
-     }
-     */
-    QUICKULL jshell = (QUICKULL)devSim.sqrQshell; //devSim.Qshell*(devSim.Qshell+1)/2;
-    QUICKULL totalInt = (QUICKULL)jshell*jshell;
-    QUICKULL myInt = (QUICKULL)totalInt / totalThreads;
-    if ((totalInt - myInt*totalThreads)> offside) myInt++;
-    QUICKULL currentInt = offside;
+
+    QUICKULL jshell   = (QUICKULL) devSim.sqrQshell;
+    QUICKULL myInt    = (QUICKULL) jshell*jshell / totalThreads;
+
+    if ((jshell*jshell - myInt*totalThreads)> offside) myInt++;
+
     for (QUICKULL i = 1; i<=myInt; i++) {
-        
-        /*        int II = (int)currentInt/(jshell*jshell*jshell);
-         int JJ = (int)(currentInt-jshell*jshell*jshell*II)/(jshell*jshell);
-         int KK = (int)(currentInt-jshell*jshell*jshell*II-jshell*jshell*JJ)/(jshell);
-         int LL = (int)(currentInt-jshell*jshell*jshell*II-jshell*jshell*JJ-jshell*KK);
-         */
+
+        QUICKULL currentInt = totalThreads * (i-1)+offside;        
         QUICKULL a = (QUICKULL) currentInt/jshell;
         QUICKULL b = (QUICKULL) (currentInt - a*jshell);
         
@@ -649,9 +604,13 @@ get2e_kernel()
         int jj = devSim.sorted_Q[JJ];
         int kk = devSim.sorted_Q[KK];
         int ll = devSim.sorted_Q[LL];
+        int iii = devSim.sorted_Qnumber[II];
+        int jjj = devSim.sorted_Qnumber[JJ];
+        int kkk = devSim.sorted_Qnumber[KK];
+        int lll = devSim.sorted_Qnumber[LL];
         
-        if (ii<=kk && ii<=jj && kk<=ll) {
-            
+//        if (ii<=kk && ii<=jj && kk<=ll) {
+        if (ii<=kk){
             int nshell = devSim.nshell;
             QUICKDouble DNMax = MAX(MAX(4.0*LOC2(devSim.cutMatrix, ii, jj, nshell, nshell), 4.0*LOC2(devSim.cutMatrix, kk, ll, nshell, nshell)),
                                     MAX(MAX(LOC2(devSim.cutMatrix, ii, ll, nshell, nshell),     LOC2(devSim.cutMatrix, ii, kk, nshell, nshell)),
@@ -660,67 +619,12 @@ get2e_kernel()
             if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.integralCutoff && \
                 (LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell) * DNMax) > devSim.integralCutoff) {
                 
-                iclass(devSim.sorted_Qnumber[II],devSim.sorted_Qnumber[JJ],devSim.sorted_Qnumber[KK],devSim.sorted_Qnumber[LL], ii+1, jj+1, kk+1, ll+1, DNMax);
+                iclass(iii,jjj,kkk,lll, ii+1, jj+1, kk+1, ll+1, DNMax);
                 
             }
         }
-        currentInt += totalThreads;
     }
 }
-
-/*
-#ifndef TEST
-__device__
-#endif
-void gpu_shell(unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL)
-{
-    int nshell = devSim.nshell;
-    int QstartI, QstartJ, QstartK, QstartL;
-    int QfinalI, QfinalJ, QfinalK, QfinalL;
-    
-    
-    QstartI = devSim.Qstart[II-1];
-    QstartJ = devSim.Qstart[JJ-1];
-    QstartK = devSim.Qstart[KK-1];
-    QstartL = devSim.Qstart[LL-1];
-    
-    QfinalI = devSim.Qfinal[II-1];
-    QfinalJ = devSim.Qfinal[JJ-1];
-    QfinalK = devSim.Qfinal[KK-1];
-    QfinalL = devSim.Qfinal[LL-1];        
-    
-    QUICKDouble DNMax = MAX(MAX(4.0*LOC2(devSim.cutMatrix, II-1, JJ-1, nshell, nshell), 4.0*LOC2(devSim.cutMatrix, KK-1, LL-1, nshell, nshell)),
-                            MAX(MAX(LOC2(devSim.cutMatrix, II-1, LL-1, nshell, nshell),     LOC2(devSim.cutMatrix, II-1, KK-1, nshell, nshell)),
-                                MAX(LOC2(devSim.cutMatrix, JJ-1, KK-1, nshell, nshell),     LOC2(devSim.cutMatrix, JJ-1, LL-1, nshell, nshell))));
-    
-    if ((LOC2(devSim.YCutoff, KK-1, LL-1, nshell, nshell) * LOC2(devSim.YCutoff, II-1, JJ-1, nshell, nshell))> devSim.integralCutoff && \
-        (LOC2(devSim.YCutoff, KK-1, LL-1, nshell, nshell) * LOC2(devSim.YCutoff, II-1, JJ-1, nshell, nshell) * DNMax) > devSim.integralCutoff) {
-        
-        int indexNum = 0;
-        int4 index[16];
-        for (int i = QstartI; i<= QfinalI; i++) {
-            for (int j = QstartJ; j<= QfinalJ; j++) {
-                for (int k = QstartK; k <= QfinalK; k++) {
-                    for (int l = QstartL; l<= QfinalL; l++) {
-                        index[indexNum].x = i;
-                        index[indexNum].y = j;
-                        index[indexNum].z = k;
-                        index[indexNum].w = l;
-                        indexNum++;
-                    }
-                }
-            }
-        }
-        
-        for (int i = 0; i<indexNum; i++) {
-            iclass(index[i].x, index[i].y, index[i].z, index[i].w, II, JJ, KK, LL, DNMax);
-        }
-    }
-    
-  	return;
-}
-*/
-
 
 __device__ QUICKDouble quick_dsqr(QUICKDouble a)
 {
@@ -735,13 +639,11 @@ __device__
 void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax)
 {
 
-//      QUICKDouble sharedGcexpoK[6], sharedGcexpoL[6];
-    
     QUICKDouble RAx, RAy, RAz;
     QUICKDouble RBx, RBy, RBz;
     QUICKDouble RCx, RCy, RCz;
     QUICKDouble RDx, RDy, RDz;
-    //     int KsumtypeI, KsumtypeJ, KsumtypeK, KsumtypeL;
+
     int kPrimI, kPrimJ, kPrimL, kPrimK;
     int kStartI, kStartJ, kStartK, kStartL;
     
