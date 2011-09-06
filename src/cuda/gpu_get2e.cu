@@ -660,8 +660,10 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
      NII1 is the starting angular momenta for shell i and NII2 is the ending
      angular momenta.So it is with other varibles
      */
-    int NABCDTYPE =(int) (devSim.Qfinal[II-1]+devSim.Qfinal[JJ-1])*10u+devSim.Qfinal[KK-1]+devSim.Qfinal[LL-1]; // NABCDTYPE is used for hrr
-    int NABCD= (int) devSim.Qfinal[II-1]+devSim.Qfinal[JJ-1]+devSim.Qfinal[KK-1]+devSim.Qfinal[LL-1];
+    int ijtype = devSim.Qfinal[II-1]+devSim.Qfinal[JJ-1];
+    int kltype = devSim.Qfinal[KK-1]+devSim.Qfinal[LL-1];
+    int NABCDTYPE =(int) (ijtype)*10u+kltype; // NABCDTYPE is used for hrr
+    int NABCD= (int) ijtype+kltype;
     
     /*RA, RB, RC, and RD are the coordinates for atom katomA, katomB, katomC and katomD, 
      which means they are corrosponding coorinates for shell II, JJ, KK, and LL.
@@ -801,7 +803,52 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                         QUICKDouble YVerticalTemp[VDIM1*VDIM2*VDIM3];
                         FmT(NABCD, T, YVerticalTemp, sqrt(ABCD));
                         
-                        if (NABCDTYPE != 0) {
+                        if (ijtype + kltype != 0) {
+                            
+                            if (ijtype >= 1) {
+                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                            }
+                            
+                            if (kltype >= 1) {
+                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                            }
+                            
+                            if (ijtype >= 1 && kltype >= 1) {
+                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                            }
+                            
+                            if (ijtype >=2) {
+                                PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                            }
+                            
+                            if (kltype >= 2) {
+                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                            }
+                            
+                            if (ijtype>=1 && kltype >=2) {
+                                SSDS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                PSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                            }
+                            
+                            if (ijtype>=2 && kltype >=1) {
+                                PSSS(2, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                DSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                DSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5*ABCD);
+                            }
+                            
+                            if (ijtype>=2 && kltype >=2) {
+                                SSPS(3, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                SSDS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                PSDS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                
+                                PSPS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                DSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD, 0.5/AB, CD*ABCD);
+                            
+                                                            
+                        /*
                             if (NABCDTYPE == 10) {
                                 PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
                             }else if (NABCDTYPE == 1) {
@@ -867,7 +914,7 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                                 PSDS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
                                 
                                 PSPS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                                DSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD, 0.5/AB, CD*ABCD);
+                                DSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD, 0.5/AB, CD*ABCD);*/
                             }
                         }
                         
@@ -1277,102 +1324,6 @@ __device__
 	return;
 }
 
-#ifndef TEST
-__device__
-#endif
-void vertical(int NABCDTYPE, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,\
-              QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz,\
-              QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,\
-              QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-              QUICKDouble ABCDtemp,QUICKDouble ABtemp,QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom)
-{
-    switch (NABCDTYPE) {
-        // SSSS oribital
-        case 0:
-        break;
-        // PSSS orbital
-        case 10:
-        PSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        break;
-        // SSPS orbital
-        case 1:
-        SSPS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        break;
-        // PSPS orbital
-        case 11:
-        PSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        SSPS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        SSPS(1, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        PSPS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp);
-        break;
-        case 20:
-        PSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        PSSS(1, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        DSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABtemp, CDcom);
-        break;
-        case 2:
-        SSPS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        SSPS(1, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        SSDS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz, CDtemp, ABcom);
-        break;
-        case 21:
-        SSPS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        
-        PSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        SSPS(1, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        PSPS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp);
-        
-        PSSS(1, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        DSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABtemp, CDcom);
-        
-        PSSS(2, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        DSSS(1, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABtemp, CDcom);
-        DSPS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz, ABCDtemp);
-        break;
-        case 12:
-        SSPS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        
-        PSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        SSPS(1, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        PSPS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp);
-        
-        SSDS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz, CDtemp, ABcom);
-        
-        SSPS(2, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        SSDS(1, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz, CDtemp, ABcom);
-        PSDS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp);
-        break;
-        case 22:
-        SSPS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        
-        PSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        SSPS(1, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        PSPS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp);
-        
-        SSDS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz, CDtemp, ABcom);
-        SSPS(2, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        SSDS(1, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz, CDtemp, ABcom);
-        PSDS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp);
-        
-        PSSS(1, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        DSSS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABtemp, CDcom);
-        PSSS(2, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz);
-        DSSS(1, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABtemp, CDcom);
-        DSPS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz, ABCDtemp);
-        
-        SSPS(3, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
-        SSDS(2, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz, CDtemp, ABcom);
-        PSDS(1, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp);
-        
-        PSPS(1, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp);
-        DSDS(0, YVerticalTemp, Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, ABCDtemp, ABtemp, CDcom);
-        break;
-        
-        default:
-        break;
-    }
-	return;
-}
 
 #ifndef TEST
 __device__
@@ -1380,12 +1331,9 @@ __device__
 void PSSS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy,QUICKDouble Ptempz, \
           QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz)
 {
-    LOC3(YVerticalTemp, 1, 0,  mtemp, VDIM1, VDIM2, VDIM3) = Ptempx  * LOC3( YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-    + WPtempx * LOC3( YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3);
-    LOC3(YVerticalTemp, 2, 0,  mtemp, VDIM1, VDIM2, VDIM3) = Ptempy  * LOC3( YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-    + WPtempy * LOC3( YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3);
-    LOC3(YVerticalTemp, 3, 0,  mtemp, VDIM1, VDIM2, VDIM3) = Ptempz  * LOC3( YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-    + WPtempz * LOC3( YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3);
+    VY( 1, 0, mtemp) = Ptempx * VY( 0, 0, mtemp) + WPtempx * VY( 0, 0, mtemp+1);
+    VY( 2, 0, mtemp) = Ptempy * VY( 0, 0, mtemp) + WPtempy * VY( 0, 0, mtemp+1);
+    VY( 3, 0, mtemp) = Ptempz * VY( 0, 0, mtemp) + WPtempz * VY( 0, 0, mtemp+1);
 	return;
 }
 
@@ -1396,12 +1344,10 @@ void SSPS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Qtempx, QUICKDouble
           QUICKDouble WQtempx, QUICKDouble WQtempy, QUICKDouble WQtempz)
 {
     
-    LOC3(YVerticalTemp, 0, 1,  mtemp, VDIM1, VDIM2, VDIM3) = Qtempx  * LOC3( YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-    + WQtempx * LOC3( YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3);
-    LOC3(YVerticalTemp, 0, 2,  mtemp, VDIM1, VDIM2, VDIM3) = Qtempy  * LOC3( YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-    + WQtempy * LOC3( YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3);
-    LOC3(YVerticalTemp, 0, 3,  mtemp, VDIM1, VDIM2, VDIM3) = Qtempz  * LOC3( YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-    + WQtempz * LOC3( YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3);
+    VY( 0, 1, mtemp) = Qtempx * VY( 0, 0, mtemp) + WQtempx * VY( 0, 0, mtemp+1);
+    VY( 0, 2, mtemp) = Qtempy * VY( 0, 0, mtemp) + WQtempy * VY( 0, 0, mtemp+1);
+    VY( 0, 3, mtemp) = Qtempz * VY( 0, 0, mtemp) + WQtempz * VY( 0, 0, mtemp+1);
+    
 	return;
 }
 
@@ -1412,18 +1358,17 @@ void PSPS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble
           QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz, QUICKDouble ABCDtemp)
 {
     
-    for (int j = 0; j<3; j++) {
-        LOC3(YVerticalTemp, 1 ,j+1, mtemp, VDIM1,VDIM2,VDIM3) = Ptempx * LOC3( YVerticalTemp, 0, j+1, mtemp, VDIM1, VDIM2, VDIM3) \
-        +  WPtempx* LOC3( YVerticalTemp, 0, j+1, mtemp+1, VDIM1, VDIM2, VDIM3);
-        LOC3(YVerticalTemp, 2 ,j+1, mtemp, VDIM1,VDIM2,VDIM3) = Ptempy * LOC3( YVerticalTemp, 0, j+1, mtemp, VDIM1, VDIM2, VDIM3) \
-        +  WPtempy* LOC3( YVerticalTemp, 0, j+1, mtemp+1, VDIM1, VDIM2, VDIM3);
-        LOC3(YVerticalTemp, 3 ,j+1, mtemp, VDIM1,VDIM2,VDIM3) = Ptempz * LOC3( YVerticalTemp, 0, j+1, mtemp, VDIM1, VDIM2, VDIM3) \
-        +  WPtempz* LOC3( YVerticalTemp, 0, j+1, mtemp+1, VDIM1, VDIM2, VDIM3);
-    }
+    VY( 1, 1, mtemp) = Ptempx * VY( 0, 1, mtemp) + WPtempx * VY( 0, 1, mtemp+1) + ABCDtemp * VY( 0, 0, mtemp+1);
+    VY( 2, 1, mtemp) = Ptempy * VY( 0, 1, mtemp) + WPtempy * VY( 0, 1, mtemp+1);
+    VY( 3, 1, mtemp) = Ptempz * VY( 0, 1, mtemp) + WPtempz * VY( 0, 1, mtemp+1);
     
-    for (int i = 0; i<3; i++) {
-        LOC3(YVerticalTemp, i+1, i+1, mtemp, VDIM1, VDIM2, VDIM3) += ABCDtemp * LOC3( YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3);
-    }
+    VY( 1, 2, mtemp) = Ptempx * VY( 0, 2, mtemp) + WPtempx * VY( 0, 2, mtemp+1);
+    VY( 2, 2, mtemp) = Ptempy * VY( 0, 2, mtemp) + WPtempy * VY( 0, 2, mtemp+1) + ABCDtemp * VY( 0, 0, mtemp+1);
+    VY( 3, 2, mtemp) = Ptempz * VY( 0, 2, mtemp) + WPtempz * VY( 0, 2, mtemp+1);
+    
+    VY( 1, 3, mtemp) = Ptempx * VY( 0, 3, mtemp) + WPtempx * VY( 0, 3, mtemp+1);
+    VY( 2, 3, mtemp) = Ptempy * VY( 0, 3, mtemp) + WPtempy * VY( 0, 3, mtemp+1);
+    VY( 3, 3, mtemp) = Ptempz * VY( 0, 3, mtemp) + WPtempz * VY( 0, 3, mtemp+1) + ABCDtemp * VY( 0, 0, mtemp+1);
     
 	return;
 }
@@ -1434,42 +1379,14 @@ __device__
 void DSSS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy,QUICKDouble Ptempz, \
           QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz, QUICKDouble ABtemp, QUICKDouble CDcom)
 {
-    int Bx, By, Bz;
+    VY( 4, 0, mtemp) = Ptempx * VY( 2, 0, mtemp) + WPtempx * VY( 2, 0, mtemp+1);
+    VY( 5, 0, mtemp) = Ptempy * VY( 3, 0, mtemp) + WPtempy * VY( 3, 0, mtemp+1);
+    VY( 6, 0, mtemp) = Ptempx * VY( 3, 0, mtemp) + WPtempx * VY( 3, 0, mtemp+1);
     
-    for (int i = 4; i<10; i++) {
-        Bx = LOC2(devMcal, 0, i, 3, MCALDIM);
-        By = LOC2(devMcal, 1, i, 3, MCALDIM);
-        Bz = LOC2(devMcal, 2, i, 3, MCALDIM);
-        
-        if (Bx != 0) {
-            Bx = Bx - 1;
-            int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-            LOC3(YVerticalTemp, i, 0, mtemp, VDIM1, VDIM2, VDIM3) =  Ptempx * LOC3( YVerticalTemp, ii-1, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-            + WPtempx * LOC3( YVerticalTemp, ii-1, 0, mtemp+1,VDIM1, VDIM2, VDIM3);
-            if (Bx > 0) {
-                LOC3(YVerticalTemp, i, 0, mtemp, VDIM1, VDIM2, VDIM3) += ABtemp * (LOC3(YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-                                                                                   - CDcom * LOC3(YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3));
-            }
-        }else if (By != 0){
-            By = By - 1;
-            int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-            LOC3(YVerticalTemp, i, 0, mtemp, VDIM1, VDIM2, VDIM3) =  Ptempy * LOC3( YVerticalTemp, ii-1, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-            + WPtempy * LOC3( YVerticalTemp, ii-1, 0, mtemp+1,VDIM1, VDIM2, VDIM3);
-            if (By > 0) {
-                LOC3(YVerticalTemp, i, 0, mtemp, VDIM1, VDIM2, VDIM3) += ABtemp * (LOC3(YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-                                                                                   - CDcom * LOC3(YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3));
-            }
-        }else if (Bz != 0) {
-            Bz = Bz - 1;
-            int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-            LOC3(YVerticalTemp, i, 0, mtemp, VDIM1, VDIM2, VDIM3) =  Ptempz * LOC3( YVerticalTemp, ii-1, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-            + WPtempz * LOC3( YVerticalTemp, ii-1, 0, mtemp+1,VDIM1, VDIM2, VDIM3);
-            if (Bz > 0) {
-                LOC3(YVerticalTemp, i, 0, mtemp, VDIM1, VDIM2, VDIM3) += ABtemp * (LOC3(YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-                                                                                   - CDcom * LOC3(YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3));
-            }
-        }
-    }
+    VY( 7, 0, mtemp) = Ptempx * VY( 1, 0, mtemp) + WPtempx * VY( 1, 0, mtemp+1)+ ABtemp*(VY( 0, 0, mtemp) - CDcom * VY( 0, 0, mtemp+1));
+    VY( 8, 0, mtemp) = Ptempy * VY( 2, 0, mtemp) + WPtempy * VY( 2, 0, mtemp+1)+ ABtemp*(VY( 0, 0, mtemp) - CDcom * VY( 0, 0, mtemp+1));
+    VY( 9, 0, mtemp) = Ptempz * VY( 3, 0, mtemp) + WPtempz * VY( 3, 0, mtemp+1)+ ABtemp*(VY( 0, 0, mtemp) - CDcom * VY( 0, 0, mtemp+1));
+    
 	return;
 }
 
@@ -1479,41 +1396,14 @@ __device__
 void SSDS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Qtempx, QUICKDouble Qtempy,QUICKDouble Qtempz, \
           QUICKDouble WQtempx, QUICKDouble WQtempy, QUICKDouble WQtempz, QUICKDouble CDtemp, QUICKDouble ABcom)
 {
-    int Bx, By, Bz;
-    for (int i = 4; i<10; i++) {
-        Bx = LOC2(devMcal, 0, i, 3, MCALDIM);
-        By = LOC2(devMcal, 1, i, 3, MCALDIM);
-        Bz = LOC2(devMcal, 2, i, 3, MCALDIM);
-        
-        if (Bx != 0) {
-            Bx = Bx - 1;
-            int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-            LOC3(YVerticalTemp, 0, i, mtemp, VDIM1, VDIM2, VDIM3) =  Qtempx * LOC3( YVerticalTemp, 0, ii-1, mtemp, VDIM1, VDIM2, VDIM3) \
-            + WQtempx * LOC3( YVerticalTemp, 0, ii-1, mtemp+1,VDIM1, VDIM2, VDIM3);
-            if (Bx > 0) {
-                LOC3(YVerticalTemp, 0, i, mtemp, VDIM1, VDIM2, VDIM3) += CDtemp * (LOC3(YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-                                                                                   - ABcom * LOC3(YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3));
-            }
-        }else if (By != 0){
-            By = By - 1;
-            int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-            LOC3(YVerticalTemp, 0, i, mtemp, VDIM1, VDIM2, VDIM3) =  Qtempy * LOC3( YVerticalTemp, 0, ii-1, mtemp, VDIM1, VDIM2, VDIM3) \
-            + WQtempy * LOC3( YVerticalTemp, 0, ii-1, mtemp+1,VDIM1, VDIM2, VDIM3);
-            if (By > 0) {
-                LOC3(YVerticalTemp, 0, i, mtemp, VDIM1, VDIM2, VDIM3) += CDtemp * (LOC3(YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-                                                                                   - ABcom * LOC3(YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3));
-            }
-        }else if (Bz != 0) {
-            Bz = Bz - 1;
-            int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-            LOC3(YVerticalTemp, 0, i, mtemp, VDIM1, VDIM2, VDIM3) =  Qtempz * LOC3( YVerticalTemp, 0, ii-1, mtemp, VDIM1, VDIM2, VDIM3) \
-            + WQtempz * LOC3( YVerticalTemp, 0, ii-1, mtemp+1,VDIM1, VDIM2, VDIM3);
-            if (Bz > 0) {
-                LOC3(YVerticalTemp, 0, i, mtemp, VDIM1, VDIM2, VDIM3) += CDtemp * (LOC3(YVerticalTemp, 0, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-                                                                                   - ABcom * LOC3(YVerticalTemp, 0, 0, mtemp+1, VDIM1, VDIM2, VDIM3));
-            }
-        }
-    }
+    VY( 0, 4, mtemp) = Qtempx * VY( 0, 2, mtemp) + WQtempx * VY( 0, 2, mtemp+1);
+    VY( 0, 5, mtemp) = Qtempy * VY( 0, 3, mtemp) + WQtempy * VY( 0, 3, mtemp+1);
+    VY( 0, 6, mtemp) = Qtempx * VY( 0, 3, mtemp) + WQtempx * VY( 0, 3, mtemp+1);
+    
+    VY( 0, 7, mtemp) = Qtempx * VY( 0, 1, mtemp) + WQtempx * VY( 0, 1, mtemp+1)+ CDtemp*(VY( 0, 0, mtemp) - ABcom * VY( 0, 0, mtemp+1));
+    VY( 0, 8, mtemp) = Qtempy * VY( 0, 2, mtemp) + WQtempy * VY( 0, 2, mtemp+1)+ CDtemp*(VY( 0, 0, mtemp) - ABcom * VY( 0, 0, mtemp+1));
+    VY( 0, 9, mtemp) = Qtempz * VY( 0, 3, mtemp) + WQtempz * VY( 0, 3, mtemp+1)+ CDtemp*(VY( 0, 0, mtemp) - ABcom * VY( 0, 0, mtemp+1));
+    
 	return;
 }
 
@@ -1525,44 +1415,30 @@ __device__
 void DSPS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Qtempx, QUICKDouble Qtempy,QUICKDouble Qtempz, \
           QUICKDouble WQtempx, QUICKDouble WQtempy, QUICKDouble WQtempz, QUICKDouble ABCDtemp)
 {
-
-    int Bx, By, Bz;
-    for (int i = 4; i<10; i++) {
-        for (int jtemp = 2; jtemp <= 4; jtemp++) {
-            Bx = LOC2(devMcal, 0, i, 3, MCALDIM);
-            By = LOC2(devMcal, 1, i, 3, MCALDIM);
-            Bz = LOC2(devMcal, 2, i, 3, MCALDIM);
-            
-            if (LOC2(devMcal, 0, jtemp-1, 3, MCALDIM) != 0 ) {
-                LOC3(YVerticalTemp, i, jtemp-1, mtemp, VDIM1, VDIM2, VDIM3) =  Qtempx * LOC3( YVerticalTemp, i, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-                + WQtempx * LOC3( YVerticalTemp, i, 0, mtemp+1,VDIM1, VDIM2, VDIM3);
-                if (Bx != 0) {
-                    Bx = Bx -1;
-                    int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-                    LOC3(YVerticalTemp, i, jtemp-1, mtemp, VDIM1, VDIM2, VDIM3) += \
-                    ABCDtemp * LOC3(YVerticalTemp, ii-1, 0, mtemp+1, VDIM1, VDIM2, VDIM3) * LOC2(devMcal, 0, i, 3, MCALDIM);
-                }       
-            }else if (LOC2(devMcal, 1, jtemp-1, 3, MCALDIM) != 0) {
-                LOC3(YVerticalTemp, i, jtemp-1, mtemp, VDIM1, VDIM2, VDIM3) =  Qtempy * LOC3( YVerticalTemp, i, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-                + WQtempy * LOC3( YVerticalTemp, i, 0, mtemp+1,VDIM1, VDIM2, VDIM3);
-                if (By != 0) {
-                    By = By -1;
-                    int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-                    LOC3(YVerticalTemp, i, jtemp-1, mtemp, VDIM1, VDIM2, VDIM3) += \
-                    ABCDtemp * LOC3(YVerticalTemp, ii-1, 0, mtemp+1, VDIM1, VDIM2, VDIM3) * LOC2(devMcal, 1, i, 3, MCALDIM);
-                }
-            }else if (LOC2(devMcal, 2, jtemp-1, 3, MCALDIM) != 0) {
-                LOC3(YVerticalTemp, i, jtemp-1, mtemp, VDIM1, VDIM2, VDIM3) =  Qtempz * LOC3( YVerticalTemp, i, 0, mtemp, VDIM1, VDIM2, VDIM3) \
-                + WQtempz * LOC3( YVerticalTemp, i, 0, mtemp+1,VDIM1, VDIM2, VDIM3);
-                if (Bz != 0) {
-                    Bz = Bz -1;
-                    int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-                    LOC3(YVerticalTemp, i, jtemp-1, mtemp, VDIM1, VDIM2, VDIM3) += \
-                    ABCDtemp * LOC3(YVerticalTemp, ii-1, 0, mtemp+1, VDIM1, VDIM2, VDIM3) * LOC2(devMcal, 2, i, 3, MCALDIM);
-                }
-            }
-        }
-    }
+    
+    VY( 4, 1, mtemp) = Qtempx * VY( 4, 0, mtemp) + WQtempx * VY( 4, 0, mtemp + 1) + ABCDtemp * VY( 2, 0, mtemp + 1);
+    VY( 4, 2, mtemp) = Qtempy * VY( 4, 0, mtemp) + WQtempy * VY( 4, 0, mtemp + 1) + ABCDtemp * VY( 1, 0, mtemp + 1);
+    VY( 4, 3, mtemp) = Qtempz * VY( 4, 0, mtemp) + WQtempz * VY( 4, 0, mtemp + 1);
+    
+    VY( 5, 1, mtemp) = Qtempx * VY( 5, 0, mtemp) + WQtempx * VY( 5, 0, mtemp + 1);
+    VY( 5, 2, mtemp) = Qtempy * VY( 5, 0, mtemp) + WQtempy * VY( 5, 0, mtemp + 1) + ABCDtemp * VY( 3, 0, mtemp + 1);
+    VY( 5, 3, mtemp) = Qtempz * VY( 5, 0, mtemp) + WQtempz * VY( 5, 0, mtemp + 1) + ABCDtemp * VY( 2, 0, mtemp + 1);
+    
+    VY( 6, 1, mtemp) = Qtempx * VY( 6, 0, mtemp) + WQtempx * VY( 6, 0, mtemp + 1) + ABCDtemp * VY( 3, 0, mtemp + 1);
+    VY( 6, 2, mtemp) = Qtempy * VY( 6, 0, mtemp) + WQtempy * VY( 6, 0, mtemp + 1);
+    VY( 6, 3, mtemp) = Qtempz * VY( 6, 0, mtemp) + WQtempz * VY( 6, 0, mtemp + 1) + ABCDtemp * VY( 1, 0, mtemp + 1);
+    
+    VY( 7, 1, mtemp) = Qtempx * VY( 7, 0, mtemp) + WQtempx * VY( 7, 0, mtemp + 1) + ABCDtemp * VY( 1, 0, mtemp + 1) * 2;
+    VY( 7, 2, mtemp) = Qtempy * VY( 7, 0, mtemp) + WQtempy * VY( 7, 0, mtemp + 1);
+    VY( 7, 3, mtemp) = Qtempz * VY( 7, 0, mtemp) + WQtempz * VY( 7, 0, mtemp + 1);
+    
+    VY( 8, 1, mtemp) = Qtempx * VY( 8, 0, mtemp) + WQtempx * VY( 8, 0, mtemp + 1);
+    VY( 8, 2, mtemp) = Qtempy * VY( 8, 0, mtemp) + WQtempy * VY( 8, 0, mtemp + 1) + ABCDtemp * VY( 2, 0, mtemp + 1) * 2;
+    VY( 8, 3, mtemp) = Qtempz * VY( 8, 0, mtemp) + WQtempz * VY( 8, 0, mtemp + 1);
+    
+    VY( 9, 1, mtemp) = Qtempx * VY( 9, 0, mtemp) + WQtempx * VY( 9, 0, mtemp + 1);
+    VY( 9, 2, mtemp) = Qtempy * VY( 9, 0, mtemp) + WQtempy * VY( 9, 0, mtemp + 1);
+    VY( 9, 3, mtemp) = Qtempz * VY( 9, 0, mtemp) + WQtempz * VY( 9, 0, mtemp + 1) + ABCDtemp * VY( 3, 0, mtemp + 1) * 2;            
     
 	return;
 }
@@ -1573,43 +1449,32 @@ __device__
 void PSDS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy,QUICKDouble Ptempz, \
           QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz, QUICKDouble ABCDtemp)
 {
-    int Bx, By, Bz;
-    for (int i = 4; i<10; i++) {
-        for (int jtemp = 2; jtemp <= 4; jtemp++) {
-            Bx = LOC2(devMcal, 0, i, 3, MCALDIM);
-            By = LOC2(devMcal, 1, i, 3, MCALDIM);
-            Bz = LOC2(devMcal, 2, i, 3, MCALDIM);
-            
-            if (LOC2(devMcal, 0, jtemp-1, 3, MCALDIM) != 0 ) {
-                LOC3(YVerticalTemp, jtemp-1, i, mtemp, VDIM1, VDIM2, VDIM3) =  Ptempx * LOC3( YVerticalTemp, 0, i, mtemp, VDIM1, VDIM2, VDIM3) \
-                + WPtempx * LOC3( YVerticalTemp, 0, i, mtemp+1,VDIM1, VDIM2, VDIM3);
-                if (Bx != 0) {
-                    Bx = Bx -1;
-                    int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-                    LOC3(YVerticalTemp, jtemp-1, i, mtemp, VDIM1, VDIM2, VDIM3) += \
-                    ABCDtemp * LOC3(YVerticalTemp, 0, ii-1, mtemp+1, VDIM1, VDIM2, VDIM3) * LOC2(devMcal, 0, i, 3, MCALDIM);
-                }       
-            }else if (LOC2(devMcal, 1, jtemp-1, 3, MCALDIM) != 0) {
-                LOC3(YVerticalTemp, jtemp-1, i, mtemp, VDIM1, VDIM2, VDIM3) =  Ptempy * LOC3( YVerticalTemp, 0, i, mtemp, VDIM1, VDIM2, VDIM3) \
-                + WPtempy * LOC3( YVerticalTemp, 0, i, mtemp+1,VDIM1, VDIM2, VDIM3);
-                if (By != 0) {
-                    By = By -1;
-                    int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-                    LOC3(YVerticalTemp, jtemp-1, i, mtemp, VDIM1, VDIM2, VDIM3) += \
-                    ABCDtemp * LOC3(YVerticalTemp, 0, ii-1, mtemp+1, VDIM1, VDIM2, VDIM3) * LOC2(devMcal, 1, i, 3, MCALDIM);
-                }
-            }else if (LOC2(devMcal, 2, jtemp-1, 3, MCALDIM) != 0) {
-                LOC3(YVerticalTemp, jtemp-1, i, mtemp, VDIM1, VDIM2, VDIM3) =  Ptempz * LOC3( YVerticalTemp, 0, i, mtemp, VDIM1, VDIM2, VDIM3) \
-                + WPtempz * LOC3( YVerticalTemp, 0, i, mtemp+1,VDIM1, VDIM2, VDIM3);
-                if (Bz != 0) {
-                    Bz = Bz -1;
-                    int ii = (int) LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-                    LOC3(YVerticalTemp, jtemp-1, i, mtemp, VDIM1, VDIM2, VDIM3) += \
-                    ABCDtemp * LOC3(YVerticalTemp, 0, ii-1, mtemp+1, VDIM1, VDIM2, VDIM3) * LOC2(devMcal, 2, i, 3, MCALDIM);
-                }
-            }
-        }
-    }
+    
+    
+    VY( 1, 4, mtemp) = Ptempx * VY( 0, 4, mtemp) + WPtempx * VY( 0, 4, mtemp + 1) + ABCDtemp * VY( 0, 2, mtemp + 1);
+    VY( 2, 4, mtemp) = Ptempy * VY( 0, 4, mtemp) + WPtempy * VY( 0, 4, mtemp + 1) + ABCDtemp * VY( 0, 1, mtemp + 1);
+    VY( 3, 4, mtemp) = Ptempz * VY( 0, 4, mtemp) + WPtempz * VY( 0, 4, mtemp + 1);
+    
+    VY( 1, 5, mtemp) = Ptempx * VY( 0, 5, mtemp) + WPtempx * VY( 0, 5, mtemp + 1);
+    VY( 2, 5, mtemp) = Ptempy * VY( 0, 5, mtemp) + WPtempy * VY( 0, 5, mtemp + 1) + ABCDtemp * VY( 0, 3, mtemp + 1);
+    VY( 3, 5, mtemp) = Ptempz * VY( 0, 5, mtemp) + WPtempz * VY( 0, 5, mtemp + 1) + ABCDtemp * VY( 0, 2, mtemp + 1);
+    
+    VY( 1, 6, mtemp) = Ptempx * VY( 0, 6, mtemp) + WPtempx * VY( 0, 6, mtemp + 1) + ABCDtemp * VY( 0, 3, mtemp + 1);
+    VY( 2, 6, mtemp) = Ptempy * VY( 0, 6, mtemp) + WPtempy * VY( 0, 6, mtemp + 1);
+    VY( 3, 6, mtemp) = Ptempz * VY( 0, 6, mtemp) + WPtempz * VY( 0, 6, mtemp + 1) + ABCDtemp * VY( 0, 1, mtemp + 1);
+    
+    VY( 1, 7, mtemp) = Ptempx * VY( 0, 7, mtemp) + WPtempx * VY( 0, 7, mtemp + 1) + ABCDtemp * VY( 0, 1, mtemp + 1) * 2;
+    VY( 2, 7, mtemp) = Ptempy * VY( 0, 7, mtemp) + WPtempy * VY( 0, 7, mtemp + 1);
+    VY( 3, 7, mtemp) = Ptempz * VY( 0, 7, mtemp) + WPtempz * VY( 0, 7, mtemp + 1);
+    
+    VY( 1, 8, mtemp) = Ptempx * VY( 0, 8, mtemp) + WPtempx * VY( 0, 8, mtemp + 1);
+    VY( 2, 8, mtemp) = Ptempy * VY( 0, 8, mtemp) + WPtempy * VY( 0, 8, mtemp + 1) + ABCDtemp * VY( 0, 2, mtemp + 1) * 2;
+    VY( 3, 8, mtemp) = Ptempz * VY( 0, 8, mtemp) + WPtempz * VY( 0, 8, mtemp + 1);
+    
+    VY( 1, 9, mtemp) = Ptempx * VY( 0, 9, mtemp) + WPtempx * VY( 0, 9, mtemp + 1);
+    VY( 2, 9, mtemp) = Ptempy * VY( 0, 9, mtemp) + WPtempy * VY( 0, 9, mtemp + 1);
+    VY( 3, 9, mtemp) = Ptempz * VY( 0, 9, mtemp) + WPtempz * VY( 0, 9, mtemp + 1) + ABCDtemp * VY( 0, 3, mtemp + 1) * 2;    
+    
 	return;
 }
 
@@ -1617,79 +1482,55 @@ void PSDS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble
 __device__
 #endif
 void DSDS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy,QUICKDouble Ptempz, \
-    QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz, QUICKDouble ABCDtemp, QUICKDouble ABtemp, QUICKDouble CDcom)
+          QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz, QUICKDouble ABCDtemp, QUICKDouble ABtemp, QUICKDouble CDcom)
 {
-    int Ax, Ay, Az;
-    int Bx, By, Bz;
     
-    for (int i = 4; i<10; i++) {
-        for (int jtemp = 4; jtemp < 10; jtemp++) {
-            Bx = LOC2(devMcal, 0, i, 3, MCALDIM);
-            By = LOC2(devMcal, 1, i, 3, MCALDIM);
-            Bz = LOC2(devMcal, 2, i, 3, MCALDIM);
-            
-            Ax = LOC2(devMcal, 0, jtemp, 3, MCALDIM);
-            Ay = LOC2(devMcal, 1, jtemp, 3, MCALDIM);
-            Az = LOC2(devMcal, 2, jtemp, 3, MCALDIM);
-            
-            if (Bx != 0) {
-                Bx = Bx - 1;
-                int ii = LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-                LOC3(YVerticalTemp, i, jtemp, mtemp, VDIM1, VDIM2, VDIM3) = Ptempx * LOC3( YVerticalTemp, ii-1, jtemp, mtemp, VDIM1, VDIM2, VDIM3) + \
-                                                                          +WPtempx * LOC3( YVerticalTemp, ii-1, jtemp, mtemp+1, VDIM1, VDIM2, VDIM3);
-            
-                if (LOC2(devMcal, 0, i, 3, MCALDIM) >= 2) {
-                    LOC3(YVerticalTemp, i, jtemp, mtemp, VDIM1, VDIM2, VDIM3) += \
-                          ABtemp * (LOC3(YVerticalTemp, 0, jtemp, mtemp, VDIM1, VDIM2, VDIM3)
-                         - CDcom *  LOC3(YVerticalTemp, 0, jtemp, mtemp+1, VDIM1, VDIM2, VDIM3));
-                }
-                if (Ax != 0) {
-                    Ax = Ax -1;
-                    int iii = (int) LOC3(devTrans,  Ax, Ay, Az, TRANSDIM, TRANSDIM, TRANSDIM);
-                        LOC3(YVerticalTemp, i, jtemp, mtemp, VDIM1, VDIM2, VDIM3) += \
-                        ABCDtemp * LOC3(YVerticalTemp, ii-1, iii-1, mtemp+1, VDIM1, VDIM2, VDIM3) * LOC2(devMcal, 0, jtemp, 3, MCALDIM);
-                }
-            }else if (By != 0) {
-                By = By - 1;
-                int ii = LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-                LOC3(YVerticalTemp, i, jtemp, mtemp, VDIM1, VDIM2, VDIM3) = Ptempy * LOC3( YVerticalTemp, ii-1, jtemp, mtemp, VDIM1, VDIM2, VDIM3) + \
-                                                                          +WPtempy * LOC3( YVerticalTemp, ii-1, jtemp, mtemp+1, VDIM1, VDIM2, VDIM3);
-            
-                if (LOC2(devMcal, 1, i, 3, MCALDIM) >= 2) {
-                    LOC3(YVerticalTemp, i, jtemp, mtemp, VDIM1, VDIM2, VDIM3) += \
-                          ABtemp * (LOC3(YVerticalTemp, 0, jtemp, mtemp, VDIM1, VDIM2, VDIM3)
-                         - CDcom *  LOC3(YVerticalTemp, 0, jtemp, mtemp+1, VDIM1, VDIM2, VDIM3));
-                }
-                if (Ay != 0) {
-                    Ay = Ay -1;
-                    int iii = (int) LOC3(devTrans,  Ax, Ay, Az, TRANSDIM, TRANSDIM, TRANSDIM);
-                        LOC3(YVerticalTemp, i, jtemp, mtemp, VDIM1, VDIM2, VDIM3) += \
-                        ABCDtemp * LOC3(YVerticalTemp, ii-1, iii-1, mtemp+1, VDIM1, VDIM2, VDIM3) * LOC2(devMcal, 1, jtemp, 3, MCALDIM);
-                }
-            }else if (Bz != 0) {
-                Bz = Bz - 1;
-                int ii = LOC3(devTrans, Bx, By, Bz, TRANSDIM, TRANSDIM, TRANSDIM);
-                LOC3(YVerticalTemp, i, jtemp, mtemp, VDIM1, VDIM2, VDIM3) = Ptempz * LOC3( YVerticalTemp, ii-1, jtemp, mtemp, VDIM1, VDIM2, VDIM3) + \
-                                                                          +WPtempz * LOC3( YVerticalTemp, ii-1, jtemp, mtemp+1, VDIM1, VDIM2, VDIM3);
-            
-                if (LOC2(devMcal, 2, i, 3, MCALDIM) >= 2) {
-                    LOC3(YVerticalTemp, i, jtemp, mtemp, VDIM1, VDIM2, VDIM3) += \
-                          ABtemp * (LOC3(YVerticalTemp, 0, jtemp, mtemp, VDIM1, VDIM2, VDIM3)
-                         - CDcom *  LOC3(YVerticalTemp, 0, jtemp, mtemp+1, VDIM1, VDIM2, VDIM3));
-                }
-                if (Az != 0) {
-                    Az = Az -1;
-                    int iii = (int) LOC3(devTrans,  Ax, Ay, Az, TRANSDIM, TRANSDIM, TRANSDIM);
-                        LOC3(YVerticalTemp, i, jtemp, mtemp, VDIM1, VDIM2, VDIM3) += \
-                        ABCDtemp * LOC3(YVerticalTemp, ii-1, iii-1, mtemp+1, VDIM1, VDIM2, VDIM3) * LOC2(devMcal, 2, jtemp, 3, MCALDIM);
-                }
-            }
-            
-        }
-    }
+    VY( 4, 4, mtemp) = Ptempx * VY( 2, 4, mtemp) + WPtempx * VY( 2, 4, mtemp+1) + ABCDtemp * VY( 2, 2, mtemp+1);
+    VY( 4, 5, mtemp) = Ptempx * VY( 2, 5, mtemp) + WPtempx * VY( 2, 5, mtemp+1);
+    VY( 4, 6, mtemp) = Ptempx * VY( 2, 6, mtemp) + WPtempx * VY( 2, 6, mtemp+1) + ABCDtemp * VY( 2, 3, mtemp+1);
+    VY( 4, 7, mtemp) = Ptempx * VY( 2, 7, mtemp) + WPtempx * VY( 2, 7, mtemp+1) + 2 * ABCDtemp * VY( 2, 1, mtemp+1);
+    VY( 4, 8, mtemp) = Ptempx * VY( 2, 8, mtemp) + WPtempx * VY( 2, 8, mtemp+1);
+    VY( 4, 9, mtemp) = Ptempx * VY( 2, 9, mtemp) + WPtempx * VY( 2, 9, mtemp+1);
+    
+    VY( 5, 4, mtemp) = Ptempy * VY( 3, 4, mtemp) + WPtempy * VY( 3, 4, mtemp+1) + ABCDtemp * VY( 3, 1, mtemp+1);
+    VY( 5, 5, mtemp) = Ptempy * VY( 3, 5, mtemp) + WPtempy * VY( 3, 5, mtemp+1) + ABCDtemp * VY( 3, 3, mtemp+1);
+    VY( 5, 6, mtemp) = Ptempy * VY( 3, 6, mtemp) + WPtempy * VY( 3, 6, mtemp+1);
+    VY( 5, 7, mtemp) = Ptempy * VY( 3, 7, mtemp) + WPtempy * VY( 3, 7, mtemp+1);
+    VY( 5, 8, mtemp) = Ptempy * VY( 3, 8, mtemp) + WPtempy * VY( 3, 8, mtemp+1) + 2 * ABCDtemp * VY( 3, 2, mtemp+1);
+    VY( 5, 9, mtemp) = Ptempy * VY( 3, 9, mtemp) + WPtempy * VY( 3, 9, mtemp+1);
+    
+    VY( 6, 4, mtemp) = Ptempx * VY( 3, 4, mtemp) + WPtempx * VY( 3, 4, mtemp+1) + ABCDtemp * VY( 3, 2, mtemp+1);
+    VY( 6, 5, mtemp) = Ptempx * VY( 3, 5, mtemp) + WPtempx * VY( 3, 5, mtemp+1);
+    VY( 6, 6, mtemp) = Ptempx * VY( 3, 6, mtemp) + WPtempx * VY( 3, 6, mtemp+1) + ABCDtemp * VY( 3, 3, mtemp+1);
+    VY( 6, 7, mtemp) = Ptempx * VY( 3, 7, mtemp) + WPtempx * VY( 3, 7, mtemp+1) + 2 * ABCDtemp * VY( 3, 1, mtemp+1);
+    VY( 6, 8, mtemp) = Ptempx * VY( 3, 8, mtemp) + WPtempx * VY( 3, 8, mtemp+1);
+    VY( 6, 9, mtemp) = Ptempx * VY( 3, 9, mtemp) + WPtempx * VY( 3, 9, mtemp+1);
+    
+    VY( 7, 4, mtemp) = Ptempx * VY( 1, 4, mtemp) + WPtempx * VY( 1, 4, mtemp+1) +  ABtemp * (VY( 0, 4,mtemp)-CDcom*VY( 0, 4,mtemp+1)) + ABCDtemp * VY( 1, 2, mtemp+1);
+    VY( 7, 5, mtemp) = Ptempx * VY( 1, 5, mtemp) + WPtempx * VY( 1, 5, mtemp+1) +  ABtemp * (VY( 0, 5,mtemp)-CDcom*VY( 0, 5,mtemp+1));
+    VY( 7, 6, mtemp) = Ptempx * VY( 1, 6, mtemp) + WPtempx * VY( 1, 6, mtemp+1) +  ABtemp * (VY( 0, 6,mtemp)-CDcom*VY( 0, 6,mtemp+1)) + ABCDtemp * VY( 1, 3, mtemp+1);
+    VY( 7, 7, mtemp) = Ptempx * VY( 1, 7, mtemp) + WPtempx * VY( 1, 7, mtemp+1) +  ABtemp * (VY( 0, 7,mtemp)-CDcom*VY( 0, 7,mtemp+1)) + 2 * ABCDtemp * VY( 1, 1, mtemp+1);
+    VY( 7, 8, mtemp) = Ptempx * VY( 1, 8, mtemp) + WPtempx * VY( 1, 8, mtemp+1) +  ABtemp * (VY( 0, 8,mtemp)-CDcom*VY( 0, 8,mtemp+1));
+    VY( 7, 9, mtemp) = Ptempx * VY( 1, 9, mtemp) + WPtempx * VY( 1, 9, mtemp+1) +  ABtemp * (VY( 0, 9,mtemp)-CDcom*VY( 0, 9,mtemp+1));
+    
+    
+    VY( 8, 4, mtemp) = Ptempy * VY( 2, 4, mtemp) + WPtempy * VY( 2, 4, mtemp+1) +  ABtemp * (VY( 0, 4,mtemp)-CDcom*VY( 0, 4,mtemp+1)) + ABCDtemp * VY( 2, 1, mtemp+1);
+    VY( 8, 5, mtemp) = Ptempy * VY( 2, 5, mtemp) + WPtempy * VY( 2, 5, mtemp+1) +  ABtemp * (VY( 0, 5,mtemp)-CDcom*VY( 0, 5,mtemp+1)) + ABCDtemp * VY( 2, 3, mtemp+1);
+    VY( 8, 6, mtemp) = Ptempy * VY( 2, 6, mtemp) + WPtempy * VY( 2, 6, mtemp+1) +  ABtemp * (VY( 0, 6,mtemp)-CDcom*VY( 0, 6,mtemp+1));
+    VY( 8, 7, mtemp) = Ptempy * VY( 2, 7, mtemp) + WPtempy * VY( 2, 7, mtemp+1) +  ABtemp * (VY( 0, 7,mtemp)-CDcom*VY( 0, 7,mtemp+1));
+    VY( 8, 8, mtemp) = Ptempy * VY( 2, 8, mtemp) + WPtempy * VY( 2, 8, mtemp+1) +  ABtemp * (VY( 0, 8,mtemp)-CDcom*VY( 0, 8,mtemp+1)) + 2 * ABCDtemp * VY( 2, 2, mtemp+1);
+    VY( 8, 9, mtemp) = Ptempy * VY( 2, 9, mtemp) + WPtempy * VY( 2, 9, mtemp+1) +  ABtemp * (VY( 0, 9,mtemp)-CDcom*VY( 0, 9,mtemp+1));
+    
+    VY( 9, 4, mtemp) = Ptempz * VY( 3, 4, mtemp) + WPtempz * VY( 3, 4, mtemp+1) +  ABtemp * (VY( 0, 4,mtemp)-CDcom*VY( 0, 4,mtemp+1));
+    VY( 9, 5, mtemp) = Ptempz * VY( 3, 5, mtemp) + WPtempz * VY( 3, 5, mtemp+1) +  ABtemp * (VY( 0, 5,mtemp)-CDcom*VY( 0, 5,mtemp+1)) + ABCDtemp * VY( 3, 2, mtemp+1);
+    VY( 9, 6, mtemp) = Ptempz * VY( 3, 6, mtemp) + WPtempz * VY( 3, 6, mtemp+1) +  ABtemp * (VY( 0, 6,mtemp)-CDcom*VY( 0, 6,mtemp+1)) + ABCDtemp * VY( 3, 1, mtemp+1);
+    VY( 9, 7, mtemp) = Ptempz * VY( 3, 7, mtemp) + WPtempz * VY( 3, 7, mtemp+1) +  ABtemp * (VY( 0, 7,mtemp)-CDcom*VY( 0, 7,mtemp+1));
+    VY( 9, 8, mtemp) = Ptempz * VY( 3, 8, mtemp) + WPtempz * VY( 3, 8, mtemp+1) +  ABtemp * (VY( 0, 8,mtemp)-CDcom*VY( 0, 8,mtemp+1));
+    VY( 9, 9, mtemp) = Ptempz * VY( 3, 9, mtemp) + WPtempz * VY( 3, 9, mtemp+1) +  ABtemp * (VY( 0, 9,mtemp)-CDcom*VY( 0, 9,mtemp+1)) + 2 * ABCDtemp * VY( 3, 3, mtemp+1);
+    
 	return;
 }
- 
+
 
 #ifndef TEST
 __device__

@@ -38,6 +38,8 @@ fflush(stdout);\
 #define MAX(A,B)    (A>B?A:B)
 #define MIN(A,B)    (A<B?A:B)
 
+#define VY(a,b,c) LOC3(YVerticalTemp, a, b, c, VDIM1, VDIM2, VDIM3)
+
 #define PRINTERROR(err, s) \
 {\
     if (err != cudaSuccess) {\
