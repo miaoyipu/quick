@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Mon Sep  5 22:45:55 2011
+ TASK STARTS ON: Wed Sep  7 00:22:41 2011
  INPUT FILE:     water16.in
  OUTPUT FILE:    water16.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -88,7 +88,7 @@ RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
 SCF CYCLE      =        2      TIME      =     0.06
 RMS CHANGE     = 0.813251E-01  MAX CHANGE= 0.292791E+00
 
-SCF CYCLE      =        3      TIME      =   0.06
+SCF CYCLE      =        3      TIME      =   0.07
 DIIS CYCLE     =        1      MAX ERROR = 0.237253E-01
 RMS CHANGE     = 0.640345E-02  MAX CHANGE= 0.247217E-01
 
@@ -104,7 +104,7 @@ SCF CYCLE      =        6      TIME      =   0.06
 DIIS CYCLE     =        4      MAX ERROR = 0.110807E-02
 RMS CHANGE     = 0.986522E-03  MAX CHANGE= 0.381572E-02
 
-SCF CYCLE      =        7      TIME      =   0.07
+SCF CYCLE      =        7      TIME      =   0.06
 DIIS CYCLE     =        5      MAX ERROR = 0.364363E-04
 RMS CHANGE     = 0.292852E-04  MAX CHANGE= 0.127867E-03
 PREPARED FOR FINAL NO INTERPOLATION ITERATION
@@ -227,12 +227,12 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1  -1216.222027938      ------         3.790     1        0.25      3.54      0.09    0.1780E+01  0.2549E-01  0.4267E+00
-  2  -1215.489417851  -.732610E+00       5.050     2        0.26      4.79      0.09    0.2119E+00  0.6522E-02  0.1446E+00
-  3  -1215.889011419  0.399594E+00       5.090     3        0.26      4.83      0.09    0.1008E+00  0.2267E-02  0.5896E-01
-  4  -1215.979054680  0.900433E-01       5.060     4        0.26      4.80      0.09    0.2218E-01  0.8718E-03  0.1597E-01
-  5  -1215.986984789  0.793011E-02       5.070     5        0.27      4.80      0.09    0.3782E-02  0.3437E-03  0.7719E-02
-  6  -1215.987644781  0.659992E-03       5.040     6        0.26      4.78      0.09    0.6661E-03  0.5384E-04  0.1505E-02
+  1  -1216.222027938      ------         2.160     1        0.26      1.90      0.09    0.1780E+01  0.2549E-01  0.4267E+00
+  2  -1215.489417851  -.732610E+00       2.700     2        0.25      2.45      0.09    0.2119E+00  0.6522E-02  0.1446E+00
+  3  -1215.889011419  0.399594E+00       2.730     3        0.26      2.47      0.09    0.1008E+00  0.2267E-02  0.5896E-01
+  4  -1215.979054680  0.900433E-01       2.710     4        0.26      2.45      0.09    0.2218E-01  0.8718E-03  0.1597E-01
+  5  -1215.986984789  0.793011E-02       2.720     5        0.26      2.46      0.09    0.3782E-02  0.3437E-03  0.7719E-02
+  6  -1215.987644781  0.659992E-03       2.730     6        0.27      2.46      0.09    0.6661E-03  0.5384E-04  0.1505E-02
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   6 CYLCES
  MAX ERROR = 0.666142E-03   RMS CHANGE = 0.538397E-04   MAX CHANGE = 0.150519E-02
@@ -308,19 +308,19 @@ TOTAL ENERGY         = -1215.987644781
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     7.310000000( 18.87%)
-TOTAL SCF TIME     =    30.680000000( 79.19%)
-      TOTAL OP TIME      =    29.120000000( 75.17%)
-            TOTAL 1e TIME      =     1.580000000(  4.08%)
-            TOTAL 2e TIME      =    27.530000000( 71.06%)
+INITIAL GUESS TIME =     3.170000000( 14.72%)
+TOTAL SCF TIME     =    17.310000000( 80.36%)
+      TOTAL OP TIME      =    15.750000000( 73.12%)
+            TOTAL 1e TIME      =     1.560000000(  7.24%)
+            TOTAL 2e TIME      =    14.190000000( 65.88%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     1.560000000(  4.03%)
-            TOTAL DIAG TIME    =     0.540000000(  1.39%)
-DIPOLE TIME        =     0.490000000(  1.26%)
-TOTAL TIME         =    38.740000000
+      TOTAL DII TIME     =     1.560000000(  7.24%)
+            TOTAL DIAG TIME    =     0.540000000(  2.51%)
+DIPOLE TIME        =     0.500000000(  2.32%)
+TOTAL TIME         =    21.540000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes 38.7 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes 21.5 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Mon Sep  5 22:46:38 2011
+ Normal Terminatation. Task Finished on: Wed Sep  7 00:23:02 2011

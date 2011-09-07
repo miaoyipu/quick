@@ -660,10 +660,10 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
      NII1 is the starting angular momenta for shell i and NII2 is the ending
      angular momenta.So it is with other varibles
      */
-    int ijtype = devSim.Qfinal[II-1]+devSim.Qfinal[JJ-1];
-    int kltype = devSim.Qfinal[KK-1]+devSim.Qfinal[LL-1];
-    int NABCDTYPE =(int) (ijtype)*10u+kltype; // NABCDTYPE is used for hrr
-    int NABCD= (int) ijtype+kltype;
+     
+    // IJKLTYPE is the I, J, K,L type
+    int NABCDTYPE = (int)((I+J)*10+K+L);
+    int IJKLTYPE = (int) (1000 * I + 100 *J + 10 * K + L);
     
     /*RA, RB, RC, and RD are the coordinates for atom katomA, katomB, katomC and katomD, 
      which means they are corrosponding coorinates for shell II, JJ, KK, and LL.
@@ -683,11 +683,6 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
     RDx = LOC2(devSim.xyz, 0 , katomD-1, 3, devSim.natom);
     RDy = LOC2(devSim.xyz, 1 , katomD-1, 3, devSim.natom);
     RDz = LOC2(devSim.xyz, 2 , katomD-1, 3, devSim.natom);
-    
-    //        KsumtypeI = devSim.Ksumtype[II-1];
-    //        KsumtypeJ = devSim.Ksumtype[JJ-1];
-    //        KsumtypeK = devSim.Ksumtype[KK-1];
-    //        KsumtypeL = devSim.Ksumtype[LL-1];
     
     kPrimI = devSim.kprim[II-1];
     kPrimJ = devSim.kprim[JJ-1];
@@ -799,134 +794,456 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                         
                         QUICKDouble T = AB * CD * ABCD * ( quick_dsqr(Px-Qx) + quick_dsqr(Py-Qy) + quick_dsqr(Pz-Qz));
 
-                        
+                        QUICKDouble X2 = sqrt(ABCD) * X1 * LOC4(devSim.Xcoeff, kStartK+KKK-1, kStartL+LLL-1, K, L, devSim.jbasis, devSim.jbasis, 4, 4);                    
                         QUICKDouble YVerticalTemp[VDIM1*VDIM2*VDIM3];
-                        FmT(NABCD, T, YVerticalTemp, sqrt(ABCD));
-                        
-                        if (ijtype + kltype != 0) {
-                            
-                            if (ijtype >= 1) {
-                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                            }
-                            
-                            if (kltype >= 1) {
-                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                            }
-                            
-                            if (ijtype >= 1 && kltype >= 1) {
-                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                            }
-                            
-                            if (ijtype >=2) {
-                                PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
-                            }
-                            
-                            if (kltype >= 2) {
-                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
-                            }
-                            
-                            if (ijtype>=1 && kltype >=2) {
-                                SSDS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
-                                PSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                            }
-                            
-                            if (ijtype>=2 && kltype >=1) {
-                                PSSS(2, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                DSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
-                                DSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5*ABCD);
-                            }
-                            
-                            if (ijtype>=2 && kltype >=2) {
-                                SSPS(3, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                SSDS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
-                                PSDS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                                
-                                PSPS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                                DSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD, 0.5/AB, CD*ABCD);
-                            
-                                                            
-                        /*
-                            if (NABCDTYPE == 10) {
-                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                            }else if (NABCDTYPE == 1) {
-                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                            }else if(NABCDTYPE == 11) {
-                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                            }else if(NABCDTYPE == 20) {
-                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
-                            }else if(NABCDTYPE == 2) {
-                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
-                            }else if(NABCDTYPE == 21) {
-                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                
-                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                                
-                                PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
-                                
-                                PSSS(2, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                DSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
-                                DSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5*ABCD);
-                            }else if(NABCDTYPE == 12) {
-                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                
-                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                                
-                                SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
-                                
-                                SSPS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                SSDS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
-                                PSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                            }else if(NABCDTYPE == 22) {
-                                SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                
-                                PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                                
-                                SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
-                                SSPS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                SSDS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
-                                PSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                                
-                                PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
-                                PSSS(2, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
-                                DSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
-                                DSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5*ABCD);
-                                
-                                SSPS(3, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
-                                SSDS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
-                                PSDS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                                
-                                PSPS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
-                                DSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD, 0.5/AB, CD*ABCD);*/
-                            }
-                        }
+                        FmT(I+J+K+L, T, YVerticalTemp, X2);
                         
                         /*
                          X2 is the multiplication of four indices normalized coeffecient
                          */
-                        QUICKDouble X2 = X1 * LOC4(devSim.Xcoeff, kStartK+KKK-1, kStartL+LLL-1, K, L, devSim.jbasis, devSim.jbasis, 4, 4);                    
-                        for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
-                            for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
-                                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) += X2 * LOC3(YVerticalTemp, j-1,i-1,0, VDIM1, VDIM2, VDIM3);
+                        
+                        
+                        if (NABCDTYPE != 0) {
+                            
+                            if (NABCDTYPE == 10) {
+                                //PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 0) = (Px-RAx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 1);
+                                VY( 2, 0, 0) = (Py-RAy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 1);
+                                VY( 3, 0, 0) = (Pz-RAz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 1);
+                                
+                            }else if (NABCDTYPE == 1) {
+                                //SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 0) = (Qx-RCx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 1);
+                                VY( 0, 2, 0) = (Qy-RCy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 1);
+                                VY( 0, 3, 0) = (Qz-RCz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 1);
+                                
+                            }else if(NABCDTYPE == 11) {
+                                //PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 0) = (Px-RAx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 1);
+                                VY( 2, 0, 0) = (Py-RAy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 1);
+                                VY( 3, 0, 0) = (Pz-RAz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 1);
+                                
+                                //SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 0) = (Qx-RCx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 1);
+                                VY( 0, 2, 0) = (Qy-RCy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 1);
+                                VY( 0, 3, 0) = (Qz-RCz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 1);
+                                
+                                //SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 1) = (Qx-RCx) * VY( 0, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 2);
+                                VY( 0, 2, 1) = (Qy-RCy) * VY( 0, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 2);
+                                VY( 0, 3, 1) = (Qz-RCz) * VY( 0, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 2);
+                                
+                                
+                                //PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                VY( 1, 1, 0) = (Px-RAx) * VY( 0, 1, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 1, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                VY( 2, 1, 0) = (Py-RAy) * VY( 0, 1, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 1, 1);
+                                VY( 3, 1, 0) = (Pz-RAz) * VY( 0, 1, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 1, 1);
+
+                                VY( 1, 2, 0) = (Px-RAx) * VY( 0, 2, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 2, 1);
+                                VY( 2, 2, 0) = (Py-RAy) * VY( 0, 2, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 2, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                VY( 3, 2, 0) = (Pz-RAz) * VY( 0, 2, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 2, 1);
+
+                                VY( 1, 3, 0) = (Px-RAx) * VY( 0, 3, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 3, 1);
+                                VY( 2, 3, 0) = (Py-RAy) * VY( 0, 3, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 3, 1);
+                                VY( 3, 3, 0) = (Pz-RAz) * VY( 0, 3, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 3, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                
+                            }else if(NABCDTYPE == 20) {
+                                //PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 0) = (Px-RAx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 1);
+                                VY( 2, 0, 0) = (Py-RAy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 1);
+                                VY( 3, 0, 0) = (Pz-RAz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 1);
+                                
+                                //PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 1) = (Px-RAx) * VY( 0, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 2);
+                                VY( 2, 0, 1) = (Py-RAy) * VY( 0, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 2);
+                                VY( 3, 0, 1) = (Pz-RAz) * VY( 0, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 2);
+                                
+                                //DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                VY( 4, 0, 0) = (Px-RAx) * VY( 2, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 2, 0, 1);
+                                VY( 5, 0, 0) = (Py-RAy) * VY( 3, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 3, 0, 1);
+                                VY( 6, 0, 0) = (Px-RAx) * VY( 3, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 3, 0, 1);
+                                
+                                VY( 7, 0, 0) = (Px-RAx) * VY( 1, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 1, 0, 1) + 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                VY( 8, 0, 0) = (Py-RAy) * VY( 2, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 2, 0, 1) + 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                VY( 9, 0, 0) = (Pz-RAz) * VY( 3, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 3, 0, 1) + 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                
+                            }else if(NABCDTYPE == 2) {
+                                //SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 0) = (Qx-RCx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 1);
+                                VY( 0, 2, 0) = (Qy-RCy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 1);
+                                VY( 0, 3, 0) = (Qz-RCz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 1);
+                                
+                                
+                                //SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 1) = (Qx-RCx) * VY( 0, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 2);
+                                VY( 0, 2, 1) = (Qy-RCy) * VY( 0, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 2);
+                                VY( 0, 3, 1) = (Qz-RCz) * VY( 0, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 2);
+                                
+                                //SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                VY( 0, 4, 0) = (Qx-RCx) * VY( 0, 2, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 2, 1);
+                                VY( 0, 5, 0) = (Qy-RCy) * VY( 0, 3, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 3, 1);
+                                VY( 0, 6, 0) = (Qx-RCx) * VY( 0, 3, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 3, 1);
+                                
+                                VY( 0, 7, 0) = (Qx-RCx) * VY( 0, 1, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 1, 1) + 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1)) ;
+                                VY( 0, 8, 0) = (Qy-RCy) * VY( 0, 2, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 2, 1) + 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1)) ;
+                                VY( 0, 9, 0) = (Qz-RCz) * VY( 0, 3, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 3, 1) + 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1)) ;
+                                                                
+                            }else if(NABCDTYPE == 21) {
+                                //SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 0) = (Qx-RCx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 1);
+                                VY( 0, 2, 0) = (Qy-RCy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 1);
+                                VY( 0, 3, 0) = (Qz-RCz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 1);
+                                
+                                //PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 0) = (Px-RAx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 1);
+                                VY( 2, 0, 0) = (Py-RAy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 1);
+                                VY( 3, 0, 0) = (Pz-RAz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 1);
+                                
+                                //SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 1) = (Qx-RCx) * VY( 0, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 2);
+                                VY( 0, 2, 1) = (Qy-RCy) * VY( 0, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 2);
+                                VY( 0, 3, 1) = (Qz-RCz) * VY( 0, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 2);
+                                
+                                //PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                VY( 1, 1, 0) = (Px-RAx) * VY( 0, 1, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 1, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                VY( 2, 1, 0) = (Py-RAy) * VY( 0, 1, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 1, 1);
+                                VY( 3, 1, 0) = (Pz-RAz) * VY( 0, 1, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 1, 1);
+
+                                VY( 1, 2, 0) = (Px-RAx) * VY( 0, 2, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 2, 1);
+                                VY( 2, 2, 0) = (Py-RAy) * VY( 0, 2, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 2, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                VY( 3, 2, 0) = (Pz-RAz) * VY( 0, 2, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 2, 1);
+
+                                VY( 1, 3, 0) = (Px-RAx) * VY( 0, 3, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 3, 1);
+                                VY( 2, 3, 0) = (Py-RAy) * VY( 0, 3, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 3, 1);
+                                VY( 3, 3, 0) = (Pz-RAz) * VY( 0, 3, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 3, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                
+                                //PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 1) = (Px-RAx) * VY( 0, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 2);
+                                VY( 2, 0, 1) = (Py-RAy) * VY( 0, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 2);
+                                VY( 3, 0, 1) = (Pz-RAz) * VY( 0, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 2);
+                                
+                                //DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                VY( 4, 0, 0) = (Px-RAx) * VY( 2, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 2, 0, 1);
+                                VY( 5, 0, 0) = (Py-RAy) * VY( 3, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 3, 0, 1);
+                                VY( 6, 0, 0) = (Px-RAx) * VY( 3, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 3, 0, 1);
+                                
+                                VY( 7, 0, 0) = (Px-RAx) * VY( 1, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 1, 0, 1) + 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                VY( 8, 0, 0) = (Py-RAy) * VY( 2, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 2, 0, 1) + 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                VY( 9, 0, 0) = (Pz-RAz) * VY( 3, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 3, 0, 1) + 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                
+                                
+                                //PSSS(2, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 2) = (Px-RAx) * VY( 0, 0, 2) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 3);
+                                VY( 2, 0, 2) = (Py-RAy) * VY( 0, 0, 2) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 3);
+                                VY( 3, 0, 2) = (Pz-RAz) * VY( 0, 0, 2) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 3);
+                                
+                                //DSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                VY( 4, 0, 1) = (Px-RAx) * VY( 2, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 2, 0, 2);
+                                VY( 5, 0, 1) = (Py-RAy) * VY( 3, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 3, 0, 2);
+                                VY( 6, 0, 1) = (Px-RAx) * VY( 3, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 3, 0, 2);
+                                
+                                VY( 7, 0, 1) = (Px-RAx) * VY( 1, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 1, 0, 2) + 0.5 / AB *(VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
+                                VY( 8, 0, 1) = (Py-RAy) * VY( 2, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 2, 0, 2) + 0.5 / AB *(VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
+                                VY( 9, 0, 1) = (Pz-RAz) * VY( 3, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 3, 0, 2) + 0.5 / AB *(VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
+                                
+                                //DSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5*ABCD);
+                                VY( 4, 1, 0) = (Qx-RCx) * VY( 4, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 4, 0, 1) + 0.5 * ABCD * VY( 2, 0, 1);
+                                VY( 4, 2, 0) = (Qy-RCy) * VY( 4, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 4, 0, 1) + 0.5 * ABCD * VY( 1, 0, 1);
+                                VY( 4, 3, 0) = (Qz-RCz) * VY( 4, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 4, 0, 1);
+                                
+                                VY( 5, 1, 0) = (Qx-RCx) * VY( 5, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 5, 0, 1);
+                                VY( 5, 2, 0) = (Qy-RCy) * VY( 5, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 5, 0, 1) + 0.5 * ABCD * VY( 3, 0, 1);
+                                VY( 5, 3, 0) = (Qz-RCz) * VY( 5, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 5, 0, 1) + 0.5 * ABCD * VY( 2, 0, 1);
+                                
+                                VY( 6, 1, 0) = (Qx-RCx) * VY( 6, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 6, 0, 1) + 0.5 * ABCD * VY( 3, 0, 1);
+                                VY( 6, 2, 0) = (Qy-RCy) * VY( 6, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 6, 0, 1);
+                                VY( 6, 3, 0) = (Qz-RCz) * VY( 6, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 6, 0, 1) + 0.5 * ABCD * VY( 1, 0, 1);
+                                
+                                VY( 7, 1, 0) = (Qx-RCx) * VY( 7, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 7, 0, 1) + ABCD * VY( 1, 0, 1);
+                                VY( 7, 2, 0) = (Qy-RCy) * VY( 7, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 7, 0, 1);
+                                VY( 7, 3, 0) = (Qz-RCz) * VY( 7, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 7, 0, 1);
+                                
+                                VY( 8, 1, 0) = (Qx-RCx) * VY( 8, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 8, 0, 1);
+                                VY( 8, 2, 0) = (Qy-RCy) * VY( 8, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 8, 0, 1) + ABCD * VY( 2, 0, 1);
+                                VY( 8, 3, 0) = (Qz-RCz) * VY( 8, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 8, 0, 1);
+                                
+                                VY( 9, 1, 0) = (Qx-RCx) * VY( 9, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 9, 0, 1);
+                                VY( 9, 2, 0) = (Qy-RCy) * VY( 9, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 9, 0, 1);
+                                VY( 9, 3, 0) = (Qz-RCz) * VY( 9, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 9, 0, 1) + ABCD * VY( 3, 0, 1);
+                                
+                                
+                            }else if(NABCDTYPE == 12) {
+                                //SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 0) = (Qx-RCx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 1);
+                                VY( 0, 2, 0) = (Qy-RCy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 1);
+                                VY( 0, 3, 0) = (Qz-RCz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 1);
+                                
+                                //PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 0) = (Px-RAx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 1);
+                                VY( 2, 0, 0) = (Py-RAy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 1);
+                                VY( 3, 0, 0) = (Pz-RAz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 1);
+                                
+                                //SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 1) = (Qx-RCx) * VY( 0, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 2);
+                                VY( 0, 2, 1) = (Qy-RCy) * VY( 0, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 2);
+                                VY( 0, 3, 1) = (Qz-RCz) * VY( 0, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 2);
+                                
+                                //PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                VY( 1, 1, 0) = (Px-RAx) * VY( 0, 1, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 1, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                VY( 2, 1, 0) = (Py-RAy) * VY( 0, 1, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 1, 1);
+                                VY( 3, 1, 0) = (Pz-RAz) * VY( 0, 1, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 1, 1);
+
+                                VY( 1, 2, 0) = (Px-RAx) * VY( 0, 2, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 2, 1);
+                                VY( 2, 2, 0) = (Py-RAy) * VY( 0, 2, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 2, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                VY( 3, 2, 0) = (Pz-RAz) * VY( 0, 2, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 2, 1);
+
+                                VY( 1, 3, 0) = (Px-RAx) * VY( 0, 3, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 3, 1);
+                                VY( 2, 3, 0) = (Py-RAy) * VY( 0, 3, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 3, 1);
+                                VY( 3, 3, 0) = (Pz-RAz) * VY( 0, 3, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 3, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                
+                                //SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                VY( 0, 4, 0) = (Qx-RCx) * VY( 0, 2, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 2, 1);
+                                VY( 0, 5, 0) = (Qy-RCy) * VY( 0, 3, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 3, 1);
+                                VY( 0, 6, 0) = (Qx-RCx) * VY( 0, 3, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 3, 1);
+                                
+                                VY( 0, 7, 0) = (Qx-RCx) * VY( 0, 1, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 1, 1) + 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1)) ;
+                                VY( 0, 8, 0) = (Qy-RCy) * VY( 0, 2, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 2, 1) + 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1)) ;
+                                VY( 0, 9, 0) = (Qz-RCz) * VY( 0, 3, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 3, 1) + 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1)) ;                                
+                                
+                                //SSPS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 2) = (Qx-RCx) * VY( 0, 0, 2) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 3);
+                                VY( 0, 2, 2) = (Qy-RCy) * VY( 0, 0, 2) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 3);
+                                VY( 0, 3, 2) = (Qz-RCz) * VY( 0, 0, 2) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 3);
+                                
+                                //SSDS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                VY( 0, 4, 1) = (Qx-RCx) * VY( 0, 2, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 2, 2);
+                                VY( 0, 5, 1) = (Qy-RCy) * VY( 0, 3, 1) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 3, 2);
+                                VY( 0, 6, 1) = (Qx-RCx) * VY( 0, 3, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 3, 2);
+                                
+                                VY( 0, 7, 1) = (Qx-RCx) * VY( 0, 1, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 1, 2) + 0.5 / CD *(VY( 0, 0, 1) - AB*ABCD * VY( 0, 0, 2)) ;
+                                VY( 0, 8, 1) = (Qy-RCy) * VY( 0, 2, 1) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 2, 2) + 0.5 / CD *(VY( 0, 0, 1) - AB*ABCD * VY( 0, 0, 2)) ;
+                                VY( 0, 9, 1) = (Qz-RCz) * VY( 0, 3, 1) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 3, 2) + 0.5 / CD *(VY( 0, 0, 1) - AB*ABCD * VY( 0, 0, 2)) ;
+                                
+                                //PSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                VY( 1, 4, 0) = (Px-RAx) * VY( 0, 4, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 4, 1) + 0.5 * ABCD * VY( 0, 2, 1);
+                                VY( 2, 4, 0) = (Py-RAy) * VY( 0, 4, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 4, 1) + 0.5 * ABCD * VY( 0, 1, 1);
+                                VY( 3, 4, 0) = (Pz-RAz) * VY( 0, 4, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 4, 1) ;
+                                
+                                VY( 1, 5, 0) = (Px-RAx) * VY( 0, 5, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 5, 1);
+                                VY( 2, 5, 0) = (Py-RAy) * VY( 0, 5, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 5, 1) + 0.5 * ABCD * VY( 0, 3, 1);
+                                VY( 3, 5, 0) = (Pz-RAz) * VY( 0, 5, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 5, 1) + 0.5 * ABCD * VY( 0, 2, 1);
+                                
+                                VY( 1, 6, 0) = (Px-RAx) * VY( 0, 6, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 6, 1) + 0.5 * ABCD * VY( 0, 3, 1);
+                                VY( 2, 6, 0) = (Py-RAy) * VY( 0, 6, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 6, 1);
+                                VY( 3, 6, 0) = (Pz-RAz) * VY( 0, 6, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 6, 1) + 0.5 * ABCD * VY( 0, 1, 1);
+                                
+                                VY( 1, 7, 0) = (Px-RAx) * VY( 0, 7, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 7, 1) + ABCD * VY( 0, 1, 1);
+                                VY( 2, 7, 0) = (Py-RAy) * VY( 0, 7, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 7, 1);
+                                VY( 3, 7, 0) = (Pz-RAz) * VY( 0, 7, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 7, 1);
+
+                                VY( 1, 8, 0) = (Px-RAx) * VY( 0, 8, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 8, 1);
+                                VY( 2, 8, 0) = (Py-RAy) * VY( 0, 8, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 8, 1) + ABCD * VY( 0, 2, 1);
+                                VY( 3, 8, 0) = (Pz-RAz) * VY( 0, 8, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 8, 1);
+                                
+                                VY( 1, 9, 0) = (Px-RAx) * VY( 0, 9, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 9, 1);
+                                VY( 2, 9, 0) = (Py-RAy) * VY( 0, 9, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 9, 1);
+                                VY( 3, 9, 0) = (Pz-RAz) * VY( 0, 9, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 9, 1) + ABCD * VY( 0, 3, 1);                                
+                                
+                                
+                                
+                            }else if(NABCDTYPE == 22) {
+                                //SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 0) = (Qx-RCx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 1);
+                                VY( 0, 2, 0) = (Qy-RCy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 1);
+                                VY( 0, 3, 0) = (Qz-RCz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 1);
+                                
+                                //PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 0) = (Px-RAx) * VY( 0, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 1);
+                                VY( 2, 0, 0) = (Py-RAy) * VY( 0, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 1);
+                                VY( 3, 0, 0) = (Pz-RAz) * VY( 0, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 1);
+                                
+                                //SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 1) = (Qx-RCx) * VY( 0, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 2);
+                                VY( 0, 2, 1) = (Qy-RCy) * VY( 0, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 2);
+                                VY( 0, 3, 1) = (Qz-RCz) * VY( 0, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 2);
+                                
+                                //PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                VY( 1, 1, 0) = (Px-RAx) * VY( 0, 1, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 1, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                VY( 2, 1, 0) = (Py-RAy) * VY( 0, 1, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 1, 1);
+                                VY( 3, 1, 0) = (Pz-RAz) * VY( 0, 1, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 1, 1);
+
+                                VY( 1, 2, 0) = (Px-RAx) * VY( 0, 2, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 2, 1);
+                                VY( 2, 2, 0) = (Py-RAy) * VY( 0, 2, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 2, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                VY( 3, 2, 0) = (Pz-RAz) * VY( 0, 2, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 2, 1);
+
+                                VY( 1, 3, 0) = (Px-RAx) * VY( 0, 3, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 3, 1);
+                                VY( 2, 3, 0) = (Py-RAy) * VY( 0, 3, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 3, 1);
+                                VY( 3, 3, 0) = (Pz-RAz) * VY( 0, 3, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 3, 1) + 0.5*ABCD * VY( 0, 0, 1);
+                                
+                                //SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                VY( 0, 4, 0) = (Qx-RCx) * VY( 0, 2, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 2, 1);
+                                VY( 0, 5, 0) = (Qy-RCy) * VY( 0, 3, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 3, 1);
+                                VY( 0, 6, 0) = (Qx-RCx) * VY( 0, 3, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 3, 1);
+                                
+                                VY( 0, 7, 0) = (Qx-RCx) * VY( 0, 1, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 1, 1) + 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1)) ;
+                                VY( 0, 8, 0) = (Qy-RCy) * VY( 0, 2, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 2, 1) + 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1)) ;
+                                VY( 0, 9, 0) = (Qz-RCz) * VY( 0, 3, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 3, 1) + 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1)) ;                                
+                                
+                                //SSPS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 2) = (Qx-RCx) * VY( 0, 0, 2) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 3);
+                                VY( 0, 2, 2) = (Qy-RCy) * VY( 0, 0, 2) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 3);
+                                VY( 0, 3, 2) = (Qz-RCz) * VY( 0, 0, 2) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 3);
+                                
+                                //SSDS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                VY( 0, 4, 1) = (Qx-RCx) * VY( 0, 2, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 2, 2);
+                                VY( 0, 5, 1) = (Qy-RCy) * VY( 0, 3, 1) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 3, 2);
+                                VY( 0, 6, 1) = (Qx-RCx) * VY( 0, 3, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 3, 2);
+                                
+                                VY( 0, 7, 1) = (Qx-RCx) * VY( 0, 1, 1) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 1, 2) + 0.5 / CD *(VY( 0, 0, 1) - AB*ABCD * VY( 0, 0, 2)) ;
+                                VY( 0, 8, 1) = (Qy-RCy) * VY( 0, 2, 1) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 2, 2) + 0.5 / CD *(VY( 0, 0, 1) - AB*ABCD * VY( 0, 0, 2)) ;
+                                VY( 0, 9, 1) = (Qz-RCz) * VY( 0, 3, 1) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 3, 2) + 0.5 / CD *(VY( 0, 0, 1) - AB*ABCD * VY( 0, 0, 2)) ;
+                                                                
+                                //PSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                VY( 1, 4, 0) = (Px-RAx) * VY( 0, 4, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 4, 1) + 0.5 * ABCD * VY( 0, 2, 1);
+                                VY( 2, 4, 0) = (Py-RAy) * VY( 0, 4, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 4, 1) + 0.5 * ABCD * VY( 0, 1, 1);
+                                VY( 3, 4, 0) = (Pz-RAz) * VY( 0, 4, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 4, 1) ;
+                                
+                                VY( 1, 5, 0) = (Px-RAx) * VY( 0, 5, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 5, 1);
+                                VY( 2, 5, 0) = (Py-RAy) * VY( 0, 5, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 5, 1) + 0.5 * ABCD * VY( 0, 3, 1);
+                                VY( 3, 5, 0) = (Pz-RAz) * VY( 0, 5, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 5, 1) + 0.5 * ABCD * VY( 0, 2, 1);
+                                
+                                VY( 1, 6, 0) = (Px-RAx) * VY( 0, 6, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 6, 1) + 0.5 * ABCD * VY( 0, 3, 1);
+                                VY( 2, 6, 0) = (Py-RAy) * VY( 0, 6, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 6, 1);
+                                VY( 3, 6, 0) = (Pz-RAz) * VY( 0, 6, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 6, 1) + 0.5 * ABCD * VY( 0, 1, 1);
+                                
+                                VY( 1, 7, 0) = (Px-RAx) * VY( 0, 7, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 7, 1) + ABCD * VY( 0, 1, 1);
+                                VY( 2, 7, 0) = (Py-RAy) * VY( 0, 7, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 7, 1);
+                                VY( 3, 7, 0) = (Pz-RAz) * VY( 0, 7, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 7, 1);
+
+                                VY( 1, 8, 0) = (Px-RAx) * VY( 0, 8, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 8, 1);
+                                VY( 2, 8, 0) = (Py-RAy) * VY( 0, 8, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 8, 1) + ABCD * VY( 0, 2, 1);
+                                VY( 3, 8, 0) = (Pz-RAz) * VY( 0, 8, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 8, 1);
+                                
+                                VY( 1, 9, 0) = (Px-RAx) * VY( 0, 9, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 9, 1);
+                                VY( 2, 9, 0) = (Py-RAy) * VY( 0, 9, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 9, 1);
+                                VY( 3, 9, 0) = (Pz-RAz) * VY( 0, 9, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 9, 1) + ABCD * VY( 0, 3, 1);
+                                
+                                //PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 1) = (Px-RAx) * VY( 0, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 2);
+                                VY( 2, 0, 1) = (Py-RAy) * VY( 0, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 2);
+                                VY( 3, 0, 1) = (Pz-RAz) * VY( 0, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 2);
+                                
+                                //DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                VY( 4, 0, 0) = (Px-RAx) * VY( 2, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 2, 0, 1);
+                                VY( 5, 0, 0) = (Py-RAy) * VY( 3, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 3, 0, 1);
+                                VY( 6, 0, 0) = (Px-RAx) * VY( 3, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 3, 0, 1);
+                                
+                                VY( 7, 0, 0) = (Px-RAx) * VY( 1, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 1, 0, 1) + 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                VY( 8, 0, 0) = (Py-RAy) * VY( 2, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 2, 0, 1) + 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                VY( 9, 0, 0) = (Pz-RAz) * VY( 3, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 3, 0, 1) + 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                
+                                //PSSS(2, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz);
+                                VY( 1, 0, 2) = (Px-RAx) * VY( 0, 0, 2) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 0, 3);
+                                VY( 2, 0, 2) = (Py-RAy) * VY( 0, 0, 2) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 0, 3);
+                                VY( 3, 0, 2) = (Pz-RAz) * VY( 0, 0, 2) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 0, 3);
+                                
+                                //DSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5/AB, CD*ABCD);
+                                VY( 4, 0, 1) = (Px-RAx) * VY( 2, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 2, 0, 2);
+                                VY( 5, 0, 1) = (Py-RAy) * VY( 3, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 3, 0, 2);
+                                VY( 6, 0, 1) = (Px-RAx) * VY( 3, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 3, 0, 2);
+                                
+                                VY( 7, 0, 1) = (Px-RAx) * VY( 1, 0, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 1, 0, 2) + 0.5 / AB *(VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
+                                VY( 8, 0, 1) = (Py-RAy) * VY( 2, 0, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 2, 0, 2) + 0.5 / AB *(VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
+                                VY( 9, 0, 1) = (Pz-RAz) * VY( 3, 0, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 3, 0, 2) + 0.5 / AB *(VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
+                                
+                                //DSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5*ABCD);
+                                VY( 4, 1, 0) = (Qx-RCx) * VY( 4, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 4, 0, 1) + 0.5 * ABCD * VY( 2, 0, 1);
+                                VY( 4, 2, 0) = (Qy-RCy) * VY( 4, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 4, 0, 1) + 0.5 * ABCD * VY( 1, 0, 1);
+                                VY( 4, 3, 0) = (Qz-RCz) * VY( 4, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 4, 0, 1);
+                                
+                                VY( 5, 1, 0) = (Qx-RCx) * VY( 5, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 5, 0, 1);
+                                VY( 5, 2, 0) = (Qy-RCy) * VY( 5, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 5, 0, 1) + 0.5 * ABCD * VY( 3, 0, 1);
+                                VY( 5, 3, 0) = (Qz-RCz) * VY( 5, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 5, 0, 1) + 0.5 * ABCD * VY( 2, 0, 1);
+                                
+                                VY( 6, 1, 0) = (Qx-RCx) * VY( 6, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 6, 0, 1) + 0.5 * ABCD * VY( 3, 0, 1);
+                                VY( 6, 2, 0) = (Qy-RCy) * VY( 6, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 6, 0, 1);
+                                VY( 6, 3, 0) = (Qz-RCz) * VY( 6, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 6, 0, 1) + 0.5 * ABCD * VY( 1, 0, 1);
+                                
+                                VY( 7, 1, 0) = (Qx-RCx) * VY( 7, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 7, 0, 1) + ABCD * VY( 1, 0, 1);
+                                VY( 7, 2, 0) = (Qy-RCy) * VY( 7, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 7, 0, 1);
+                                VY( 7, 3, 0) = (Qz-RCz) * VY( 7, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 7, 0, 1);
+                                
+                                VY( 8, 1, 0) = (Qx-RCx) * VY( 8, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 8, 0, 1);
+                                VY( 8, 2, 0) = (Qy-RCy) * VY( 8, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 8, 0, 1) + ABCD * VY( 2, 0, 1);
+                                VY( 8, 3, 0) = (Qz-RCz) * VY( 8, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 8, 0, 1);
+                                
+                                VY( 9, 1, 0) = (Qx-RCx) * VY( 9, 0, 0) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 9, 0, 1);
+                                VY( 9, 2, 0) = (Qy-RCy) * VY( 9, 0, 0) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 9, 0, 1);
+                                VY( 9, 3, 0) = (Qz-RCz) * VY( 9, 0, 0) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 9, 0, 1) + ABCD * VY( 3, 0, 1);
+                                
+                                
+                                //SSPS(3, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                VY( 0, 1, 3) = (Qx-RCx) * VY( 0, 0, 3) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 0, 4);
+                                VY( 0, 2, 3) = (Qy-RCy) * VY( 0, 0, 3) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 0, 4);
+                                VY( 0, 3, 3) = (Qz-RCz) * VY( 0, 0, 3) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 0, 4);
+                                
+                                //SSDS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, 0.5/CD, AB*ABCD);
+                                VY( 0, 4, 2) = (Qx-RCx) * VY( 0, 2, 2) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 2, 3);
+                                VY( 0, 5, 2) = (Qy-RCy) * VY( 0, 3, 2) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 3, 3);
+                                VY( 0, 6, 2) = (Qx-RCx) * VY( 0, 3, 2) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 3, 3);
+                                
+                                VY( 0, 7, 2) = (Qx-RCx) * VY( 0, 1, 2) + ((Px*AB+Qx*CD)*ABCD - Qx) * VY( 0, 1, 3) + 0.5 / CD *(VY( 0, 0, 2) - AB*ABCD * VY( 0, 0, 3)) ;
+                                VY( 0, 8, 2) = (Qy-RCy) * VY( 0, 2, 2) + ((Py*AB+Qy*CD)*ABCD - Qy) * VY( 0, 2, 3) + 0.5 / CD *(VY( 0, 0, 2) - AB*ABCD * VY( 0, 0, 3)) ;
+                                VY( 0, 9, 2) = (Qz-RCz) * VY( 0, 3, 2) + ((Pz*AB+Qz*CD)*ABCD - Qz) * VY( 0, 3, 3) + 0.5 / CD *(VY( 0, 0, 2) - AB*ABCD * VY( 0, 0, 3)) ;
+                                
+                                //PSDS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                VY( 1, 4, 1) = (Px-RAx) * VY( 0, 4, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 4, 2) + 0.5 * ABCD * VY( 0, 2, 2);
+                                VY( 2, 4, 1) = (Py-RAy) * VY( 0, 4, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 4, 2) + 0.5 * ABCD * VY( 0, 1, 2);
+                                VY( 3, 4, 1) = (Pz-RAz) * VY( 0, 4, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 4, 2) ;
+                                
+                                VY( 1, 5, 1) = (Px-RAx) * VY( 0, 5, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 5, 2);
+                                VY( 2, 5, 1) = (Py-RAy) * VY( 0, 5, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 5, 2) + 0.5 * ABCD * VY( 0, 3, 2);
+                                VY( 3, 5, 1) = (Pz-RAz) * VY( 0, 5, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 5, 2) + 0.5 * ABCD * VY( 0, 2, 2);
+                                
+                                VY( 1, 6, 1) = (Px-RAx) * VY( 0, 6, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 6, 2) + 0.5 * ABCD * VY( 0, 3, 2);
+                                VY( 2, 6, 1) = (Py-RAy) * VY( 0, 6, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 6, 2);
+                                VY( 3, 6, 1) = (Pz-RAz) * VY( 0, 6, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 6, 2) + 0.5 * ABCD * VY( 0, 1, 2);
+                                
+                                VY( 1, 7, 1) = (Px-RAx) * VY( 0, 7, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 7, 2) + ABCD * VY( 0, 1, 2);
+                                VY( 2, 7, 1) = (Py-RAy) * VY( 0, 7, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 7, 2);
+                                VY( 3, 7, 1) = (Pz-RAz) * VY( 0, 7, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 7, 2);
+
+                                VY( 1, 8, 1) = (Px-RAx) * VY( 0, 8, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 8, 2);
+                                VY( 2, 8, 1) = (Py-RAy) * VY( 0, 8, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 8, 2) + ABCD * VY( 0, 2, 2);
+                                VY( 3, 8, 1) = (Pz-RAz) * VY( 0, 8, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 8, 2);
+                                
+                                VY( 1, 9, 1) = (Px-RAx) * VY( 0, 9, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 9, 2);
+                                VY( 2, 9, 1) = (Py-RAy) * VY( 0, 9, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 9, 2);
+                                VY( 3, 9, 1) = (Pz-RAz) * VY( 0, 9, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 9, 2) + ABCD * VY( 0, 3, 2);
+                                
+                                //PSPS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD);
+                                VY( 1, 1, 1) = (Px-RAx) * VY( 0, 1, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 1, 2) + 0.5*ABCD * VY( 0, 0, 2);
+                                VY( 2, 1, 1) = (Py-RAy) * VY( 0, 1, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 1, 2);
+                                VY( 3, 1, 1) = (Pz-RAz) * VY( 0, 1, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 1, 2);
+
+                                VY( 1, 2, 1) = (Px-RAx) * VY( 0, 2, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 2, 2);
+                                VY( 2, 2, 1) = (Py-RAy) * VY( 0, 2, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 2, 2) + 0.5*ABCD * VY( 0, 0, 2);
+                                VY( 3, 2, 1) = (Pz-RAz) * VY( 0, 2, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 2, 2);
+
+                                VY( 1, 3, 1) = (Px-RAx) * VY( 0, 3, 1) + ((Px*AB+Qx*CD)*ABCD - Px) * VY( 0, 3, 2);
+                                VY( 2, 3, 1) = (Py-RAy) * VY( 0, 3, 1) + ((Py*AB+Qy*CD)*ABCD - Py) * VY( 0, 3, 2);
+                                VY( 3, 3, 1) = (Pz-RAz) * VY( 0, 3, 1) + ((Pz*AB+Qz*CD)*ABCD - Pz) * VY( 0, 3, 2) + 0.5*ABCD * VY( 0, 0, 2);
+                                
+                                DSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, 0.5*ABCD, 0.5/AB, CD*ABCD); 
                             }
                         }
+                        
+                        for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+                            for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+                                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) += LOC3(YVerticalTemp, j-1,i-1,0, VDIM1, VDIM2, VDIM3);
+                            }
+                        }
+                        
                     }   
                 }
             }
@@ -943,8 +1260,6 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
     int LLL1 = devSim.Ksumtype[LL-1]+LOC2(devSim.Qsbasis, LL-1, L, nshell, 4);
     int LLL2 = devSim.Ksumtype[LL-1]+LOC2(devSim.Qfbasis, LL-1, L, nshell, 4);
     
-    // IJKLTYPE is the I, J, K,L type
-    int IJKLTYPE = (int) (1000 * I + 100 *J + 10 * K + L);
     
     // maxIJKL is the max of I,J,K,L
     int maxIJKL = (int)MAX(MAX(I,J),MAX(K,L));
