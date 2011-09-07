@@ -21,12 +21,12 @@ void gpu_basis_type :: upload_all()
     this->first_shell_basis_function->Upload();
     this->last_basis_function->Upload();
     this->ncenter->Upload();
+    this->kshell->Upload();
+    this->ktype->Upload();
   */
     this->kstart->Upload();
     this->katom->Upload();
-  //  this->ktype->Upload();
     this->kprim->Upload();
-  //  this->kshell->Upload();
     this->Ksumtype->Upload();
     this->Qnumber->Upload();
     this->Qstart->Upload();

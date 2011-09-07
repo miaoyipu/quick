@@ -1,5 +1,5 @@
 #/bin/bash
 
-cp -a ../src/ ../archieve/2011-9-6-new_quick_0.07beta36
+cp -a ../src/ ../archieve/2011-9-7-new_quick_0.07beta37
 
 

@@ -145,12 +145,12 @@ struct gpu_basis_type {
     cuda_buffer_type<int>*          first_shell_basis_function;
     cuda_buffer_type<int>*          last_shell_basis_function;
     cuda_buffer_type<int>*          ncenter;
+    cuda_buffer_type<int>*          ktype;
+    cuda_buffer_type<int>*          kshell;
   */
     cuda_buffer_type<int>*          kstart;
-    cuda_buffer_type<int>*          katom;
-//    cuda_buffer_type<int>*          ktype;
+    cuda_buffer_type<int>*          katom;  
     cuda_buffer_type<int>*          kprim;
-//    cuda_buffer_type<int>*          kshell;
     cuda_buffer_type<int>*          Ksumtype;
     cuda_buffer_type<int>*          Qnumber;
     cuda_buffer_type<int>*          Qstart;
