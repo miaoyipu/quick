@@ -40,7 +40,7 @@ __global__ void get2e_kernel();
 
 __device__ void gpu_shell(unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL);
 
-__device__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* vals, QUICKDouble sqrtABCD);
+__device__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* vals);
 __device__ void vertical(int NABCDTYPE, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,\
               QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz,\
               QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,\

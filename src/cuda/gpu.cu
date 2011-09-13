@@ -561,6 +561,13 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
         gpu->gpu_basis->Qshell += gpu->gpu_basis->Qfinal->_hostData[i] - gpu->gpu_basis->Qstart->_hostData[i] + 1;
     }
     
+    for (int i = 0; i<gpu->gpu_basis->nshell; i++) {
+        for (int j = 0; j<4; j++) {
+            LOC2(gpu->gpu_basis->Qsbasis->_hostData, i, j, gpu->gpu_basis->nshell, 4) += gpu->gpu_basis->Ksumtype->_hostData[i];
+            LOC2(gpu->gpu_basis->Qfbasis->_hostData, i, j, gpu->gpu_basis->nshell, 4) += gpu->gpu_basis->Ksumtype->_hostData[i];
+        }
+    }
+    
     gpu -> gpu_sim.Qshell = gpu->gpu_basis->Qshell;
     
     gpu -> gpu_basis -> sorted_Q                    =   new cuda_buffer_type<int>( gpu->gpu_basis->Qshell);

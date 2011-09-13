@@ -23,10 +23,10 @@ fflush(stdout);\
 //#define VDIM2 56
 //#define VDIM3 10
 //#define STOREDIM 120
-#define VDIM1 20
-#define VDIM2 20
+#define VDIM1 10
+#define VDIM2 10
 #define VDIM3 5
-#define STOREDIM 12
+#define STOREDIM 10
 #define TRANSDIM 8
 #define MCALDIM 120
 

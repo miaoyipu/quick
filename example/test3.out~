@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Wed Sep  7 16:28:45 2011
+ TASK STARTS ON: Thu Sep  8 00:03:21 2011
  INPUT FILE:     test3.in
  OUTPUT FILE:    test3.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -484,7 +484,7 @@ OPERATORA[   7,   9]=      0.0000000000
 OPERATORA[   8,   9]=      0.0000000000
 OPERATORA[   9,   9]=     -0.1594556921
 
-SCF CYCLE      =        1      TIME      =     0.07
+SCF CYCLE      =        1      TIME      =     0.06
 RMS CHANGE     = 0.149950E+00  MAX CHANGE= 0.820200E+00
 
 
@@ -739,7 +739,7 @@ OPERATORA[   7,   9]=     -0.0055895576
 OPERATORA[   8,   9]=      0.0337655822
 OPERATORA[   9,   9]=      0.0614026890
 
-SCF CYCLE      =        2      TIME      =     0.06
+SCF CYCLE      =        2      TIME      =     0.07
 RMS CHANGE     = 0.797517E-01  MAX CHANGE= 0.320914E+00
 
 SCF CYCLE      =        3      TIME      =   0.06
@@ -1011,7 +1011,7 @@ OPERATORA[   7,   9]=     -0.0080834972
 OPERATORA[   8,   9]=      0.0488310544
 OPERATORA[   9,   9]=     -0.0878850163
 
-SCF CYCLE      =        7      TIME      =     0.07
+SCF CYCLE      =        7      TIME      =     0.06
 RMS CHANGE     = 0.153492E-04  MAX CHANGE= 0.106143E-03
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
@@ -1124,7 +1124,7 @@ OPERATORA[   2,   1]=     -0.5577929887
 OPERATORA[   1,   2]=     -0.5577929887
 OPERATORA[   2,   2]=     -0.3451181920
 
-SCF CYCLE      =        2      TIME      =     0.00
+SCF CYCLE      =        2      TIME      =     0.01
 RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
 
 SCF CYCLE      =        3      TIME      =   0.00
@@ -1630,8 +1630,8 @@ THE X MATRIX
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1    -39.639764544      ------         0.040     1        0.00      0.04      0.00    0.1489E+01  0.1037E+00  0.5681E+00
-  2    -39.322516042  -.317249E+00       0.040     2        0.00      0.04      0.00    0.1511E+00  0.4963E-01  0.4164E+00
+  1    -39.639764544      ------         0.050     1        0.00      0.05      0.00    0.1489E+01  0.1037E+00  0.5681E+00
+  2    -39.322516042  -.317249E+00       0.030     2        0.00      0.03      0.00    0.1511E+00  0.4963E-01  0.4164E+00
   3    -39.374324154  0.518081E-01       0.040     3        0.00      0.04      0.00    0.5432E-01  0.1356E-01  0.7171E-01
   4    -39.386061468  0.117373E-01       0.040     4        0.00      0.04      0.00    0.4834E-01  0.1237E-01  0.9631E-01
   5    -39.393513734  0.745227E-02       0.040     5        0.00      0.04      0.00    0.4662E-01  0.1158E-01  0.5585E-01
@@ -1884,19 +1884,19 @@ TOTAL ENERGY         =   -39.457220046
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     0.510000000( 37.23%)
-TOTAL SCF TIME     =     0.520000000( 37.96%)
-      TOTAL OP TIME      =     0.520000000( 37.96%)
+INITIAL GUESS TIME =     0.500000000( 37.04%)
+TOTAL SCF TIME     =     0.520000000( 38.52%)
+      TOTAL OP TIME      =     0.520000000( 38.52%)
             TOTAL 1e TIME      =     0.000000000(  0.00%)
-            TOTAL 2e TIME      =     0.520000000( 37.96%)
+            TOTAL 2e TIME      =     0.520000000( 38.52%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
       TOTAL DII TIME     =     0.000000000(  0.00%)
             TOTAL DIAG TIME    =     0.000000000(  0.00%)
 DIPOLE TIME        =     0.000000000(  0.00%)
-TOTAL TIME         =     1.370000000
+TOTAL TIME         =     1.350000000
 ------------------------------------
  Job cpu time:  0 days  0 hours  0 minutes  1.4 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Wed Sep  7 16:28:46 2011
+ Normal Terminatation. Task Finished on: Thu Sep  8 00:03:23 2011
