@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Fri Sep  9 17:08:44 2011
+ TASK STARTS ON: Thu Sep 15 17:51:04 2011
  INPUT FILE:     benzene.in
  OUTPUT FILE:    benzene.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -89,7 +89,7 @@ RMS CHANGE     = 0.149950E+00  MAX CHANGE= 0.820200E+00
 SCF CYCLE      =        2      TIME      =     0.06
 RMS CHANGE     = 0.797517E-01  MAX CHANGE= 0.320914E+00
 
-SCF CYCLE      =        3      TIME      =   0.07
+SCF CYCLE      =        3      TIME      =   0.06
 DIIS CYCLE     =        1      MAX ERROR = 0.394445E-01
 RMS CHANGE     = 0.137215E-01  MAX CHANGE= 0.589123E-01
 
@@ -97,11 +97,11 @@ SCF CYCLE      =        4      TIME      =   0.06
 DIIS CYCLE     =        2      MAX ERROR = 0.746633E-02
 RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
 
-SCF CYCLE      =        5      TIME      =   0.05
+SCF CYCLE      =        5      TIME      =   0.06
 DIIS CYCLE     =        3      MAX ERROR = 0.308852E-02
 RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
 
-SCF CYCLE      =        6      TIME      =   0.06
+SCF CYCLE      =        6      TIME      =   0.07
 DIIS CYCLE     =        4      MAX ERROR = 0.299208E-03
 RMS CHANGE     = 0.311349E-03  MAX CHANGE= 0.215704E-02
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
@@ -214,16 +214,16 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1   -232.675862245      ------         0.430     1        0.01      0.42      0.00    0.2049E+01  0.5188E-01  0.4834E+00
-  2   -230.484182254  -.219168E+01       0.460     2        0.01      0.45      0.01    0.1001E+00  0.1503E-01  0.8911E-01
-  3   -230.606174558  0.121992E+00       0.460     3        0.01      0.45      0.01    0.3838E-01  0.5316E-02  0.5098E-01
-  4   -230.619549551  0.133750E-01       0.460     4        0.01      0.45      0.01    0.1171E-01  0.1437E-02  0.1140E-01
-  5   -230.621126461  0.157691E-02       0.460     5        0.01      0.45      0.01    0.3420E-02  0.5361E-03  0.4310E-02
-  6   -230.621298243  0.171782E-03       0.460     6        0.01      0.45      0.00    0.9986E-03  0.1469E-03  0.1373E-02
-  7   -230.621311606  0.133623E-04       0.460     7        0.00      0.46      0.00    0.2361E-03  0.4021E-04  0.3734E-03
+  1   -232.675862245      ------         0.170     1        0.01      0.16      0.00    0.2049E+01  0.5188E-01  0.4834E+00
+  2   -230.484182254  -.219168E+01       0.180     2        0.01      0.17      0.01    0.1001E+00  0.1503E-01  0.8911E-01
+  3   -230.606174558  0.121992E+00       0.170     3        0.01      0.16      0.00    0.3838E-01  0.5316E-02  0.5098E-01
+  4   -230.619549551  0.133750E-01       0.180     4        0.01      0.17      0.01    0.1171E-01  0.1437E-02  0.1140E-01
+  5   -230.621126461  0.157691E-02       0.170     5        0.00      0.17      0.00    0.3420E-02  0.5361E-03  0.4310E-02
+  6   -230.621298243  0.171782E-03       0.180     6        0.01      0.17      0.00    0.9986E-03  0.1469E-03  0.1373E-02
+  7   -230.621311606  0.133623E-04       0.180     7        0.01      0.17      0.00    0.2361E-03  0.4021E-04  0.3734E-03
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   7 CYLCES
- MAX ERROR = 0.236118E-03   RMS CHANGE = 0.402143E-04   MAX CHANGE = 0.373367E-03
+ MAX ERROR = 0.236118E-03   RMS CHANGE = 0.402144E-04   MAX CHANGE = 0.373368E-03
  -----------------------------------------------
 ELECTRONIC ENERGY    =  -433.652011630
 CORE_CORE REPULSION  =   203.030700024
@@ -285,19 +285,19 @@ TOTAL ENERGY         =  -230.621311606
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     0.570000000( 13.57%)
-TOTAL SCF TIME     =     3.250000000( 77.38%)
-      TOTAL OP TIME      =     3.190000000( 75.95%)
-            TOTAL 1e TIME      =     0.060000000(  1.43%)
-            TOTAL 2e TIME      =     3.130000000( 74.52%)
+INITIAL GUESS TIME =     0.560000000( 25.45%)
+TOTAL SCF TIME     =     1.290000000( 58.64%)
+      TOTAL OP TIME      =     1.230000000( 55.91%)
+            TOTAL 1e TIME      =     0.060000000(  2.73%)
+            TOTAL 2e TIME      =     1.170000000( 53.18%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     0.060000000(  1.43%)
-            TOTAL DIAG TIME    =     0.040000000(  0.95%)
-DIPOLE TIME        =     0.040000000(  0.95%)
-TOTAL TIME         =     4.200000000
+      TOTAL DII TIME     =     0.060000000(  2.73%)
+            TOTAL DIAG TIME    =     0.020000000(  0.91%)
+DIPOLE TIME        =     0.030000000(  1.36%)
+TOTAL TIME         =     2.200000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes  4.2 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes  2.2 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Fri Sep  9 17:08:48 2011
+ Normal Terminatation. Task Finished on: Thu Sep 15 17:51:06 2011

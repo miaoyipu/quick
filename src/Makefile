@@ -62,7 +62,8 @@ CPP = gcc -DCUBLAS_USE_THUNKING
 # CUDA Compiler
 CUDAC = nvcc
 CUDA_LIBPATH = -L/usr/local/gfortran/lib 
-CUDA_FLAGS= -Xptxas=-v -m64 -g -G -use_fast_math -maxrregcount=63 -gencode arch=compute_20,code=sm_20
+#CUDA_FLAGS= -Xptxas=-v -m64 -g -G -use_fast_math -maxrregcount=63 -gencode arch=compute_20,code=sm_20
+CUDA_FLAGS= -Xptxas=-v -m64 -O65536 -use_fast_math -gencode arch=compute_20,code=sm_20
 
 # G++ Compiler
 CXX = g++

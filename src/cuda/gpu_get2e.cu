@@ -798,9 +798,10 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                                                                         
                         QUICKDouble T = AB * CD * ABCD * ( quick_dsqr(Px-Qx) + quick_dsqr(Py-Qy) + quick_dsqr(Pz-Qz));
 
-                        QUICKDouble X2 = sqrt(ABCD) * X1 * LOC4(devSim.Xcoeff, kStartK+KKK-1, kStartL+LLL-1, K, L, devSim.jbasis, devSim.jbasis, 4, 4);
                         QUICKDouble YVerticalTemp[VDIM1*VDIM2*VDIM3];
                         FmT(I+J+K+L, T, YVerticalTemp);
+                        QUICKDouble X2 = sqrt(ABCD) * X1 * LOC4(devSim.Xcoeff, kStartK+KKK-1, kStartL+LLL-1, K, L, devSim.jbasis, devSim.jbasis, 4, 4);
+                        
                         for (int i = 0; i<=I+J+K+L; i++) {
                             VY(0, 0, i) = VY(0, 0, i) * X2;
                         }
@@ -809,7 +810,7 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                          X2 is the multiplication of four indices normalized coeffecient
                          */
                         
-                        
+                       /* 
                         if (I+J+K+L != 0) {
                        
                             QUICKDouble tempx = (Px*AB+Qx*CD)*ABCD;
@@ -818,6 +819,7 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                        
                             ABCD = ABCD * 0.5;
                             QUICKDouble ABtemp, CDtemp;
+                            
                             if (I+J>0) {
                                 //PSSS(0)
                                 VY( 1, 0, 0) = (Px-RAx) * VY( 0, 0, 0) + (tempx - Px) * VY( 0, 0, 1);
@@ -856,7 +858,7 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                             }
                             
                             if (I+J>1) {
-                                ABtemp = 1/AB;
+                                ABtemp = 0.5/AB;
                                 //PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz);
                                 VY( 1, 0, 1) = (Px-RAx) * VY( 0, 0, 1) + (tempx - Px) * VY( 0, 0, 2);
                                 VY( 2, 0, 1) = (Py-RAy) * VY( 0, 0, 1) + (tempy - Py) * VY( 0, 0, 2);
@@ -867,9 +869,9 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                                 VY( 5, 0, 0) = (Py-RAy) * VY( 3, 0, 0) + (tempy - Py) * VY( 3, 0, 1);
                                 VY( 6, 0, 0) = (Px-RAx) * VY( 3, 0, 0) + (tempx - Px) * VY( 3, 0, 1);
                                 
-                                VY( 7, 0, 0) = (Px-RAx) * VY( 1, 0, 0) + (tempx - Px) * VY( 1, 0, 1) + 0.5 * ABtemp *(VY( 0, 0, 0) - CD * 2 * ABCD * VY( 0, 0, 1));
-                                VY( 8, 0, 0) = (Py-RAy) * VY( 2, 0, 0) + (tempy - Py) * VY( 2, 0, 1) + 0.5 * ABtemp *(VY( 0, 0, 0) - CD * 2 * ABCD * VY( 0, 0, 1));
-                                VY( 9, 0, 0) = (Pz-RAz) * VY( 3, 0, 0) + (tempz - Pz) * VY( 3, 0, 1) + 0.5 * ABtemp *(VY( 0, 0, 0) - CD * 2 * ABCD * VY( 0, 0, 1));
+                                VY( 7, 0, 0) = (Px-RAx) * VY( 1, 0, 0) + (tempx - Px) * VY( 1, 0, 1) + ABtemp *(VY( 0, 0, 0) - CD * 2 * ABCD * VY( 0, 0, 1));
+                                VY( 8, 0, 0) = (Py-RAy) * VY( 2, 0, 0) + (tempy - Py) * VY( 2, 0, 1) + ABtemp *(VY( 0, 0, 0) - CD * 2 * ABCD * VY( 0, 0, 1));
+                                VY( 9, 0, 0) = (Pz-RAz) * VY( 3, 0, 0) + (tempz - Pz) * VY( 3, 0, 1) + ABtemp *(VY( 0, 0, 0) - CD * 2 * ABCD * VY( 0, 0, 1));
                             }
                             
                             if (K+L>1) {
@@ -900,9 +902,9 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                                 VY( 5, 0, 1) = (Py-RAy) * VY( 3, 0, 1) + (tempy - Py) * VY( 3, 0, 2);
                                 VY( 6, 0, 1) = (Px-RAx) * VY( 3, 0, 1) + (tempx - Px) * VY( 3, 0, 2);
                                 
-                                VY( 7, 0, 1) = (Px-RAx) * VY( 1, 0, 1) + (tempx - Px) * VY( 1, 0, 2) + ABtemp *( 0.5 * VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
-                                VY( 8, 0, 1) = (Py-RAy) * VY( 2, 0, 1) + (tempy - Py) * VY( 2, 0, 2) + ABtemp *( 0.5 * VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
-                                VY( 9, 0, 1) = (Pz-RAz) * VY( 3, 0, 1) + (tempz - Pz) * VY( 3, 0, 2) + ABtemp *( 0.5 * VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
+                                VY( 7, 0, 1) = (Px-RAx) * VY( 1, 0, 1) + (tempx - Px) * VY( 1, 0, 2) + ABtemp *( VY( 0, 0, 1) - 2 * CD * ABCD * VY( 0, 0, 2));
+                                VY( 8, 0, 1) = (Py-RAy) * VY( 2, 0, 1) + (tempy - Py) * VY( 2, 0, 2) + ABtemp *( VY( 0, 0, 1) - 2 * CD * ABCD * VY( 0, 0, 2));
+                                VY( 9, 0, 1) = (Pz-RAz) * VY( 3, 0, 1) + (tempz - Pz) * VY( 3, 0, 2) + ABtemp *( VY( 0, 0, 1) - 2 * CD * ABCD * VY( 0, 0, 2));
                                 
                                 //DSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, tempx - Qx, tempy - Qy, tempz - Qz, 0.5*ABCD);
                                 VY( 4, 1, 0) = (Qx-RCx) * VY( 4, 0, 0) + (tempx - Qx) * VY( 4, 0, 1) + ABCD * VY( 2, 0, 1);
@@ -1048,43 +1050,433 @@ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsign
                                 VY( 6, 8, 0) = (Px-RAx) * VY( 3, 8, 0) + (tempx - Px) * VY( 3, 8, 1);
                                 VY( 6, 9, 0) = (Px-RAx) * VY( 3, 9, 0) + (tempx - Px) * VY( 3, 9, 1);
                                 
-                                VY( 7, 4, 0) = (Px-RAx) * VY( 1, 4, 0) + (tempx - Px) * VY( 1, 4, 1) +  ABtemp * (0.5*VY( 0, 4,0)-CD*ABCD*VY( 0, 4,1)) + ABCD * VY( 1, 2, 1);
-                                VY( 7, 5, 0) = (Px-RAx) * VY( 1, 5, 0) + (tempx - Px) * VY( 1, 5, 1) +  ABtemp * (0.5*VY( 0, 5,0)-CD*ABCD*VY( 0, 5,1));
-                                VY( 7, 6, 0) = (Px-RAx) * VY( 1, 6, 0) + (tempx - Px) * VY( 1, 6, 1) +  ABtemp * (0.5*VY( 0, 6,0)-CD*ABCD*VY( 0, 6,1)) + ABCD * VY( 1, 3, 1);
-                                VY( 7, 7, 0) = (Px-RAx) * VY( 1, 7, 0) + (tempx - Px) * VY( 1, 7, 1) +  ABtemp * (0.5*VY( 0, 7,0)-CD*ABCD*VY( 0, 7,1)) + 2*ABCD * VY( 1, 1, 1);
-                                VY( 7, 8, 0) = (Px-RAx) * VY( 1, 8, 0) + (tempx - Px) * VY( 1, 8, 1) +  ABtemp * (0.5*VY( 0, 8,0)-CD*ABCD*VY( 0, 8,1));
-                                VY( 7, 9, 0) = (Px-RAx) * VY( 1, 9, 0) + (tempx - Px) * VY( 1, 9, 1) +  ABtemp * (0.5*VY( 0, 9,0)-CD*ABCD*VY( 0, 9,1));
+                                VY( 7, 4, 0) = (Px-RAx) * VY( 1, 4, 0) + (tempx - Px) * VY( 1, 4, 1) +  ABtemp * (VY( 0, 4,0)-2 * CD*ABCD*VY( 0, 4,1)) + ABCD * VY( 1, 2, 1);
+                                VY( 7, 5, 0) = (Px-RAx) * VY( 1, 5, 0) + (tempx - Px) * VY( 1, 5, 1) +  ABtemp * (VY( 0, 5,0)-2 * CD*ABCD*VY( 0, 5,1));
+                                VY( 7, 6, 0) = (Px-RAx) * VY( 1, 6, 0) + (tempx - Px) * VY( 1, 6, 1) +  ABtemp * (VY( 0, 6,0)-2 * CD*ABCD*VY( 0, 6,1)) + ABCD * VY( 1, 3, 1);
+                                VY( 7, 7, 0) = (Px-RAx) * VY( 1, 7, 0) + (tempx - Px) * VY( 1, 7, 1) +  ABtemp * (VY( 0, 7,0)-2 * CD*ABCD*VY( 0, 7,1)) + 2*ABCD * VY( 1, 1, 1);
+                                VY( 7, 8, 0) = (Px-RAx) * VY( 1, 8, 0) + (tempx - Px) * VY( 1, 8, 1) +  ABtemp * (VY( 0, 8,0)-2 * CD*ABCD*VY( 0, 8,1));
+                                VY( 7, 9, 0) = (Px-RAx) * VY( 1, 9, 0) + (tempx - Px) * VY( 1, 9, 1) +  ABtemp * (VY( 0, 9,0)-2 * CD*ABCD*VY( 0, 9,1));
                                 
                                 
-                                VY( 8, 4, 0) = (Py-RAy) * VY( 2, 4, 0) + (tempy - Py) * VY( 2, 4, 1) +  ABtemp * (0.5*VY( 0, 4,0)-CD*ABCD*VY( 0, 4,1)) + ABCD * VY( 2, 1, 1);
-                                VY( 8, 5, 0) = (Py-RAy) * VY( 2, 5, 0) + (tempy - Py) * VY( 2, 5, 1) +  ABtemp * (0.5*VY( 0, 5,0)-CD*ABCD*VY( 0, 5,1)) + ABCD * VY( 2, 3, 1);
-                                VY( 8, 6, 0) = (Py-RAy) * VY( 2, 6, 0) + (tempy - Py) * VY( 2, 6, 1) +  ABtemp * (0.5*VY( 0, 6,0)-CD*ABCD*VY( 0, 6,1));
-                                VY( 8, 7, 0) = (Py-RAy) * VY( 2, 7, 0) + (tempy - Py) * VY( 2, 7, 1) +  ABtemp * (0.5*VY( 0, 7,0)-CD*ABCD*VY( 0, 7,1));
-                                VY( 8, 8, 0) = (Py-RAy) * VY( 2, 8, 0) + (tempy - Py) * VY( 2, 8, 1) +  ABtemp * (0.5*VY( 0, 8,0)-CD*ABCD*VY( 0, 8,1)) + 2*ABCD * VY( 2, 2, 1);
-                                VY( 8, 9, 0) = (Py-RAy) * VY( 2, 9, 0) + (tempy - Py) * VY( 2, 9, 1) +  ABtemp * (0.5*VY( 0, 9,0)-CD*ABCD*VY( 0, 9,1));
+                                VY( 8, 4, 0) = (Py-RAy) * VY( 2, 4, 0) + (tempy - Py) * VY( 2, 4, 1) +  ABtemp * (VY( 0, 4,0)-2 * CD*ABCD*VY( 0, 4,1)) + ABCD * VY( 2, 1, 1);
+                                VY( 8, 5, 0) = (Py-RAy) * VY( 2, 5, 0) + (tempy - Py) * VY( 2, 5, 1) +  ABtemp * (VY( 0, 5,0)-2 * CD*ABCD*VY( 0, 5,1)) + ABCD * VY( 2, 3, 1);
+                                VY( 8, 6, 0) = (Py-RAy) * VY( 2, 6, 0) + (tempy - Py) * VY( 2, 6, 1) +  ABtemp * (VY( 0, 6,0)-2 * CD*ABCD*VY( 0, 6,1));
+                                VY( 8, 7, 0) = (Py-RAy) * VY( 2, 7, 0) + (tempy - Py) * VY( 2, 7, 1) +  ABtemp * (VY( 0, 7,0)-2 * CD*ABCD*VY( 0, 7,1));
+                                VY( 8, 8, 0) = (Py-RAy) * VY( 2, 8, 0) + (tempy - Py) * VY( 2, 8, 1) +  ABtemp * (VY( 0, 8,0)-2 * CD*ABCD*VY( 0, 8,1)) + 2*ABCD * VY( 2, 2, 1);
+                                VY( 8, 9, 0) = (Py-RAy) * VY( 2, 9, 0) + (tempy - Py) * VY( 2, 9, 1) +  ABtemp * (VY( 0, 9,0)-2 * CD*ABCD*VY( 0, 9,1));
                                 
-                                VY( 9, 4, 0) = (Pz-RAz) * VY( 3, 4, 0) + (tempz - Pz) * VY( 3, 4, 1) +  ABtemp * (0.5*VY( 0, 4,0)-CD*ABCD*VY( 0, 4,1));
-                                VY( 9, 5, 0) = (Pz-RAz) * VY( 3, 5, 0) + (tempz - Pz) * VY( 3, 5, 1) +  ABtemp * (0.5*VY( 0, 5,0)-CD*ABCD*VY( 0, 5,1)) + ABCD * VY( 3, 2, 1);
-                                VY( 9, 6, 0) = (Pz-RAz) * VY( 3, 6, 0) + (tempz - Pz) * VY( 3, 6, 1) +  ABtemp * (0.5*VY( 0, 6,0)-CD*ABCD*VY( 0, 6,1)) + ABCD * VY( 3, 1, 1);
-                                VY( 9, 7, 0) = (Pz-RAz) * VY( 3, 7, 0) + (tempz - Pz) * VY( 3, 7, 1) +  ABtemp * (0.5*VY( 0, 7,0)-CD*ABCD*VY( 0, 7,1));
-                                VY( 9, 8, 0) = (Pz-RAz) * VY( 3, 8, 0) + (tempz - Pz) * VY( 3, 8, 1) +  ABtemp * (0.5*VY( 0, 8,0)-CD*ABCD*VY( 0, 8,1));
-                                VY( 9, 9, 0) = (Pz-RAz) * VY( 3, 9, 0) + (tempz - Pz) * VY( 3, 9, 1) +  ABtemp * (0.5*VY( 0, 9,0)-CD*ABCD*VY( 0, 9,1)) + 2*ABCD * VY( 3, 3, 1);
+                                VY( 9, 4, 0) = (Pz-RAz) * VY( 3, 4, 0) + (tempz - Pz) * VY( 3, 4, 1) +  ABtemp * (VY( 0, 4,0)-2 * CD*ABCD*VY( 0, 4,1));
+                                VY( 9, 5, 0) = (Pz-RAz) * VY( 3, 5, 0) + (tempz - Pz) * VY( 3, 5, 1) +  ABtemp * (VY( 0, 5,0)-2 * CD*ABCD*VY( 0, 5,1)) + ABCD * VY( 3, 2, 1);
+                                VY( 9, 6, 0) = (Pz-RAz) * VY( 3, 6, 0) + (tempz - Pz) * VY( 3, 6, 1) +  ABtemp * (VY( 0, 6,0)-2 * CD*ABCD*VY( 0, 6,1)) + ABCD * VY( 3, 1, 1);
+                                VY( 9, 7, 0) = (Pz-RAz) * VY( 3, 7, 0) + (tempz - Pz) * VY( 3, 7, 1) +  ABtemp * (VY( 0, 7,0)-2 * CD*ABCD*VY( 0, 7,1));
+                                VY( 9, 8, 0) = (Pz-RAz) * VY( 3, 8, 0) + (tempz - Pz) * VY( 3, 8, 1) +  ABtemp * (VY( 0, 8,0)-2 * CD*ABCD*VY( 0, 8,1));
+                                VY( 9, 9, 0) = (Pz-RAz) * VY( 3, 9, 0) + (tempz - Pz) * VY( 3, 9, 1) +  ABtemp * (VY( 0, 9,0)-2 * CD*ABCD*VY( 0, 9,1)) + 2*ABCD * VY( 3, 3, 1);
                                 
                             }
-                        }
+                        }*/
                         
-                        for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
-                            for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
-                                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) += LOC3(YVerticalTemp, j-1,i-1,0, VDIM1, VDIM2, VDIM3);
+                        LOC2(store, 0, 0, STOREDIM, STOREDIM) += VY( 0, 0, 0);
+                        
+                        //------------- FOR CASE I+J+K+L > 0 -----------------------------------
+                        // includes NABCDTYPE = 1,10,2,20,11,12,21,22 situation
+                        //----------------------------------------------------------------------
+                        if (I+J+K+L != 0) {
+                            int NABCDTYPE = (I+J)*10+K+L;
+                            QUICKDouble tempx = (Px*AB+Qx*CD)*ABCD;
+                            QUICKDouble tempy = (Py*AB+Qy*CD)*ABCD;
+                            QUICKDouble tempz = (Pz*AB+Qz*CD)*ABCD;
+                            
+                            if (NABCDTYPE == 10) { //NABCDTYPE: 10
+                                //PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, tempz - Pz);
+                                LOC2(store, 1, 0, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 0, 0) + (tempx - Px) * VY( 0, 0, 1);
+                                LOC2(store, 2, 0, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 0, 0) + (tempy - Py) * VY( 0, 0, 1);
+                                LOC2(store, 3, 0, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 0, 0) + (tempz - Pz) * VY( 0, 0, 1);
+                                 
+                            }
+                            
+                            if (NABCDTYPE == 1){ //NABCDTYPE: 10
+                                //SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, tempx - Qx, tempy - Qy, tempz - Qz);
+                                LOC2(store, 0, 1, STOREDIM, STOREDIM) += (Qx-RCx) * VY( 0, 0, 0) + (tempx - Qx) * VY( 0, 0, 1);
+                                LOC2(store, 0, 2, STOREDIM, STOREDIM) += (Qy-RCy) * VY( 0, 0, 0) + (tempy - Qy) * VY( 0, 0, 1);
+                                LOC2(store, 0, 3, STOREDIM, STOREDIM) += (Qz-RCz) * VY( 0, 0, 0) + (tempz - Qz) * VY( 0, 0, 1);
+                                 
+                            }
+                            
+                            //------------- FOR CASE I+J+K+L > 1 -----------------------------------
+                            // includes NABCDTYPE = 2,20,11,12,21,22 situation
+                            //----------------------------------------------------------------------
+                            if (I+J+K+L>1) { 
+                                
+                                if (K+L>0) {
+                                    //SSPS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, tempx - Qx, tempy - Qy, tempz - Qz);
+                                    VY( 0, 1, 0) = (Qx-RCx) * VY( 0, 0, 0) + (tempx - Qx) * VY( 0, 0, 1);
+                                    VY( 0, 2, 0) = (Qy-RCy) * VY( 0, 0, 0) + (tempy - Qy) * VY( 0, 0, 1);
+                                    VY( 0, 3, 0) = (Qz-RCz) * VY( 0, 0, 0) + (tempz - Qz) * VY( 0, 0, 1);
+                                    if (I==0) {
+                                    LOC2(store, 0, 1, STOREDIM, STOREDIM)+= VY( 0, 1, 0);
+                                    LOC2(store, 0, 2, STOREDIM, STOREDIM)+= VY( 0, 2, 0);
+                                    LOC2(store, 0, 3, STOREDIM, STOREDIM)+= VY( 0, 3, 0);
+                                    }
+                                }
+                                
+                                if (I+J>0) {
+                                    //PSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz);
+                                    VY( 1, 0, 0) = (Px-RAx) * VY( 0, 0, 0) + (tempx - Px) * VY( 0, 0, 1);
+                                    VY( 2, 0, 0) = (Py-RAy) * VY( 0, 0, 0) + (tempy - Py) * VY( 0, 0, 1);
+                                    VY( 3, 0, 0) = (Pz-RAz) * VY( 0, 0, 0) + (tempz - Pz) * VY( 0, 0, 1);
+                                    if(K==0) {
+                                        LOC2(store, 1, 0, STOREDIM, STOREDIM)+= (Px-RAx) * VY( 0, 0, 0) + (tempx - Px) * VY( 0, 0, 1);
+                                        LOC2(store, 2, 0, STOREDIM, STOREDIM)+= (Py-RAy) * VY( 0, 0, 0) + (tempy - Py) * VY( 0, 0, 1);
+                                        LOC2(store, 3, 0, STOREDIM, STOREDIM)+= (Pz-RAz) * VY( 0, 0, 0) + (tempz - Pz) * VY( 0, 0, 1);
+                                    }
+                                }
+                                
+                                if ((I+J)>0 && (K+L)>0 || (K+L)>1) {
+                                    //SSPS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz);
+                                    VY( 0, 1, 1) = (Qx-RCx) * VY( 0, 0, 1) + (tempx - Qx) * VY( 0, 0, 2);
+                                    VY( 0, 2, 1) = (Qy-RCy) * VY( 0, 0, 1) + (tempy - Qy) * VY( 0, 0, 2);
+                                    VY( 0, 3, 1) = (Qz-RCz) * VY( 0, 0, 1) + (tempz - Qz) * VY( 0, 0, 2);
+                                }
+                                
+                                if(NABCDTYPE == 2) {
+                                    LOC2(store, 0, 4, STOREDIM, STOREDIM)+= (Qx-RCx) * VY( 0, 2, 0) + (tempx - Qx) * VY( 0, 2, 1);
+                                    LOC2(store, 0, 5, STOREDIM, STOREDIM)+= (Qy-RCy) * VY( 0, 3, 0) + (tempy - Qy) * VY( 0, 3, 1);
+                                    LOC2(store, 0, 6, STOREDIM, STOREDIM)+= (Qx-RCx) * VY( 0, 3, 0) + (tempx - Qx) * VY( 0, 3, 1);
+                                    
+                                    QUICKDouble tmp = 0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1));
+                                    LOC2(store, 0, 7, STOREDIM, STOREDIM)+= (Qx-RCx) * VY( 0, 1, 0) + (tempx - Qx) * VY( 0, 1, 1) + tmp ;
+                                    LOC2(store, 0, 8, STOREDIM, STOREDIM)+= (Qy-RCy) * VY( 0, 2, 0) + (tempy - Qy) * VY( 0, 2, 1) + tmp ;
+                                    LOC2(store, 0, 9, STOREDIM, STOREDIM)+= (Qz-RCz) * VY( 0, 3, 0) + (tempz - Qz) * VY( 0, 3, 1) + tmp ;
+                                     
+                                }
+                                
+                                if ((I+J)>1) {
+                                    //PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz);
+                                    VY( 1, 0, 1) = (Px-RAx) * VY( 0, 0, 1) + (tempx - Px) * VY( 0, 0, 2);
+                                    VY( 2, 0, 1) = (Py-RAy) * VY( 0, 0, 1) + (tempy - Py) * VY( 0, 0, 2);
+                                    VY( 3, 0, 1) = (Pz-RAz) * VY( 0, 0, 1) + (tempz - Pz) * VY( 0, 0, 2);
+                                }
+                                
+                                if(NABCDTYPE == 20) {
+                                    LOC2(store, 4, 0, STOREDIM, STOREDIM)+= (Px-RAx) * VY( 2, 0, 0) + (tempx - Px) * VY( 2, 0, 1);
+                                    LOC2(store, 5, 0, STOREDIM, STOREDIM)+= (Py-RAy) * VY( 3, 0, 0) + (tempy - Py) * VY( 3, 0, 1);
+                                    LOC2(store, 6, 0, STOREDIM, STOREDIM)+= (Px-RAx) * VY( 3, 0, 0) + (tempx - Px) * VY( 3, 0, 1);
+                                    
+                                    QUICKDouble tmp = 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                    LOC2(store, 7, 0, STOREDIM, STOREDIM)+= (Px-RAx) * VY( 1, 0, 0) + (tempx - Px) * VY( 1, 0, 1) + tmp;
+                                    LOC2(store, 8, 0, STOREDIM, STOREDIM)+= (Py-RAy) * VY( 2, 0, 0) + (tempy - Py) * VY( 2, 0, 1) + tmp;
+                                    LOC2(store, 9, 0, STOREDIM, STOREDIM)+= (Pz-RAz) * VY( 3, 0, 0) + (tempz - Pz) * VY( 3, 0, 1) + tmp;
+                                     
+                                }
+                                
+                                if((I+J) != 0 && (K+L) != 0) {// for case 11, 21, 12
+                                
+                                    QUICKDouble tmp = 0.5*ABCD * VY( 0, 0, 1);
+                                    LOC2(store, 1, 1, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 1, 0) + (tempx - Px) * VY( 0, 1, 1) + tmp;
+                                    LOC2(store, 2, 1, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 1, 0) + (tempy - Py) * VY( 0, 1, 1);
+                                    LOC2(store, 3, 1, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 1, 0) + (tempz - Pz) * VY( 0, 1, 1);
+                                    
+                                    LOC2(store, 1, 2, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 2, 0) + (tempx - Px) * VY( 0, 2, 1);
+                                    LOC2(store, 2, 2, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 2, 0) + (tempy - Py) * VY( 0, 2, 1) + tmp;
+                                    LOC2(store, 3, 2, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 2, 0) + (tempz - Pz) * VY( 0, 2, 1);
+                                    
+                                    LOC2(store, 1, 3, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 3, 0) + (tempx - Px) * VY( 0, 3, 1);
+                                    LOC2(store, 2, 3, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 3, 0) + (tempy - Py) * VY( 0, 3, 1);
+                                    LOC2(store, 3, 3, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 3, 0) + (tempz - Pz) * VY( 0, 3, 1) + tmp;
+                                }
+                                
+                                //------------- FOR CASE I+J+K+L > 2 -----------------------------------
+                                // includes NABCDTYPE = 12,21,22 situation
+                                //----------------------------------------------------------------------
+                                if ((I+J+K+L)>2) {//NABCDTYPE: 21, 12, 22
+                                    //PSPS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, (Px*AB+Qx*CD)*ABCD - Px, tempy - Py, tempz - Pz, 0.5*ABCD);
+                                    
+                                    QUICKDouble tmp = 0.5*ABCD * VY( 0, 0, 1);
+                                    VY( 1, 1, 0) = (Px-RAx) * VY( 0, 1, 0) + (tempx - Px) * VY( 0, 1, 1) + tmp;
+                                    VY( 2, 1, 0) = (Py-RAy) * VY( 0, 1, 0) + (tempy - Py) * VY( 0, 1, 1);
+                                    VY( 3, 1, 0) = (Pz-RAz) * VY( 0, 1, 0) + (tempz - Pz) * VY( 0, 1, 1);
+                                    
+                                    VY( 1, 2, 0) = (Px-RAx) * VY( 0, 2, 0) + (tempx - Px) * VY( 0, 2, 1);
+                                    VY( 2, 2, 0) = (Py-RAy) * VY( 0, 2, 0) + (tempy - Py) * VY( 0, 2, 1) + tmp;
+                                    VY( 3, 2, 0) = (Pz-RAz) * VY( 0, 2, 0) + (tempz - Pz) * VY( 0, 2, 1);
+                                    
+                                    VY( 1, 3, 0) = (Px-RAx) * VY( 0, 3, 0) + (tempx - Px) * VY( 0, 3, 1);
+                                    VY( 2, 3, 0) = (Py-RAy) * VY( 0, 3, 0) + (tempy - Py) * VY( 0, 3, 1);
+                                    VY( 3, 3, 0) = (Pz-RAz) * VY( 0, 3, 0) + (tempz - Pz) * VY( 0, 3, 1) + tmp;
+                                    
+                                    if ((I+J)>1 && (K+L)>0) {
+                                        //DSSS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz, 0.5/AB, CD*ABCD);
+                                        VY( 4, 0, 0) = (Px-RAx) * VY( 2, 0, 0) + (tempx - Px) * VY( 2, 0, 1);
+                                        VY( 5, 0, 0) = (Py-RAy) * VY( 3, 0, 0) + (tempy - Py) * VY( 3, 0, 1);
+                                        VY( 6, 0, 0) = (Px-RAx) * VY( 3, 0, 0) + (tempx - Px) * VY( 3, 0, 1);
+                                        
+                                        QUICKDouble tmp = 0.5 / AB *(VY( 0, 0, 0) - CD * ABCD * VY( 0, 0, 1));
+                                        VY( 7, 0, 0) = (Px-RAx) * VY( 1, 0, 0) + (tempx - Px) * VY( 1, 0, 1) + tmp;
+                                        VY( 8, 0, 0) = (Py-RAy) * VY( 2, 0, 0) + (tempy - Py) * VY( 2, 0, 1) + tmp;
+                                        VY( 9, 0, 0) = (Pz-RAz) * VY( 3, 0, 0) + (tempz - Pz) * VY( 3, 0, 1) + tmp;
+                                        
+                                        
+                                        //PSSS(2, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz);
+                                        VY( 1, 0, 2) = (Px-RAx) * VY( 0, 0, 2) + (tempx - Px) * VY( 0, 0, 3);
+                                        VY( 2, 0, 2) = (Py-RAy) * VY( 0, 0, 2) + (tempy - Py) * VY( 0, 0, 3);
+                                        VY( 3, 0, 2) = (Pz-RAz) * VY( 0, 0, 2) + (tempz - Pz) * VY( 0, 0, 3);
+                                        
+                                        //DSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz, 0.5/AB, CD*ABCD);
+                                        VY( 4, 0, 1) = (Px-RAx) * VY( 2, 0, 1) + (tempx - Px) * VY( 2, 0, 2);
+                                        VY( 5, 0, 1) = (Py-RAy) * VY( 3, 0, 1) + (tempy - Py) * VY( 3, 0, 2);
+                                        VY( 6, 0, 1) = (Px-RAx) * VY( 3, 0, 1) + (tempx - Px) * VY( 3, 0, 2);
+                                        
+                                        tmp = 0.5 / AB *(VY( 0, 0, 1) - CD * ABCD * VY( 0, 0, 2));
+                                        VY( 7, 0, 1) = (Px-RAx) * VY( 1, 0, 1) + (tempx - Px) * VY( 1, 0, 2) + tmp;
+                                        VY( 8, 0, 1) = (Py-RAy) * VY( 2, 0, 1) + (tempy - Py) * VY( 2, 0, 2) + tmp;
+                                        VY( 9, 0, 1) = (Pz-RAz) * VY( 3, 0, 1) + (tempz - Pz) * VY( 3, 0, 2) + tmp;
+                                        
+                                        LOC2(store, 4, 0, STOREDIM, STOREDIM) += VY( 4, 0, 0);
+                                        LOC2(store, 5, 0, STOREDIM, STOREDIM) += VY( 5, 0, 0);
+                                        LOC2(store, 6, 0, STOREDIM, STOREDIM) += VY( 6, 0, 0);
+                                        LOC2(store, 7, 0, STOREDIM, STOREDIM) += VY( 7, 0, 0);
+                                        LOC2(store, 8, 0, STOREDIM, STOREDIM) += VY( 8, 0, 0);
+                                        LOC2(store, 9, 0, STOREDIM, STOREDIM) += VY( 9, 0, 0);
+                                        
+                                        tmp = 0.5 * ABCD * VY( 2, 0, 1);
+                                        LOC2(store, 4, 1, STOREDIM, STOREDIM) += (Qx-RCx) * VY( 4, 0, 0) + (tempx - Qx) * VY( 4, 0, 1) + tmp;
+                                        LOC2(store, 5, 3, STOREDIM, STOREDIM) += (Qz-RCz) * VY( 5, 0, 0) + (tempz - Qz) * VY( 5, 0, 1) + tmp;
+                                        LOC2(store, 8, 2, STOREDIM, STOREDIM) += (Qy-RCy) * VY( 8, 0, 0) + (tempy - Qy) * VY( 8, 0, 1) + 2*tmp;
+                                        
+                                        tmp = 0.5 * ABCD * VY( 1, 0, 1);
+                                        LOC2(store, 7, 1, STOREDIM, STOREDIM) += (Qx-RCx) * VY( 7, 0, 0) + (tempx - Qx) * VY( 7, 0, 1) + 2*tmp;
+                                        LOC2(store, 4, 2, STOREDIM, STOREDIM) += (Qy-RCy) * VY( 4, 0, 0) + (tempy - Qy) * VY( 4, 0, 1) + tmp;
+                                        LOC2(store, 6, 3, STOREDIM, STOREDIM) += (Qz-RCz) * VY( 6, 0, 0) + (tempz - Qz) * VY( 6, 0, 1) + tmp;
+                                        
+                                        tmp = 0.5 * ABCD * VY( 3, 0, 1);
+                                        LOC2(store, 6, 1, STOREDIM, STOREDIM) += (Qx-RCx) * VY( 6, 0, 0) + (tempx - Qx) * VY( 6, 0, 1) + tmp;
+                                        LOC2(store, 5, 2, STOREDIM, STOREDIM) += (Qy-RCy) * VY( 5, 0, 0) + (tempy - Qy) * VY( 5, 0, 1) + tmp;
+                                        LOC2(store, 9, 3, STOREDIM, STOREDIM) += (Qz-RCz) * VY( 9, 0, 0) + (tempz - Qz) * VY( 9, 0, 1) + 2*tmp;
+                                        
+                                        LOC2(store, 5, 1, STOREDIM, STOREDIM) += (Qx-RCx) * VY( 5, 0, 0) + (tempx - Qx) * VY( 5, 0, 1);
+                                        LOC2(store, 8, 1, STOREDIM, STOREDIM) += (Qx-RCx) * VY( 8, 0, 0) + (tempx - Qx) * VY( 8, 0, 1);
+                                        LOC2(store, 9, 1, STOREDIM, STOREDIM) += (Qx-RCx) * VY( 9, 0, 0) + (tempx - Qx) * VY( 9, 0, 1);
+                                        
+                                        LOC2(store, 6, 2, STOREDIM, STOREDIM) += (Qy-RCy) * VY( 6, 0, 0) + (tempy - Qy) * VY( 6, 0, 1);
+                                        LOC2(store, 7, 2, STOREDIM, STOREDIM) += (Qy-RCy) * VY( 7, 0, 0) + (tempy - Qy) * VY( 7, 0, 1);
+                                        LOC2(store, 9, 2, STOREDIM, STOREDIM) += (Qy-RCy) * VY( 9, 0, 0) + (tempy - Qy) * VY( 9, 0, 1);
+                                        
+                                        LOC2(store, 4, 3, STOREDIM, STOREDIM) += (Qz-RCz) * VY( 4, 0, 0) + (tempz - Qz) * VY( 4, 0, 1);
+                                        LOC2(store, 7, 3, STOREDIM, STOREDIM) += (Qz-RCz) * VY( 7, 0, 0) + (tempz - Qz) * VY( 7, 0, 1);
+                                        LOC2(store, 8, 3, STOREDIM, STOREDIM) += (Qz-RCz) * VY( 8, 0, 0) + (tempz - Qz) * VY( 8, 0, 1);
+                                           
+                                    }
+                                    
+                                    if ((K+L)>1 && (I+J)>0) {
+                                    
+                                        //SSDS(0, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, tempx - Qx, tempy - Qy, tempz - Qz, 0.5/CD, AB*ABCD);
+                                        VY( 0, 4, 0) = (Qx-RCx) * VY( 0, 2, 0) + (tempx - Qx) * VY( 0, 2, 1);
+                                        VY( 0, 5, 0) = (Qy-RCy) * VY( 0, 3, 0) + (tempy - Qy) * VY( 0, 3, 1);
+                                        VY( 0, 6, 0) = (Qx-RCx) * VY( 0, 3, 0) + (tempx - Qx) * VY( 0, 3, 1);
+                                        
+                                        QUICKDouble tmp =  0.5 / CD *(VY( 0, 0, 0) - AB*ABCD * VY( 0, 0, 1));
+                                        VY( 0, 7, 0) = (Qx-RCx) * VY( 0, 1, 0) + (tempx - Qx) * VY( 0, 1, 1) + tmp;
+                                        VY( 0, 8, 0) = (Qy-RCy) * VY( 0, 2, 0) + (tempy - Qy) * VY( 0, 2, 1) + tmp;
+                                        VY( 0, 9, 0) = (Qz-RCz) * VY( 0, 3, 0) + (tempz - Qz) * VY( 0, 3, 1) + tmp;                                
+                                        
+                                        //SSPS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, tempx - Qx, tempy - Qy, tempz - Qz);
+                                        VY( 0, 1, 2) = (Qx-RCx) * VY( 0, 0, 2) + (tempx - Qx) * VY( 0, 0, 3);
+                                        VY( 0, 2, 2) = (Qy-RCy) * VY( 0, 0, 2) + (tempy - Qy) * VY( 0, 0, 3);
+                                        VY( 0, 3, 2) = (Qz-RCz) * VY( 0, 0, 2) + (tempz - Qz) * VY( 0, 0, 3);
+                                        
+                                        //SSDS(1, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, tempx - Qx, tempy - Qy, tempz - Qz, 0.5/CD, AB*ABCD);
+                                        VY( 0, 4, 1) = (Qx-RCx) * VY( 0, 2, 1) + (tempx - Qx) * VY( 0, 2, 2);
+                                        VY( 0, 5, 1) = (Qy-RCy) * VY( 0, 3, 1) + (tempy - Qy) * VY( 0, 3, 2);
+                                        VY( 0, 6, 1) = (Qx-RCx) * VY( 0, 3, 1) + (tempx - Qx) * VY( 0, 3, 2);
+                                        
+                                        tmp = 0.5 / CD *(VY( 0, 0, 1) - AB*ABCD * VY( 0, 0, 2)) ;
+                                        VY( 0, 7, 1) = (Qx-RCx) * VY( 0, 1, 1) + (tempx - Qx) * VY( 0, 1, 2) + tmp;
+                                        VY( 0, 8, 1) = (Qy-RCy) * VY( 0, 2, 1) + (tempy - Qy) * VY( 0, 2, 2) + tmp;
+                                        VY( 0, 9, 1) = (Qz-RCz) * VY( 0, 3, 1) + (tempz - Qz) * VY( 0, 3, 2) + tmp;
+                                        
+                                        LOC2(store, 0, 4, STOREDIM, STOREDIM) += VY( 0, 4, 0);
+                                        LOC2(store, 0, 5, STOREDIM, STOREDIM) += VY( 0, 5, 0);
+                                        LOC2(store, 0, 6, STOREDIM, STOREDIM) += VY( 0, 6, 0);
+                                        LOC2(store, 0, 7, STOREDIM, STOREDIM) += VY( 0, 7, 0);
+                                        LOC2(store, 0, 8, STOREDIM, STOREDIM) += VY( 0, 8, 0);
+                                        LOC2(store, 0, 9, STOREDIM, STOREDIM) += VY( 0, 9, 0);
+                                        
+                                        tmp = 0.5 * ABCD * VY( 0, 1, 1);
+                                        LOC2(store, 2, 4, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 4, 0) + (tempy - Py) * VY( 0, 4, 1) + tmp;
+                                        LOC2(store, 3, 6, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 6, 0) + (tempz - Pz) * VY( 0, 6, 1) + tmp;
+                                        LOC2(store, 1, 7, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 7, 0) + (tempx - Px) * VY( 0, 7, 1) + 2*tmp;
+                                        
+                                        tmp = 0.5 * ABCD * VY( 0, 2, 1);
+                                        LOC2(store, 1, 4, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 4, 0) + (tempx - Px) * VY( 0, 4, 1) + tmp;
+                                        LOC2(store, 2, 8, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 8, 0) + (tempy - Py) * VY( 0, 8, 1) + 2*tmp;
+                                        LOC2(store, 3, 5, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 5, 0) + (tempz - Pz) * VY( 0, 5, 1) + tmp;
+                                        
+                                        tmp = 0.5 * ABCD * VY( 0, 3, 1);
+                                        LOC2(store, 1, 6, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 6, 0) + (tempx - Px) * VY( 0, 6, 1) + tmp;
+                                        LOC2(store, 2, 5, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 5, 0) + (tempy - Py) * VY( 0, 5, 1) + tmp;
+                                        LOC2(store, 3, 9, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 9, 0) + (tempz - Pz) * VY( 0, 9, 1) + 2*tmp;
+                                    
+                                        LOC2(store, 1, 5, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 5, 0) + (tempx - Px) * VY( 0, 5, 1);
+                                        LOC2(store, 1, 8, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 8, 0) + (tempx - Px) * VY( 0, 8, 1);
+                                        LOC2(store, 1, 9, STOREDIM, STOREDIM) += (Px-RAx) * VY( 0, 9, 0) + (tempx - Px) * VY( 0, 9, 1);
+                                        
+                                        LOC2(store, 2, 6, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 6, 0) + (tempy - Py) * VY( 0, 6, 1);
+                                        LOC2(store, 2, 7, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 7, 0) + (tempy - Py) * VY( 0, 7, 1);
+                                        LOC2(store, 2, 9, STOREDIM, STOREDIM) += (Py-RAy) * VY( 0, 9, 0) + (tempy - Py) * VY( 0, 9, 1);
+                                        
+                                        LOC2(store, 3, 4, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 4, 0) + (tempz - Pz) * VY( 0, 4, 1);
+                                        LOC2(store, 3, 7, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 7, 0) + (tempz - Pz) * VY( 0, 7, 1);
+                                        LOC2(store, 3, 8, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 0, 8, 0) + (tempz - Pz) * VY( 0, 8, 1);
+                                        
+                                    }
+                                    
+                                    if(NABCDTYPE == 22) {
+                                        
+                                        //PSDS(0, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz, 0.5*ABCD);
+                                        QUICKDouble tmp = 0.5 * ABCD * VY( 0, 1, 1);
+                                        VY( 2, 4, 0) = (Py-RAy) * VY( 0, 4, 0) + (tempy - Py) * VY( 0, 4, 1) + tmp;
+                                        VY( 3, 6, 0) = (Pz-RAz) * VY( 0, 6, 0) + (tempz - Pz) * VY( 0, 6, 1) + tmp;
+                                        VY( 1, 7, 0) = (Px-RAx) * VY( 0, 7, 0) + (tempx - Px) * VY( 0, 7, 1) + 2*tmp;
+                                        tmp = 0.5 * ABCD * VY( 0, 2, 1);
+                                        VY( 1, 4, 0) = (Px-RAx) * VY( 0, 4, 0) + (tempx - Px) * VY( 0, 4, 1) + tmp;
+                                        VY( 3, 5, 0) = (Pz-RAz) * VY( 0, 5, 0) + (tempz - Pz) * VY( 0, 5, 1) + tmp;
+                                        VY( 2, 8, 0) = (Py-RAy) * VY( 0, 8, 0) + (tempy - Py) * VY( 0, 8, 1) + 2*tmp;
+                                        tmp = 0.5 * ABCD * VY( 0, 3, 1);
+                                        VY( 2, 5, 0) = (Py-RAy) * VY( 0, 5, 0) + (tempy - Py) * VY( 0, 5, 1) + tmp;
+                                        VY( 1, 6, 0) = (Px-RAx) * VY( 0, 6, 0) + (tempx - Px) * VY( 0, 6, 1) + tmp;
+                                        VY( 3, 9, 0) = (Pz-RAz) * VY( 0, 9, 0) + (tempz - Pz) * VY( 0, 9, 1) + 2*tmp;
+                                        
+                                        VY( 3, 4, 0) = (Pz-RAz) * VY( 0, 4, 0) + (tempz - Pz) * VY( 0, 4, 1) ;
+                                        VY( 1, 5, 0) = (Px-RAx) * VY( 0, 5, 0) + (tempx - Px) * VY( 0, 5, 1);
+                                        VY( 2, 6, 0) = (Py-RAy) * VY( 0, 6, 0) + (tempy - Py) * VY( 0, 6, 1);
+                                        VY( 2, 7, 0) = (Py-RAy) * VY( 0, 7, 0) + (tempy - Py) * VY( 0, 7, 1);
+                                        VY( 3, 7, 0) = (Pz-RAz) * VY( 0, 7, 0) + (tempz - Pz) * VY( 0, 7, 1);
+                                        VY( 1, 8, 0) = (Px-RAx) * VY( 0, 8, 0) + (tempx - Px) * VY( 0, 8, 1);
+                                        VY( 3, 8, 0) = (Pz-RAz) * VY( 0, 8, 0) + (tempz - Pz) * VY( 0, 8, 1);
+                                        VY( 1, 9, 0) = (Px-RAx) * VY( 0, 9, 0) + (tempx - Px) * VY( 0, 9, 1);
+                                        VY( 2, 9, 0) = (Py-RAy) * VY( 0, 9, 0) + (tempy - Py) * VY( 0, 9, 1);
+                                        
+                                        //PSSS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz);
+                                        VY( 1, 0, 1) = (Px-RAx) * VY( 0, 0, 1) + (tempx - Px) * VY( 0, 0, 2);
+                                        VY( 2, 0, 1) = (Py-RAy) * VY( 0, 0, 1) + (tempy - Py) * VY( 0, 0, 2);
+                                        VY( 3, 0, 1) = (Pz-RAz) * VY( 0, 0, 1) + (tempz - Pz) * VY( 0, 0, 2);
+                                        
+                                        //SSPS(3, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, tempx - Qx, tempy - Qy, tempz - Qz);
+                                        VY( 0, 1, 3) = (Qx-RCx) * VY( 0, 0, 3) + (tempx - Qx) * VY( 0, 0, 4);
+                                        VY( 0, 2, 3) = (Qy-RCy) * VY( 0, 0, 3) + (tempy - Qy) * VY( 0, 0, 4);
+                                        VY( 0, 3, 3) = (Qz-RCz) * VY( 0, 0, 3) + (tempz - Qz) * VY( 0, 0, 4);
+                                        
+                                        //SSDS(2, YVerticalTemp, Qx-RCx, Qy-RCy, Qz-RCz, tempx - Qx, tempy - Qy, tempz - Qz, 0.5/CD, AB*ABCD);
+                                        VY( 0, 4, 2) = (Qx-RCx) * VY( 0, 2, 2) + (tempx - Qx) * VY( 0, 2, 3);
+                                        VY( 0, 5, 2) = (Qy-RCy) * VY( 0, 3, 2) + (tempy - Qy) * VY( 0, 3, 3);
+                                        VY( 0, 6, 2) = (Qx-RCx) * VY( 0, 3, 2) + (tempx - Qx) * VY( 0, 3, 3);
+                                        
+                                        tmp = 0.5 / CD *(VY( 0, 0, 2) - AB*ABCD * VY( 0, 0, 3)) ;
+                                        VY( 0, 7, 2) = (Qx-RCx) * VY( 0, 1, 2) + (tempx - Qx) * VY( 0, 1, 3) + tmp;
+                                        VY( 0, 8, 2) = (Qy-RCy) * VY( 0, 2, 2) + (tempy - Qy) * VY( 0, 2, 3) + tmp;
+                                        VY( 0, 9, 2) = (Qz-RCz) * VY( 0, 3, 2) + (tempz - Qz) * VY( 0, 3, 3) + tmp;
+                                        
+                                        //PSDS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz, 0.5*ABCD);
+                                        tmp = 0.5 * ABCD * VY( 0, 1, 2);
+                                        VY( 2, 4, 1) = (Py-RAy) * VY( 0, 4, 1) + (tempy - Py) * VY( 0, 4, 2) + tmp;
+                                        VY( 3, 6, 1) = (Pz-RAz) * VY( 0, 6, 1) + (tempz - Pz) * VY( 0, 6, 2) + tmp;
+                                        VY( 1, 7, 1) = (Px-RAx) * VY( 0, 7, 1) + (tempx - Px) * VY( 0, 7, 2) + 2 * tmp;
+                                        
+                                        tmp = 0.5 * ABCD * VY( 0, 2, 2);
+                                        VY( 2, 8, 1) = (Py-RAy) * VY( 0, 8, 1) + (tempy - Py) * VY( 0, 8, 2) + 2 * tmp;
+                                        VY( 1, 4, 1) = (Px-RAx) * VY( 0, 4, 1) + (tempx - Px) * VY( 0, 4, 2) + tmp;
+                                        VY( 3, 5, 1) = (Pz-RAz) * VY( 0, 5, 1) + (tempz - Pz) * VY( 0, 5, 2) + tmp;
+                                        
+                                        tmp = 0.5 * ABCD * VY( 0, 3, 2);
+                                        VY( 2, 5, 1) = (Py-RAy) * VY( 0, 5, 1) + (tempy - Py) * VY( 0, 5, 2) + tmp;
+                                        VY( 1, 6, 1) = (Px-RAx) * VY( 0, 6, 1) + (tempx - Px) * VY( 0, 6, 2) + tmp;
+                                        VY( 3, 9, 1) = (Pz-RAz) * VY( 0, 9, 1) + (tempz - Pz) * VY( 0, 9, 2) + 2 * tmp;
+                                        VY( 3, 4, 1) = (Pz-RAz) * VY( 0, 4, 1) + (tempz - Pz) * VY( 0, 4, 2) ;
+                                        
+                                        VY( 1, 5, 1) = (Px-RAx) * VY( 0, 5, 1) + (tempx - Px) * VY( 0, 5, 2);
+                                        VY( 2, 6, 1) = (Py-RAy) * VY( 0, 6, 1) + (tempy - Py) * VY( 0, 6, 2);
+                                        VY( 2, 7, 1) = (Py-RAy) * VY( 0, 7, 1) + (tempy - Py) * VY( 0, 7, 2);
+                                        VY( 3, 7, 1) = (Pz-RAz) * VY( 0, 7, 1) + (tempz - Pz) * VY( 0, 7, 2);
+                                        VY( 1, 8, 1) = (Px-RAx) * VY( 0, 8, 1) + (tempx - Px) * VY( 0, 8, 2);
+                                        VY( 3, 8, 1) = (Pz-RAz) * VY( 0, 8, 1) + (tempz - Pz) * VY( 0, 8, 2);
+                                        
+                                        VY( 1, 9, 1) = (Px-RAx) * VY( 0, 9, 1) + (tempx - Px) * VY( 0, 9, 2);
+                                        VY( 2, 9, 1) = (Py-RAy) * VY( 0, 9, 1) + (tempy - Py) * VY( 0, 9, 2);
+                                        
+                                        //PSPS(1, YVerticalTemp, Px-RAx, Py-RAy, Pz-RAz, tempx - Px, tempy - Py, tempz - Pz, 0.5*ABCD);
+                                        VY( 1, 1, 1) = (Px-RAx) * VY( 0, 1, 1) + (tempx - Px) * VY( 0, 1, 2) + 0.5*ABCD * VY( 0, 0, 2);
+                                        VY( 2, 1, 1) = (Py-RAy) * VY( 0, 1, 1) + (tempy - Py) * VY( 0, 1, 2);
+                                        VY( 3, 1, 1) = (Pz-RAz) * VY( 0, 1, 1) + (tempz - Pz) * VY( 0, 1, 2);
+                                        
+                                        VY( 1, 2, 1) = (Px-RAx) * VY( 0, 2, 1) + (tempx - Px) * VY( 0, 2, 2);
+                                        VY( 2, 2, 1) = (Py-RAy) * VY( 0, 2, 1) + (tempy - Py) * VY( 0, 2, 2) + 0.5*ABCD * VY( 0, 0, 2);
+                                        VY( 3, 2, 1) = (Pz-RAz) * VY( 0, 2, 1) + (tempz - Pz) * VY( 0, 2, 2);
+                                        
+                                        VY( 1, 3, 1) = (Px-RAx) * VY( 0, 3, 1) + (tempx - Px) * VY( 0, 3, 2);
+                                        VY( 2, 3, 1) = (Py-RAy) * VY( 0, 3, 1) + (tempy - Py) * VY( 0, 3, 2);
+                                        VY( 3, 3, 1) = (Pz-RAz) * VY( 0, 3, 1) + (tempz - Pz) * VY( 0, 3, 2) + 0.5*ABCD * VY( 0, 0, 2);
+                                        
+                                        LOC2(store, 4, 4, STOREDIM, STOREDIM) += (Px-RAx) * VY( 2, 4, 0) + (tempx - Px) * VY( 2, 4, 1) + 0.5 * ABCD * VY( 2, 2, 1);
+                                        LOC2(store, 4, 5, STOREDIM, STOREDIM) += (Px-RAx) * VY( 2, 5, 0) + (tempx - Px) * VY( 2, 5, 1);
+                                        LOC2(store, 4, 6, STOREDIM, STOREDIM) += (Px-RAx) * VY( 2, 6, 0) + (tempx - Px) * VY( 2, 6, 1) + 0.5 * ABCD * VY( 2, 3, 1);
+                                        LOC2(store, 4, 7, STOREDIM, STOREDIM) += (Px-RAx) * VY( 2, 7, 0) + (tempx - Px) * VY( 2, 7, 1) + ABCD * VY( 2, 1, 1);
+                                        LOC2(store, 4, 8, STOREDIM, STOREDIM) += (Px-RAx) * VY( 2, 8, 0) + (tempx - Px) * VY( 2, 8, 1);
+                                        LOC2(store, 4, 9, STOREDIM, STOREDIM) += (Px-RAx) * VY( 2, 9, 0) + (tempx - Px) * VY( 2, 9, 1);
+                                        
+                                        LOC2(store, 5, 4, STOREDIM, STOREDIM) += (Py-RAy) * VY( 3, 4, 0) + (tempy - Py) * VY( 3, 4, 1) + 0.5 * ABCD * VY( 3, 1, 1);
+                                        LOC2(store, 5, 5, STOREDIM, STOREDIM) += (Py-RAy) * VY( 3, 5, 0) + (tempy - Py) * VY( 3, 5, 1) + 0.5 * ABCD * VY( 3, 3, 1);
+                                        LOC2(store, 5, 6, STOREDIM, STOREDIM) += (Py-RAy) * VY( 3, 6, 0) + (tempy - Py) * VY( 3, 6, 1);
+                                        LOC2(store, 5, 7, STOREDIM, STOREDIM) += (Py-RAy) * VY( 3, 7, 0) + (tempy - Py) * VY( 3, 7, 1);
+                                        LOC2(store, 5, 8, STOREDIM, STOREDIM) += (Py-RAy) * VY( 3, 8, 0) + (tempy - Py) * VY( 3, 8, 1) + ABCD * VY( 3, 2, 1);
+                                        LOC2(store, 5, 9, STOREDIM, STOREDIM) += (Py-RAy) * VY( 3, 9, 0) + (tempy - Py) * VY( 3, 9, 1);
+                                        
+                                        LOC2(store, 6, 4, STOREDIM, STOREDIM) += (Px-RAx) * VY( 3, 4, 0) + (tempx - Px) * VY( 3, 4, 1) + 0.5 * ABCD * VY( 3, 2, 1);
+                                        LOC2(store, 6, 5, STOREDIM, STOREDIM) += (Px-RAx) * VY( 3, 5, 0) + (tempx - Px) * VY( 3, 5, 1);
+                                        LOC2(store, 6, 6, STOREDIM, STOREDIM) += (Px-RAx) * VY( 3, 6, 0) + (tempx - Px) * VY( 3, 6, 1) + 0.5 * ABCD * VY( 3, 3, 1);
+                                        LOC2(store, 6, 7, STOREDIM, STOREDIM) += (Px-RAx) * VY( 3, 7, 0) + (tempx - Px) * VY( 3, 7, 1) + ABCD * VY( 3, 1, 1);
+                                        LOC2(store, 6, 8, STOREDIM, STOREDIM) += (Px-RAx) * VY( 3, 8, 0) + (tempx - Px) * VY( 3, 8, 1);
+                                        LOC2(store, 6, 9, STOREDIM, STOREDIM) += (Px-RAx) * VY( 3, 9, 0) + (tempx - Px) * VY( 3, 9, 1);
+                                        
+                                        tmp = 0.5/AB;
+                                        VY( 0, 4,1) = tmp * (VY( 0, 4,0)-CD * ABCD*VY( 0, 4, 1));
+                                        VY( 0, 5,1) = tmp * (VY( 0, 5,0)-CD * ABCD*VY( 0, 5, 1));
+                                        VY( 0, 6,1) = tmp * (VY( 0, 6,0)-CD * ABCD*VY( 0, 6, 1));
+                                        VY( 0, 7,1) = tmp * (VY( 0, 7,0)-CD * ABCD*VY( 0, 7, 1));
+                                        VY( 0, 8,1) = tmp * (VY( 0, 8,0)-CD * ABCD*VY( 0, 8, 1));
+                                        VY( 0, 9,1) = tmp * (VY( 0, 9,0)-CD * ABCD*VY( 0, 9, 1));
+                                        
+                                        LOC2(store, 7, 4, STOREDIM, STOREDIM) += (Px-RAx) * VY( 1, 4, 0) + (tempx - Px) * VY( 1, 4, 1) +  VY( 0, 4, 1) + 0.5 * ABCD * VY( 1, 2, 1);
+                                        LOC2(store, 7, 5, STOREDIM, STOREDIM) += (Px-RAx) * VY( 1, 5, 0) + (tempx - Px) * VY( 1, 5, 1) +  VY( 0, 5, 1) ;
+                                        LOC2(store, 7, 6, STOREDIM, STOREDIM) += (Px-RAx) * VY( 1, 6, 0) + (tempx - Px) * VY( 1, 6, 1) +  VY( 0, 6, 1) + 0.5 * ABCD * VY( 1, 3, 1);
+                                        LOC2(store, 7, 7, STOREDIM, STOREDIM) += (Px-RAx) * VY( 1, 7, 0) + (tempx - Px) * VY( 1, 7, 1) +  VY( 0, 7, 1) + ABCD * VY( 1, 1, 1);
+                                        LOC2(store, 7, 8, STOREDIM, STOREDIM) += (Px-RAx) * VY( 1, 8, 0) + (tempx - Px) * VY( 1, 8, 1) +  VY( 0, 8, 1) ;
+                                        LOC2(store, 7, 9, STOREDIM, STOREDIM) += (Px-RAx) * VY( 1, 9, 0) + (tempx - Px) * VY( 1, 9, 1) +  VY( 0, 9, 1) ;
+                                        
+                                        LOC2(store, 8, 4, STOREDIM, STOREDIM) += (Py-RAy) * VY( 2, 4, 0) + (tempy - Py) * VY( 2, 4, 1) +  VY( 0, 4, 1) + 0.5 * ABCD * VY( 2, 1, 1);
+                                        LOC2(store, 8, 5, STOREDIM, STOREDIM) += (Py-RAy) * VY( 2, 5, 0) + (tempy - Py) * VY( 2, 5, 1) +  VY( 0, 5, 1)  + 0.5 * ABCD * VY( 2, 3, 1);
+                                        LOC2(store, 8, 6, STOREDIM, STOREDIM) += (Py-RAy) * VY( 2, 6, 0) + (tempy - Py) * VY( 2, 6, 1) +  VY( 0, 6, 1) ;
+                                        LOC2(store, 8, 7, STOREDIM, STOREDIM) += (Py-RAy) * VY( 2, 7, 0) + (tempy - Py) * VY( 2, 7, 1) +  VY( 0, 7, 1) ;
+                                        LOC2(store, 8, 8, STOREDIM, STOREDIM) += (Py-RAy) * VY( 2, 8, 0) + (tempy - Py) * VY( 2, 8, 1) +  VY( 0, 8, 1) + ABCD * VY( 2, 2, 1);
+                                        LOC2(store, 8, 9, STOREDIM, STOREDIM) += (Py-RAy) * VY( 2, 9, 0) + (tempy - Py) * VY( 2, 9, 1) +  VY( 0, 9, 1) ;
+                                        
+                                        
+                                        LOC2(store, 9, 4, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 3, 4, 0) + (tempz - Pz) * VY( 3, 4, 1) +  VY( 0, 4, 1);
+                                        LOC2(store, 9, 5, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 3, 5, 0) + (tempz - Pz) * VY( 3, 5, 1) +  VY( 0, 5, 1) + 0.5 * ABCD * VY( 3, 2, 1);
+                                        LOC2(store, 9, 6, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 3, 6, 0) + (tempz - Pz) * VY( 3, 6, 1) +  VY( 0, 6, 1) + 0.5 * ABCD * VY( 3, 1, 1);
+                                        LOC2(store, 9, 7, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 3, 7, 0) + (tempz - Pz) * VY( 3, 7, 1) +  VY( 0, 7, 1) ;
+                                        LOC2(store, 9, 8, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 3, 8, 0) + (tempz - Pz) * VY( 3, 8, 1) +  VY( 0, 8, 1) ;
+                                        LOC2(store, 9, 9, STOREDIM, STOREDIM) += (Pz-RAz) * VY( 3, 9, 0) + (tempz - Pz) * VY( 3, 9, 1) +  VY( 0, 9, 1) + ABCD * VY( 3, 3, 1);
+                                    }
+                                    
+                                }
                             }
                         }
-                        
                     }   
                 }
             }
         }
     }
-    
+
     
     // IJKLTYPE is the I, J, K,L type
     int IJKLTYPE = (int) (1000 * I + 100 *J + 10 * K + L);
