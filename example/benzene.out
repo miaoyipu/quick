@@ -1,5 +1,5 @@
   **************************************************************************
-  **                      QUICK-0.07 Mar 2011                             **
+  **                      QUICK-0.06 June 12                              **
   **                                                                      **
   **                        Copyright (c) 2011                            **
   **                Regents of the University of Florida                  **
@@ -23,15 +23,38 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Sun Aug 21 22:47:34 2011
+ TASK STARTS ON: Fri Sep 16 16:46:07 2011
  INPUT FILE:     benzene.in
  OUTPUT FILE:    benzene.out
  BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
 
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GT 330M
+| CUDA DEVICE PM              :        6
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.10
+| CUDA DEVICE MEMORY SIZE (MB):      255
+| SUPPORTING CUDA VERSION     :      1.2
+|--------------------------------------------
+
+ ! WARNING: Selected GPU does not support double-precision computation.
+
+
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF NCYC=1000 ZMAKE BASIS=STO-3G ENERGY                                                                                                                                                                  
+KEYWORD=HF NCYC=1000 ZMAKE BASIS=6-31G ENERGY                                                                                                                                                                   
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
@@ -48,12 +71,145 @@ KEYWORD=HF NCYC=1000 ZMAKE BASIS=STO-3G ENERGY
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
-| BASIS SET = STO-3G
-| BASIS FILE = /Users/miao/Workspace/new_quick/basis/STO-3G
-THRESHOLD FOR ECP-INTEGRALS PRESCREENING =     0.10000E-11  (DEFAULT)
+| BASIS SET = 6-31G.BAS
+| BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31G.BAS
 
  @ Finish reading job
 
 
  @ Begin SAD initial guess
+
+ For Atom Kind =    1
+ ELEMENT = C 
+BASIS FUNCTIONS =    9
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.04
+RMS CHANGE     = 0.149950E+00  MAX CHANGE= 0.820200E+00
+
+SCF CYCLE      =        2      TIME      =     0.04
+RMS CHANGE     = 0.797517E-01  MAX CHANGE= 0.307512E+00
+
+SCF CYCLE      =        3      TIME      =   0.04
+DIIS CYCLE     =        1      MAX ERROR = 0.377972E-01
+RMS CHANGE     = 0.137215E-01  MAX CHANGE= 0.564520E-01
+
+SCF CYCLE      =        4      TIME      =   0.04
+DIIS CYCLE     =        2      MAX ERROR = 0.715452E-02
+RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
+
+SCF CYCLE      =        5      TIME      =   0.04
+DIIS CYCLE     =        3      MAX ERROR = 0.308852E-02
+RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
+
+SCF CYCLE      =        6      TIME      =   0.04
+DIIS CYCLE     =        4      MAX ERROR = 0.299208E-03
+RMS CHANGE     = 0.311349E-03  MAX CHANGE= 0.215704E-02
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        7      TIME      =     0.04
+RMS CHANGE     = 0.153492E-04  MAX CHANGE= 0.106143E-03
+CONVERGED!!!!!
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
+
+ @ End Energy calculation
+
+ For Atom Kind =    2
+ ELEMENT = H 
+BASIS FUNCTIONS =    2
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.00
+RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
+
+SCF CYCLE      =        2      TIME      =     0.00
+RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
+
+SCF CYCLE      =        3      TIME      =   0.00
+DIIS CYCLE     =        1      MAX ERROR = 0.543720E-02
+RMS CHANGE     = 0.492246E-02  MAX CHANGE= 0.776945E-02
+
+SCF CYCLE      =        4      TIME      =   0.00
+DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
+RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        5      TIME      =     0.00
+RMS CHANGE     = 0.142040E-10  MAX CHANGE= 0.224882E-10
+CONVERGED!!!!!
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
+
+ @ End Energy calculation
+
+
+ @ Finish SAD initial guess
+
+
+ @ Begin to Read Mol Info
+
+
+ =========== Molecule Input ==========
+| TOTAL MOLECULAR CHARGE  =    0    MULTIPLICITY                =    1
+| TOTOAL ATOM NUMBER      =   12    NUMBER OF ATOM TYPES        =    2
+| NUMBER OF HYDROGEN ATOM =    6    NUMBER OF NON-HYDROGEN ATOM =    6
+| NUMBER OF ELECTRONS     =   42
+
+ -- INPUT GEOMETRY -- :
+    C          -3.5784       1.3276      -1.1133
+    C          -2.1833       1.3276      -1.1133
+    C          -1.4857       2.5354      -1.1133
+    C          -2.1834       3.7439      -1.1145
+    C          -3.5782       3.7438      -1.1150
+    C          -4.2758       2.5356      -1.1140
+    H          -4.1282       0.3753      -1.1128
+    H          -1.6337       0.3751      -1.1120
+    H          -0.3860       2.5355      -1.1127
+    H          -1.6332       4.6960      -1.1145
+    H          -4.1283       4.6961      -1.1159
+    H          -5.3754       2.5358      -1.1142
+
+ -- DISTANCE MATRIX -- :
+              1           2           3           4           5
+      1     0.00000
+      2     2.63647     0.00000
+      3     4.56597     2.63562     0.00000
+      4     5.27246     4.56607     2.63698     0.00000
+      5     4.56592     5.27224     4.56625     2.63584     0.00000
+      6     2.63585     4.56592     5.27249     4.56603     2.63643
+      7     2.07796     4.09230     6.44961     7.35042     6.44983
+      8     4.09204     2.07805     4.09188     6.45023     7.35028
+      9     6.45007     4.09197     2.07809     4.09278     6.45003
+     10     7.35055     6.44968     4.09254     2.07809     4.09240
+     11     6.44974     7.35048     6.45059     4.09226     2.07825
+     12     4.09195     6.44988     7.35044     6.44964     4.09215
+              6           7           8           9          10
+      6     0.00000
+      7     4.09188     0.00000
+      8     6.44952     4.71379     0.00000
+      9     7.35058     8.16524     4.71443     0.00000
+     10     6.45029     9.42852     8.16535     4.71426     0.00000
+     11     4.09223     8.16509     9.42853     8.16594     4.71515
+     12     2.07795     4.71419     8.16495     9.42853     8.16549
+             11          12
+     11     0.00000
+     12     4.71377     0.00000
+
+============== BASIS INFOS ==============
+| BASIS FUNCTIONS =   66
+| NSHELL =   30 NPRIM  =   84
+| JSHELL =   30 JBASIS =   84
+
+
+ @ End Reading Mol Info 
+
+
+ @ Begin Energy Calculation
 

@@ -11,7 +11,6 @@
 
 void gpu_basis_type :: upload_all()
 {
-/*
     this->ncontract->Upload();
     this->itype->Upload();
     this->aexp->Upload();
@@ -21,12 +20,11 @@ void gpu_basis_type :: upload_all()
     this->first_shell_basis_function->Upload();
     this->last_basis_function->Upload();
     this->ncenter->Upload();
-  */
     this->kstart->Upload();
     this->katom->Upload();
-  //  this->ktype->Upload();
+    this->ktype->Upload();
     this->kprim->Upload();
-  //  this->kshell->Upload();
+    this->kshell->Upload();
     this->Ksumtype->Upload();
     this->Qnumber->Upload();
     this->Qstart->Upload();
@@ -35,17 +33,7 @@ void gpu_basis_type :: upload_all()
     this->Qfbasis->Upload();
     this->gccoeff->Upload();
     this->cons->Upload();
-    this->Xcoeff->Upload();
+//    this->Xcoeff->Upload();
     this->gcexpo->Upload();
     this->KLMN->Upload();
-    
-    this->Xcoeff->Upload();
-    this->expoSum->Upload();
-    this->weightedCenterX->Upload();
-    this->weightedCenterY->Upload();
-    this->weightedCenterZ->Upload();
-    
-    this->sorted_Q->Upload();
-    this->sorted_Qnumber->Upload();
-    
 }

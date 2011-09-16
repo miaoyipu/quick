@@ -17,26 +17,19 @@ fflush(stdout);\
 }
 
 // Define TEST for the CPU host test, and undef it when you need to run it on device
-//#define TEST
+#define TEST
 
-//#define VDIM1 56
-//#define VDIM2 56
-//#define VDIM3 10
-//#define STOREDIM 120
-#define VDIM1 20
-#define VDIM2 20
-#define VDIM3 5
-#define STOREDIM 12
+#define VDIM1 56
+#define VDIM2 56
+#define VDIM3 10
+#define STOREDIM 120
 #define TRANSDIM 8
 #define MCALDIM 120
 
 // Macro for two- and three- dimension array, d1,d2 and d3 are the dimension and i1,i2 and i3 are the indices
 #define LOC2(A,i1,i2,d1,d2)  A[i2+(i1)*(d2)]
-#define LOC3(A,i1,i2,i3,d1,d2,d3) A[i3+((i2)+(i1)*(d2))*(d3)]
-#define LOC4(A,i1,i2,i3,i4,d1,d2,d3,d4) A[i4+(i3+((i2)+(i1)*(d2))*(d3))*(d4)]
-
+#define LOC3(A,i1,i2,i3,d1,d2,d3) A[i3+(i2)*(d3)+(i1)*(d2)*(d3)]
 #define MAX(A,B)    (A>B?A:B)
-#define MIN(A,B)    (A<B?A:B)
 
 #define PRINTERROR(err, s) \
 {\
@@ -52,22 +45,9 @@ static FILE *debugFile;
 #ifdef DEBUG
 #define PRINTDEBUG(s) \
 {\
-    printf("FILE:%15s, LINE:%5d DATE: %s TIME:%s DEBUG : %s. \n", __FILE__,__LINE__,__DATE__,__TIME__,s );\
+    printf("FILE:%10s, LINE:%5d DATE: %s TIME:%s DEBUG: %s. \n", __FILE__,__LINE__,__DATE__,__TIME__,s );\
 }
-
-#define PRINTUSINGTIME(s,time)\
-{\
-    printf("TIME:%15s, LINE:%5d DATE: %s TIME:%s TIMING:%20s ======= %f ms =======.\n", __FILE__, __LINE__, __DATE__,__TIME__,s,time);\
-}
-
-#define PRINTMEM(s,a) \
-{\
-printf("MEM :%15s, LINE:%5d DATE: %s TIME:%s MEM   : %10s %lli\n", __FILE__,__LINE__,__DATE__,__TIME__,s,a);\
-}
-
 #endif
-
-
 
 
 #ifdef TEST
@@ -78,7 +58,18 @@ printf("MEM :%15s, LINE:%5d DATE: %s TIME:%s MEM   : %10s %lli\n", __FILE__,__LI
 #define QUICKSUB(address, val)  atomicAdd(&(address),(val))
 #endif
 
-#define TEXDENSE(a,b) fetch_texture_double(textureDense, (a-1)*devSim.nbasis+(b-1))
+
+#define TESTCODE(AAA,BBB) \
+{\
+    if (LOC2(devSim.oULL, AAA-1, BBB-1, devSim.nbasis, devSim.nbasis) >= 0x8000000000000000ull) { \
+        tmp1  = -(QUICKDouble)(LOC2(devSim.oULL, AAA-1, BBB-1, devSim.nbasis, devSim.nbasis) ^ 0xffffffffffffffffull);\
+    }\
+    else\
+    {\
+        tmp1  = (QUICKDouble) LOC2(devSim.oULL, AAA-1, BBB-1, devSim.nbasis, devSim.nbasis);\
+    }       \
+    printf("i=%i j=%i =%24.16e\n",AAA,BBB,tmp1*ONEOVERENERGYSCALE);\
+}
 
 
 /*
@@ -92,8 +83,7 @@ printf("MEM :%15s, LINE:%5d DATE: %s TIME:%s MEM   : %10s %lli\n", __FILE__,__LI
  for SPSP: QUICKDouble = float
  QUICKSingle = float
  */
-//typedef double QUICKDouble;
-#define QUICKDouble double
+typedef double QUICKDouble;
 //typedef float  QUICKDouble;
 typedef float  QUICKSingle;
 #define QUICKULL \
@@ -104,18 +94,13 @@ static const int SM_13_THREADS_PER_BLOCK    =   256;
 static const int SM_2X_THREADS_PER_BLOCK    =   512;
 
 // physical constant, the same with quick_constants_module
-//static const QUICKDouble PI                 =   (QUICKDouble)3.1415926535897932384626433832795;
-//static const QUICKSingle PI_FLOAT           =   (QUICKSingle)3.1415926535897932384626433832795;
-#define PI (3.1415926535897932384626433832795)
-
-
-#define X0 (5.9149671727956128778234784350536)//sqrt(2*PI^2.5)
-
+static const QUICKDouble PI                 =   (QUICKDouble)3.1415926535897932384626433832795;
+static const QUICKSingle PI_FLOAT           =   (QUICKSingle)3.1415926535897932384626433832795;
 
 // Energy Scale
-static const QUICKDouble OSCALE                  = (QUICKDouble)1E16;
-static const QUICKDouble ONEOVEROSCALE           = (QUICKDouble)1.0 / OSCALE;
-static const QUICKDouble ONEOVEROSCALESQUARED    = (QUICKDouble)1.0 / (OSCALE * OSCALE);
+static const QUICKDouble ENERGYSCALE                  = (QUICKDouble)1E10;
+static const QUICKDouble ONEOVERENERGYSCALE           = (QUICKDouble)1.0 / ENERGYSCALE;
+static const QUICKDouble ONEOVERENERGYSCALESQUARED    = (QUICKDouble)1.0 / (ENERGYSCALE * ENERGYSCALE);
 
 // SM Version enum
 enum SM_VERSION

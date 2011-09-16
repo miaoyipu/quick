@@ -64,13 +64,12 @@ subroutine hfoperator(oneElecO)
    ! Delta density matrix cutoff
    call densityCutoff()
 
-   call cpu_time(timer_begin%T2e)  ! Terminate the timer for 2e-integrals
-
 #ifdef CUDA
    if (quick_method%bCUDA) then
       call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
                   quick_qm_struct%vec,quick_qm_struct%dense)
-      call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
+      call gpu_upload_cutoff(cutmatrix, Ycutoff, quick_method%integralCutoff, &
+                  cutPrim, quick_method%primLimit)
       call gpu_get2e(quick_qm_struct%o);
    else
 #endif
@@ -88,18 +87,8 @@ subroutine hfoperator(oneElecO)
    ! Remember the operator is symmetry
    call copySym(quick_qm_struct%o,nbasis)
 
-
-   ! Operator matrix
-!   write(ioutfile,'("OPERATOR MATRIX FOR CYCLE")')
-!   call PriSym(iOutFile,nbasis,quick_qm_struct%o,'f14.8')
-   
    ! Give the energy, E=1/2*sigma[i,j](Pij*(Fji+Hcoreji))
    if(quick_method%printEnergy) call get2eEnergy()
-   
-   
-   call cpu_time(timer_end%T2e)  ! Terminate the timer for 2e-integrals
-   timer_cumer%T2e=timer_cumer%T2e+timer_end%T2e-timer_begin%T2e ! add the time to cumer
-
    return
 
 end subroutine hfoperator
@@ -830,6 +819,7 @@ end subroutine mpi_hfoperatordc
    integer II_arg
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
 #endif
+   call cpu_time(timer_begin%t2e) !Trigger the timer for 2e-integrals
 
 #ifndef CUDA
    II = II_arg
@@ -856,6 +846,10 @@ end subroutine mpi_hfoperatordc
          enddo
       enddo
    enddo
+
+   call cpu_time(timer_end%T2e)  ! Terminate the timer for 2e-integrals
+   timer_cumer%T2e=timer_cumer%T2e+timer_end%T2e-timer_begin%T2e ! add the time to cumer
+
 end subroutine get2e
 
 !------------------------------------------------

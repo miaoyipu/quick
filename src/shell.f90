@@ -528,6 +528,16 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                  DENSELI=quick_qm_struct%dense(LLL,III)
                  DENSELK=quick_qm_struct%dense(LLL,KKK)
                  DENSEJI=quick_qm_struct%dense(JJJ,III)
+write(*,*) "1", DENSEKI, DENSEKJ, DENSELJ, DENSELI, DENSELK, DENSEJI
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(LLL,KKK)
+write(*,*) quick_qm_struct%o(KKK,III)
+write(*,*) quick_qm_struct%o(LLL,III)
+write(*,*) quick_qm_struct%o(JJJ,KKK)
+write(*,*) quick_qm_struct%o(JJJ,LLL)
+write(*,*) quick_qm_struct%o(KKK,JJJ)
+write(*,*) quick_qm_struct%o(LLL,JJJ)
 
                  ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
                  ! can be equal.
@@ -539,6 +549,15 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                  quick_qm_struct%o(JJJ,LLL) = quick_qm_struct%o(JJJ,LLL)-.5d0*DENSEKI*Y
                  quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSELI*Y
                  quick_qm_struct%o(LLL,JJJ) = quick_qm_struct%o(LLL,JJJ)-.5d0*DENSEKI*Y
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(LLL,KKK)
+write(*,*) quick_qm_struct%o(KKK,III)
+write(*,*) quick_qm_struct%o(LLL,III)
+write(*,*) quick_qm_struct%o(JJJ,KKK)
+write(*,*) quick_qm_struct%o(JJJ,LLL)
+write(*,*) quick_qm_struct%o(KKK,JJJ)
+write(*,*) quick_qm_struct%o(LLL,JJJ)
               enddo
            enddo
         enddo
@@ -558,6 +577,16 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                        DENSELI=quick_qm_struct%dense(LLL,III)
                        DENSELK=quick_qm_struct%dense(LLL,KKK)
                        DENSEJI=quick_qm_struct%dense(JJJ,III)
+write(*,*) "2", DENSEKI, DENSEKJ, DENSELJ, DENSELI, DENSELK, DENSEJI
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(LLL,KKK)
+write(*,*) quick_qm_struct%o(KKK,III)
+write(*,*) quick_qm_struct%o(LLL,III)
+write(*,*) quick_qm_struct%o(JJJ,KKK)
+write(*,*) quick_qm_struct%o(JJJ,LLL)
+write(*,*) quick_qm_struct%o(KKK,JJJ)
+write(*,*) quick_qm_struct%o(LLL,JJJ)
                        ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
                        ! can be equal.
 
@@ -569,24 +598,50 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                        quick_qm_struct%o(JJJ,LLL) = quick_qm_struct%o(JJJ,LLL)-.5d0*DENSEKI*Y
                        quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSELI*Y
                        quick_qm_struct%o(LLL,JJJ) = quick_qm_struct%o(LLL,JJJ)-.5d0*DENSEKI*Y
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(LLL,KKK)
+write(*,*) quick_qm_struct%o(KKK,III)
+write(*,*) quick_qm_struct%o(LLL,III)
+write(*,*) quick_qm_struct%o(JJJ,KKK)
+write(*,*) quick_qm_struct%o(JJJ,LLL)
+write(*,*) quick_qm_struct%o(KKK,JJJ)
+write(*,*) quick_qm_struct%o(LLL,JJJ)
+
                     elseif(III.eq.JJJ.and.KKK.eq.LLL)then
 
                        DENSEJI=quick_qm_struct%dense(KKK,III)
                        DENSEJJ=quick_qm_struct%dense(KKK,KKK)
                        DENSEII=quick_qm_struct%dense(III,III)
+write(*,*) "3", DENSEJI, DENSEJJ, DENSEII
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(III,III)
+write(*,*) quick_qm_struct%o(KKK,KKK)
+write(*,*) quick_qm_struct%o(KKK,III)
                        ! Find  all the (ii|jj) integrals.
                        quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+DENSEJJ*Y
                        quick_qm_struct%o(KKK,KKK) = quick_qm_struct%o(KKK,KKK)+DENSEII*Y
                        quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEJI*Y
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(III,III)
+write(*,*) quick_qm_struct%o(KKK,KKK)
+write(*,*) quick_qm_struct%o(KKK,III)
                     elseif(JJJ.eq.KKK.and.JJJ.eq.LLL)then
 
                        DENSEJI=quick_qm_struct%dense(JJJ,III)
                        DENSEJJ=quick_qm_struct%dense(JJJ,JJJ)
+write(*,*) "4", DENSEJI, DENSEJJ
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(JJJ,JJJ)
 
                        ! Find  all the (ij|jj) integrals.
                        quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+.5d0*DENSEJJ*Y
                        quick_qm_struct%o(JJJ,JJJ) = quick_qm_struct%o(JJJ,JJJ)+DENSEJI*Y
 
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(JJJ,JJJ)
                        !        ! Find  all the (ii|ij) integrals.
                        !        ! Find all the (ij|ij) integrals
 
@@ -596,6 +651,13 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                        DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
                        DENSEKK=quick_qm_struct%dense(KKK,KKK)
                        DENSEJI=quick_qm_struct%dense(JJJ,III)
+write(*,*) "5", DENSEKI, DENSEKJ, DENSEKK, DENSEJI
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(KKK,KKK)
+write(*,*) quick_qm_struct%o(KKK,III)
+write(*,*) quick_qm_struct%o(KKK,JJJ)
+write(*,*) quick_qm_struct%o(JJJ,KKK)
 
                        ! Find all the (ij|kk) integrals where j>i, k>j.
                        quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+DENSEKK*Y
@@ -603,18 +665,35 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                        quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEKJ*Y
                        quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSEKI*Y
                        quick_qm_struct%o(JJJ,KKK) = quick_qm_struct%o(JJJ,KKK)-.5d0*DENSEKI*Y
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(KKK,KKK)
+write(*,*) quick_qm_struct%o(KKK,III)
+write(*,*) quick_qm_struct%o(KKK,JJJ)
+write(*,*) quick_qm_struct%o(JJJ,KKK)
                        !        ! Find all the (ik|jj) integrals where j>i, k>j.
                     elseif(III.eq.JJJ.and.KKK.lt.LLL)then
                        DENSEII=quick_qm_struct%dense(III,III)
                        DENSEJI=quick_qm_struct%dense(KKK,III)
                        DENSEKI=quick_qm_struct%dense(LLL,III)
                        DENSEKJ=quick_qm_struct%dense(LLL,KKK)
+write(*,*) "6", DENSEII, DENSEJJ, DENSEKI, DENSEKJ
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(LLL,KKK)
+write(*,*) quick_qm_struct%o(III,III)
+write(*,*) quick_qm_struct%o(KKK,III)
+write(*,*) quick_qm_struct%o(LLL,III)
 
                        ! Find all the (ii|jk) integrals where j>i, k>j.
                        quick_qm_struct%o(LLL,KKK) = quick_qm_struct%o(LLL,KKK)+DENSEII*Y
                        quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+2.d0*DENSEKJ*Y
                        quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEKI*Y
                        quick_qm_struct%o(LLL,III) = quick_qm_struct%o(LLL,III)-.5d0*DENSEJI*Y
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(LLL,KKK)
+write(*,*) quick_qm_struct%o(III,III)
+write(*,*) quick_qm_struct%o(KKK,III)
+write(*,*) quick_qm_struct%o(LLL,III)
                     endif
 
                  else
@@ -623,34 +702,67 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                    !    write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
                        if(III.eq.JJJ.and.III.eq.KKK.and.III.eq.LLL)then
                           DENSEII=quick_qm_struct%dense(III,III)
+write(*,*) "7",DENSEII
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(III,III)
 
                           ! do all the (ii|ii) integrals.
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+.5d0*DENSEII*Y
 
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(III,III)
                        elseif(III.eq.JJJ.and.III.eq.KKK.and.III.lt.LLL)then
                           DENSEJI=quick_qm_struct%dense(LLL,III)
                           DENSEII=quick_qm_struct%dense(III,III)
+write(*,*) "8",DENSEJI, DENSEII
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(LLL,III)
+write(*,*) quick_qm_struct%o(III,III)
                           ! Find  all the (ii|ij) integrals.
                           quick_qm_struct%o(LLL,III) = quick_qm_struct%o(LLL,III)+.5d0*DENSEII*Y
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+DENSEJI*Y
+
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(LLL,III)
+write(*,*) quick_qm_struct%o(III,III)
                        elseif(III.eq.KKK.and.JJJ.eq.LLL.and.III.lt.JJJ)then
                           DENSEJI=quick_qm_struct%dense(JJJ,III)
                           DENSEJJ=quick_qm_struct%dense(JJJ,JJJ)
                           DENSEII=quick_qm_struct%dense(III,III)
+write(*,*) "9",DENSEJI, DENSEJJ, DENSEII
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(JJJ,JJJ)
+write(*,*) quick_qm_struct%o(III,III)
                           ! Find all the (ij|ij) integrals
                           quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+1.50*DENSEJI*Y
                           quick_qm_struct%o(JJJ,JJJ) = quick_qm_struct%o(JJJ,JJJ)-.5d0*DENSEII*Y
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)-.5d0*DENSEJJ*Y
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(JJJ,JJJ)
+write(*,*) quick_qm_struct%o(III,III)
                        elseif(III.eq.KKK.and.III.lt.JJJ.and.JJJ.lt.LLL)then
                           DENSEKI=quick_qm_struct%dense(LLL,III)
                           DENSEKJ=quick_qm_struct%dense(LLL,JJJ)
                           DENSEII=quick_qm_struct%dense(III,III)
                           DENSEJI=quick_qm_struct%dense(JJJ,III)
+write(*,*) "10",DENSEKI, DENSEKJ, DENSEII, DENSEJI
+write(*,*) "before"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(LLL,III)
+write(*,*) quick_qm_struct%o(III,III)
+write(*,*) quick_qm_struct%o(LLL,JJJ)
                           ! Find all the (ij|ik) integrals where j>i,k>j
                           quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+1.5d0*DENSEKI*Y
                           quick_qm_struct%o(LLL,III) = quick_qm_struct%o(LLL,III)+1.5d0*DENSEJI*Y
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)-1.d0*DENSEKJ*Y
                           quick_qm_struct%o(LLL,JJJ) = quick_qm_struct%o(LLL,JJJ)-.5d0*DENSEII*Y
+write(*,*) "after"
+write(*,*) quick_qm_struct%o(JJJ,III)
+write(*,*) quick_qm_struct%o(LLL,III)
+write(*,*) quick_qm_struct%o(III,III)
+write(*,*) quick_qm_struct%o(LLL,JJJ)
                        endif
                     endif
                  endif

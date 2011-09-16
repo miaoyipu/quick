@@ -1,4 +1,6 @@
 
+
+
 !
 !	quick_timer_module.f90
 !	new_quick
@@ -101,7 +103,7 @@ module quick_timer_module
             endif
 
             ! Dipole Timing
-            write (io,'("DIPOLE TIME        =",F16.9,"( ",F5.2,"%)")') timer_end%TDip-timer_begin%TDip, &
+            write (io,'(6x,"DIPOLE TIME        =",F16.9,"( ",F5.2,"%)")') timer_end%TDip-timer_begin%TDip, &
                 (timer_end%TDip-timer_begin%TDip)/(timer_end%TTotal-timer_begin%TTotal)*100
             ! Grad Timing
             if (quick_method%opt) then

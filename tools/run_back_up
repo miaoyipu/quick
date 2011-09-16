@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cp -a ../src/ ../archieve/2011-8-14-new_quick_0.07_beta24
+cp -a ../src/ ../archieve/2011-9-16-new_quick_0.07sp1
 

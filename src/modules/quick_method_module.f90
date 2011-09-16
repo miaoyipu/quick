@@ -1,4 +1,6 @@
 
+
+
 !
 !	quick_method_module.f90
 !	new_quick
