@@ -1,7 +1,7 @@
   **************************************************************************
-  **                      QUICK 0.01-2010-Jul                             **
+  **                      QUICK-0.06 June 12                              **
   **                                                                      **
-  **                        Copyright (c) 2010                            **
+  **                        Copyright (c) 2011                            **
   **                Regents of the University of Florida                  **
   **                       All Rights Reserved.                           **
   **                                                                      **
@@ -19,227 +19,113 @@
   Cite this work as:
   Miao, Y.: He, X.: Ayers,K: Brothers, E.: Merz,K. M. QUICK;
   University of Florida, Gainesville, FL, 2010
- 
- Task starts on: Fri Oct 29 14:43:42 2010
 
- INPUT FILE:   ACE_ALA10_NME.in              
- OUTPUT FILE:  ACE_ALA10_NME.out             
- TOTAL PROCESSOR =     1
- MASTER NAME     = qtpclnt135.qtp.ufl.edu        
- 
+  If you have any comment or queries, please send email for technic support:
+  quick@qtp.ufl.edu
 
- @  Read Atom types
+ TASK STARTS ON: Fri Sep 16 14:26:52 2011
+ INPUT FILE:     ACE_ALA10_NME.in
+ OUTPUT FILE:    ACE_ALA10_NME.out
+ BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
-ATOM TYPES=   4
-ATOM NUMBER= 112
-
- @ Read Job Type
+ @ Read Job And Atom
 
   -------------------------------------
-KEYWORD= HF DIVCON BASIS=6-31G DENSERMS=0.00001 NCYC=1000 ENERGY ATOMBASIS                                                                                                                                      
+KEYWORD=KEYWORD=DIVCON HF BASIS=STO-3G DENSERMS=0.00001 NCYC=1000 ENERGY ATOMBASIS                                                                                                                              
   -------------------------------------
-PDB INPUT = FALSE (DEFAULT)
-MFCC = FALSE (DEFAULT)
-Fast Multipole Methods = FALSE (DEFAULT)
-Second order perturbation theory = FALSE (DEFAULT)
-METHOD = HARTREE FOCK
-GAS PHASE (DEFAULT)
-PRINT TOTAL ENERGY OF EACH CYCLE = TRUE
-BASIS FILE=/Users/miao/Workspace/new_quick/basis/6-31G                                     
-Initial density matrix guess = SAD (default)
-SUM INNER ELECTRONS INTO CORE = FALSE (DEFAULT)
-DO NOT PRINT HOMO-LUMO GAP (DEFAULT)
-NO OPTIMIZE GEOMETRY (DEFAULT)
-NO ANALYTICAL GRADIENT CALCULATION (DEFAULT)
-NO ANALYTICAL HESSIAN CALCULATION (DEFAULT)
-NO CALCULATION OF FREQUENCIES (DEFAULT)
-UTILIZE PULAY'S DIIS METHOD FOR SCF CONVERGENCE ACCELERATION. (BY DEFAULT)
-DIV AND CON= TRUE
-DIV AND CON ON ATOM BASIS
-DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-04
-DELTA DENSITY CYCLE STARTS FROM CYCLE1000
-NO READ IN DMX GUESS (DEFAULT) 
-NO EXTERNAL POINT CHARGES (DEFAULT) 
-TOTAL MOLECULAR CHARGE =  0 (DEFAULT)
-MULTIPLICITY = 1 (DEFAULT)
-MAX SCF CYCLES = 200 (DEFAULT)
-MAX DIIS CYCLES = 10 (DEFAULT)
-MATRIX ELEMENTS LESS THAN 0.100E-09 CONSIDERED ZERO. (DEFAULT)
-BASIS FUNCTION MAGNITUDE LESS THAN   0.1E-09 A.U. CONSIDERED ZERO. (DEFAULT)
-THRESHOLD FOR ECP-INTEGRALS PRESCREENING =     0.10000E-11  (DEFAULT)
-
+ ============== JOB CARD =============
+| METHOD = HATREE FOCK
+| SAD INITAL GUESS 
+| USE DIIS SCF
+| PRINT ENERGY EVERY CYCLE
+| DIV & CON METHOD = DIV AND CON ON ATOM BASIS
+| MAX SCF CYCLES =    200
+| MAX DIIS CYCLES =   10
+| DELTA DENSITY START CYCLE = 1000
+| COMPUATIONAL CUTOFF: 
+|      TWO-e INTEGRAL   =  0.100E-06
+|      BASIS SET PRIME  =  0.100E-06
+|      MATRIX ELEMENTS  =  0.100E-09
+|      BASIS FUNCTION   =  0.100E-09
+| DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-04
+| BASIS SET = STO-3G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/STO-3G
 
  @ Finish reading job
-
 
 
  @ Begin SAD initial guess
 
  For Atom Kind =    1
  ELEMENT = H 
-NUMBER OF ALPHA ELECTRONS =    1
-NUMBER OF BETA ELECTRONS  =    0
-BASIS FUNCTIONS =    2
+BASIS FUNCTIONS =    1
 
  @ Begin Energy Calculation
 
 
 SCF CYCLE      =        1      TIME      =     0.00
-RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
-
-SCF CYCLE      =        2      TIME      =     0.00
-RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
-
-SCF CYCLE      =        3      TIME      =   0.00
-DIIS CYCLE     =        1      MAX ERROR = 0.543720E-02
-RMS CHANGE     = 0.492246E-02  MAX CHANGE= 0.776945E-02
-
-SCF CYCLE      =        4      TIME      =   0.00
-DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
-RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
-DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
-
-SCF CYCLE      =        5      TIME      =     0.00
-RMS CHANGE     = 0.587056E-12  MAX CHANGE= 0.929423E-12
+RMS CHANGE     = 0.100000E-07  MAX CHANGE= 0.100000E-07
 CONVERGED!!!!!
-ELECTRONIC ENERGY  =     0.000000000
-CORE_CORE REPULSION=     0.000000000
-TOTAL ENERGY       =     0.000000000
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
 
  @ End Energy calculation
 
  For Atom Kind =    2
  ELEMENT = C 
-NUMBER OF ALPHA ELECTRONS =    4
-NUMBER OF BETA ELECTRONS  =    2
-BASIS FUNCTIONS =    9
+BASIS FUNCTIONS =    5
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.04
-RMS CHANGE     = 0.149950E+00  MAX CHANGE= 0.820200E+00
+SCF CYCLE      =        1      TIME      =     0.01
+RMS CHANGE     = 0.245482E+00  MAX CHANGE= 0.665739E+00
 
-SCF CYCLE      =        2      TIME      =     0.06
-RMS CHANGE     = 0.797517E-01  MAX CHANGE= 0.324725E+00
-
-SCF CYCLE      =        3      TIME      =   0.06
-DIIS CYCLE     =        1      MAX ERROR = 0.399130E-01
-RMS CHANGE     = 0.137215E-01  MAX CHANGE= 0.596119E-01
-
-SCF CYCLE      =        4      TIME      =   0.05
-DIIS CYCLE     =        2      MAX ERROR = 0.755500E-02
-RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
-
-SCF CYCLE      =        5      TIME      =   0.05
-DIIS CYCLE     =        3      MAX ERROR = 0.309781E-02
-RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
-
-SCF CYCLE      =        6      TIME      =   0.05
-DIIS CYCLE     =        4      MAX ERROR = 0.299208E-03
-RMS CHANGE     = 0.311349E-03  MAX CHANGE= 0.215704E-02
-
-SCF CYCLE      =        7      TIME      =   0.05
-DIIS CYCLE     =        5      MAX ERROR = 0.116288E-04
-RMS CHANGE     = 0.209319E-04  MAX CHANGE= 0.144795E-03
-DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
-
-SCF CYCLE      =        8      TIME      =     0.05
-RMS CHANGE     = 0.179113E-05  MAX CHANGE= 0.123926E-04
+SCF CYCLE      =        2      TIME      =     0.02
+RMS CHANGE     = 0.632563E-10  MAX CHANGE= 0.150058E-09
 CONVERGED!!!!!
-ELECTRONIC ENERGY  =     0.000000000
-CORE_CORE REPULSION=     0.000000000
-TOTAL ENERGY       =     0.000000000
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
 
  @ End Energy calculation
 
  For Atom Kind =    3
  ELEMENT = O 
-NUMBER OF ALPHA ELECTRONS =    5
-NUMBER OF BETA ELECTRONS  =    3
-BASIS FUNCTIONS =    9
+BASIS FUNCTIONS =    5
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.04
-RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
+SCF CYCLE      =        1      TIME      =     0.01
+RMS CHANGE     = 0.238978E+00  MAX CHANGE= 0.504578E+00
 
-SCF CYCLE      =        2      TIME      =     0.05
-RMS CHANGE     = 0.813251E-01  MAX CHANGE= 0.292480E+00
-
-SCF CYCLE      =        3      TIME      =   0.04
-DIIS CYCLE     =        1      MAX ERROR = 0.237250E-01
-RMS CHANGE     = 0.640345E-02  MAX CHANGE= 0.245919E-01
-
-SCF CYCLE      =        4      TIME      =   0.04
-DIIS CYCLE     =        2      MAX ERROR = 0.690121E-02
-RMS CHANGE     = 0.233510E-02  MAX CHANGE= 0.921819E-02
-
-SCF CYCLE      =        5      TIME      =   0.04
-DIIS CYCLE     =        3      MAX ERROR = 0.298057E-02
-RMS CHANGE     = 0.133240E-02  MAX CHANGE= 0.487382E-02
-
-SCF CYCLE      =        6      TIME      =   0.05
-DIIS CYCLE     =        4      MAX ERROR = 0.112352E-02
-RMS CHANGE     = 0.986522E-03  MAX CHANGE= 0.369278E-02
-
-SCF CYCLE      =        7      TIME      =   0.04
-DIIS CYCLE     =        5      MAX ERROR = 0.364363E-04
-RMS CHANGE     = 0.292852E-04  MAX CHANGE= 0.123747E-03
-DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
-
-SCF CYCLE      =        8      TIME      =     0.04
-RMS CHANGE     = 0.515945E-05  MAX CHANGE= 0.202274E-04
+SCF CYCLE      =        2      TIME      =     0.02
+RMS CHANGE     = 0.307220E-10  MAX CHANGE= 0.827385E-10
 CONVERGED!!!!!
-ELECTRONIC ENERGY  =     0.000000000
-CORE_CORE REPULSION=     0.000000000
-TOTAL ENERGY       =     0.000000000
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
 
  @ End Energy calculation
 
  For Atom Kind =    4
  ELEMENT = N 
-NUMBER OF ALPHA ELECTRONS =    5
-NUMBER OF BETA ELECTRONS  =    2
-BASIS FUNCTIONS =    9
+BASIS FUNCTIONS =    5
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.04
-RMS CHANGE     = 0.150709E+00  MAX CHANGE= 0.817290E+00
+SCF CYCLE      =        1      TIME      =     0.02
+RMS CHANGE     = 0.242566E+00  MAX CHANGE= 0.658473E+00
 
-SCF CYCLE      =        2      TIME      =     0.05
-RMS CHANGE     = 0.903365E-01  MAX CHANGE= 0.322206E+00
-
-SCF CYCLE      =        3      TIME      =   0.04
-DIIS CYCLE     =        1      MAX ERROR = 0.232146E-01
-RMS CHANGE     = 0.717180E-02  MAX CHANGE= 0.254087E-01
-
-SCF CYCLE      =        4      TIME      =   0.04
-DIIS CYCLE     =        2      MAX ERROR = 0.696787E-02
-RMS CHANGE     = 0.238394E-02  MAX CHANGE= 0.162489E-01
-
-SCF CYCLE      =        5      TIME      =   0.04
-DIIS CYCLE     =        3      MAX ERROR = 0.203040E-02
-RMS CHANGE     = 0.112750E-02  MAX CHANGE= 0.763565E-02
-
-SCF CYCLE      =        6      TIME      =   0.05
-DIIS CYCLE     =        4      MAX ERROR = 0.546784E-03
-RMS CHANGE     = 0.310240E-03  MAX CHANGE= 0.209245E-02
-
-SCF CYCLE      =        7      TIME      =   0.04
-DIIS CYCLE     =        5      MAX ERROR = 0.386850E-05
-RMS CHANGE     = 0.375934E-05  MAX CHANGE= 0.253646E-04
-PREPARED FOR FINAL NO INTERPOLATION ITERATION
-
-SCF CYCLE      =        8      TIME      =     0.05
-RMS CHANGE     = 0.547440E-06  MAX CHANGE= 0.368789E-05
+SCF CYCLE      =        2      TIME      =     0.02
+RMS CHANGE     = 0.605086E-10  MAX CHANGE= 0.152096E-09
 CONVERGED!!!!!
-ELECTRONIC ENERGY  =     0.000000000
-CORE_CORE REPULSION=     0.000000000
-TOTAL ENERGY       =     0.000000000
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
 
  @ End Energy calculation
 
@@ -249,130 +135,134 @@ TOTAL ENERGY       =     0.000000000
 
  @ Begin to Read Mol Info
 
-TOTOAL ATOM NUMBER =  112
-NUMBER OF HYDROGEN ATOM =   57
-NUMBER OF NON-HYDROGEN ATOM =   55
-DEGREE OF FREEDOM =   330
 
-NUMBER OF ELECTRONS =  420
-BASIS FUNCTIONS =  609
+ =========== Molecule Input ==========
+| TOTAL MOLECULAR CHARGE  =    0    MULTIPLICITY                =    1
+| TOTOAL ATOM NUMBER      =  112    NUMBER OF ATOM TYPES        =    4
+| NUMBER OF HYDROGEN ATOM =   57    NUMBER OF NON-HYDROGEN ATOM =   55
+| NUMBER OF ELECTRONS     =  420
+
+ -- INPUT GEOMETRY -- :
+    H          -1.4440      -0.5920       1.3630
+    C          -0.8820       0.3230       1.1780
+    H          -0.3320       0.6000       2.0750
+    H          -1.5660       1.1220       0.8990
+    C           0.0930       0.0780       0.0500
+    O           0.1620      -1.0260      -0.4730
+    N           0.8480       1.1100      -0.3190
+    H           0.7610       1.9810       0.1830
+    C           1.8760       1.0610      -1.3610
+    H           2.3300       0.0690      -1.3710
+    C           1.2090       1.3150      -2.7210
+    H           0.7490       2.3050      -2.7310
+    H           1.9520       1.2570      -3.5170
+    H           0.4410       0.5610      -2.9040
+    C           2.9820       2.0970      -1.0900
+    O           2.7810       3.0420      -0.3270
+    N           4.1370       1.9390      -1.7410
+    H           4.2350       1.1640      -2.3820
+    C           5.2670       2.8670      -1.6750
+    H           4.8950       3.8880      -1.5660
+    C           6.1190       2.5140      -0.4460
+    H           6.5000       1.4950      -0.5350
+    H           6.9600       3.2030      -0.3650
+    H           5.5150       2.5930       0.4600
+    C           6.1080       2.7890      -2.9620
+    O           6.0540       1.7920      -3.6810
+    N           6.9040       3.8260      -3.2360
+    H           6.9250       4.6090      -2.5980
+    C           7.8370       3.8870      -4.3610
+    H           8.2720       2.8990      -4.5250
+    C           7.0660       4.3100      -5.6210
+    H           6.6200       5.2940      -5.4730
+    H           7.7420       4.3500      -6.4760
+    H           6.2780       3.5860      -5.8340
+    C           8.9750       4.8810      -4.0630
+    O           8.8200       5.7710      -3.2280
+    N          10.1010       4.7490      -4.7680
+    H          10.1690       4.0060      -5.4500
+    C          11.2330       5.6740      -4.7140
+    H          10.8620       6.6940      -4.6030
+    C          12.1040       5.3240      -3.4970
+    H          12.4780       4.3020      -3.5880
+    H          12.9500       6.0090      -3.4360
+    H          11.5160       5.4100      -2.5820
+    C          12.0560       5.5880      -6.0120
+    O          12.0330       4.5630      -6.6920
+    N          12.8010       6.6470      -6.3370
+    H          12.7870       7.4600      -5.7360
+    C          13.7380       6.6950      -7.4600
+    H          14.2390       5.7300      -7.5560
+    C          12.9530       6.9830      -8.7490
+    H          12.4380       7.9420      -8.6670
+    H          13.6340       7.0160      -9.6000
+    H          12.2190       6.1950      -8.9220
+    C          14.8020       7.7830      -7.2250
+    O          14.5580       8.7400      -6.4920
+    N          15.9630       7.6520      -7.8710
+    H          16.1070       6.8470      -8.4630
+    C          17.0330       8.6510      -7.8770
+    H          16.5940       9.6500      -7.9190
+    C          17.8500       8.5170      -6.5830
+    H          18.2890       7.5190      -6.5210
+    H          18.6490       9.2590      -6.5700
+    H          17.2070       8.6810      -5.7180
+    C          17.9380       8.4590      -9.1080
+    O          18.0160       7.3580      -9.6530
+    N          18.6420       9.5140      -9.5220
+    H          18.5450      10.3920      -9.0310
+    C          19.6510       9.4840     -10.5820
+    H          20.2160       8.5520     -10.5170
+    C          18.9450       9.5450     -11.9460
+    H          18.3680      10.4680     -12.0260
+    H          19.6830       9.5150     -12.7480
+    H          18.2750       8.6910     -12.0570
+    C          20.6290      10.6630     -10.4250
+    O          20.2900      11.6690      -9.8020
+    N          21.8230      10.5520     -11.0120
+    H          22.0400       9.7100     -11.5260
+    C          22.8260      11.6170     -11.0720
+    H          22.3260      12.5760     -11.2170
+    C          23.5960      11.6510      -9.7430
+    H          24.0990      10.6970      -9.5770
+    H          24.3400      12.4490      -9.7640
+    H          22.9070      11.8420      -8.9190
+    C          23.7860      11.3840     -12.2540
+    O          23.8890      10.2670     -12.7600
+    N          24.5070      12.4280     -12.6690
+    H          24.3990      13.3150     -12.1980
+    C          25.5530      12.3690     -13.6920
+    H          26.0950      11.4260     -13.5990
+    C          24.8970      12.4310     -15.0800
+    H          24.3460      13.3660     -15.1930
+    H          25.6600      12.3670     -15.8570
+    H          24.2090      11.5930     -15.2020
+    C          26.5550      13.5240     -13.5020
+    O          26.2630      14.4930     -12.8010
+    N          27.7230      13.4320     -14.1420
+    H          27.8920      12.6330     -14.7370
+    C          28.7560      14.4680     -14.1530
+    H          28.2800      15.4510     -14.1570
+    C          29.6030      14.3340     -12.8770
+    H          30.0900      13.3580     -12.8520
+    H          30.3620      15.1150     -12.8460
+    H          28.9650      14.4370     -11.9970
+    C          29.6270      14.3500     -15.4200
+    O          29.5580      13.3470     -16.1290
+    N          30.4580      15.3660     -15.6910
+    H          30.4630      16.1520     -15.0600
+    C          31.3660      15.3940     -16.8360
+    H          32.1270      14.6190     -16.7220
+    H          30.8100      15.1980     -17.7550
+    H          31.8530      16.3670     -16.9130
+
+============== BASIS INFOS ==============
+| BASIS FUNCTIONS =  332
+| NSHELL =  167 NPRIM  =  501
+| JSHELL =  167 JBASIS =  501
 
 
-INPUT GEOMETRY:
-H          -1.4440      -0.5920       1.3630
-C          -0.8820       0.3230       1.1780
-H          -0.3320       0.6000       2.0750
-H          -1.5660       1.1220       0.8990
-C           0.0930       0.0780       0.0500
-O           0.1620      -1.0260      -0.4730
-N           0.8480       1.1100      -0.3190
-H           0.7610       1.9810       0.1830
-C           1.8760       1.0610      -1.3610
-H           2.3300       0.0690      -1.3710
-C           1.2090       1.3150      -2.7210
-H           0.7490       2.3050      -2.7310
-H           1.9520       1.2570      -3.5170
-H           0.4410       0.5610      -2.9040
-C           2.9820       2.0970      -1.0900
-O           2.7810       3.0420      -0.3270
-N           4.1370       1.9390      -1.7410
-H           4.2350       1.1640      -2.3820
-C           5.2670       2.8670      -1.6750
-H           4.8950       3.8880      -1.5660
-C           6.1190       2.5140      -0.4460
-H           6.5000       1.4950      -0.5350
-H           6.9600       3.2030      -0.3650
-H           5.5150       2.5930       0.4600
-C           6.1080       2.7890      -2.9620
-O           6.0540       1.7920      -3.6810
-N           6.9040       3.8260      -3.2360
-H           6.9250       4.6090      -2.5980
-C           7.8370       3.8870      -4.3610
-H           8.2720       2.8990      -4.5250
-C           7.0660       4.3100      -5.6210
-H           6.6200       5.2940      -5.4730
-H           7.7420       4.3500      -6.4760
-H           6.2780       3.5860      -5.8340
-C           8.9750       4.8810      -4.0630
-O           8.8200       5.7710      -3.2280
-N          10.1010       4.7490      -4.7680
-H          10.1690       4.0060      -5.4500
-C          11.2330       5.6740      -4.7140
-H          10.8620       6.6940      -4.6030
-C          12.1040       5.3240      -3.4970
-H          12.4780       4.3020      -3.5880
-H          12.9500       6.0090      -3.4360
-H          11.5160       5.4100      -2.5820
-C          12.0560       5.5880      -6.0120
-O          12.0330       4.5630      -6.6920
-N          12.8010       6.6470      -6.3370
-H          12.7870       7.4600      -5.7360
-C          13.7380       6.6950      -7.4600
-H          14.2390       5.7300      -7.5560
-C          12.9530       6.9830      -8.7490
-H          12.4380       7.9420      -8.6670
-H          13.6340       7.0160      -9.6000
-H          12.2190       6.1950      -8.9220
-C          14.8020       7.7830      -7.2250
-O          14.5580       8.7400      -6.4920
-N          15.9630       7.6520      -7.8710
-H          16.1070       6.8470      -8.4630
-C          17.0330       8.6510      -7.8770
-H          16.5940       9.6500      -7.9190
-C          17.8500       8.5170      -6.5830
-H          18.2890       7.5190      -6.5210
-H          18.6490       9.2590      -6.5700
-H          17.2070       8.6810      -5.7180
-C          17.9380       8.4590      -9.1080
-O          18.0160       7.3580      -9.6530
-N          18.6420       9.5140      -9.5220
-H          18.5450      10.3920      -9.0310
-C          19.6510       9.4840     -10.5820
-H          20.2160       8.5520     -10.5170
-C          18.9450       9.5450     -11.9460
-H          18.3680      10.4680     -12.0260
-H          19.6830       9.5150     -12.7480
-H          18.2750       8.6910     -12.0570
-C          20.6290      10.6630     -10.4250
-O          20.2900      11.6690      -9.8020
-N          21.8230      10.5520     -11.0120
-H          22.0400       9.7100     -11.5260
-C          22.8260      11.6170     -11.0720
-H          22.3260      12.5760     -11.2170
-C          23.5960      11.6510      -9.7430
-H          24.0990      10.6970      -9.5770
-H          24.3400      12.4490      -9.7640
-H          22.9070      11.8420      -8.9190
-C          23.7860      11.3840     -12.2540
-O          23.8890      10.2670     -12.7600
-N          24.5070      12.4280     -12.6690
-H          24.3990      13.3150     -12.1980
-C          25.5530      12.3690     -13.6920
-H          26.0950      11.4260     -13.5990
-C          24.8970      12.4310     -15.0800
-H          24.3460      13.3660     -15.1930
-H          25.6600      12.3670     -15.8570
-H          24.2090      11.5930     -15.2020
-C          26.5550      13.5240     -13.5020
-O          26.2630      14.4930     -12.8010
-N          27.7230      13.4320     -14.1420
-H          27.8920      12.6330     -14.7370
-C          28.7560      14.4680     -14.1530
-H          28.2800      15.4510     -14.1570
-C          29.6030      14.3340     -12.8770
-H          30.0900      13.3580     -12.8520
-H          30.3620      15.1150     -12.8460
-H          28.9650      14.4370     -11.9970
-C          29.6270      14.3500     -15.4200
-O          29.5580      13.3470     -16.1290
-N          30.4580      15.3660     -15.6910
-H          30.4630      16.1520     -15.0600
-C          31.3660      15.3940     -16.8360
-H          32.1270      14.6190     -16.7220
-H          30.8100      15.1980     -17.7550
-H          31.8530      16.3670     -16.9130
-
- @ End Reading Mol Info
+ @ End Reading Mol Info 
 
 
  @ Now Begin Div & Con Fragment
@@ -590,33 +480,33 @@ Total Frag= 112
 The Core and Buffer Atoms
 ============================================================
 Frag       CoreAtom     CoreTot     BufAtom       BufTot     SubAtom     SubTot    Elec    NBasis
-    1  1-18,24           19       19-23,25-36       17       1-36              36   137   198
-    2  19-22              4       5-18,23-38,44     31       5-38,44           35   137   196
-    3  23,25-26           3       7-22,24,27-42,44  34       7-42,44           37   137   200
-    4  27-28,34           3       9-13,15-26,29-33  34       9-13,15-46        37   143   207
-    5  29-32              4       13,15-28,33-48,5  32       13,15-48,54       36   138   198
-    6  33,35-36           3       17-32,34,37-52,5  34       17-52,54          37   137   200
-    7  37-38,44           3       19-23,25-36,39-4  34       19-23,25-56       37   143   207
-    8  39-42              4       23,25-38,43-58,6  32       23,25-58,64       36   138   198
-    9  43,45-46           3       27-42,44,47-62,6  34       27-62,64          37   137   200
-   10  47-48,54           3       29-33,35-46,49-5  34       29-33,35-66       37   143   207
-   11  49-52              4       33,35-48,53-68,7  32       33,35-68,74       36   138   198
-   12  53,55-56           3       37-52,54,57-72,7  34       37-72,74          37   137   200
-   13  57-58,64           3       39-43,45-56,59-6  34       39-43,45-76       37   143   207
-   14  59-62              4       43,45-58,63-78,8  32       43,45-78,84       36   138   198
-   15  63,65-66           3       47-62,64,67-82,8  34       47-82,84          37   137   200
-   16  67-68,74           3       49-53,55-66,69-7  34       49-53,55-86       37   143   207
-   17  69-72              4       53,55-68,73-88,9  32       53,55-88,94       36   138   198
-   18  73,75-76           3       57-72,74,77-92,9  34       57-92,94          37   137   200
-   19  77-78,84           3       59-63,65-76,79-8  34       59-63,65-96       37   143   207
-   20  79-82              4       63,65-78,83-98,1  32       63,65-98,104      36   138   198
-   21  83,85-86           3       67-82,84,87-102,  34       67-102,104        37   137   200
-   22  87-88,94           3       69-73,75-86,89-9  34       69-73,75-106      37   143   207
-   23  89-92              4       73,75-88,93-108   31       73,75-108         35   137   196
-   24  93,95-112         19       77-92,94          17       77-112            36   131   191
+    1  1-18,24           19       19-23,25-36       17       1-36              36   137   108
+    2  19-22              4       5-18,23-38,44     31       5-38,44           35   137   107
+    3  23,25-26           3       7-22,24,27-42,44  34       7-42,44           37   137   109
+    4  27-28,34           3       9-13,15-26,29-33  34       9-13,15-46        37   143   113
+    5  29-32              4       13,15-28,33-48,5  32       13,15-48,54       36   138   108
+    6  33,35-36           3       17-32,34,37-52,5  34       17-52,54          37   137   109
+    7  37-38,44           3       19-23,25-36,39-4  34       19-23,25-56       37   143   113
+    8  39-42              4       23,25-38,43-58,6  32       23,25-58,64       36   138   108
+    9  43,45-46           3       27-42,44,47-62,6  34       27-62,64          37   137   109
+   10  47-48,54           3       29-33,35-46,49-5  34       29-33,35-66       37   143   113
+   11  49-52              4       33,35-48,53-68,7  32       33,35-68,74       36   138   108
+   12  53,55-56           3       37-52,54,57-72,7  34       37-72,74          37   137   109
+   13  57-58,64           3       39-43,45-56,59-6  34       39-43,45-76       37   143   113
+   14  59-62              4       43,45-58,63-78,8  32       43,45-78,84       36   138   108
+   15  63,65-66           3       47-62,64,67-82,8  34       47-82,84          37   137   109
+   16  67-68,74           3       49-53,55-66,69-7  34       49-53,55-86       37   143   113
+   17  69-72              4       53,55-68,73-88,9  32       53,55-88,94       36   138   108
+   18  73,75-76           3       57-72,74,77-92,9  34       57-92,94          37   137   109
+   19  77-78,84           3       59-63,65-76,79-8  34       59-63,65-96       37   143   113
+   20  79-82              4       63,65-78,83-98,1  32       63,65-98,104      36   138   108
+   21  83,85-86           3       67-82,84,87-102,  34       67-102,104        37   137   109
+   22  87-88,94           3       69-73,75-86,89-9  34       69-73,75-106      37   143   113
+   23  89-92              4       73,75-88,93-108   31       73,75-108         35   137   107
+   24  93,95-112         19       77-92,94          17       77-112            36   131   104
 -----------------------------------------------------------
 Total Frag=  24
-NBasis Max= 207
+NBasis Max= 113
 ===========================================================
 
  @ Now End Div & Con Fragment
@@ -624,237 +514,3 @@ NBasis Max= 207
 
  @ Begin Energy Calculation
 
- -------------------------------
-SCF CYCLE=    1
-E(Fermi)    =    0.0339540  AFTER  25 N.C. Cycles
-SCF TIME =       207.06
-MAX DC DIAG TIME =         1.86
-DIIS CYCLE     =        1
-RMS CHANGE     = 0.112916E+00  MAX CHANGE= 0.569232E+00
-TOTAL ENERGY= -2728.879970302
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=    2
-E(Fermi)    =   -0.1101256  AFTER  20 N.C. Cycles
-SCF TIME =       382.77
-MAX DC DIAG TIME =         2.00
-DIIS CYCLE     =        2
-RMS CHANGE     = 0.179447E-01  MAX CHANGE= 0.480358E+00
-TOTAL ENERGY= -2702.001465420
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=    3
-E(Fermi)    =    0.1170124  AFTER  22 N.C. Cycles
-SCF TIME =       375.79
-MAX DC DIAG TIME =         1.81
-DIIS CYCLE     =        3
-RMS CHANGE     = 0.136040E-01  MAX CHANGE= 0.343278E+00
-TOTAL ENERGY= -2703.328116990
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=    4
-E(Fermi)    =   -0.0280217  AFTER  22 N.C. Cycles
-SCF TIME =       367.51
-MAX DC DIAG TIME =         1.81
-DIIS CYCLE     =        4
-RMS CHANGE     = 0.915279E-02  MAX CHANGE= 0.212002E+00
-TOTAL ENERGY= -2703.734419023
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=    5
-E(Fermi)    =    0.0849984  AFTER  23 N.C. Cycles
-SCF TIME =       371.61
-MAX DC DIAG TIME =         1.80
-DIIS CYCLE     =        5
-RMS CHANGE     = 0.836008E-02  MAX CHANGE= 0.190591E+00
-TOTAL ENERGY= -2703.900857560
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=    6
-E(Fermi)    =   -0.0093707  AFTER  23 N.C. Cycles
-SCF TIME =       370.12
-MAX DC DIAG TIME =         1.81
-DIIS CYCLE     =        6
-RMS CHANGE     = 0.639747E-02  MAX CHANGE= 0.149424E+00
-TOTAL ENERGY= -2704.040649669
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=    7
-E(Fermi)    =    0.0694425  AFTER  22 N.C. Cycles
-SCF TIME =       370.01
-MAX DC DIAG TIME =         1.80
-DIIS CYCLE     =        7
-RMS CHANGE     = 0.560971E-02  MAX CHANGE= 0.125599E+00
-TOTAL ENERGY= -2704.119567474
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=    8
-E(Fermi)    =   -0.0006787  AFTER  19 N.C. Cycles
-SCF TIME =       367.01
-MAX DC DIAG TIME =         1.80
-DIIS CYCLE     =        8
-RMS CHANGE     = 0.450069E-02  MAX CHANGE= 0.105002E+00
-TOTAL ENERGY= -2704.184302918
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=    9
-E(Fermi)    =    0.0584583  AFTER  21 N.C. Cycles
-SCF TIME =       368.84
-MAX DC DIAG TIME =         1.79
-DIIS CYCLE     =        9
-RMS CHANGE     = 0.385799E-02  MAX CHANGE= 0.880890E-01
-TOTAL ENERGY= -2704.224363779
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   10
-E(Fermi)    =    0.0042244  AFTER  23 N.C. Cycles
-SCF TIME =       377.68
-MAX DC DIAG TIME =         1.83
-DIIS CYCLE     =       10
-RMS CHANGE     = 0.315340E-02  MAX CHANGE= 0.735513E-01
-TOTAL ENERGY= -2704.255037093
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   11
-E(Fermi)    =    0.0501855  AFTER  22 N.C. Cycles
-SCF TIME =       395.89
-MAX DC DIAG TIME =         1.92
-DIIS CYCLE     =        1
-RMS CHANGE     = 0.267299E-02  MAX CHANGE= 0.616420E-01
-TOTAL ENERGY= -2704.275172015
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   12
-E(Fermi)    =    0.0073000  AFTER  22 N.C. Cycles
-SCF TIME =       383.03
-MAX DC DIAG TIME =         1.90
-DIIS CYCLE     =        2
-RMS CHANGE     = 0.220339E-02  MAX CHANGE= 0.514527E-01
-TOTAL ENERGY= -2704.289714053
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   13
-E(Fermi)    =    0.0436103  AFTER  22 N.C. Cycles
-SCF TIME =       390.09
-MAX DC DIAG TIME =         1.85
-DIIS CYCLE     =        3
-RMS CHANGE     = 0.185802E-02  MAX CHANGE= 0.430891E-01
-TOTAL ENERGY= -2704.299735124
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   14
-E(Fermi)    =    0.0094138  AFTER  21 N.C. Cycles
-SCF TIME =       384.88
-MAX DC DIAG TIME =         1.88
-DIIS CYCLE     =        4
-RMS CHANGE     = 0.153804E-02  MAX CHANGE= 0.359714E-01
-TOTAL ENERGY= -2704.306613666
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   15
-E(Fermi)    =    0.0375811  AFTER  20 N.C. Cycles
-SCF TIME =       384.78
-MAX DC DIAG TIME =         2.12
-DIIS CYCLE     =        5
-RMS CHANGE     = 0.129540E-02  MAX CHANGE= 0.301097E-01
-TOTAL ENERGY= -2704.311575014
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   16
-E(Fermi)    =    0.0109482  AFTER  20 N.C. Cycles
-SCF TIME =       389.13
-MAX DC DIAG TIME =         1.82
-DIIS CYCLE     =        6
-RMS CHANGE     = 0.107489E-02  MAX CHANGE= 0.251455E-01
-TOTAL ENERGY= -2704.314819224
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   17
-E(Fermi)    =    0.0270225  AFTER  14 N.C. Cycles
-SCF TIME =       372.07
-MAX DC DIAG TIME =         1.81
-DIIS CYCLE     =        7
-RMS CHANGE     = 0.906648E-03  MAX CHANGE= 0.210432E-01
-TOTAL ENERGY= -2704.317270367
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   18
-E(Fermi)    =    0.0120863  AFTER  22 N.C. Cycles
-SCF TIME =       371.24
-MAX DC DIAG TIME =         1.81
-DIIS CYCLE     =        8
-RMS CHANGE     = 0.754086E-03  MAX CHANGE= 0.175825E-01
-TOTAL ENERGY= -2704.318795332
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   19
-E(Fermi)    =    0.0197908  AFTER  18 N.C. Cycles
-SCF TIME =       371.10
-MAX DC DIAG TIME =         1.91
-DIIS CYCLE     =        9
-RMS CHANGE     = 0.629918E-03  MAX CHANGE= 0.147141E-01
-TOTAL ENERGY= -2704.320007077
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   20
-E(Fermi)    =    0.0129270  AFTER  18 N.C. Cycles
-SCF TIME =       369.86
-MAX DC DIAG TIME =         1.81
-DIIS CYCLE     =       10
-RMS CHANGE     = 0.524766E-03  MAX CHANGE= 0.123005E-01
-TOTAL ENERGY= -2704.320726008
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   21
-E(Fermi)    =    0.0178972  AFTER  21 N.C. Cycles
-SCF TIME =       370.09
-MAX DC DIAG TIME =         1.81
-DIIS CYCLE     =        1
-RMS CHANGE     = 0.437766E-03  MAX CHANGE= 0.102947E-01
-TOTAL ENERGY= -2704.321330031
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   22
-E(Fermi)    =    0.0135532  AFTER  20 N.C. Cycles
-SCF TIME =       370.71
-MAX DC DIAG TIME =         1.80
-DIIS CYCLE     =        2
-RMS CHANGE     = 0.364853E-03  MAX CHANGE= 0.860967E-02
-TOTAL ENERGY= -2704.321658921
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   23
-E(Fermi)    =    0.0169235  AFTER  20 N.C. Cycles
-SCF TIME =       370.84
-MAX DC DIAG TIME =         1.80
-DIIS CYCLE     =        3
-RMS CHANGE     = 0.304320E-03  MAX CHANGE= 0.720669E-02
-TOTAL ENERGY= -2704.321966526
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   24
-E(Fermi)    =    0.0140152  AFTER  22 N.C. Cycles
-SCF TIME =       368.65
-MAX DC DIAG TIME =         1.80
-DIIS CYCLE     =        4
-RMS CHANGE     = 0.253704E-03  MAX CHANGE= 0.602956E-02
-TOTAL ENERGY= -2704.322107890
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   25
-E(Fermi)    =    0.0163334  AFTER  18 N.C. Cycles
-SCF TIME =       367.22
-MAX DC DIAG TIME =         1.80
-DIIS CYCLE     =        5
-RMS CHANGE     = 0.211588E-03  MAX CHANGE= 0.504801E-02
-TOTAL ENERGY= -2704.322271580
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- -------------------------------
-SCF CYCLE=   26
-E(Fermi)    =    0.0143529  AFTER  21 N.C. Cycles
-SCF TIME =       368.20
-MAX DC DIAG TIME =         1.79
-DIIS CYCLE     =        6
-RMS CHANGE     = 0.176426E-03  MAX CHANGE= 0.422513E-02
-TOTAL ENERGY= -2704.322334231
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)

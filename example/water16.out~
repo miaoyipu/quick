@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Thu Sep 15 14:40:38 2011
+ TASK STARTS ON: Fri Sep 16 14:39:30 2011
  INPUT FILE:     water16.in
  OUTPUT FILE:    water16.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -31,13 +31,14 @@
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF BASIS=3-21G ENERGY                                                                                                                                                                                   
+KEYWORD=DIVCON HF BASIS=STO-3G ENERGY                                                                                                                                                                           
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
 | SAD INITAL GUESS 
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
+| DIV & CON METHOD = DIV AND CON ON ATOM BASIS
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
@@ -47,8 +48,8 @@ KEYWORD=HF BASIS=3-21G ENERGY
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
-| BASIS SET = 3-21G
-| BASIS FILE = /home/miao/Workspace/new_quick/basis/3-21G
+| BASIS SET = STO-3G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/STO-3G
 
  @ Finish reading job
 
@@ -57,40 +58,16 @@ KEYWORD=HF BASIS=3-21G ENERGY
 
  For Atom Kind =    1
  ELEMENT = O 
-BASIS FUNCTIONS =    9
+BASIS FUNCTIONS =    5
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.00
-RMS CHANGE     = 0.140799E+00  MAX CHANGE= 0.694611E+00
+SCF CYCLE      =        1      TIME      =     0.02
+RMS CHANGE     = 0.238978E+00  MAX CHANGE= 0.504578E+00
 
 SCF CYCLE      =        2      TIME      =     0.02
-RMS CHANGE     = 0.583170E-01  MAX CHANGE= 0.207265E+00
-
-SCF CYCLE      =        3      TIME      =   0.01
-DIIS CYCLE     =        1      MAX ERROR = 0.264535E-01
-RMS CHANGE     = 0.234899E-02  MAX CHANGE= 0.951712E-02
-
-SCF CYCLE      =        4      TIME      =   0.01
-DIIS CYCLE     =        2      MAX ERROR = 0.461752E-02
-RMS CHANGE     = 0.836540E-03  MAX CHANGE= 0.447586E-02
-
-SCF CYCLE      =        5      TIME      =   0.02
-DIIS CYCLE     =        3      MAX ERROR = 0.105621E-02
-RMS CHANGE     = 0.253035E-03  MAX CHANGE= 0.133740E-02
-
-SCF CYCLE      =        6      TIME      =   0.01
-DIIS CYCLE     =        4      MAX ERROR = 0.426481E-03
-RMS CHANGE     = 0.243520E-03  MAX CHANGE= 0.137571E-02
-
-SCF CYCLE      =        7      TIME      =   0.02
-DIIS CYCLE     =        5      MAX ERROR = 0.524416E-05
-RMS CHANGE     = 0.265555E-05  MAX CHANGE= 0.146751E-04
-PREPARED FOR FINAL NO INTERPOLATION ITERATION
-
-SCF CYCLE      =        8      TIME      =     0.01
-RMS CHANGE     = 0.257220E-06  MAX CHANGE= 0.141208E-05
+RMS CHANGE     = 0.307220E-10  MAX CHANGE= 0.827385E-10
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -100,28 +77,13 @@ TOTAL ENERGY         =     0.000000000
 
  For Atom Kind =    2
  ELEMENT = H 
-BASIS FUNCTIONS =    2
+BASIS FUNCTIONS =    1
 
  @ Begin Energy Calculation
 
 
 SCF CYCLE      =        1      TIME      =     0.00
-RMS CHANGE     = 0.259048E+00  MAX CHANGE= 0.328842E+00
-
-SCF CYCLE      =        2      TIME      =     0.00
-RMS CHANGE     = 0.215450E-01  MAX CHANGE= 0.344128E-01
-
-SCF CYCLE      =        3      TIME      =   0.00
-DIIS CYCLE     =        1      MAX ERROR = 0.821860E-02
-RMS CHANGE     = 0.670443E-02  MAX CHANGE= 0.107533E-01
-
-SCF CYCLE      =        4      TIME      =   0.00
-DIIS CYCLE     =        2      MAX ERROR = 0.253372E-02
-RMS CHANGE     = 0.299815E-02  MAX CHANGE= 0.481365E-02
-DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
-
-SCF CYCLE      =        5      TIME      =     0.00
-RMS CHANGE     = 0.681095E-10  MAX CHANGE= 0.109382E-09
+RMS CHANGE     = 0.100000E-07  MAX CHANGE= 0.100000E-07
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -193,114 +155,164 @@ TOTAL ENERGY         =     0.000000000
     H           1.3161       1.6222       2.3217
 
 ============== BASIS INFOS ==============
-| BASIS FUNCTIONS =  208
-| NSHELL =  112 NPRIM  =  192
-| JSHELL =  112 JBASIS =  192
+| BASIS FUNCTIONS =  112
+| NSHELL =   64 NPRIM  =  192
+| JSHELL =   64 JBASIS =  192
 
 
  @ End Reading Mol Info 
 
 
+ @ Now Begin Div & Con Fragment
+
+NUMBER OF FRAG= 48
+RBuffer=   2.00 A
+============================================================
+The Core and Buffer Atoms before elimination
+============================================================
+Frag       CoreAtom     CoreTot     BufAtom       BufTot  SubTot
+    1  1                  1       18-19              2        3
+    2  2                  1       20-21              2        3
+    3  3                  1       22-23              2        3
+    4  4                  1       24-25              2        3
+    5  5                  1       26-27              2        3
+    6  6                  1       28-29              2        3
+    7  7                  1       30-31              2        3
+    8  8                  1       32-33              2        3
+    9  9                  1       34-35              2        3
+   10  10                 1       36-37              2        3
+   11  11                 1       38-39              2        3
+   12  12                 1       40-41              2        3
+   13  13                 1       42-43              2        3
+   14  14                 1       44-45              2        3
+   15  15                 1       46-47              2        3
+   16  16                 1       17,48              2        3
+   17  17                 1       16,48              2        3
+   18  18                 1       1,19               2        3
+   19  19                 1       1,18               2        3
+   20  20                 1       2,21               2        3
+   21  21                 1       2,20               2        3
+   22  22                 1       3,23               2        3
+   23  23                 1       3,22               2        3
+   24  24                 1       4,25               2        3
+   25  25                 1       4,24               2        3
+   26  26                 1       5,27               2        3
+   27  27                 1       5,26               2        3
+   28  28                 1       6,29               2        3
+   29  29                 1       6,28               2        3
+   30  30                 1       7,31               2        3
+   31  31                 1       7,30               2        3
+   32  32                 1       8,33               2        3
+   33  33                 1       8,32               2        3
+   34  34                 1       9,35               2        3
+   35  35                 1       9,34               2        3
+   36  36                 1       10,37              2        3
+   37  37                 1       10,36              2        3
+   38  38                 1       11,39              2        3
+   39  39                 1       11,38              2        3
+   40  40                 1       12,41              2        3
+   41  41                 1       12,40              2        3
+   42  42                 1       13,43              2        3
+   43  43                 1       13,42              2        3
+   44  44                 1       14,45              2        3
+   45  45                 1       14,44              2        3
+   46  46                 1       15,47              2        3
+   47  47                 1       15,46              2        3
+   48  48                 1       16-17              2        3
+-----------------------------------------------------------
+Total Frag=  48
+===========================================================
+ move the subsystem           17  into           16
+ move the subsystem           18  into            1
+ move the subsystem           19  into            1
+ move the subsystem           20  into            2
+ move the subsystem           21  into            2
+ move the subsystem           22  into            3
+ move the subsystem           23  into            3
+ move the subsystem           24  into            4
+ move the subsystem           25  into            4
+ move the subsystem           26  into            5
+ move the subsystem           27  into            5
+ move the subsystem           28  into            6
+ move the subsystem           29  into            6
+ move the subsystem           30  into            7
+ move the subsystem           31  into            7
+ move the subsystem           32  into            8
+ move the subsystem           33  into            8
+ move the subsystem           34  into            9
+ move the subsystem           35  into            9
+ move the subsystem           36  into           10
+ move the subsystem           37  into           10
+ move the subsystem           38  into           11
+ move the subsystem           39  into           11
+ move the subsystem           40  into           12
+ move the subsystem           41  into           12
+ move the subsystem           42  into           13
+ move the subsystem           43  into           13
+ move the subsystem           44  into           14
+ move the subsystem           45  into           14
+ move the subsystem           46  into           15
+ move the subsystem           47  into           15
+ move the subsystem           48  into           16
+============================================================
+The Core and Buffer Atoms
+============================================================
+Frag       CoreAtom     CoreTot     BufAtom       BufTot     SubAtom     SubTot    Elec    NBasis
+    1  1,18-19            3       1                  0       1,18-19            3    10     7
+    2  2,20-21            3       2                  0       2,20-21            3    10     7
+    3  3,22-23            3       3                  0       3,22-23            3    10     7
+    4  4,24-25            3       4                  0       4,24-25            3    10     7
+    5  5,26-27            3       5                  0       5,26-27            3    10     7
+    6  6,28-29            3       6                  0       6,28-29            3    10     7
+    7  7,30-31            3       7                  0       7,30-31            3    10     7
+    8  8,32-33            3       8                  0       8,32-33            3    10     7
+    9  9,34-35            3       9                  0       9,34-35            3    10     7
+   10  10,36-37           3       10                 0       10,36-37           3    10     7
+   11  11,38-39           3       11                 0       11,38-39           3    10     7
+   12  12,40-41           3       12                 0       12,40-41           3    10     7
+   13  13,42-43           3       13                 0       13,42-43           3    10     7
+   14  14,44-45           3       14                 0       14,44-45           3    10     7
+   15  15,46-47           3       15                 0       15,46-47           3    10     7
+   16  16-17,48           3       16                 0       16-17,48           3    10     7
+-----------------------------------------------------------
+Total Frag=  16
+NBasis Max=   7
+===========================================================
+
+ @ Now End Div & Con Fragment
+
+
  @ Begin Energy Calculation
 
-                                         SCF ENERGY
-------------------------------------------------------------------------------------------------------------------------
-NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
-------------------------------------------------------------------------------------------------------------------------
-  1  -1210.017981128      ------        12.480     1        0.27     12.21      0.09    0.1589E+01  0.2606E-01  0.4700E+00
-  2  -1209.199128091  -.818853E+00      17.980     2        0.27     17.71      0.09    0.2454E+00  0.5523E-02  0.1236E+00
-  3  -1209.603899441  0.404771E+00      18.110     3        0.27     17.84      0.09    0.1041E+00  0.1869E-02  0.4117E-01
-  4  -1209.671325042  0.674256E-01      18.030     4        0.27     17.76      0.09    0.2658E-01  0.9598E-03  0.1619E-01
-  5  -1209.680559627  0.923458E-02      18.020     5        0.27     17.75      0.09    0.4745E-02  0.3938E-03  0.7143E-02
-  6  -1209.681383872  0.824245E-03      18.000     6        0.27     17.73      0.09    0.1122E-02  0.6485E-04  0.1207E-02
-------------------------------------------------------------------------------------------------------------------------
- REACH CONVERGENCE AFTER   6 CYLCES
- MAX ERROR = 0.112191E-02   RMS CHANGE = 0.648477E-04   MAX CHANGE = 0.120748E-02
- -----------------------------------------------
-ELECTRONIC ENERGY    = -2723.170297803
-CORE_CORE REPULSION  =  1513.488913932
-TOTAL ENERGY         = -1209.681383872
-
- @ End Energy calculation
-
-
- @ Begin Charge and Dipole Calculation
-
-    ATOMIC CHARGES
-   ATOM          MULLIKEN            LOWDIN
-   O             -0.7915            -0.5029
-   O             -0.7651            -0.4848
-   O             -0.7984            -0.5065
-   O             -0.7802            -0.4947
-   O             -0.7901            -0.5024
-   O             -0.7733            -0.4926
-   O             -0.7766            -0.4940
-   O             -0.7872            -0.4965
-   O             -0.7754            -0.4925
-   O             -0.7758            -0.4937
-   O             -0.7606            -0.4799
-   O             -0.7874            -0.5013
-   O             -0.7760            -0.4897
-   O             -0.7801            -0.4947
-   O             -0.7647            -0.4847
-   O             -0.7852            -0.4988
-   H              0.3944             0.2507
-   H              0.3873             0.2436
-   H              0.3889             0.2464
-   H              0.3789             0.2437
-   H              0.3967             0.2519
-   H              0.3951             0.2496
-   H              0.3936             0.2468
-   H              0.3897             0.2476
-   H              0.3922             0.2487
-   H              0.3866             0.2449
-   H              0.3917             0.2481
-   H              0.3745             0.2372
-   H              0.3877             0.2456
-   H              0.3896             0.2467
-   H              0.3836             0.2425
-   H              0.3934             0.2492
-   H              0.3974             0.2523
-   H              0.3838             0.2416
-   H              0.3870             0.2462
-   H              0.3840             0.2433
-   H              0.3951             0.2512
-   H              0.4015             0.2552
-   H              0.3815             0.2459
-   H              0.3924             0.2481
-   H              0.3965             0.2514
-   H              0.3903             0.2472
-   H              0.3916             0.2489
-   H              0.3883             0.2463
-   H              0.3873             0.2454
-   H              0.3961             0.2509
-   H              0.3805             0.2447
-   H              0.3904             0.2479
-   TOTAL         0.0000             0.0000
-
-    DIPOLE (DEBYE)
-      X         Y         Z        TOTAL
-    1.4341   -0.0673   -3.4162    3.7056
-
- @ End Charge and Dipole Calculation
-
-
- @ Output Timing Infomration
-
-------------- TIMING ---------------
-INITIAL GUESS TIME =     0.220000000(  0.21%)
-TOTAL SCF TIME     =   103.110000000( 99.25%)
-      TOTAL OP TIME      =   101.490000000( 97.69%)
-            TOTAL 1e TIME      =     0.490000000(  0.47%)
-            TOTAL 2e TIME      =   101.000000000( 97.22%)
-            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     1.620000000(  1.56%)
-            TOTAL DIAG TIME    =     0.540000000(  0.52%)
-DIPOLE TIME        =     0.380000000(  0.37%)
-TOTAL TIME         =   103.890000000
-------------------------------------
- Job cpu time:  0 days  0 hours  1 minutes 43.9 seconds.
-
- @ Finish Output Timing Infomration
-
- Normal Terminatation. Task Finished on: Thu Sep 15 14:42:22 2011
+ -------------------------------
+SCF CYCLE=    1
+ Exceed the maximum interations
+ IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
+E(Fermi)    =   -0.0000000  AFTER 101 N.C. Cycles
+DIIS CYCLE     =        1
+DIIS TIME =         0.00
+RMS CHANGE     = 0.719209E+01  MAX CHANGE= 0.666352E+02
+ -------------------------------
+SCF CYCLE=    2
+ Exceed the maximum interations
+ IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
+E(Fermi)    =  196.5063554  AFTER 101 N.C. Cycles
+DIIS CYCLE     =        2
+DIIS TIME =         0.00
+RMS CHANGE     = 0.172811E+02  MAX CHANGE= 0.674584E+02
+ -------------------------------
+SCF CYCLE=    3
+ Exceed the maximum interations
+ IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
+E(Fermi)    =   -0.5547215  AFTER 101 N.C. Cycles
+DIIS CYCLE     =        3
+DIIS TIME =         0.00
+RMS CHANGE     = 0.177723E+02  MAX CHANGE= 0.677167E+02
+ -------------------------------
+SCF CYCLE=    4
+ Exceed the maximum interations
+ IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
+E(Fermi)    =  201.1020648  AFTER 101 N.C. Cycles
+DIIS CYCLE     =        4
+DIIS TIME =         0.00
+RMS CHANGE     = 0.177806E+02  MAX CHANGE= 0.677541E+02

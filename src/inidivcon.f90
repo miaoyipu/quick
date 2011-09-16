@@ -103,6 +103,7 @@ subroutine inidivcon(natomsaved)
 
      select case (quick_method%ifragbasis)    ! define buffer region for different fragment method and number of fragment
      case (1)
+        !rbuffer1=7.0d0
         rbuffer1=7.0d0
         rbuffer2=0.0d0
         np=natomt               ! Atom basis
@@ -726,6 +727,7 @@ subroutine inidivcon(natomsaved)
   ! STEP 4. broadcast all the info and variables to other nodes
   !===================================================================
 
+#ifdef MPI
   allocate(mpi_dc_fragn(0:mpisize-1))       ! frag no. a node has
   allocate(mpi_dc_frag(0:mpisize-1,np)) ! frag a node has
   allocate(mpi_dc_nbasis(0:mpisize-1))  ! total basis set a node has
@@ -736,7 +738,6 @@ subroutine inidivcon(natomsaved)
      mpi_dc_frag(0,i)=i
   enddo
 
-#ifdef MPI
   !-------------------MPI/ALL NODES------------------------------------
   if (bMPI) then
      call mpi_setup_inidivcon(natomt)
@@ -907,8 +908,6 @@ subroutine divideX
 
   nbasissave=nbasis
 
-  !        print*,'test',np  
-
   do Itt=1,np
 
      ! XIAO HE reconsider              
@@ -929,7 +928,7 @@ subroutine divideX
 
      !    call DIAG(NBASIS,HOLD,NBASIS,TOL,V,Sminhalf,IDEGEN1,Uxiao,IERROR)
 
-     call DIAG(NBASIS,Odcsubtemp,NBASIS,TOL,Vtemp,EVAL1temp,IDEGEN1temp,VECtemp,IERROR)
+     call DIAG(NBASIS,Odcsubtemp,NBASIS,1d-10,Vtemp,EVAL1temp,IDEGEN1temp,VECtemp,IERROR)
 
      ! Consider the following:
 

@@ -1,1 +1,4 @@
-remove V2, Uxiao,quick_qm_struct%Osave,denseOld,Osavedft from struct and move them to local variable
+Add DGEMM to GPUGP quick
+Add d,f..orbitals
+Add GPU support D&C
+Add multi-GPU support quick

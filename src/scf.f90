@@ -724,9 +724,12 @@ subroutine electdiisdc(jscf,PRMS)
 
       Ttmp=0.0d0
 
+#ifdef MPI
       do Ittt=1,mpi_dc_fragn(mpirank)
-
          itt=mpi_dc_frag(mpirank,ittt)   ! aimed fragment
+#else
+      do itt = 1, np
+#endif
 
          ! pass value for convience reason
          nbasis=nbasisdc(itt)    ! basis set for fragment
@@ -761,7 +764,6 @@ subroutine electdiisdc(jscf,PRMS)
                Odcsubtemp(I,J)=OIJ
             enddo
          enddo
-
          NtempN=nbasisdc(itt)
 
          !--------------------------------------------
@@ -918,12 +920,12 @@ subroutine electdiisdc(jscf,PRMS)
       !---------- MPI/MASTER ----------------------
       if (master) then
          ! Write infos for this cycle
-         write (ioutfile,'("SCF TIME = ",F12.2)') timer_end%TSCF-timer_begin%TSCF
-         write (ioutfile,'("DC DIAG TIME = ",F12.2)')  Ttmp                                  ! Max CPU Time in every node
+         write (*,'("SCF TIME = ",F12.2)') timer_end%TSCF-timer_begin%TSCF
+         write (*,'("DC DIAG TIME = ",F12.2)')  Ttmp                                  ! Max CPU Time in every node
          write (ioutfile,'("DIIS CYCLE     = ",I8)') itemp
          write (ioutfile,'("DIIS TIME = ",F12.2)') timer_end%TDII-timer_begin%TDII
          write (ioutfile,'("RMS CHANGE     = ",E12.6, "  MAX CHANGE= ",E12.6)') PRMS,PCHANGE
-         if(quick_method%printEnergy) write (ioutfile,'("TOTAL ENERGY=",F16.9)') quick_qm_struct%Eel+quick_qm_struct%Ecore
+         if(quick_method%printEnergy) write (*,'("TOTAL ENERGY=",F16.9)') quick_qm_struct%Eel+quick_qm_struct%Ecore
 
          if(PRMS.le.0.00001d0.and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**7.5d0))then
             quick_method%integralCutoff=1.0d0/(10.0d0**8.0d0)
