@@ -4,5 +4,4 @@ src/*.o
 src/*.mod
 src/_*
 src/*.bak
-src/new_quick*
 example
