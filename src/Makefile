@@ -128,7 +128,8 @@ all: quick quick.cuda
 quick_subs:
 	cp *.mod ./subs
 	cd ./subs && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
-	ar -r $(libfolder)/quicklib.a ./subs/*.o
+	ar -r -s $(libfolder)/quicklib.a ./subs/*.o
+	ranlib $(libfolder)/quicklib.a
 	rm ./subs/*.mod
 
 #================= quick module library =================================
@@ -213,4 +214,4 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
-#include depend
+include depend

@@ -29,6 +29,7 @@ subroutine getmolsad()
    bMPI=.false.
    quick_molspec%imult=0
    quick_method%HF=.true.
+   quick_method%DFT=.false.
    quick_method%UNRST=.true.
    quick_method%ZMAT=.false.
    quick_method%divcon=.false.

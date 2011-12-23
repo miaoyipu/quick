@@ -2,8 +2,8 @@
  Input=water1.gjf
  Output=water1.log
  Initial command:
- /Users/miao/Workspace/g09/l1.exe /Users/miao/Workspace/new_quick/example/Gau-6034.inp -scrdir=/Users/miao/Workspace/new_quick/example/
- Entering Link 1 = /Users/miao/Workspace/g09/l1.exe PID=      6035.
+ /Users/miao/Workspace/g09/l1.exe /Users/miao/Workspace/new_quick/example/Gau-4075.inp -scrdir=/Users/miao/Workspace/new_quick/example/
+ Entering Link 1 = /Users/miao/Workspace/g09/l1.exe PID=      4076.
   
  Copyright (c) 1988,1990,1992,1993,1995,1998,2003,2009, Gaussian, Inc.
                   All Rights Reserved.
@@ -76,7 +76,7 @@
  
  ******************************************
  Gaussian 09:  EM64M-G09RevA.02 11-Jun-2009
-                19-Aug-2011 
+                 8-Nov-2011 
  ******************************************
  --------------------------
  #HF/6-31g scf=direct nofmm
@@ -92,7 +92,7 @@
  water
  -----
  Symbolic Z-matrix:
- Charge =  0 Multiplicity = 1
+ Charge = -1 Multiplicity = 2
  H                     0.3032   -0.494     0. 
  H                    -0.3032   -0.9088    0. 
  
@@ -104,7 +104,7 @@
       1          1           0        0.303200   -0.494000    0.000000
       2          1           0       -0.303200   -0.908800    0.000000
  ---------------------------------------------------------------------
- Stoichiometry    H2
+ Stoichiometry    H2(1-,2)
  Framework group  D*H[C*(H.H)]
  Deg. of freedom     1
  Full point group                 D*H     NOp   8
@@ -129,10 +129,10 @@
  There are     0 symmetry adapted basis functions of B2U symmetry.
  There are     0 symmetry adapted basis functions of B3U symmetry.
  Integral buffers will be    131072 words long.
- Raffenetti 1 integral format.
+ Raffenetti 2 integral format.
  Two-electron integral symmetry is turned on.
      4 basis functions,     8 primitive gaussians,     4 cartesian basis functions
-     1 alpha electrons        1 beta electrons
+     2 alpha electrons        1 beta electrons
        nuclear repulsion energy         0.7202657049 Hartrees.
  One-electron integrals computed using PRISM.
  NBasis=     4 RedAO= T  NBF=     2     0     0     0     0     2     0     0
@@ -148,16 +148,25 @@
          I1Cent=           4 NGrid=           0.
  Petite list used in FoFCou.
  Initial guess orbital symmetries:
+ Alpha Orbitals:
+       Occupied  (SGG) (SGU)
+       Virtual   (SGG) (SGU)
+ Beta  Orbitals:
        Occupied  (SGG)
        Virtual   (SGU) (SGG) (SGU)
- The electronic state of the initial guess is 1-SGG.
+ The electronic state of the initial guess is 2-SGU.
+ Initial guess <Sx>= 0.0000 <Sy>= 0.0000 <Sz>= 0.5000 <S**2>= 0.7500 S= 0.5000
  Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
  Requested convergence on MAX density matrix=1.00D-06.
  Requested convergence on             energy=1.00D-06.
  No special actions if energy rises.
- Keep R1 ints in memory in canonical form, NReq=819834.
- SCF Done:  E(RHF) =  -1.12681149634     A.U. after    4 cycles
-             Convg  =    0.9448D-09             -V/T =  1.9967
+ Keep R1 and R2 ints in memory in canonical form, NReq=819896.
+ SCF Done:  E(UHF) = -0.893402147324     A.U. after    7 cycles
+             Convg  =    0.9451D-11             -V/T =  1.6141
+ <Sx>= 0.0000 <Sy>= 0.0000 <Sz>= 0.5000 <S**2>= 0.7506 S= 0.5003
+ <L.S>= 0.000000000000E+00
+ Annihilation of the first spin contaminant:
+ S**2 before annihilation     0.7506,   after     0.7500
 
  **********************************************************************
 
@@ -166,69 +175,113 @@
  **********************************************************************
 
  Orbital symmetries:
+ Alpha Orbitals:
+       Occupied  (SGG) (SGU)
+       Virtual   (SGG) (SGU)
+ Beta  Orbitals:
        Occupied  (SGG)
        Virtual   (SGU) (SGG) (SGU)
- The electronic state is 1-SGG.
- Alpha  occ. eigenvalues --   -0.59743
- Alpha virt. eigenvalues --    0.23989   0.77217   1.41147
+ The electronic state is 2-SGU.
+ Alpha  occ. eigenvalues --   -0.26003   0.22681
+ Alpha virt. eigenvalues --    1.11255   1.75955
+  Beta  occ. eigenvalues --   -0.18525
+  Beta virt. eigenvalues --    0.61240   1.14040   1.82487
           Condensed to atoms (all electrons):
               1          2
-     1  H    0.594678   0.405322
-     2  H    0.405322   0.594678
+     1  H    3.847617  -2.347617
+     2  H   -2.347617   3.847617
  Mulliken atomic charges:
               1
-     1  H    0.000000
-     2  H    0.000000
- Sum of Mulliken atomic charges =   0.00000
+     1  H   -0.500000
+     2  H   -0.500000
+ Sum of Mulliken atomic charges =  -1.00000
  Mulliken charges with hydrogens summed into heavy atoms:
               1
- Sum of Mulliken charges with hydrogens summed into heavy atoms =   0.00000
- Electronic spatial extent (au):  <R**2>=              5.1909
- Charge=              0.0000 electrons
+ Sum of Mulliken charges with hydrogens summed into heavy atoms =  -1.00000
+          Atomic-Atomic Spin Densities.
+              1          2
+     1  H    3.261265  -2.761265
+     2  H   -2.761265   3.261265
+ Mulliken atomic spin densities:
+              1
+     1  H    0.500000
+     2  H    0.500000
+ Sum of Mulliken atomic spin densities =   1.00000
+ Electronic spatial extent (au):  <R**2>=             12.9850
+ Charge=             -1.0000 electrons
  Dipole moment (field-independent basis, Debye):
     X=              0.0000    Y=              0.0000    Z=              0.0000  Tot=              0.0000
  Quadrupole moment (field-independent basis, Debye-Ang):
-   XX=             -2.0348   YY=             -2.0348   ZZ=             -1.6160
+   XX=             -4.1650   YY=             -4.1650   ZZ=             -7.8389
    XY=              0.0000   XZ=              0.0000   YZ=              0.0000
  Traceless Quadrupole moment (field-independent basis, Debye-Ang):
-   XX=             -0.1396   YY=             -0.1396   ZZ=              0.2792
+   XX=              1.2246   YY=              1.2246   ZZ=             -2.4492
    XY=              0.0000   XZ=              0.0000   YZ=              0.0000
  Octapole moment (field-independent basis, Debye-Ang**2):
   XXX=              0.0000  YYY=              0.0000  ZZZ=              0.0000  XYY=              0.0000
   XXY=              0.0000  XXZ=              0.0000  XZZ=              0.0000  YZZ=              0.0000
   YYZ=              0.0000  XYZ=              0.0000
  Hexadecapole moment (field-independent basis, Debye-Ang**3):
- XXXX=             -1.8813 YYYY=             -1.8813 ZZZZ=             -2.8295 XXXY=              0.0000
+ XXXX=             -4.6347 YYYY=             -4.6347 ZZZZ=            -16.4871 XXXY=              0.0000
  XXXZ=              0.0000 YYYX=              0.0000 YYYZ=              0.0000 ZZZX=              0.0000
- ZZZY=              0.0000 XXYY=             -0.6271 XXZZ=             -0.7959 YYZZ=             -0.7959
+ ZZZY=              0.0000 XXYY=             -1.5449 XXZZ=             -3.4375 YYZZ=             -3.4375
  XXYZ=              0.0000 YYXZ=              0.0000 ZZXY=              0.0000
- N-N= 7.202657049363D-01 E-N=-3.629825644902D+00  KE= 1.130536050021D+00
- Symmetry AG   KE= 1.130536050021D+00
+ N-N= 7.202657049363D-01 E-N=-6.212689057336D+00  KE= 1.969484674931D+00
+ Symmetry AG   KE= 1.515468415520D+00
  Symmetry B1G  KE= 0.000000000000D+00
  Symmetry B2G  KE= 0.000000000000D+00
  Symmetry B3G  KE= 0.000000000000D+00
  Symmetry AU   KE= 0.000000000000D+00
- Symmetry B1U  KE= 2.614472908022D-32
+ Symmetry B1U  KE= 4.540162594104D-01
  Symmetry B2U  KE= 0.000000000000D+00
  Symmetry B3U  KE= 0.000000000000D+00
- 1\1\GINC-QTPCLNT135\SP\RHF\6-31G\H2\MIAO\19-Aug-2011\0\\#HF/6-31g scf=
- direct nofmm\\water\\0,1\H,0,0.3032,-0.494,0.\H,0,-0.3032,-0.9088,0.\\
- Version=EM64M-G09RevA.02\State=1-SGG\HF=-1.1268115\RMSD=9.448e-10\Dipo
- le=0.,0.,0.\Quadrupole=0.1083417,-0.004539,-0.1038028,0.1451147,0.,0.\
- PG=D*H [C*(H1.H1)]\\@
+                          Isotropic Fermi Contact Couplings
+        Atom                 a.u.       MegaHertz       Gauss      10(-4) cm-1
+     1  H(1)               0.02554     114.17701      40.74119      38.08535
+     2  H(1)               0.02554     114.17701      40.74119      38.08535
+ --------------------------------------------------------
+       Center         ----  Spin Dipole Couplings  ----
+                      3XX-RR        3YY-RR        3ZZ-RR
+ --------------------------------------------------------
+     1   Atom       -0.028867     -0.028867      0.057734
+     2   Atom       -0.028867     -0.028867      0.057734
+ --------------------------------------------------------
+                        XY            XZ            YZ
+ --------------------------------------------------------
+     1   Atom        0.000000      0.000000      0.000000
+     2   Atom        0.000000      0.000000      0.000000
+ --------------------------------------------------------
 
 
- THE ENLIGHTENED ONE, BECAUSE HE SAW MANKIND DROWNING  
- IN THE GREAT SEA OF BIRTH, DEATH, AND SORROW, LONGED TO SAVE 
- THEM, FOR THIS HE WAS MOVED TO PITY.                         
- BECAUSE HE SAW MEN OF THE WORLD STRAYING IN FALSE PATHS, AND 
- NONE TO GUIDE THEM, FOR THIS HE WAS MOVED TO PITY.           
-                     ..................                       
- BECAUSE HE SAW THE MEN OF THE WORLD PLOUGHING THEIR FIELDS,  
- SOWING THE SEED, TRAFFICKING, HUCKSTERING, BUYING, SELLING,  
- AND AT THE END WINNOWING NOTHING BUT BITTERNESS,             
- FOR THIS HE WAS MOVED TO PITY......                   
-                   BUDAH'S PITY - UPSAKA SILA SUTRA           
+ ---------------------------------------------------------------------------------
+              Anisotropic Spin Dipole Couplings in Principal Axis System
+ ---------------------------------------------------------------------------------
+
+       Atom             a.u.   MegaHertz   Gauss  10(-4) cm-1        Axes
+
+              Baa    -0.0289   -15.402    -5.496    -5.138  0.0000  1.0000  0.0000
+     1 H(1)   Bbb    -0.0289   -15.402    -5.496    -5.138  1.0000  0.0000  0.0000
+              Bcc     0.0577    30.804    10.992    10.275  0.0000  0.0000  1.0000
+ 
+              Baa    -0.0289   -15.402    -5.496    -5.138  0.0000  1.0000  0.0000
+     2 H(1)   Bbb    -0.0289   -15.402    -5.496    -5.138  1.0000  0.0000  0.0000
+              Bcc     0.0577    30.804    10.992    10.275  0.0000  0.0000  1.0000
+ 
+
+ ---------------------------------------------------------------------------------
+
+ 1\1\GINC-SSRB-VPN2-13-132\SP\UHF\6-31G\H2(1-,2)\MIAO\08-Nov-2011\0\\#H
+ F/6-31g scf=direct nofmm\\water\\-1,2\H,0,0.3032,-0.494,0.\H,0,-0.3032
+ ,-0.9088,0.\\Version=EM64M-G09RevA.02\State=2-SGU\HF=-0.8934021\S2=0.7
+ 50566\S2-1=0.\S2A=0.75\RMSD=9.451e-12\Dipole=0.,0.,0.\Quadrupole=-0.95
+ 02869,0.0398122,0.9104747,-1.2728297,0.,0.\PG=D*H [C*(H1.H1)]\\@
+
+
+ Human beings, who are almost unique in having the
+ ability to learn from the experience of others, are
+ also remarkable for their apparent disinclination to do so.
+                               -- Douglas Adams,
+                                Last Chance to See
  Job cpu time:  0 days  0 hours  0 minutes  0.8 seconds.
  File lengths (MBytes):  RWF=      5 Int=      0 D2E=      0 Chk=      1 Scr=      1
- Normal termination of Gaussian 09 at Fri Aug 19 18:44:24 2011.
+ Normal termination of Gaussian 09 at Tue Nov  8 11:45:54 2011.

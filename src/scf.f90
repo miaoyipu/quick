@@ -241,14 +241,37 @@ subroutine electdiis(jscf)
          ! matrix.
 
          ! The first part is ODS
-         quick_scratch%hold=MATMUL(quick_qm_struct%dense,quick_qm_struct%s)
-         allerror(iidiis,1:nbasis,1:nbasis)=MATMUL(quick_qm_struct%o,quick_scratch%hold)
+#ifdef CUDA
+         call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%dense, &
+                            nbasis, quick_qm_struct%s, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+                            
+         call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
+                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
+#else
+         quick_scratch%hold = MATMUL(quick_qm_struct%dense,quick_qm_struct%s)
+         quick_scratch%hold2 = MATMUL(quick_qm_struct%o,quick_scratch%hold)
+#endif
+        
+         do i = 1, nbasis
+            do j = 1, nbasis
+                allerror(iidiis, i, j) = quick_scratch%hold2( i, j)
+            enddo
+         enddo
          
          ! Calculate D O. then calculate S (do) and subtract that from the allerror matrix.
          ! This means we now have the e(i) matrix.
          ! allerror=ODS-SDO
+#ifdef CUDA
+
+         call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%dense, &
+                            nbasis, quick_qm_struct%o, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+                            
+         call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%s, &
+                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
+#else         
          quick_scratch%hold=MATMUL(quick_qm_struct%dense,quick_qm_struct%o)
          quick_scratch%hold2=MATMUL(quick_qm_struct%s,quick_scratch%hold)
+#endif
 
          errormax = 0.d0
          do I=1,nbasis
@@ -264,9 +287,30 @@ subroutine electdiis(jscf)
          ! The easiest way to do this is to calculate e(i) . X , store
          ! this in HOLD, and then calculate Transpose[X] (.e(i) . X)
          !-----------------------------------------------
-         quick_scratch%hold=MATMUL(allerror(iidiis,1:nbasis,1:nbasis),quick_qm_struct%x)
-         allerror(iidiis,1:nbasis,1:nbasis)=MATMUL(quick_qm_struct%x,quick_scratch%hold)
+         
+         do i = 1, nbasis
+            do j = 1, nbasis
+                quick_scratch%hold2( i, j) = allerror(iidiis, i, j)
+            enddo
+         enddo
+         
+#ifdef CUDA
 
+         call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_scratch%hold2, &
+                            nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+                            
+         call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
+                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
+#else         
+         
+         quick_scratch%hold=MATMUL(quick_scratch%hold2,quick_qm_struct%x)
+         quick_scratch%hold2=MATMUL(quick_qm_struct%x,quick_scratch%hold)
+#endif
+         do i = 1, nbasis
+            do j = 1, nbasis
+                allerror(iidiis, i, j) = quick_scratch%hold2( i, j)
+            enddo
+         enddo
          !-----------------------------------------------
          ! 4)  Store the e'(I) and O(i).
          ! e'(i) is already stored.  Simply store the operator matrix in
@@ -407,9 +451,18 @@ subroutine electdiis(jscf)
          ! First you have to transpose this into an orthogonal basis, which
          ! is accomplished by calculating Transpose[X] . O . X.
          !-----------------------------------------------
+         
+#ifdef CUDA
+
+         call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
+                            nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+                            
+         call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
+                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
+#else         
          quick_scratch%hold=MATMUL(quick_qm_struct%o,quick_qm_struct%x)
          quick_qm_struct%o=MATMUL(quick_qm_struct%x,quick_scratch%hold)
-
+#endif
          ! Now diagonalize the operator matrix.
          call cpu_time(timer_begin%TDiag)
          call DIAG(nbasis,quick_qm_struct%o,nbasis,quick_method%DMCutoff,V2,quick_qm_struct%E,&
@@ -420,7 +473,15 @@ subroutine electdiis(jscf)
          ! The C' is from the above diagonalization.  Also, save the previous
          ! Density matrix to check for convergence.
          !        call DMatMul(nbasis,X,VEC,CO)    ! C=XC'
+         
+#ifdef CUDA
+
+         call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
+                            nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
+#else         
          quick_qm_struct%co=MATMUL(quick_qm_struct%x,quick_qm_struct%vec)
+#endif
+
          call CopyDMat(quick_qm_struct%dense,quick_scratch%hold,nbasis) ! Save DENSE to HOLD
 
          ! PIJ=SIGMA[i=1,nelec/2]2CJK*CIK
@@ -724,9 +785,12 @@ subroutine electdiisdc(jscf,PRMS)
 
       Ttmp=0.0d0
 
+#ifdef MPI
       do Ittt=1,mpi_dc_fragn(mpirank)
-
          itt=mpi_dc_frag(mpirank,ittt)   ! aimed fragment
+#else
+      do itt = 1, np
+#endif
 
          ! pass value for convience reason
          nbasis=nbasisdc(itt)    ! basis set for fragment
@@ -761,7 +825,6 @@ subroutine electdiisdc(jscf,PRMS)
                Odcsubtemp(I,J)=OIJ
             enddo
          enddo
-
          NtempN=nbasisdc(itt)
 
          !--------------------------------------------
@@ -918,12 +981,12 @@ subroutine electdiisdc(jscf,PRMS)
       !---------- MPI/MASTER ----------------------
       if (master) then
          ! Write infos for this cycle
-         write (ioutfile,'("SCF TIME = ",F12.2)') timer_end%TSCF-timer_begin%TSCF
-         write (ioutfile,'("DC DIAG TIME = ",F12.2)')  Ttmp                                  ! Max CPU Time in every node
+         write (*,'("SCF TIME = ",F12.2)') timer_end%TSCF-timer_begin%TSCF
+         write (*,'("DC DIAG TIME = ",F12.2)')  Ttmp                                  ! Max CPU Time in every node
          write (ioutfile,'("DIIS CYCLE     = ",I8)') itemp
          write (ioutfile,'("DIIS TIME = ",F12.2)') timer_end%TDII-timer_begin%TDII
          write (ioutfile,'("RMS CHANGE     = ",E12.6, "  MAX CHANGE= ",E12.6)') PRMS,PCHANGE
-         if(quick_method%printEnergy) write (ioutfile,'("TOTAL ENERGY=",F16.9)') quick_qm_struct%Eel+quick_qm_struct%Ecore
+         if(quick_method%printEnergy) write (*,'("TOTAL ENERGY=",F16.9)') quick_qm_struct%Eel+quick_qm_struct%Ecore
 
          if(PRMS.le.0.00001d0.and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**7.5d0))then
             quick_method%integralCutoff=1.0d0/(10.0d0**8.0d0)

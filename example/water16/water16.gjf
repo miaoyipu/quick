@@ -1,7 +1,7 @@
 %chk=AB
 %mem=125MW
 %nproc=1
-#hf/6-31g geom=connectivity nosymm polar
+#hf/6-31g* geom=connectivity nosymm
 
 Water16 modeled by HyperChem and optimized by amber94 force feld
 

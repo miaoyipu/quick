@@ -114,7 +114,7 @@ end subroutine g2eshell
   NLL1=quick_basis%Qstart(LL)
   NLL2=quick_basis%Qfinal(LL)
 
-goto 1011
+
   NNAB=(NII2+NJJ2)
   NNCD=(NKK2+NLL2)
 
@@ -265,7 +265,6 @@ goto 1011
      enddo
   enddo
 
-1011 continue
   do I=NII1,NII2
      NNA=Sumindex(I-1)+1
      do J=NJJ1,NJJ2
@@ -299,7 +298,7 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
 
   COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
 
-!  double precision X44(129600)
+  double precision X44(129600)
 
   COMMON /COM1/RA,RB,RC,RD
   COMMON /COM2/AA,BB,CC,DD,AB,CD,ROU,ABCD
@@ -336,38 +335,15 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
   NABCDTYPE=(NII2+NJJ2)*10+(NKK2+NLL2)
 
   NABCD=NII2+NJJ2+NKK2+NLL2
-
+  itt = 0
   do JJJ=1,quick_basis%kprim(JJ)
      Nprij=quick_basis%kstart(JJ)+JJJ-1
      
      do III=1,quick_basis%kprim(II)
         Nprii=quick_basis%kstart(II)+III-1
         
-!        X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)
+        X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)
         cutoffprim1=dnmax*cutprim(Nprii,Nprij)
-
-        AB=Apri(Nprii,Nprij)    ! AB = Apri = expo(NpriI)+expo(NpriJ)
-
-        ABtemp=0.5d0/AB         ! ABtemp = 1/(2Apri) = 1/2(expo(NpriI)+expo(NpriJ))
-        do M=1,3
-        
-           ! P' is the weighting center of NpriI and NpriJ
-           !                           --->           --->
-           ! ->  ------>       expo(I)*xyz(I)+expo(J)*xyz(J)
-           ! P = P'(I,J)  = ------------------------------
-           !                       expo(I) + expo(J)    
-           P(M)=Ppri(M,Nprii,Nprij)
-           
-           !                        -->            -->
-           ! ----->         expo(I)*xyz(I)+expo(J)*xyz(J)                                 -->            -->
-           ! AAtemp = ----------------------------------- * (expo(I) + expo(J)) = expo(I)*xyz(I)+expo(J)*xyz(J)
-           !                  expo(I) + expo(J)
-           AAtemp(M)=P(M)*AB
-           
-           ! ----->   ->  ->
-           ! Ptemp  = P - A
-           Ptemp(M)=P(M)-RA(M)
-        enddo
         
         do LLL=1,quick_basis%kprim(LL)
            Npril=quick_basis%kstart(LL)+LLL-1
@@ -376,117 +352,25 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
               Nprik=quick_basis%kstart(KK)+KKK-1
               cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
              
-              !--------------------------------
-              ! use the following code instead of the original will save 10% 
-              ! time but cost more space
-              ! uncommend !double prcision X44(129600)
-              !========= PART I ======================
-              ! X44(ITT) = X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
-              !========= DELETE IN BETWEEN ===============
               if(cutoffprim.gt.quick_method%primLimit)then
-              CD=Apri(Nprik,Npril)  ! CD = Apri = expo(NpriK) + expo(NpriL)
-                 ABCD=AB+CD            ! ABCD = expo(NpriI)+expo(NpriJ)+expo(NpriK)+expo(NpriL)
-
-                 !         AB * CD      (expo(I)+expo(J))*(expo(K)+expo(L))
-                 ! Rou = ----------- = ------------------------------------
-                 !         AB + CD         expo(I)+expo(J)+expo(K)+expo(L)
-                 ROU=AB*CD/ABCD        
-                 
-                 RPQ=0.0d0
-                 
-                 !              _______________________________
-                 ! ABCDxiao = \/expo(I)+expo(J)+expo(K)+expo(L)
-                 ABCDxiao=dsqrt(ABCD)  
-                 
-                 CDtemp=0.5d0/CD       ! CDtemp =  1/2(expo(NpriK)+expo(NpriL))
-                 
-                 !                expo(I)+expo(J)                        expo(K)+expo(L)
-                 ! ABcom = --------------------------------  CDcom = --------------------------------
-                 !          expo(I)+expo(J)+expo(K)+expo(L)           expo(I)+expo(J)+expo(K)+expo(L)
-                 ABcom=AB/ABCD         
-                 CDcom=CD/ABCD
-                 
-                 ! ABCDtemp = 1/2(expo(I)+expo(J)+expo(K)+expo(L))
-                 ABCDtemp=0.5d0/ABCD
-                 do M=1,3
-                 
-                    ! Q' is the weighting center of NpriK and NpriL
-                    !                           --->           --->
-                    ! ->  ------>       expo(K)*xyz(K)+expo(L)*xyz(L)
-                    ! Q = P'(K,L)  = ------------------------------
-                    !                       expo(K) + expo(L)  
-                    Q(M)=Ppri(M,Nprik,Npril)
-
-                    ! W' is the weight center for NpriI,NpriJ,NpriK and NpriL
-                    !                --->             --->             --->            --->
-                    ! ->     expo(I)*xyz(I) + expo(J)*xyz(J) + expo(K)*xyz(K) +expo(L)*xyz(L)
-                    ! W = -------------------------------------------------------------------
-                    !                    expo(I) + expo(J) + expo(K) + expo(L)
-                    W(M)=(AAtemp(M)+Q(M)*CD)/ABCD
-                    
-                    !        ->  ->  2
-                    ! RPQ =| P - Q | 
-                    XXXtemp=P(M)-Q(M)
-                    RPQ=RPQ+XXXtemp*XXXtemp
-                    
-                    ! ---->   ->  ->
-                    ! Qtemp = Q - K
-                    Qtemp(M)=Q(M)-RC(M)
-                    
-                    ! ----->   ->  ->
-                    ! WQtemp = W - Q
-                    ! ----->   ->  ->
-                    ! WPtemp = W - P
-                    WQtemp(M)=W(M)-Q(M)
-                    WPtemp(M)=W(M)-P(M)
-                 enddo
-                 
-                 !             ->  -> 2
-                 ! T = ROU * | P - Q|
-                 T=RPQ*ROU
-
-                 !                         2m        2
-                 ! Fm(T) = integral(1,0) {t   exp(-Tt )dt}
-                 ! NABCD is the m value, and FM returns the FmT value
-                 call FmT(NABCD,T,FM)
-            
-                 do iitemp=0,NABCD
-                    ! Yxiaotemp(1,1,iitemp) is the starting point of recurrsion
-                    Yxiaotemp(1,1,iitemp)=FM(iitemp)/ABCDxiao!              _______________________________
-                                                             ! ABCDxiao = \/expo(I)+expo(J)+expo(K)+expo(L) 
-                 enddo
-                 ITT=ITT+1
-
-                 ! now we will do vrr and and the double-electron integral
-                 call vertical(NABCDTYPE)
-                 
-                 X2=X0*quick_basis%Xcoeff(Nprii,Nprij,I,J)*quick_basis%Xcoeff(Nprik,Npril,K,L)
-
-                 do MM2=NNC,NNCD
-                    do MM1=NNA,NNAB
-                        store(MM1,MM2)=store(MM1,MM2)+ &
-                            X2*Yxiaotemp(MM1,MM2,0)
-                    enddo
-                enddo
+              
+                itt = itt+1
+                X44(ITT) = X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
               endif
-              !========= DELETE IN BETWEEN ============
            enddo
         enddo
      enddo
   enddo
 
-!=================== PART II========================
-!  do MM2=NNC,NNCD
-!     do MM1=NNA,NNAB
-!        Ytemp=0.0d0
-!        do itemp=1,ITT
-!           Ytemp=Ytemp+X44(itemp)*Yxiao(itemp,MM1,MM2)
-!        enddo
-!        write(*,*) II,JJ,KK,LL,i,j,k,l,MM1,MM2,Ytemp, itt
-!        store(MM1,MM2)=Ytemp
-!     enddo
-!  enddo
-!===================================================
+  do MM2=NNC,NNCD
+     do MM1=NNA,NNAB
+        Ytemp=0.0d0
+        do itemp=1,ITT
+           Ytemp=Ytemp+X44(itemp)*Yxiao(itemp,MM1,MM2)
+        enddo
+        store(MM1,MM2)=Ytemp
+     enddo
+  enddo
 
   NBI1=quick_basis%Qsbasis(II,I)
   NBI2=quick_basis%Qfbasis(II,I)
@@ -528,16 +412,6 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                  DENSELI=quick_qm_struct%dense(LLL,III)
                  DENSELK=quick_qm_struct%dense(LLL,KKK)
                  DENSEJI=quick_qm_struct%dense(JJJ,III)
-write(*,*) "1", DENSEKI, DENSEKJ, DENSELJ, DENSELI, DENSELK, DENSEJI
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
-write(*,*) quick_qm_struct%o(JJJ,LLL)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
 
                  ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
                  ! can be equal.
@@ -549,15 +423,7 @@ write(*,*) quick_qm_struct%o(LLL,JJJ)
                  quick_qm_struct%o(JJJ,LLL) = quick_qm_struct%o(JJJ,LLL)-.5d0*DENSEKI*Y
                  quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSELI*Y
                  quick_qm_struct%o(LLL,JJJ) = quick_qm_struct%o(LLL,JJJ)-.5d0*DENSEKI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
-write(*,*) quick_qm_struct%o(JJJ,LLL)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
+
               enddo
            enddo
         enddo
@@ -577,16 +443,7 @@ write(*,*) quick_qm_struct%o(LLL,JJJ)
                        DENSELI=quick_qm_struct%dense(LLL,III)
                        DENSELK=quick_qm_struct%dense(LLL,KKK)
                        DENSEJI=quick_qm_struct%dense(JJJ,III)
-write(*,*) "2", DENSEKI, DENSEKJ, DENSELJ, DENSELI, DENSELK, DENSEJI
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
-write(*,*) quick_qm_struct%o(JJJ,LLL)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
+
                        ! Find the (ij|kl) integrals where j>i,k>i,l>k. Note that k and j
                        ! can be equal.
 
@@ -598,50 +455,24 @@ write(*,*) quick_qm_struct%o(LLL,JJJ)
                        quick_qm_struct%o(JJJ,LLL) = quick_qm_struct%o(JJJ,LLL)-.5d0*DENSEKI*Y
                        quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSELI*Y
                        quick_qm_struct%o(LLL,JJJ) = quick_qm_struct%o(LLL,JJJ)-.5d0*DENSEKI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
-write(*,*) quick_qm_struct%o(JJJ,LLL)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
 
                     elseif(III.eq.JJJ.and.KKK.eq.LLL)then
 
                        DENSEJI=quick_qm_struct%dense(KKK,III)
                        DENSEJJ=quick_qm_struct%dense(KKK,KKK)
                        DENSEII=quick_qm_struct%dense(III,III)
-write(*,*) "3", DENSEJI, DENSEJJ, DENSEII
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(KKK,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
                        ! Find  all the (ii|jj) integrals.
                        quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+DENSEJJ*Y
                        quick_qm_struct%o(KKK,KKK) = quick_qm_struct%o(KKK,KKK)+DENSEII*Y
                        quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEJI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(KKK,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
                     elseif(JJJ.eq.KKK.and.JJJ.eq.LLL)then
 
                        DENSEJI=quick_qm_struct%dense(JJJ,III)
                        DENSEJJ=quick_qm_struct%dense(JJJ,JJJ)
-write(*,*) "4", DENSEJI, DENSEJJ
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(JJJ,JJJ)
 
                        ! Find  all the (ij|jj) integrals.
                        quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+.5d0*DENSEJJ*Y
                        quick_qm_struct%o(JJJ,JJJ) = quick_qm_struct%o(JJJ,JJJ)+DENSEJI*Y
-
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(JJJ,JJJ)
                        !        ! Find  all the (ii|ij) integrals.
                        !        ! Find all the (ij|ij) integrals
 
@@ -651,13 +482,6 @@ write(*,*) quick_qm_struct%o(JJJ,JJJ)
                        DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
                        DENSEKK=quick_qm_struct%dense(KKK,KKK)
                        DENSEJI=quick_qm_struct%dense(JJJ,III)
-write(*,*) "5", DENSEKI, DENSEKJ, DENSEKK, DENSEJI
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(KKK,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
 
                        ! Find all the (ij|kk) integrals where j>i, k>j.
                        quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+DENSEKK*Y
@@ -665,35 +489,18 @@ write(*,*) quick_qm_struct%o(JJJ,KKK)
                        quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEKJ*Y
                        quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSEKI*Y
                        quick_qm_struct%o(JJJ,KKK) = quick_qm_struct%o(JJJ,KKK)-.5d0*DENSEKI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(KKK,KKK)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(KKK,JJJ)
-write(*,*) quick_qm_struct%o(JJJ,KKK)
                        !        ! Find all the (ik|jj) integrals where j>i, k>j.
                     elseif(III.eq.JJJ.and.KKK.lt.LLL)then
                        DENSEII=quick_qm_struct%dense(III,III)
                        DENSEJI=quick_qm_struct%dense(KKK,III)
                        DENSEKI=quick_qm_struct%dense(LLL,III)
                        DENSEKJ=quick_qm_struct%dense(LLL,KKK)
-write(*,*) "6", DENSEII, DENSEJJ, DENSEKI, DENSEKJ
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
 
                        ! Find all the (ii|jk) integrals where j>i, k>j.
                        quick_qm_struct%o(LLL,KKK) = quick_qm_struct%o(LLL,KKK)+DENSEII*Y
                        quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+2.d0*DENSEKJ*Y
                        quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEKI*Y
                        quick_qm_struct%o(LLL,III) = quick_qm_struct%o(LLL,III)-.5d0*DENSEJI*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(LLL,KKK)
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(KKK,III)
-write(*,*) quick_qm_struct%o(LLL,III)
                     endif
 
                  else
@@ -702,67 +509,40 @@ write(*,*) quick_qm_struct%o(LLL,III)
                    !    write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
                        if(III.eq.JJJ.and.III.eq.KKK.and.III.eq.LLL)then
                           DENSEII=quick_qm_struct%dense(III,III)
-write(*,*) "7",DENSEII
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(III,III)
 
                           ! do all the (ii|ii) integrals.
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+.5d0*DENSEII*Y
 
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(III,III)
                        elseif(III.eq.JJJ.and.III.eq.KKK.and.III.lt.LLL)then
                           DENSEJI=quick_qm_struct%dense(LLL,III)
                           DENSEII=quick_qm_struct%dense(III,III)
-write(*,*) "8",DENSEJI, DENSEII
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(III,III)
+
                           ! Find  all the (ii|ij) integrals.
                           quick_qm_struct%o(LLL,III) = quick_qm_struct%o(LLL,III)+.5d0*DENSEII*Y
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)+DENSEJI*Y
 
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(III,III)
                        elseif(III.eq.KKK.and.JJJ.eq.LLL.and.III.lt.JJJ)then
                           DENSEJI=quick_qm_struct%dense(JJJ,III)
                           DENSEJJ=quick_qm_struct%dense(JJJ,JJJ)
                           DENSEII=quick_qm_struct%dense(III,III)
-write(*,*) "9",DENSEJI, DENSEJJ, DENSEII
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(JJJ,JJJ)
-write(*,*) quick_qm_struct%o(III,III)
+
                           ! Find all the (ij|ij) integrals
                           quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+1.50*DENSEJI*Y
                           quick_qm_struct%o(JJJ,JJJ) = quick_qm_struct%o(JJJ,JJJ)-.5d0*DENSEII*Y
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)-.5d0*DENSEJJ*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(JJJ,JJJ)
-write(*,*) quick_qm_struct%o(III,III)
+
                        elseif(III.eq.KKK.and.III.lt.JJJ.and.JJJ.lt.LLL)then
                           DENSEKI=quick_qm_struct%dense(LLL,III)
                           DENSEKJ=quick_qm_struct%dense(LLL,JJJ)
                           DENSEII=quick_qm_struct%dense(III,III)
                           DENSEJI=quick_qm_struct%dense(JJJ,III)
-write(*,*) "10",DENSEKI, DENSEKJ, DENSEII, DENSEJI
-write(*,*) "before"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
+
                           ! Find all the (ij|ik) integrals where j>i,k>j
                           quick_qm_struct%o(JJJ,III) = quick_qm_struct%o(JJJ,III)+1.5d0*DENSEKI*Y
                           quick_qm_struct%o(LLL,III) = quick_qm_struct%o(LLL,III)+1.5d0*DENSEJI*Y
                           quick_qm_struct%o(III,III) = quick_qm_struct%o(III,III)-1.d0*DENSEKJ*Y
                           quick_qm_struct%o(LLL,JJJ) = quick_qm_struct%o(LLL,JJJ)-.5d0*DENSEII*Y
-write(*,*) "after"
-write(*,*) quick_qm_struct%o(JJJ,III)
-write(*,*) quick_qm_struct%o(LLL,III)
-write(*,*) quick_qm_struct%o(III,III)
-write(*,*) quick_qm_struct%o(LLL,JJJ)
+
                        endif
                     endif
                  endif

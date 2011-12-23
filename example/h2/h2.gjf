@@ -1,4 +1,4 @@
-# RHF/sto-3g opt
+# b3lyp/3-21g
 
 Dooh H2
 
@@ -6,4 +6,5 @@ Dooh H2
 H1
 H2 H1 r1
 
-r1 0.7348
+r1 1.000
+

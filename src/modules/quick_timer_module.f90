@@ -30,6 +30,7 @@ module quick_timer_module
         double precision:: T2e=0.0d0
         double precision:: TDip=0.0d0
         double precision:: TE=0.0d0
+        double precision:: TEx=0.0d0
         double precision:: TGrad=0.0d0
     end type quick_timer
     
@@ -43,6 +44,7 @@ module quick_timer_module
         double precision:: T1e=0.0d0
         double precision:: T2e=0.0d0
         double precision:: TE=0.0d0
+        double precision:: TEx=0.0d0
         double precision:: TGrad=0.0d0
     end type quick_timer_cumer
 
@@ -88,6 +90,11 @@ module quick_timer_module
             ! Time to evaluate 2e integrals
             write (io,'(12x,"TOTAL 2e TIME      =",F16.9,"( ",F5.2,"%)")') timer_cumer%T2e, &
                 timer_cumer%T2e/(timer_end%TTotal-timer_begin%TTotal)*100
+            if(quick_method%DFT) then
+                ! Time to evaluate exchange energy
+                write (io,'(12x,"TOTAL Exchange TIME=",F16.9,"( ",F5.2,"%)")') timer_cumer%TEx, &
+                    timer_cumer%TEx/(timer_end%TTotal-timer_begin%TTotal)*100
+            endif
             write (io,'(12x,"TOTAL ENERGY TIME  =",F16.9,"( ",F5.2,"%)")') timer_cumer%TE, &
                 timer_cumer%TE/(timer_end%TTotal-timer_begin%TTotal)*100                              
             ! DII Time
@@ -101,10 +108,12 @@ module quick_timer_module
                 write (io,'(12x,"TOTAL DIAG TIME    =",F16.9,"( ",F5.2,"%)")') timer_cumer%TDiag, &
                     timer_cumer%TDiag/(timer_end%TTotal-timer_begin%TTotal)*100
             endif
-
+            
+            if (quick_method%dipole) then
             ! Dipole Timing
-            write (io,'(6x,"DIPOLE TIME        =",F16.9,"( ",F5.2,"%)")') timer_end%TDip-timer_begin%TDip, &
-                (timer_end%TDip-timer_begin%TDip)/(timer_end%TTotal-timer_begin%TTotal)*100
+                write (io,'(6x,"DIPOLE TIME        =",F16.9,"( ",F5.2,"%)")') timer_end%TDip-timer_begin%TDip, &
+                    (timer_end%TDip-timer_begin%TDip)/(timer_end%TTotal-timer_begin%TTotal)*100
+            endif
             ! Grad Timing
             if (quick_method%opt) then
                 write (io,'("GRADIENT TIME      =",F16.9,"( ",F5.2,"%)")') timer_cumer%TGrad, &

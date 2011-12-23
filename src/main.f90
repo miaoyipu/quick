@@ -27,6 +27,7 @@
     
     use allMod
     use divPB_Private, only: initialize_DivPBVars
+
     implicit none
 
 #ifdef MPI
@@ -36,7 +37,8 @@
     logical :: failed = .false.         ! flag to indicates SCF fail or OPT fail 
     integer :: ierr                     ! return error info
     integer :: i,j,k
-
+    double precision t1_t, t2_t
+    common /timer/ t1_t, t2_t
     !------------------------------------------------------------------
     ! 1. The first thing that must be done is to initialize and prepare files
     !------------------------------------------------------------------
@@ -107,8 +109,7 @@
 !       call getmolmfcc
     endif
     
-    call cpu_time(timer_end%TIniGuess)
-
+    
     !------------------------------------------------------------------
     ! 3. Read Molecule Structure
     !-----------------------------------------------------------------
@@ -152,8 +153,11 @@
     quick_basis%ktype, quick_basis%kprim, quick_basis%kshell,quick_basis%Ksumtype, &
     quick_basis%Qnumber, quick_basis%Qstart, quick_basis%Qfinal, quick_basis%Qsbasis, quick_basis%Qfbasis, &
     quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
+    
+    call gpu_upload_cutoff_matrix(Ycutoff, cutPrim)
 #endif
 
+    call cpu_time(timer_end%TIniGuess)
     if (.not.quick_method%opt) then
         call getEnergy(failed)
     endif
@@ -227,7 +231,7 @@
         if (quick_method%zmat) call zmake
         
         ! Calculate Dipole Moment
-        call dipole
+        if (quick_method%dipole) call dipole
         
     endif
     

@@ -6,3 +6,4 @@ src/_*
 src/*.bak
 src/new_quick*
 new_quick.xcodeproj
+example

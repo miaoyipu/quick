@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Sat Jul 23 13:14:56 2011
+ TASK STARTS ON: Thu Sep 15 11:10:30 2011
  INPUT FILE:     water16.in
  OUTPUT FILE:    water16.out
  BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
@@ -65,7 +65,7 @@ BASIS FUNCTIONS =    9
 SCF CYCLE      =        1      TIME      =     0.05
 RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
 
-SCF CYCLE      =        2      TIME      =     0.04
+SCF CYCLE      =        2      TIME      =     0.05
 RMS CHANGE     = 0.813251E-01  MAX CHANGE= 0.295520E+00
 
 SCF CYCLE      =        3      TIME      =   0.05
@@ -203,3 +203,104 @@ TOTAL ENERGY         =     0.000000000
 
  @ Begin Energy Calculation
 
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+  1  -1216.281452071      ------        14.364     1        0.39     13.97      0.12    0.1782E+01  0.2564E-01  0.4248E+00
+  2  -1215.467174156  -.814278E+00      23.607     2        0.39     23.21      0.11    0.2429E+00  0.6570E-02  0.1689E+00
+  3  -1215.885095865  0.417922E+00      23.828     3        0.33     23.49      0.11    0.1015E+00  0.2326E-02  0.5902E-01
+  4  -1215.978282111  0.931862E-01      22.662     4        0.36     22.30      0.10    0.2557E-01  0.9015E-03  0.2072E-01
+  5  -1215.986929218  0.864711E-02      24.076     5        0.40     23.67      0.12    0.4188E-02  0.3594E-03  0.8432E-02
+  6  -1215.987644420  0.715202E-03      23.661     6        0.37     23.29      0.10    0.9006E-03  0.5461E-04  0.1566E-02
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER   6 CYLCES
+ MAX ERROR = 0.900563E-03   RMS CHANGE = 0.546074E-04   MAX CHANGE = 0.156564E-02
+ -----------------------------------------------
+ELECTRONIC ENERGY    = -2729.476558352
+CORE_CORE REPULSION  =  1513.488913932
+TOTAL ENERGY         = -1215.987644420
+
+ @ End Energy calculation
+
+
+ @ Begin Charge and Dipole Calculation
+
+    ATOMIC CHARGES
+   ATOM          MULLIKEN            LOWDIN
+   O             -0.8897            -0.6224
+   O             -0.8489            -0.6043
+   O             -0.8974            -0.6234
+   O             -0.8732            -0.6151
+   O             -0.8842            -0.6215
+   O             -0.8577            -0.6119
+   O             -0.8635            -0.6130
+   O             -0.8888            -0.6180
+   O             -0.8630            -0.6115
+   O             -0.8640            -0.6132
+   O             -0.8480            -0.6006
+   O             -0.8771            -0.6209
+   O             -0.8686            -0.6093
+   O             -0.8744            -0.6139
+   O             -0.8488            -0.6048
+   O             -0.8780            -0.6193
+   H              0.4408             0.3115
+   H              0.4403             0.3046
+   H              0.4370             0.3067
+   H              0.4093             0.3006
+   H              0.4448             0.3116
+   H              0.4457             0.3098
+   H              0.4489             0.3066
+   H              0.4334             0.3072
+   H              0.4408             0.3088
+   H              0.4321             0.3050
+   H              0.4429             0.3095
+   H              0.4153             0.2973
+   H              0.4355             0.3073
+   H              0.4351             0.3074
+   H              0.4281             0.3026
+   H              0.4417             0.3085
+   H              0.4458             0.3121
+   H              0.4326             0.3025
+   H              0.4290             0.3060
+   H              0.4282             0.3035
+   H              0.4402             0.3109
+   H              0.4505             0.3142
+   H              0.4117             0.3027
+   H              0.4394             0.3084
+   H              0.4428             0.3119
+   H              0.4358             0.3058
+   H              0.4359             0.3085
+   H              0.4341             0.3059
+   H              0.4343             0.3049
+   H              0.4454             0.3118
+   H              0.4112             0.3016
+   H              0.4366             0.3075
+   TOTAL        -0.0000            -0.0000
+
+    DIPOLE (DEBYE)
+      X         Y         Z        TOTAL
+    1.4970    0.0525   -3.6648    3.9591
+
+ @ End Charge and Dipole Calculation
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     1.081714000(  0.80%)
+TOTAL SCF TIME     =   133.390039000( 98.68%)
+      TOTAL OP TIME      =   131.127643000( 97.01%)
+            TOTAL 1e TIME      =     1.191211000(  0.88%)
+            TOTAL 2e TIME      =   129.927404000( 96.12%)
+            TOTAL ENERGY TIME  =     0.005590000(  0.00%)
+      TOTAL DII TIME     =     2.254874000(  1.67%)
+            TOTAL DIAG TIME    =     0.661857000(  0.49%)
+DIPOLE TIME        =     0.496832000(  0.37%)
+TOTAL TIME         =   135.174767000
+------------------------------------
+ Job cpu time:  0 days  0 hours  2 minutes 15.2 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Thu Sep 15 11:12:50 2011

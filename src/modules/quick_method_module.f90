@@ -42,6 +42,7 @@ module quick_method_module
         logical :: annil =  .false.    ! Annil Spin Contamination
         logical :: freq =  .false.     ! Frenquency calculation
         logical :: zmat = .false.      ! Z-matrix
+        logical :: dipole = .false.    ! Dipole Momenta
         logical :: printEnergy = .true.! Print Energy each cycle, since it's cheap but useful, set it's true for default.
         logical :: fFunXiao            ! If f orbitial is contained
         logical :: calcDens = .false.  ! calculate density
@@ -101,7 +102,7 @@ module quick_method_module
         double precision :: gNormCrt      = .00030d0 ! gradient normalization
         
 
-        logical :: bCUDA                ! if  is used here
+
 
         
     end type quick_method_type
@@ -181,6 +182,7 @@ module quick_method_module
             if (self%writePMat) write(io,'("| WRITE DENSITY MATRIX TO FILE")')
             
             if (self%zmat)      write(io,'("| Z-MATRIX CONSTRUCTION")')
+            if (self%dipole)    write(io,'("| DIPOLE")')
             if (self%ecp)       write(io,'("| ECP BASIS SET")')
             if (self%custECP)   write(io,'("| CUSTOM ECP BASIS SET")')
 
@@ -290,6 +292,8 @@ module quick_method_module
                 self%opt=.true.
                 self%grad=.true.
             endif
+            if(self%B3LYP .or. self%BLYP .or. self%BPW91 .or. self%MPW91PW91 .or. self%MPW91LYP) &
+                self%DFT=.true.
             if (index(keyWD,'DIIS-OPTIMIZE').ne.0)self%diisOpt=.true.
             if (index(keyWD,'GAP').ne.0)        self%prtGap=.true.
             if (index(keyWD,'GRAD').ne.0)       self%analGrad=.true.
@@ -298,6 +302,7 @@ module quick_method_module
             if (index(keywd,'DEBUG').ne.0)      self%debug=.true.
             if (index(keyWD,'READ').ne.0)       self%readDMX=.true.
             if (index(keyWD,'ZMAKE').ne.0)      self%zmat=.true.
+            if (index(keyWD,'DIPOLE').ne.0)      self%dipole=.true.
             if (index(keyWD,'WRITE').ne.0)      self%writePMat=.true.
             if (index(keyWD,'EXTCHARGES').ne.0) self%EXTCHARGES=.true.
             if (index(keyWD,'FORCE').ne.0)      self%grad=.true.
@@ -428,6 +433,7 @@ module quick_method_module
             self%annil =  .false.    !
             self%freq =  .false.     ! Frenquency calculation
             self%zmat = .false.      ! Z-matrix
+            self%dipole = .false.    ! Dipole
             self%ecp = .false.       ! ECP
             self%custECP = .false.   ! Custom ECP
             self%printEnergy = .true.! Print Energy each cycle
@@ -467,7 +473,6 @@ module quick_method_module
             self%gNormCrt       = .00030d0 ! gradient normalization
             self%gridSpacing    = 0.1
             self%lapgridspacing = 0.1
-            self%bCUDA  = .false.
             
         end subroutine init_quick_method
         

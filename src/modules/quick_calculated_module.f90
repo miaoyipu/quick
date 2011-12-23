@@ -223,8 +223,11 @@ module quick_calculated_module
         ! if unrestricted, some more varibles is required to be allocated
         if (quick_method%unrst) then
             allocate(self%cob(nbasis,nbasis))
-            allocate(self%denseb(nbasis,nbasis))
             allocate(self%Eb(nbasis))
+        endif
+        
+        if (quick_method%unrst .or. quick_method%DFT) then
+                allocate(self%denseb(nbasis,nbasis))
         endif
         
         ! one more thing, DFT
@@ -281,10 +284,13 @@ module quick_calculated_module
         ! if unrestricted, some more varibles is required to be allocated
         if (quick_method%unrst) then
             deallocate(self%cob)
-            deallocate(self%denseb)
             deallocate(self%Eb)
         endif
         
+        if (quick_method%unrst .or. quick_method%DFT) then
+            deallocate(self%denseb)
+        endif
+
         ! one more thing, DFT
         if (quick_method%DFT) then
             deallocate(self%oSaveDFT)

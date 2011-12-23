@@ -1,4 +1,7 @@
 #!/bin/bash
 
-cp -a ../src/ ../archieve/2011-9-16-new_quick_0.07sp1
+ver=2011-12-22-new_quick_0.07sp4_beta11
 
+cp -a ../src/ ../archieve/$ver-lm
+cp -a ../src/ ~/Dropbox/Backup/quick/$ver-lm
+cp -a ../src/ /Volumes/iDisk/Documents/quick_backup/$ver-lm
