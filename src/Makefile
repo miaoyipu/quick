@@ -224,5 +224,9 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
+<<<<<<< HEAD
+#include depend
+=======
 #contain dependent information
 include depend
+>>>>>>> cuda_branch

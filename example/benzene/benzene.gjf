@@ -1,6 +1,10 @@
 %chk=benzene.chk
 %nproc=1
+<<<<<<< HEAD
+# scf=tight blyp/3-21g opt geom=connectivity
+=======
 # b3lyp/6-31g geom=connectivity
+>>>>>>> cuda_branch
 
 Title Card Required
 

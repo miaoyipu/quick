@@ -23,6 +23,23 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
+<<<<<<< HEAD
+ TASK STARTS ON: Thu Sep 15 11:10:30 2011
+ INPUT FILE:     water16.in
+ OUTPUT FILE:    water16.out
+ BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
+
+ @ Read Job And Atom
+
+  -------------------------------------
+KEYWORD=HF BASIS=6-31G ENERGY                                                                                                                                                                                   
+  -------------------------------------
+ ============== JOB CARD =============
+| METHOD = HATREE FOCK
+| SAD INITAL GUESS 
+| USE DIIS SCF
+| PRINT ENERGY EVERY CYCLE
+=======
  TASK STARTS ON: Wed Dec 14 23:07:57 2011
  INPUT FILE:     water16.in
  OUTPUT FILE:    water16.out
@@ -60,6 +77,7 @@ KEYWORD=B3LYP BASIS=6-31G ENERGY
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
 | STANDARD GRID = SG1
+>>>>>>> cuda_branch
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
@@ -69,8 +87,13 @@ KEYWORD=B3LYP BASIS=6-31G ENERGY
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+<<<<<<< HEAD
+| BASIS SET = 6-31G.BAS
+| BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31G.BAS
+=======
 | BASIS SET = 6-31G
 | BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
+>>>>>>> cuda_branch
 
  @ Finish reading job
 
@@ -84,6 +107,37 @@ BASIS FUNCTIONS =    9
  @ Begin Energy Calculation
 
 
+<<<<<<< HEAD
+SCF CYCLE      =        1      TIME      =     0.05
+RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
+
+SCF CYCLE      =        2      TIME      =     0.05
+RMS CHANGE     = 0.813251E-01  MAX CHANGE= 0.295520E+00
+
+SCF CYCLE      =        3      TIME      =   0.05
+DIIS CYCLE     =        1      MAX ERROR = 0.237159E-01
+RMS CHANGE     = 0.640345E-02  MAX CHANGE= 0.258596E-01
+
+SCF CYCLE      =        4      TIME      =   0.05
+DIIS CYCLE     =        2      MAX ERROR = 0.962311E-02
+RMS CHANGE     = 0.233510E-02  MAX CHANGE= 0.103941E-01
+
+SCF CYCLE      =        5      TIME      =   0.05
+DIIS CYCLE     =        3      MAX ERROR = 0.288507E-02
+RMS CHANGE     = 0.133240E-02  MAX CHANGE= 0.645826E-02
+
+SCF CYCLE      =        6      TIME      =   0.05
+DIIS CYCLE     =        4      MAX ERROR = 0.990266E-03
+RMS CHANGE     = 0.986522E-03  MAX CHANGE= 0.489327E-02
+
+SCF CYCLE      =        7      TIME      =   0.05
+DIIS CYCLE     =        5      MAX ERROR = 0.364363E-04
+RMS CHANGE     = 0.292852E-04  MAX CHANGE= 0.163976E-03
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =        8      TIME      =     0.05
+RMS CHANGE     = 0.515945E-05  MAX CHANGE= 0.268031E-04
+=======
 SCF CYCLE      =        1      TIME      =     0.07
 RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
 
@@ -113,6 +167,7 @@ PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
 SCF CYCLE      =        8      TIME      =     0.06
 RMS CHANGE     = 0.515945E-05  MAX CHANGE= 0.209008E-04
+>>>>>>> cuda_branch
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -219,6 +274,8 @@ TOTAL ENERGY         =     0.000000000
 | NSHELL =  112 NPRIM  =  288
 | JSHELL =  112 JBASIS =  288
 
+<<<<<<< HEAD
+=======
 
 RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
    1           2.034000
@@ -429,6 +486,7 @@ RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
  206          11.497000
  207           5.909000
  208          11.497000
+>>>>>>> cuda_branch
 
  @ End Reading Mol Info 
 
@@ -439,6 +497,21 @@ RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
+<<<<<<< HEAD
+  1  -1216.281452071      ------        14.364     1        0.39     13.97      0.12    0.1782E+01  0.2564E-01  0.4248E+00
+  2  -1215.467174156  -.814278E+00      23.607     2        0.39     23.21      0.11    0.2429E+00  0.6570E-02  0.1689E+00
+  3  -1215.885095865  0.417922E+00      23.828     3        0.33     23.49      0.11    0.1015E+00  0.2326E-02  0.5902E-01
+  4  -1215.978282111  0.931862E-01      22.662     4        0.36     22.30      0.10    0.2557E-01  0.9015E-03  0.2072E-01
+  5  -1215.986929218  0.864711E-02      24.076     5        0.40     23.67      0.12    0.4188E-02  0.3594E-03  0.8432E-02
+  6  -1215.987644420  0.715202E-03      23.661     6        0.37     23.29      0.10    0.9006E-03  0.5461E-04  0.1566E-02
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER   6 CYLCES
+ MAX ERROR = 0.900563E-03   RMS CHANGE = 0.546074E-04   MAX CHANGE = 0.156564E-02
+ -----------------------------------------------
+ELECTRONIC ENERGY    = -2729.476558352
+CORE_CORE REPULSION  =  1513.488913932
+TOTAL ENERGY         = -1215.987644420
+=======
   1  -1222.663428180      ------         7.020     1        0.14      6.88      0.09    0.1707E+01  0.2684E-01  0.4222E+00
   2  -1221.508459447  -.115497E+01       7.220     2        0.14      7.08      0.09    0.2498E+00  0.1610E-01  0.2921E+00
   3  -1221.007379507  -.501080E+00       7.250     3        0.14      7.11      0.09    0.3220E+00  0.9022E-02  0.1719E+00
@@ -453,10 +526,93 @@ BETA ELECTRON DENSITY     =   80.0001666836
 ELECTRONIC ENERGY    = -2735.939600337
 CORE_CORE REPULSION  =  1513.488913932
 TOTAL ENERGY         = -1222.450686405
+>>>>>>> cuda_branch
 
  @ End Energy calculation
 
 
+<<<<<<< HEAD
+ @ Begin Charge and Dipole Calculation
+
+    ATOMIC CHARGES
+   ATOM          MULLIKEN            LOWDIN
+   O             -0.8897            -0.6224
+   O             -0.8489            -0.6043
+   O             -0.8974            -0.6234
+   O             -0.8732            -0.6151
+   O             -0.8842            -0.6215
+   O             -0.8577            -0.6119
+   O             -0.8635            -0.6130
+   O             -0.8888            -0.6180
+   O             -0.8630            -0.6115
+   O             -0.8640            -0.6132
+   O             -0.8480            -0.6006
+   O             -0.8771            -0.6209
+   O             -0.8686            -0.6093
+   O             -0.8744            -0.6139
+   O             -0.8488            -0.6048
+   O             -0.8780            -0.6193
+   H              0.4408             0.3115
+   H              0.4403             0.3046
+   H              0.4370             0.3067
+   H              0.4093             0.3006
+   H              0.4448             0.3116
+   H              0.4457             0.3098
+   H              0.4489             0.3066
+   H              0.4334             0.3072
+   H              0.4408             0.3088
+   H              0.4321             0.3050
+   H              0.4429             0.3095
+   H              0.4153             0.2973
+   H              0.4355             0.3073
+   H              0.4351             0.3074
+   H              0.4281             0.3026
+   H              0.4417             0.3085
+   H              0.4458             0.3121
+   H              0.4326             0.3025
+   H              0.4290             0.3060
+   H              0.4282             0.3035
+   H              0.4402             0.3109
+   H              0.4505             0.3142
+   H              0.4117             0.3027
+   H              0.4394             0.3084
+   H              0.4428             0.3119
+   H              0.4358             0.3058
+   H              0.4359             0.3085
+   H              0.4341             0.3059
+   H              0.4343             0.3049
+   H              0.4454             0.3118
+   H              0.4112             0.3016
+   H              0.4366             0.3075
+   TOTAL        -0.0000            -0.0000
+
+    DIPOLE (DEBYE)
+      X         Y         Z        TOTAL
+    1.4970    0.0525   -3.6648    3.9591
+
+ @ End Charge and Dipole Calculation
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     1.081714000(  0.80%)
+TOTAL SCF TIME     =   133.390039000( 98.68%)
+      TOTAL OP TIME      =   131.127643000( 97.01%)
+            TOTAL 1e TIME      =     1.191211000(  0.88%)
+            TOTAL 2e TIME      =   129.927404000( 96.12%)
+            TOTAL ENERGY TIME  =     0.005590000(  0.00%)
+      TOTAL DII TIME     =     2.254874000(  1.67%)
+            TOTAL DIAG TIME    =     0.661857000(  0.49%)
+DIPOLE TIME        =     0.496832000(  0.37%)
+TOTAL TIME         =   135.174767000
+------------------------------------
+ Job cpu time:  0 days  0 hours  2 minutes 15.2 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Thu Sep 15 11:12:50 2011
+=======
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
@@ -476,3 +632,4 @@ TOTAL TIME         =    39.310000000
  @ Finish Output Timing Infomration
 
  Normal Terminatation. Task Finished on: Wed Dec 14 23:08:36 2011
+>>>>>>> cuda_branch

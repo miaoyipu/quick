@@ -23,7 +23,11 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
+<<<<<<< HEAD
+ TASK STARTS ON: Fri Nov  4 16:33:38 2011
+=======
  TASK STARTS ON: Fri Dec  9 00:46:39 2011
+>>>>>>> cuda_branch
  INPUT FILE:     test3.in
  OUTPUT FILE:    test3.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -31,14 +35,23 @@
  @ Read Job And Atom
 
   -------------------------------------
+<<<<<<< HEAD
+KEYWORD=B3LYP ENERGY ZMAKE NCYC=1000  BASIS=6-31GS                                                                                                                                                              
+=======
 KEYWORD=HF NCYC=1000 CUTOFF=1.0E-9 ENERGY ZMAKE  BASIS=CC-PVDZ                                                                                                                                                  
+>>>>>>> cuda_branch
   -------------------------------------
  ============== JOB CARD =============
-| METHOD = HATREE FOCK
+| METHOD = DENSTITY FUNCTIONAL THEORY
+| DENSITY FUNCTIONAL = B3LYP
 | SAD INITAL GUESS 
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
 | Z-MATRIX CONSTRUCTION
+<<<<<<< HEAD
+| STANDARD GRID = SG1
+=======
+>>>>>>> cuda_branch
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
@@ -48,8 +61,13 @@ KEYWORD=HF NCYC=1000 CUTOFF=1.0E-9 ENERGY ZMAKE  BASIS=CC-PVDZ
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+<<<<<<< HEAD
+| BASIS SET = 6-31GS
+| BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31GS
+=======
 | BASIS SET = CC-PVDZ
 | BASIS FILE = /home/miao/Workspace/new_quick/basis/CC-PVDZ
+>>>>>>> cuda_branch
 
  @ Finish reading job
 
@@ -63,6 +81,37 @@ BASIS FUNCTIONS =   15
  @ Begin Energy Calculation
 
 
+<<<<<<< HEAD
+SCF CYCLE      =        1      TIME      =     0.13
+RMS CHANGE     = 0.126285E+00  MAX CHANGE= 0.907565E+00
+
+SCF CYCLE      =        2      TIME      =     0.13
+RMS CHANGE     = 0.797660E-01  MAX CHANGE= 0.779885E+00
+
+SCF CYCLE      =        3      TIME      =   0.13
+DIIS CYCLE     =        1      MAX ERROR = 0.384688E-01
+RMS CHANGE     = 0.904691E-02  MAX CHANGE= 0.646921E-01
+
+SCF CYCLE      =        4      TIME      =   0.13
+DIIS CYCLE     =        2      MAX ERROR = 0.663748E-02
+RMS CHANGE     = 0.229244E-02  MAX CHANGE= 0.240658E-01
+
+SCF CYCLE      =        5      TIME      =   0.13
+DIIS CYCLE     =        3      MAX ERROR = 0.321713E-02
+RMS CHANGE     = 0.169325E-02  MAX CHANGE= 0.184420E-01
+
+SCF CYCLE      =        6      TIME      =   0.13
+DIIS CYCLE     =        4      MAX ERROR = 0.549087E-03
+RMS CHANGE     = 0.331952E-03  MAX CHANGE= 0.369618E-02
+
+SCF CYCLE      =        7      TIME      =   0.13
+DIIS CYCLE     =        5      MAX ERROR = 0.801222E-05
+RMS CHANGE     = 0.174161E-05  MAX CHANGE= 0.173664E-04
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =        8      TIME      =     0.13
+RMS CHANGE     = 0.440613E-06  MAX CHANGE= 0.478130E-05
+=======
 SCF CYCLE      =        1      TIME      =     0.32
 RMS CHANGE     = 0.115935E+00  MAX CHANGE= 0.904313E+00
 
@@ -92,6 +141,7 @@ PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
 SCF CYCLE      =        8      TIME      =     0.32
 RMS CHANGE     = 0.116637E-05  MAX CHANGE= 0.129445E-04
+>>>>>>> cuda_branch
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -101,13 +151,21 @@ TOTAL ENERGY         =     0.000000000
 
  For Atom Kind =    2
  ELEMENT = H 
+<<<<<<< HEAD
+BASIS FUNCTIONS =    2
+=======
 BASIS FUNCTIONS =    5
+>>>>>>> cuda_branch
 
  @ Begin Energy Calculation
 
 
 SCF CYCLE      =        1      TIME      =     0.00
+<<<<<<< HEAD
+RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
+=======
 RMS CHANGE     = 0.114405E+00  MAX CHANGE= 0.285522E+00
+>>>>>>> cuda_branch
 
 SCF CYCLE      =        2      TIME      =     0.00
 RMS CHANGE     = 0.277097E-01  MAX CHANGE= 0.104675E+00
@@ -159,16 +217,50 @@ TOTAL ENERGY         =     0.000000000
       5     2.05992    12.78761    14.01826     1.28055     0.00000
 
 ============== BASIS INFOS ==============
+<<<<<<< HEAD
+| BASIS FUNCTIONS =   23
+| NSHELL =   12 NPRIM  =   27
+| JSHELL =   12 JBASIS =   27
+
+
+RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
+   1           2.728000
+   2           6.391000
+   3           6.635000
+   4           6.635000
+   5           6.635000
+   6          11.249000
+   7          11.692000
+   8          11.692000
+   9          11.692000
+  10           5.679000
+  11           5.679000
+  12           5.679000
+  13           5.679000
+  14           5.679000
+  15           5.679000
+  16           5.909000
+  17          11.497000
+  18           5.909000
+  19          11.497000
+  20           5.909000
+  21          11.497000
+  22           5.909000
+  23          11.497000
+=======
 | BASIS FUNCTIONS =   35
 | NSHELL =   18 NPRIM  =   40
 | JSHELL =   18 JBASIS =   40
 
+>>>>>>> cuda_branch
 
  @ End Reading Mol Info 
 
 
  @ Begin Energy Calculation
 
+<<<<<<< HEAD
+=======
                                          SCF ENERGY
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
@@ -267,3 +359,4 @@ TOTAL TIME         =     9.020000000
  @ Finish Output Timing Infomration
 
  Normal Terminatation. Task Finished on: Fri Dec  9 00:46:48 2011
+>>>>>>> cuda_branch

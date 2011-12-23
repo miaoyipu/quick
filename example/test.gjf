@@ -1,4 +1,4 @@
-#p charge NoSymmetry gfinput HF/sto-3g scf=tight nofmm
+#p  NoSymmetry gfinput HF/CC-PVDZ scf=tight nofmm
 
 water
 
@@ -16,7 +16,6 @@ H           0.3032      -0.4940       9.0000
 H          -0.3032      -0.9088       9.0000
 O           0.0000       0.1753       9.0000
 
-1.2 23.0 3.4 0.3
 
 
 

@@ -1,4 +1,6 @@
 
+
+
 !
 !	quick_method_module.f90
 !	new_quick
@@ -100,7 +102,11 @@ module quick_method_module
         double precision :: gNormCrt      = .00030d0 ! gradient normalization
         
 
+<<<<<<< HEAD
+
+=======
         logical :: bCUDA                ! if  is used here
+>>>>>>> cuda_branch
 
         
     end type quick_method_type

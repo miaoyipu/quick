@@ -128,6 +128,18 @@
 		0A07462E13281CE800CEC9FB /* basis.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = basis.f90; sourceTree = "<group>"; };
 		0A0747BF132A93F900CEC9FB /* zeroMatrix.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = zeroMatrix.f90; path = subs/zeroMatrix.f90; sourceTree = "<group>"; };
 		0A160FC31367330F0046BA7B /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = modules/Makefile; sourceTree = "<group>"; };
+		0A3BF3A314341C7700349E05 /* gpu.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; path = gpu.cu; sourceTree = "<group>"; };
+		0A3BF3A414341C7700349E05 /* gpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gpu.h; sourceTree = "<group>"; };
+		0A3BF3A514341C7700349E05 /* gpu_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gpu_common.h; sourceTree = "<group>"; };
+		0A3BF3A614341C7700349E05 /* gpu_get2e.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; path = gpu_get2e.cu; sourceTree = "<group>"; };
+		0A3BF3A714341C7700349E05 /* gpu_info.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; path = gpu_info.cu; sourceTree = "<group>"; };
+		0A3BF3A814341C7700349E05 /* gpu_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gpu_info.h; sourceTree = "<group>"; };
+		0A3BF3A914341C7700349E05 /* gpu_startup.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; path = gpu_startup.cu; sourceTree = "<group>"; };
+		0A3BF3AA14341C7700349E05 /* gpu_startup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gpu_startup.h; sourceTree = "<group>"; };
+		0A3BF3AB14341C7700349E05 /* gpu_type.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; path = gpu_type.cu; sourceTree = "<group>"; };
+		0A3BF3AC14341C7700349E05 /* gpu_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gpu_type.h; sourceTree = "<group>"; };
+		0A3BF3AD14341C7700349E05 /* gpu_write_info.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = gpu_write_info.f90; sourceTree = "<group>"; };
+		0A3F8F0A14873DFC0083C0BE /* gpu_getxc.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu_getxc.cu; path = cuda/gpu_getxc.cu; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		0A546A501326EFF0007CF0ED /* MFCC.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = MFCC.f90; sourceTree = "<group>"; };
 		0A6A04CB130DD9E2009B360A /* 3-21G */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "3-21G"; sourceTree = "<group>"; };
 		0A6A04CC130DD9E2009B360A /* 3-21G(D).BAS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "3-21G(D).BAS"; sourceTree = "<group>"; };
@@ -231,6 +243,15 @@
 		0A6A5F3F134B73E8002CA3E1 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		0A6A67C613538FDE002CA3E1 /* transpose.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = transpose.f90; path = subs/transpose.f90; sourceTree = "<group>"; };
 		0A6A68621354C174002CA3E1 /* quick_one_electron_integral.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; path = quick_one_electron_integral.f90; sourceTree = "<group>"; };
+<<<<<<< HEAD
+		0A7122D713C764970085CD79 /* depend */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = depend; sourceTree = "<group>"; };
+		0ABB963A135F945C0026657A /* gpu.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu.cu; path = cuda/gpu.cu; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		0ABB963B135F945C0026657A /* gpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpu.h; path = cuda/gpu.h; sourceTree = "<group>"; };
+		0ABB964A135FA7260026657A /* gpu_write_info.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = gpu_write_info.f90; path = cuda/gpu_write_info.f90; sourceTree = "<group>"; };
+		0ABB964C135FAD600026657A /* gpu_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpu_info.h; path = cuda/gpu_info.h; sourceTree = "<group>"; };
+		0ABB964D135FAD600026657A /* gpu_info.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu_info.cu; path = cuda/gpu_info.cu; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		0ABD36E413DF719700047E10 /* gpu_get2e.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu_get2e.cu; path = cuda/gpu_get2e.cu; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+=======
 		0AA68A1913ABD128005D9B9C /* Makefile.backup */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = Makefile.backup; sourceTree = "<group>"; };
 		0AA68AD313AC00E0005D9B9C /* gpu_get2e.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu_get2e.cu; path = cuda/gpu_get2e.cu; sourceTree = "<group>"; };
 		0ABB963A135F945C0026657A /* gpu.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu.cu; path = cuda/gpu.cu; sourceTree = "<group>"; };
@@ -238,6 +259,7 @@
 		0ABB964A135FA7260026657A /* gpu_write_info.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = gpu_write_info.f90; path = cuda/gpu_write_info.f90; sourceTree = "<group>"; };
 		0ABB964C135FAD600026657A /* gpu_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gpu_info.h; path = cuda/gpu_info.h; sourceTree = "<group>"; };
 		0ABB964D135FAD600026657A /* gpu_info.cu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cuda; name = gpu_info.cu; path = cuda/gpu_info.cu; sourceTree = "<group>"; };
+>>>>>>> cuda_branch
 		0AC9F077135CD83200F99F88 /* matComp.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = matComp.f90; path = subs/matComp.f90; sourceTree = "<group>"; };
 		0AC9F33C135F3E2600F99F88 /* fmt.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = fmt.f90; path = subs/fmt.f90; sourceTree = "<group>"; };
 		0AD3FB541315C08700E34039 /* lbfgs.f90 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.fortran.f90; name = lbfgs.f90; path = subs/lbfgs.f90; sourceTree = "<group>"; };
@@ -338,6 +360,25 @@
 			name = modules;
 			sourceTree = "<group>";
 		};
+		0A3BF3A214341C7600349E05 /* cuda_old */ = {
+			isa = PBXGroup;
+			children = (
+				0A3BF3A314341C7700349E05 /* gpu.cu */,
+				0A3BF3A414341C7700349E05 /* gpu.h */,
+				0A3BF3A514341C7700349E05 /* gpu_common.h */,
+				0A3BF3A614341C7700349E05 /* gpu_get2e.cu */,
+				0A3BF3A714341C7700349E05 /* gpu_info.cu */,
+				0A3BF3A814341C7700349E05 /* gpu_info.h */,
+				0A3BF3A914341C7700349E05 /* gpu_startup.cu */,
+				0A3BF3AA14341C7700349E05 /* gpu_startup.h */,
+				0A3BF3AB14341C7700349E05 /* gpu_type.cu */,
+				0A3BF3AC14341C7700349E05 /* gpu_type.h */,
+				0A3BF3AD14341C7700349E05 /* gpu_write_info.f90 */,
+			);
+			name = cuda_old;
+			path = cuda/cuda_old;
+			sourceTree = "<group>";
+		};
 		0A6A04CA130DD9E2009B360A /* basis */ = {
 			isa = PBXGroup;
 			children = (
@@ -415,7 +456,11 @@
 		0A6A0596130DD9E4009B360A /* src */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
+				0A7122D713C764970085CD79 /* depend */,
+=======
 				0AA68A1913ABD128005D9B9C /* Makefile.backup */,
+>>>>>>> cuda_branch
 				0AC9F402135F69B200F99F88 /* cuda */,
 				0A6A5F3F134B73E8002CA3E1 /* config.h */,
 				0AFB445613214528008456E2 /* include */,
@@ -493,7 +538,13 @@
 		0AC9F402135F69B200F99F88 /* cuda */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
+				0A3F8F0A14873DFC0083C0BE /* gpu_getxc.cu */,
+				0A3BF3A214341C7600349E05 /* cuda_old */,
+				0ABD36E413DF719700047E10 /* gpu_get2e.cu */,
+=======
 				0AA68AD313AC00E0005D9B9C /* gpu_get2e.cu */,
+>>>>>>> cuda_branch
 				0ABB963A135F945C0026657A /* gpu.cu */,
 				0ABB963B135F945C0026657A /* gpu.h */,
 				0ABB964C135FAD600026657A /* gpu_info.h */,
@@ -515,9 +566,9 @@
 				0AD3FC411315C82800E34039 /* hrr.f90 */,
 				0AD3FC421315C82800E34039 /* iatoimp.f90 */,
 				0AD3FC431315C82800E34039 /* PrtDat.f90 */,
-				0AD3FC441315C82800E34039 /* PrtTim.f90 */,
 				0AD3FC451315C82800E34039 /* pteval.f90 */,
 				0AD3FC461315C82800E34039 /* rdnum.f90 */,
+				0AD3FC441315C82800E34039 /* PrtTim.f90 */,
 				0AD3FC471315C82800E34039 /* spdfgh.f90 */,
 				0AD3FC481315C82800E34039 /* whatis.f90 */,
 				0AD3FC491315C82800E34039 /* whole.f90 */,
