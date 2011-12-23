@@ -216,6 +216,16 @@ contains
         allocate(self%gcexpo(6,nbasis_arg))
         allocate(self%gccoeff(6,nbasis_arg))
         allocate(self%cons(nbasis_arg))
+        do i = 1, 6
+            do j = 1, nbasis_arg
+                self%gcexpo( i, j) = 0.0
+                self%gccoeff( i, j) = 0.0
+            enddo
+        enddo
+        
+        do i = 1, nbasis_arg
+            self%cons(i) = 0.0
+        enddo
         
         allocate(self%KLMN(3,nbasis_arg))
    end subroutine allocate_quick_basis

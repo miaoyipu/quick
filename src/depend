@@ -35,7 +35,8 @@ nuclear.o: nuclear.f90 quick_modules
 fmm.o: fmm.f90 quick_modules
 	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       fmm.f90
 dft.o: dft.f90 quick_modules
-	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       dft.f90
+	$(FPP) dft.f90 >_dft.f90
+	$(FC) -o dft.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c      _dft.f90
 sedftoperator.o: sedftoperator.f90 quick_modules
 	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       sedftoperator.f90
 scf.o: scf.f90 quick_modules

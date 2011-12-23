@@ -28,13 +28,12 @@
  */
 template <typename T> struct cuda_buffer_type;
 struct gpu_calculated_type {
-    int                             natom;
-    int                             nbasis;
+    int                             natom;  // number of atom
+    int                             nbasis; // number of basis sets
     cuda_buffer_type<QUICKDouble>*  o;      // O matrix
     cuda_buffer_type<QUICKDouble>*  dense;  // Density Matrix
     cuda_buffer_type<QUICKULL>*     oULL;   // Unsigned long long int type O matrix
-    
-    cuda_buffer_type<QUICKDouble>*  distance;
+    cuda_buffer_type<QUICKDouble>*  distance; // distance matrix
 };
 
 struct gpu_cutoff_type {
@@ -42,17 +41,37 @@ struct gpu_cutoff_type {
     int                             nbasis;
     int                             nshell;
     
+    // the following are for pre-sorting cutoff
     int                             sqrQshell;
     cuda_buffer_type<int2>*         sorted_YCutoffIJ;
+    
+    // Cutoff matrix
     cuda_buffer_type<QUICKDouble>*  cutMatrix;
     cuda_buffer_type<QUICKDouble>*  YCutoff;
     cuda_buffer_type<QUICKDouble>*  cutPrim;
+    
+    // Cutoff criteria
     QUICKDouble                     integralCutoff;
     QUICKDouble                     primLimit;
     
 };
 
+struct DFT_calculated_type {
+    QUICKULL                     Eelxc;      // exchange correction energy
+    QUICKULL                     aelec;      // alpha electron
+    QUICKULL                     belec;      // beta electron
+};
+
 struct gpu_simulation_type {
+    
+    // basic molecule information and method information
+    QUICK_METHOD                    method;
+    DFT_calculated_type*            DFT_calculated;
+    
+    // used for DFT
+    int                             isg;        // isg algrothm
+    QUICKDouble*                    sigrad2;    // basis set range
+    
     int                             natom;
     int                             nbasis;
     int                             nshell;
@@ -65,13 +84,19 @@ struct gpu_simulation_type {
     int                             iAtomType;
     int                             maxcontract;
     int                             Qshell;
+    
     // Gaussian Type function
-    /*
+    
     int*                            ncontract;
     int*                            itype;
     QUICKDouble*                    aexp;
     QUICKDouble*                    dcoeff;
-    */
+    
+    
+    //charge and atom type
+    int*                            iattype;
+    QUICKDouble*                    chg;
+    
     // Some more infos about basis function
     QUICKDouble*                    xyz;
 /*
@@ -79,8 +104,9 @@ struct gpu_simulation_type {
     int*                            last_basis_function;
     int*                            first_shell_basis_function;
     int*                            last_shell_basis_function;
-    int*                            ncenter;
   */
+    int*                            ncenter;
+  
     int*                            kstart;
     int*                            katom;
 //    int*                            ktype;
@@ -131,12 +157,12 @@ struct gpu_basis_type {
     int                             Qshell;
     int                             maxcontract;
     // Gaussian Type function
-/*
+
     cuda_buffer_type<int>*          ncontract;
     cuda_buffer_type<int>*          itype;
     cuda_buffer_type<QUICKDouble>*  aexp;
     cuda_buffer_type<QUICKDouble>*  dcoeff;
-  */  
+  
     // Some more infos about basis function
 /*
     cuda_buffer_type<QUICKDouble>*  xyz;
@@ -144,10 +170,13 @@ struct gpu_basis_type {
     cuda_buffer_type<int>*          last_basis_function;
     cuda_buffer_type<int>*          first_shell_basis_function;
     cuda_buffer_type<int>*          last_shell_basis_function;
+*/
     cuda_buffer_type<int>*          ncenter;
+    /*
     cuda_buffer_type<int>*          ktype;
     cuda_buffer_type<int>*          kshell;
   */
+    cuda_buffer_type<QUICKDouble>*  sigrad2;
     cuda_buffer_type<int>*          kstart;
     cuda_buffer_type<int>*          katom;  
     cuda_buffer_type<int>*          kprim;
@@ -209,11 +238,14 @@ struct gpu_type {
     cuda_buffer_type<int>*          iattype;
     cuda_buffer_type<QUICKDouble>*  xyz;
     cuda_buffer_type<QUICKDouble>*  chg;
+    cuda_buffer_type<DFT_calculated_type>*
+                                    DFT_calculated;
 
     gpu_calculated_type*            gpu_calculated;
     gpu_basis_type*                 gpu_basis;
     gpu_cutoff_type*                gpu_cutoff;
     gpu_simulation_type             gpu_sim;
+
     
 /*    
     // Method
@@ -446,11 +478,3 @@ void cuda_buffer_type<T> :: Download(T* f90Data)
     }
     PRINTDEBUG("<<FINISH DOWNLOADING TEMPLATE TO FORTRAN ARRAY")
 }
-
-
-
-
-
-
-
-

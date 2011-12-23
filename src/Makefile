@@ -58,16 +58,17 @@ TMPFILES = *.mod *.stb
 # CPP Compiler
 FPP = cpp -traditional -P  -DBINTRAJ 
 CPP = gcc -DCUBLAS_USE_THUNKING
+CPP_FLAG = -I/usr/local/cuda/include  -O3
 
 # CUDA Compiler
 CUDAC = nvcc
 CUDA_LIBPATH = -L/usr/local/gfortran/lib 
 #CUDA_FLAGS= -Xptxas=-v -m64 -g -G -use_fast_math -maxrregcount=63 -gencode arch=compute_20,code=sm_20
-CUDA_FLAGS= -Xptxas=-v -m64 -O65536 -use_fast_math -gencode arch=compute_20,code=sm_20
+CUDA_FLAGS= -Xptxas=-v -m64 -O65534 -use_fast_math -gencode arch=compute_20,code=sm_20
 
 # G++ Compiler
 CXX = g++
-CFLAGS = -lgfortran -lgfortranbegin -g -L/usr/local/cuda/lib64 -lcuda -lm $(CUDA_LIBPATH) -lcudart
+CFLAGS = -lgfortran -lgfortranbegin -g -L/usr/local/cuda/lib64 -lcuda -lm $(CUDA_LIBPATH) -lcudart -lcublas 
 
 #----------------------
 # exe file location
@@ -88,7 +89,7 @@ configfolder = ./config
 # cuda files
 #----------------------
 cudafolder = ./cuda
-cudaobj = gpu_info.o gpu_write_info.o gpu.o gpu_type.o gpu_get2e.o
+cudaobj = gpu_info.o gpu_write_info.o gpu.o gpu_type.o gpu_get2e.o gpu_getxc.o
 
 #----------------------
 # quick modules and object files
@@ -134,19 +135,25 @@ quick_subs:
 
 #================= quick module library =================================
 quick_modules:
-#	cd $(modfolder) && make
-#	mv ${modfolder}/*.mod ${modfolder}/*.o ./
+	cd $(modfolder) && make
+	mv ${modfolder}/*.mod ${modfolder}/*.o ./
 #=========== targets for cuda =========================================
 quick_cuda:
-	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c *.cu
+	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_getxc.cu
+#cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c *.cu
 	cd $(cudafolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
-	mv $(cudafolder)/*.o ./
+	cp $(cudafolder)/*.o ./
 	
 #================= quick core subroutines ===============================
 main.o: main.f90 quick_modules
 	$(FPP) main.f90 > _main.f90
 	$(FC) -o main.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _main.f90
 
+
+#=========== targets for CUDBLAS =====================================
+fortran_thunking.o:
+	cd $(cudafolder)/CUBLAS && $(CPP) $(CPP_FLAG) -c  fortran_thunking.c
+	cp $(cudafolder)/CUBLAS/fortran_thunking.o ./
 
 #=========== targets for amber-quick interface ========================
 # This is a fake amber-quick interface
@@ -170,7 +177,8 @@ cpconfig:
 	cp $(configfolder)/config.h ./config.h
 cpconfig.cuda:
 	cp $(configfolder)/config.cuda.h ./config.h
-
+cpconfig.cuda.SP:
+	cp $(configfolder)/config.cuda.SP.h ./config.h
 #************************************************************************
 # 
 #                 C. Make Executed Files
@@ -180,9 +188,11 @@ cpconfig.cuda:
 quick: cpconfig quick_modules quick_subs $(OBJ) fake_amber_interface.o
 	$(FC) -o ${exefile} $(OBJ) $(libfolder)/quicklib.a fake_amber_interface.o $(LDFLAGS)
 
-quick.cuda: cpconfig.cuda quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o
-	$(CXX) -o ${exefile}.cuda $(OBJ) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o $(CFLAGS) 
+quick.cuda: cpconfig.cuda quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o fortran_thunking.o
+	$(CXX) -o ${exefile}.cuda $(OBJ) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o fortran_thunking.o $(CFLAGS) 
 
+quick.cuda.SP: cpconfig.cuda.SP quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o
+	$(CXX) -o ${exefile}.cuda.SP $(OBJ) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o $(CFLAGS) 
 
 quick_lib:$(OBJ) ambermod amber_interface.o
 

@@ -1,4 +1,4 @@
-HF energy zmake NCYC=1000  BASIS=6-31g
+B3LYP energy zmake NCYC=1000  BASIS=6-311++gss
 
 H           0.3032      -0.4940       0.0000
 H          -0.3032      -0.9088       0.0000

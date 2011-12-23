@@ -1,5 +1,9 @@
 #/bin/bash
 
-cp -a ../src/ ../archieve/2011-9-15-new_quick_0.07beta40
+ver=2011-12-22-new_quick_0.07sp4_beta11
+machine=cm
+
+cp -a ../src/ ../archieve/$ver-$machine
+cp -a ../src/ ~/Dropbox/Backup/quick/$ver-$machine
 
 

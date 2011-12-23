@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Mon Aug 29 23:39:55 2011
+ TASK STARTS ON: Wed Dec 14 23:06:56 2011
  INPUT FILE:     test2.in
  OUTPUT FILE:    test2.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -51,14 +51,16 @@
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF ENERGY ZMAKE NCYC=1000  BASIS=6-31G                                                                                                                                                                  
+KEYWORD=B3LYP ENERGY ZMAKE NCYC=1000  BASIS=6-311++GSS                                                                                                                                                          
   -------------------------------------
  ============== JOB CARD =============
-| METHOD = HATREE FOCK
+| METHOD = DENSTITY FUNCTIONAL THEORY
+| DENSITY FUNCTIONAL = B3LYP
 | SAD INITAL GUESS 
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
 | Z-MATRIX CONSTRUCTION
+| STANDARD GRID = SG1
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
@@ -68,8 +70,8 @@ KEYWORD=HF ENERGY ZMAKE NCYC=1000  BASIS=6-31G
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
-| BASIS SET = 6-31G
-| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
+| BASIS SET = 6-311++GSS
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-311++GSS
 
  @ Finish reading job
 
@@ -78,28 +80,33 @@ KEYWORD=HF ENERGY ZMAKE NCYC=1000  BASIS=6-31G
 
  For Atom Kind =    1
  ELEMENT = H 
-BASIS FUNCTIONS =    2
+BASIS FUNCTIONS =    7
 
  @ Begin Energy Calculation
 
 
 SCF CYCLE      =        1      TIME      =     0.00
-RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
+RMS CHANGE     = 0.610982E-01  MAX CHANGE= 0.160240E+00
 
-SCF CYCLE      =        2      TIME      =     0.00
-RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
+SCF CYCLE      =        2      TIME      =   0.01
+DIIS CYCLE     =        1      MAX ERROR = 0.627096E-01
+RMS CHANGE     = 0.166099E-01  MAX CHANGE= 0.546421E-01
 
 SCF CYCLE      =        3      TIME      =   0.00
-DIIS CYCLE     =        1      MAX ERROR = 0.543720E-02
-RMS CHANGE     = 0.492246E-02  MAX CHANGE= 0.776945E-02
+DIIS CYCLE     =        2      MAX ERROR = 0.243749E-01
+RMS CHANGE     = 0.107801E-01  MAX CHANGE= 0.429396E-01
 
 SCF CYCLE      =        4      TIME      =   0.00
-DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
-RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
-DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+DIIS CYCLE     =        3      MAX ERROR = 0.598226E-03
+RMS CHANGE     = 0.790889E-03  MAX CHANGE= 0.335093E-02
 
-SCF CYCLE      =        5      TIME      =     0.00
-RMS CHANGE     = 0.142040E-10  MAX CHANGE= 0.224882E-10
+SCF CYCLE      =        5      TIME      =   0.00
+DIIS CYCLE     =        4      MAX ERROR = 0.701334E-04
+RMS CHANGE     = 0.782491E-04  MAX CHANGE= 0.257296E-03
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =        6      TIME      =     0.01
+RMS CHANGE     = 0.123553E-05  MAX CHANGE= 0.567526E-05
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -109,40 +116,45 @@ TOTAL ENERGY         =     0.000000000
 
  For Atom Kind =    2
  ELEMENT = O 
-BASIS FUNCTIONS =    9
+BASIS FUNCTIONS =   23
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.06
-RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
+SCF CYCLE      =        1      TIME      =     0.43
+RMS CHANGE     = 0.685178E-01  MAX CHANGE= 0.834039E+00
 
-SCF CYCLE      =        2      TIME      =     0.07
-RMS CHANGE     = 0.813251E-01  MAX CHANGE= 0.292791E+00
+SCF CYCLE      =        2      TIME      =   0.44
+DIIS CYCLE     =        1      MAX ERROR = 0.758569E+00
+RMS CHANGE     = 0.363993E-01  MAX CHANGE= 0.552306E+00
 
-SCF CYCLE      =        3      TIME      =   0.06
-DIIS CYCLE     =        1      MAX ERROR = 0.237253E-01
-RMS CHANGE     = 0.640345E-02  MAX CHANGE= 0.247217E-01
+SCF CYCLE      =        3      TIME      =   0.44
+DIIS CYCLE     =        2      MAX ERROR = 0.136629E+00
+RMS CHANGE     = 0.114110E-01  MAX CHANGE= 0.135662E+00
 
-SCF CYCLE      =        4      TIME      =   0.06
-DIIS CYCLE     =        2      MAX ERROR = 0.717996E-02
-RMS CHANGE     = 0.233510E-02  MAX CHANGE= 0.921819E-02
+SCF CYCLE      =        4      TIME      =   0.44
+DIIS CYCLE     =        3      MAX ERROR = 0.551480E-01
+RMS CHANGE     = 0.432264E-02  MAX CHANGE= 0.503018E-01
 
-SCF CYCLE      =        5      TIME      =   0.06
-DIIS CYCLE     =        3      MAX ERROR = 0.298399E-02
-RMS CHANGE     = 0.133240E-02  MAX CHANGE= 0.503608E-02
+SCF CYCLE      =        5      TIME      =   0.44
+DIIS CYCLE     =        4      MAX ERROR = 0.176628E-01
+RMS CHANGE     = 0.325794E-02  MAX CHANGE= 0.276633E-01
 
-SCF CYCLE      =        6      TIME      =   0.06
-DIIS CYCLE     =        4      MAX ERROR = 0.110807E-02
-RMS CHANGE     = 0.986522E-03  MAX CHANGE= 0.381572E-02
+SCF CYCLE      =        6      TIME      =   0.44
+DIIS CYCLE     =        5      MAX ERROR = 0.581289E-02
+RMS CHANGE     = 0.150282E-02  MAX CHANGE= 0.108660E-01
 
-SCF CYCLE      =        7      TIME      =   0.06
-DIIS CYCLE     =        5      MAX ERROR = 0.364363E-04
-RMS CHANGE     = 0.292852E-04  MAX CHANGE= 0.127867E-03
+SCF CYCLE      =        7      TIME      =   0.44
+DIIS CYCLE     =        6      MAX ERROR = 0.334445E-03
+RMS CHANGE     = 0.136876E-03  MAX CHANGE= 0.758538E-03
+
+SCF CYCLE      =        8      TIME      =   0.44
+DIIS CYCLE     =        7      MAX ERROR = 0.140164E-03
+RMS CHANGE     = 0.426056E-04  MAX CHANGE= 0.347563E-03
 PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
-SCF CYCLE      =        8      TIME      =     0.07
-RMS CHANGE     = 0.515945E-05  MAX CHANGE= 0.209008E-04
+SCF CYCLE      =        9      TIME      =     0.44
+RMS CHANGE     = 0.173526E-04  MAX CHANGE= 0.161406E-03
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -175,10 +187,49 @@ TOTAL ENERGY         =     0.000000000
       3     1.38852     2.12727     0.00000
 
 ============== BASIS INFOS ==============
-| BASIS FUNCTIONS =   13
-| NSHELL =    7 NPRIM  =   18
-| JSHELL =    7 JBASIS =   18
+| BASIS FUNCTIONS =   37
+| NSHELL =   16 NPRIM  =   27
+| JSHELL =   16 JBASIS =   27
 
+
+RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
+   1           4.435000
+   2           8.188000
+   3          14.290000
+   4           5.681000
+   5           5.681000
+   6           5.681000
+   7          23.684000
+   8           4.435000
+   9           8.188000
+  10          14.290000
+  11           5.681000
+  12           5.681000
+  13           5.681000
+  14          23.684000
+  15           2.516000
+  16           2.868000
+  17           2.973000
+  18           2.973000
+  19           2.973000
+  20           4.996000
+  21           5.185000
+  22           5.185000
+  23           5.185000
+  24           9.206000
+  25           9.564000
+  26           9.564000
+  27           9.564000
+  28           4.501000
+  29           4.501000
+  30           4.501000
+  31           4.501000
+  32           4.501000
+  33           4.501000
+  34          15.702000
+  35          16.330000
+  36          16.330000
+  37          16.330000
 
  @ End Reading Mol Info 
 
@@ -189,21 +240,21 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1    -76.066333191      ------         0.050     1        0.00      0.05      0.00    0.2558E+01  0.1105E+00  0.3911E+00
-  2    -75.638351905  -.427981E+00       0.060     2        0.00      0.06      0.00    0.2054E+00  0.6084E-01  0.2924E+00
-  3    -75.688910968  0.505591E-01       0.050     3        0.00      0.05      0.00    0.1291E+00  0.1750E-01  0.1074E+00
-  4    -75.703289850  0.143789E-01       0.060     4        0.00      0.06      0.00    0.1853E-01  0.6040E-02  0.2191E-01
-  5    -75.704481506  0.119166E-02       0.050     5        0.00      0.05      0.00    0.9390E-02  0.5118E-02  0.1568E-01
-  6    -75.704898172  0.416667E-03       0.060     6        0.00      0.06      0.00    0.1547E-02  0.1115E-02  0.3482E-02
-  7    -75.704919124  0.209522E-04       0.050     7        0.00      0.05      0.00    0.5285E-03  0.2593E-03  0.8844E-03
-  8    -75.704920393  0.126852E-05       0.060     8        0.00      0.06      0.00    0.1488E-03  0.8960E-04  0.3080E-03
+  1    -76.489563158      ------         0.060     1        0.00      0.06      0.00    0.2434E+01  0.3043E-01  0.2060E+00
+  2    -76.094224604  -.395339E+00       0.060     2        0.00      0.06      0.00    0.3467E+00  0.4680E-01  0.4007E+00
+  3    -75.889159525  -.205065E+00       0.050     3        0.00      0.05      0.00    0.5914E+00  0.3369E-01  0.2984E+00
+  4    -76.208713350  0.319554E+00       0.050     4        0.00      0.05      0.00    0.1221E-01  0.8465E-03  0.6278E-02
+  5    -76.208890437  0.177086E-03       0.060     5        0.00      0.06      0.00    0.3206E-02  0.1265E-03  0.9707E-03
+  6    -76.208899170  0.873286E-05       0.060     6        0.00      0.06      0.00    0.5169E-03  0.4890E-04  0.4316E-03
 ------------------------------------------------------------------------------------------------------------------------
- REACH CONVERGENCE AFTER   8 CYLCES
- MAX ERROR = 0.148827E-03   RMS CHANGE = 0.895961E-04   MAX CHANGE = 0.307952E-03
+ REACH CONVERGENCE AFTER   6 CYLCES
+ MAX ERROR = 0.516858E-03   RMS CHANGE = 0.489040E-04   MAX CHANGE = 0.431631E-03
  -----------------------------------------------
-ELECTRONIC ENERGY    =   -85.947401846
+ALPHA ELECTRON DENSITY    =    4.9999808315
+BETA ELECTRON DENSITY     =    4.9999808315
+ELECTRONIC ENERGY    =   -86.451380623
 CORE_CORE REPULSION  =    10.242481453
-TOTAL ENERGY         =   -75.704920393
+TOTAL ENERGY         =   -76.208899170
 
  @ End Energy calculation
 
@@ -224,38 +275,22 @@ TOTAL ENERGY         =   -75.704920393
  @ End Zmake conversion
 
 
- @ Begin Charge and Dipole Calculation
-
-    ATOMIC CHARGES
-   ATOM          MULLIKEN            LOWDIN
-   H              0.2864             0.2065
-   H              0.2574             0.3270
-   O             -0.5438            -0.5336
-   TOTAL         0.0000             0.0000
-
-    DIPOLE (DEBYE)
-      X         Y         Z        TOTAL
-    0.4427   -3.1745    0.0001    3.2052
-
- @ End Charge and Dipole Calculation
-
-
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     0.500000000( 37.59%)
-TOTAL SCF TIME     =     0.450000000( 33.83%)
-      TOTAL OP TIME      =     0.450000000( 33.83%)
-            TOTAL 1e TIME      =     0.010000000(  0.75%)
-            TOTAL 2e TIME      =     0.440000000( 33.08%)
+INITIAL GUESS TIME =     3.980000000( 86.90%)
+TOTAL SCF TIME     =     0.350000000(  7.64%)
+      TOTAL OP TIME      =     0.350000000(  7.64%)
+            TOTAL 1e TIME      =     0.050000000(  1.09%)
+            TOTAL 2e TIME      =     0.140000000(  3.06%)
+            TOTAL Exchange TIME=     0.160000000(  3.49%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
       TOTAL DII TIME     =     0.000000000(  0.00%)
             TOTAL DIAG TIME    =     0.000000000(  0.00%)
-DIPOLE TIME        =     0.000000000(  0.00%)
-TOTAL TIME         =     1.330000000
+TOTAL TIME         =     4.580000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes  1.3 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes  4.6 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Mon Aug 29 23:39:57 2011
+ Normal Terminatation. Task Finished on: Wed Dec 14 23:07:00 2011

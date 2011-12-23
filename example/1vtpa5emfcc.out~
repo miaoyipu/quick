@@ -23,30 +23,10 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Thu Jul 14 16:30:49 2011
+ TASK STARTS ON: Fri Jul 22 21:30:47 2011
  INPUT FILE:     1vtpa5emfcc.in
  OUTPUT FILE:    1vtpa5emfcc.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
-
-|------------ CUDA INFORMATION ---------------
-|  CUDA version of Quick in use
-|  Implemented by
-|                      Yipu Miao (Florida)
-|  CAUTION: CUDA Quick is currently experimental
-|           and you may at risk to use it. Be sure
-|           to check result carelly. Advise or 
-|           bug report are welcome.
-|---------------------------------------------
-
-|------------ GPU INFORMATION ---------------
-| CUDA ENABLED DEVICE         :        1
-| CUDA DEVICE IN USE          :        0
-| CUDA DEVICE NAME            : GeForce GTX 580
-| CUDA DEVICE PM              :       16
-| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
-| CUDA DEVICE MEMORY SIZE (MB):     1535
-| SUPPORTING CUDA VERSION     :      2.0
-|--------------------------------------------
 
  @ Read Job And Atom
 
@@ -136,10 +116,10 @@ BASIS FUNCTIONS =    5
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.02
+SCF CYCLE      =        1      TIME      =     0.01
 RMS CHANGE     = 0.238978E+00  MAX CHANGE= 0.504578E+00
 
-SCF CYCLE      =        2      TIME      =     0.01
+SCF CYCLE      =        2      TIME      =     0.02
 RMS CHANGE     = 0.307220E-10  MAX CHANGE= 0.827385E-10
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000

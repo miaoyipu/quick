@@ -6,6 +6,10 @@
  *  Copyright 2011 University of Florida. All rights reserved.
  *
  */
+
+#ifndef QUICK_GPU_COMMON_H
+#define QUICK_GPU_COMMON_H
+
 #include "../config.h"
 #include <stdio.h>
 #include <cuda.h>
@@ -23,13 +27,14 @@ fflush(stdout);\
 //#define VDIM2 56
 //#define VDIM3 10
 //#define STOREDIM 120
-#define VDIM1 10
-#define VDIM2 10
-#define VDIM3 5
-#define STOREDIM 10
+#define VDIM1 1
+#define VDIM2 1
+#define VDIM3 10
+#define STOREDIM 35
 #define TRANSDIM 8
 #define MCALDIM 120
 
+#define MAXPRIM 6
 // Macro for two- and three- dimension array, d1,d2 and d3 are the dimension and i1,i2 and i3 are the indices
 #define LOC2(A,i1,i2,d1,d2)  A[i2+(i1)*(d2)]
 #define LOC3(A,i1,i2,i3,d1,d2,d3) A[i3+((i2)+(i1)*(d2))*(d3)]
@@ -64,9 +69,12 @@ static FILE *debugFile;
 
 #define PRINTMEM(s,a) \
 {\
-printf("MEM :%15s, LINE:%5d DATE: %s TIME:%s MEM   : %10s %lli\n", __FILE__,__LINE__,__DATE__,__TIME__,s,a);\
+	printf("MEM :%15s, LINE:%5d DATE: %s TIME:%s MEM   : %10s %lli\n", __FILE__,__LINE__,__DATE__,__TIME__,s,a);\
 }
-
+#else
+#define PRINTDEBUG(s)
+#define PRINTUSINGTIME(s,time)
+#define PRINTMEM(s,a)
 #endif
 
 
@@ -128,3 +136,12 @@ enum SM_VERSION
     SM_13,
     SM_2X
 };
+
+enum QUICK_METHOD
+{
+    HF    = 0,
+    B3LYP = 1,
+    DFT   = 2
+};
+
+#endif

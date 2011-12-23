@@ -1,4 +1,4 @@
-divcon HF ncyc=1000 zmake BASIS=STO-3G ENERGY
+b3lyp cutoff=1.0e-9 ncyc=1000 zmake BASIS=6-31gss  ENERGY
 
  C                 -3.57841358    1.32763054   -1.11329110
  C                 -2.18325358    1.32763054   -1.11329110

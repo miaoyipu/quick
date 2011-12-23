@@ -23,23 +23,45 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Mon Aug 15 14:51:58 2011
+ TASK STARTS ON: Wed Dec 14 22:55:29 2011
  INPUT FILE:     test.in
  OUTPUT FILE:    test.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GTX 580
+| CUDA DEVICE PM              :       16
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
+| CUDA DEVICE MEMORY SIZE (MB):     1535
+| SUPPORTING CUDA VERSION     :      2.0
+|--------------------------------------------
+
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF EXTCHARGES MAXDIIS=2 CUTOFF=1.234E-9 SCF=100 ENERGY ZMAKE NCYC=1000  BASIS=6-31G                                                                                                                     
+KEYWORD=B3LYP EXTCHARGES MAXDIIS=2 CUTOFF=1.234E-9 SCF=100 ENERGY ZMAKE NCYC=1000  BASIS=6-31GS                                                                                                                 
   -------------------------------------
  ============== JOB CARD =============
-| METHOD = HATREE FOCK
+| METHOD = DENSTITY FUNCTIONAL THEORY
+| DENSITY FUNCTIONAL = B3LYP
 | SAD INITAL GUESS 
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
 | Z-MATRIX CONSTRUCTION
 | EXTERNAL CHARGES
+| STANDARD GRID = SG1
 | MAX SCF CYCLES =    100
 | MAX DIIS CYCLES =    2
 | DELTA DENSITY START CYCLE = 1000
@@ -49,8 +71,8 @@ KEYWORD=HF EXTCHARGES MAXDIIS=2 CUTOFF=1.234E-9 SCF=100 ENERGY ZMAKE NCYC=1000  
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
-| BASIS SET = 6-31G
-| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
+| BASIS SET = 6-31GS
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31GS
 
  @ Finish reading job
 
@@ -90,46 +112,46 @@ TOTAL ENERGY         =     0.000000000
 
  For Atom Kind =    2
  ELEMENT = O 
-BASIS FUNCTIONS =    9
+BASIS FUNCTIONS =   15
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.05
-RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
+SCF CYCLE      =        1      TIME      =     0.16
+RMS CHANGE     = 0.118420E+00  MAX CHANGE= 0.838819E+00
 
-SCF CYCLE      =        2      TIME      =     0.07
-RMS CHANGE     = 0.813251E-01  MAX CHANGE= 0.292791E+00
+SCF CYCLE      =        2      TIME      =     0.18
+RMS CHANGE     = 0.664019E-01  MAX CHANGE= 0.387316E+00
 
-SCF CYCLE      =        3      TIME      =   0.06
-DIIS CYCLE     =        1      MAX ERROR = 0.237253E-01
-RMS CHANGE     = 0.640345E-02  MAX CHANGE= 0.247217E-01
+SCF CYCLE      =        3      TIME      =   0.17
+DIIS CYCLE     =        1      MAX ERROR = 0.360626E-01
+RMS CHANGE     = 0.560015E-02  MAX CHANGE= 0.349127E-01
 
-SCF CYCLE      =        4      TIME      =   0.06
-DIIS CYCLE     =        2      MAX ERROR = 0.717996E-02
-RMS CHANGE     = 0.233510E-02  MAX CHANGE= 0.921819E-02
+SCF CYCLE      =        4      TIME      =   0.18
+DIIS CYCLE     =        2      MAX ERROR = 0.993170E-02
+RMS CHANGE     = 0.202861E-02  MAX CHANGE= 0.142921E-01
 
-SCF CYCLE      =        5      TIME      =     0.06
-RMS CHANGE     = 0.144193E-02  MAX CHANGE= 0.531955E-02
+SCF CYCLE      =        5      TIME      =     0.17
+RMS CHANGE     = 0.132248E-02  MAX CHANGE= 0.877604E-02
 
-SCF CYCLE      =        6      TIME      =   0.06
-DIIS CYCLE     =        1      MAX ERROR = 0.179315E-02
-RMS CHANGE     = 0.557290E-03  MAX CHANGE= 0.230066E-02
+SCF CYCLE      =        6      TIME      =   0.17
+DIIS CYCLE     =        1      MAX ERROR = 0.280381E-02
+RMS CHANGE     = 0.497955E-03  MAX CHANGE= 0.320886E-02
 
-SCF CYCLE      =        7      TIME      =   0.06
-DIIS CYCLE     =        2      MAX ERROR = 0.626480E-03
-RMS CHANGE     = 0.247198E-03  MAX CHANGE= 0.954952E-03
+SCF CYCLE      =        7      TIME      =   0.18
+DIIS CYCLE     =        2      MAX ERROR = 0.103422E-02
+RMS CHANGE     = 0.220269E-03  MAX CHANGE= 0.126096E-02
 
-SCF CYCLE      =        8      TIME      =     0.06
-RMS CHANGE     = 0.195705E-03  MAX CHANGE= 0.754960E-03
+SCF CYCLE      =        8      TIME      =     0.17
+RMS CHANGE     = 0.179081E-03  MAX CHANGE= 0.102776E-02
 
-SCF CYCLE      =        9      TIME      =   0.06
-DIIS CYCLE     =        1      MAX ERROR = 0.228177E-03
-RMS CHANGE     = 0.760956E-04  MAX CHANGE= 0.322062E-03
+SCF CYCLE      =        9      TIME      =   0.18
+DIIS CYCLE     =        1      MAX ERROR = 0.352890E-03
+RMS CHANGE     = 0.684462E-04  MAX CHANGE= 0.448188E-03
 PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
-SCF CYCLE      =       10      TIME      =     0.06
-RMS CHANGE     = 0.476210E-04  MAX CHANGE= 0.183729E-03
+SCF CYCLE      =       10      TIME      =     0.17
+RMS CHANGE     = 0.432031E-04  MAX CHANGE= 0.237284E-03
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -258,10 +280,164 @@ TOTAL ENERGY         =     0.000000000
      24     5.66918     1.38852     2.12727     0.00000
 
 ============== BASIS INFOS ==============
-| BASIS FUNCTIONS =  104
-| NSHELL =   56 NPRIM  =  144
-| JSHELL =   56 JBASIS =  144
+| BASIS FUNCTIONS =  152
+| NSHELL =   64 NPRIM  =  152
+| JSHELL =   64 JBASIS =  152
 
+
+RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
+   1           5.909000
+   2          11.497000
+   3           5.909000
+   4          11.497000
+   5           2.034000
+   6           4.731000
+   7           4.909000
+   8           4.909000
+   9           4.909000
+  10           8.965000
+  11           9.314000
+  12           9.314000
+  13           9.314000
+  14           5.679000
+  15           5.679000
+  16           5.679000
+  17           5.679000
+  18           5.679000
+  19           5.679000
+  20           5.909000
+  21          11.497000
+  22           5.909000
+  23          11.497000
+  24           2.034000
+  25           4.731000
+  26           4.909000
+  27           4.909000
+  28           4.909000
+  29           8.965000
+  30           9.314000
+  31           9.314000
+  32           9.314000
+  33           5.679000
+  34           5.679000
+  35           5.679000
+  36           5.679000
+  37           5.679000
+  38           5.679000
+  39           5.909000
+  40          11.497000
+  41           5.909000
+  42          11.497000
+  43           2.034000
+  44           4.731000
+  45           4.909000
+  46           4.909000
+  47           4.909000
+  48           8.965000
+  49           9.314000
+  50           9.314000
+  51           9.314000
+  52           5.679000
+  53           5.679000
+  54           5.679000
+  55           5.679000
+  56           5.679000
+  57           5.679000
+  58           5.909000
+  59          11.497000
+  60           5.909000
+  61          11.497000
+  62           2.034000
+  63           4.731000
+  64           4.909000
+  65           4.909000
+  66           4.909000
+  67           8.965000
+  68           9.314000
+  69           9.314000
+  70           9.314000
+  71           5.679000
+  72           5.679000
+  73           5.679000
+  74           5.679000
+  75           5.679000
+  76           5.679000
+  77           5.909000
+  78          11.497000
+  79           5.909000
+  80          11.497000
+  81           2.034000
+  82           4.731000
+  83           4.909000
+  84           4.909000
+  85           4.909000
+  86           8.965000
+  87           9.314000
+  88           9.314000
+  89           9.314000
+  90           5.679000
+  91           5.679000
+  92           5.679000
+  93           5.679000
+  94           5.679000
+  95           5.679000
+  96           5.909000
+  97          11.497000
+  98           5.909000
+  99          11.497000
+ 100           2.034000
+ 101           4.731000
+ 102           4.909000
+ 103           4.909000
+ 104           4.909000
+ 105           8.965000
+ 106           9.314000
+ 107           9.314000
+ 108           9.314000
+ 109           5.679000
+ 110           5.679000
+ 111           5.679000
+ 112           5.679000
+ 113           5.679000
+ 114           5.679000
+ 115           5.909000
+ 116          11.497000
+ 117           5.909000
+ 118          11.497000
+ 119           2.034000
+ 120           4.731000
+ 121           4.909000
+ 122           4.909000
+ 123           4.909000
+ 124           8.965000
+ 125           9.314000
+ 126           9.314000
+ 127           9.314000
+ 128           5.679000
+ 129           5.679000
+ 130           5.679000
+ 131           5.679000
+ 132           5.679000
+ 133           5.679000
+ 134           5.909000
+ 135          11.497000
+ 136           5.909000
+ 137          11.497000
+ 138           2.034000
+ 139           4.731000
+ 140           4.909000
+ 141           4.909000
+ 142           4.909000
+ 143           8.965000
+ 144           9.314000
+ 145           9.314000
+ 146           9.314000
+ 147           5.679000
+ 148           5.679000
+ 149           5.679000
+ 150           5.679000
+ 151           5.679000
+ 152           5.679000
 
  @ End Reading Mol Info 
 
@@ -272,24 +448,28 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1   -608.554317161      ------         4.680     1        0.03      4.65      0.02    0.2559E+01  0.3920E-01  0.3915E+00
-  2   -604.960711594  -.359361E+01       5.950     2        0.03      5.92      0.01    0.2347E+00  0.2576E-01  0.3604E+00
-  3   -605.408558298  0.447847E+00       5.990     1        0.02      5.97      0.01    0.1439E+00  0.8072E-02  0.1446E+00
-  4   -605.554418466  0.145860E+00       5.970     2        0.02      5.95      0.01    0.2096E-01  0.2077E-02  0.2376E-01
-  5   -605.564633503  0.102150E-01       5.980     1        0.03      5.95      0.01    0.1170E-01  0.1517E-02  0.1765E-01
-  6   -605.568419501  0.378600E-02       5.980     2        0.03      5.95      0.01    0.6016E-02  0.6167E-03  0.8066E-02
-  7   -605.569220538  0.801037E-03       5.990     1        0.03      5.96      0.01    0.3747E-02  0.2583E-03  0.4039E-02
-  8   -605.569444495  0.223956E-03       5.970     2        0.03      5.94      0.01    0.1858E-02  0.2307E-03  0.2299E-02
-  9   -605.569582496  0.138001E-03       5.970     1        0.03      5.94      0.01    0.1085E-02  0.1881E-03  0.2030E-02
- 10   -605.569642908  0.604125E-04       5.970     2        0.03      5.94      0.01    0.6139E-03  0.6378E-04  0.7823E-03
+  1   -611.691823675      ------         1.830     1        0.05      1.78      0.03    0.2468E+01  0.2928E-01  0.3949E+00
+  2   -608.188874755  -.350295E+01       1.870     2        0.04      1.83      0.04    0.3675E+00  0.4433E-01  0.9431E+00
+  3   -606.766881910  -.142199E+01       1.870     1        0.04      1.83      0.04    0.4896E+00  0.3080E-01  0.7444E+00
+  4   -609.153628176  0.238675E+01       1.870     2        0.05      1.82      0.04    0.1990E-01  0.1448E-02  0.3799E-01
+  5   -609.153876406  0.248230E-03       1.870     1        0.05      1.82      0.04    0.2250E-01  0.7484E-03  0.2378E-01
+  6   -609.155672030  0.179562E-02       1.870     2        0.04      1.83      0.03    0.9769E-02  0.5550E-03  0.1278E-01
+  7   -609.155479538  -.192492E-03       1.860     1        0.04      1.82      0.04    0.8155E-02  0.3821E-03  0.8758E-02
+  8   -609.155853356  0.373818E-03       1.870     2        0.05      1.82      0.04    0.4504E-02  0.2797E-03  0.9242E-02
+  9   -609.155801743  -.516127E-04       1.860     1        0.04      1.82      0.03    0.7810E-02  0.2041E-03  0.6918E-02
+ 10   -609.155904323  0.102580E-03       1.870     2        0.05      1.82      0.04    0.2124E-02  0.1790E-03  0.4096E-02
+ 11   -609.155883455  -.208683E-04       1.870     1        0.05      1.82      0.04    0.3118E-02  0.1243E-03  0.2677E-02
+ 12   -609.155924411  0.409562E-04       1.870     2        0.05      1.82      0.04    0.2082E-02  0.9881E-04  0.3211E-02
 ------------------------------------------------------------------------------------------------------------------------
- REACH CONVERGENCE AFTER  10 CYLCES
- MAX ERROR = 0.613867E-03   RMS CHANGE = 0.637768E-04   MAX CHANGE = 0.782285E-03
+ REACH CONVERGENCE AFTER  12 CYLCES
+ MAX ERROR = 0.208156E-02   RMS CHANGE = 0.988073E-04   MAX CHANGE = 0.321116E-02
  -----------------------------------------------
-ELECTRONIC ENERGY    =  -928.238824749
+ALPHA ELECTRON DENSITY    =   39.9999808139
+BETA ELECTRON DENSITY     =   39.9999808139
+ELECTRONIC ENERGY    =  -931.825106252
 CORE_CORE REPULSION  =   322.669181841
 EXT CHARGE REPULSION =     0.000000000
-TOTAL ENERGY         =  -605.569642908
+TOTAL ENERGY         =  -609.155924411
 
  @ End Energy calculation
 
@@ -331,59 +511,22 @@ TOTAL ENERGY         =  -605.569642908
  @ End Zmake conversion
 
 
- @ Begin Charge and Dipole Calculation
-
-    ATOMIC CHARGES
-   ATOM          MULLIKEN            LOWDIN
-   H              0.2816             0.2031
-   H              0.2332             0.3101
-   O             -0.5149            -0.5134
-   H              0.2776             0.2002
-   H              0.2108             0.2945
-   O             -0.4884            -0.4946
-   H              0.2773             0.2000
-   H              0.2090             0.2932
-   O             -0.4862            -0.4932
-   H              0.2772             0.1999
-   H              0.2084             0.2929
-   O             -0.4856            -0.4928
-   H              0.2772             0.1999
-   H              0.2084             0.2928
-   O             -0.4856            -0.4928
-   H              0.2773             0.2000
-   H              0.2088             0.2931
-   O             -0.4861            -0.4931
-   H              0.2776             0.2002
-   H              0.2106             0.2943
-   O             -0.4881            -0.4944
-   H              0.2816             0.2031
-   H              0.2330             0.3100
-   O             -0.5146            -0.5132
-   TOTAL        -0.0000            -0.0000
-
-    DIPOLE (DEBYE)
-      X         Y         Z        TOTAL
-    3.9104  -23.1150    0.0173   23.4435
-
- @ End Charge and Dipole Calculation
-
-
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     0.720000000(  1.21%)
-TOTAL SCF TIME     =    58.750000000( 98.49%)
-      TOTAL OP TIME      =    58.470000000( 98.02%)
-            TOTAL 1e TIME      =     0.300000000(  0.50%)
-            TOTAL 2e TIME      =    58.170000000( 97.52%)
+INITIAL GUESS TIME =     1.960000000(  7.81%)
+TOTAL SCF TIME     =    22.790000000( 90.83%)
+      TOTAL OP TIME      =    22.240000000( 88.64%)
+            TOTAL 1e TIME      =    10.340000000( 41.21%)
+            TOTAL 2e TIME      =     4.000000000( 15.94%)
+            TOTAL Exchange TIME=     7.890000000( 31.45%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     0.280000000(  0.47%)
-            TOTAL DIAG TIME    =     0.110000000(  0.18%)
-DIPOLE TIME        =     0.080000000(  0.13%)
-TOTAL TIME         =    59.650000000
+      TOTAL DII TIME     =     0.550000000(  2.19%)
+            TOTAL DIAG TIME    =     0.450000000(  1.79%)
+TOTAL TIME         =    25.090000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes 59.6 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes 25.1 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Mon Aug 15 14:52:58 2011
+ Normal Terminatation. Task Finished on: Wed Dec 14 22:55:54 2011

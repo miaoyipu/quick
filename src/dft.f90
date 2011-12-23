@@ -1,3 +1,4 @@
+#include "config.h"
 ! Ed Brothers. February 5, 2003
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
 
@@ -236,8 +237,10 @@ subroutine b3lypf (rhoa1,sigmaaa1, vrhoa,vsigmaaa)
          -0.2777777777777778D-1*(-0.8443333333333333D-1*t5 &
          -0.1163333333333333D0*t144+0.4060033333333333D-1*t147)*sigma &
          +0.2777777777777778D-1*t112)-0.6666666666666667D0*t117)
-   vrhoa(i) = s2+0.5907233D-2*t65+0.3899174858189126D1*t71 &
-         +0.8419610158724123D-3*t77+0.19D0*rho*(0.5011795824473985D-1*( &
+   vrhoa(i) = s2+0.5907233D-2*t65+0.3899174858189126D1*t71
+   vrhoa(i) = vrhoa(i) &
+         +0.8419610158724123D-3*t77
+   vrhoa(i) = vrhoa(i) +0.19D0*rho*(0.5011795824473985D-1*( &
          -0.2067834969664667D0*t176*t62*t178-0.6203504908994D0*t57*t182 &
          *t192)/t57*t61+0.2419143800947354D0*t201*t189*t178/(1.D0 &
          +0.2016D-2*t201)+0.4431373767749538D-2*(-0.2625411059665811D0 &
@@ -626,7 +629,8 @@ subroutine dftoperator
    ! Note that the KS operator matrix is symmetric.
 
    ! The first part is the one elctron code.
-
+write(*,*) "E0=",quick_qm_struct%Eel
+   call cpu_time(timer_begin%T1e)
    do Ibas=1,nbasis
       do Jbas=Ibas,nbasis
          quick_qm_struct%o(Jbas,Ibas) = 0.d0
@@ -641,6 +645,7 @@ subroutine dftoperator
                      xyz(1,quick_basis%ncenter(Jbas)),xyz(2,quick_basis%ncenter(Jbas)), &
                      xyz(3,quick_basis%ncenter(Jbas)),xyz(1,quick_basis%ncenter(Ibas)), &
                      xyz(2,quick_basis%ncenter(Ibas)),xyz(3,quick_basis%ncenter(Ibas)))
+                     
             enddo
          enddo
       enddo
@@ -652,7 +657,6 @@ subroutine dftoperator
       enddo
    enddo
 
-   call cpu_time(t1)
 
    Eelxc=0.0d0
 
@@ -703,10 +707,12 @@ subroutine dftoperator
       enddo
 
    endif
-   call cpu_time(t2)
-
+   
+   write(*,*) "E1=",quick_qm_struct%Eel
+   call cpu_time(timer_end%T1e)
+   timer_cumer%T1e=timer_cumer%T1e+timer_end%T1e-timer_begin%T1e
    if(quick_method%printEnergy)then
-      write (ioutfile,'("Time for one-electron energy evaluation=",F16.9)') t2-t1
+   !   write (ioutfile,'("Time for one-electron energy evaluation=",F16.9)') t2-t1
    endif
 
    !
@@ -721,9 +727,8 @@ subroutine dftoperator
    ! The next term defines the electron repulsion_prim.
 
    ! Delta density matrix cutoff
-
-   call cpu_time(T1)
-
+   call cpu_time(timer_begin%T2e)
+   
    do II=1,jshell
       do JJ=II,jshell
          DNtemp=0.0d0
@@ -738,6 +743,15 @@ subroutine dftoperator
 
    ! print*,"before 2e"
    if(quick_method%B3LYP)then
+#ifdef CUDA
+      if (quick_method%bCUDA) then
+        call gpu_upload_method(1)
+        call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
+                  quick_qm_struct%vec,quick_qm_struct%dense)
+        call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
+        call gpu_get2e(quick_qm_struct%o);
+      else
+#endif
       do II=1,jshell
          do JJ=II,jshell
             Testtmp=Ycutoff(II,JJ)
@@ -748,8 +762,6 @@ subroutine dftoperator
                   if(testCutoff.gt.quick_method%integralCutoff)then
                      DNmax=max(4.0d0*cutmatrix(II,JJ),4.0d0*cutmatrix(KK,LL), &
                            cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
-                     !            DNmax=max(cutmatrix(II,JJ),cutmatrix(KK,LL) &
-                           !                  )
                      cutoffTest=testCutoff*DNmax
                      if(cutoffTest.gt.quick_method%integralCutoff)then
                         IIxiao=II
@@ -757,17 +769,32 @@ subroutine dftoperator
                         KKxiao=KK
                         LLxiao=LL
                         call shelldftb3lyp(IIxiao,JJxiao,KKxiao,LLxiao)
-                        !            Nxiao2=Nxiao2+1
                      endif
                      !            else
                      !             print*,II,JJ,KK,LL,cutoffTest,testCutoff,DNmax
-                     !            print*,'***',O(1,1)
+                     !            print*,'***',quick_qm_struct%O(1,1)
                   endif
                enddo
             enddo
          enddo
       enddo
+
+#ifdef CUDA
+    endif
+#endif
+
    else
+
+#ifdef CUDA
+      if (quick_method%bCUDA) then
+        call gpu_upload_method(2)
+        call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
+                  quick_qm_struct%vec,quick_qm_struct%dense)
+        call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
+        call gpu_get2e(quick_qm_struct%o);
+      else
+#endif
+
       do II=1,jshell
          do JJ=II,jshell
             Testtmp=Ycutoff(II,JJ)
@@ -797,6 +824,11 @@ subroutine dftoperator
             enddo
          enddo
       enddo
+
+#ifdef CUDA
+    endif
+#endif
+
    endif
 
    do I=1,nbasis
@@ -804,18 +836,18 @@ subroutine dftoperator
          quick_qm_struct%Osavedft(i,j)=quick_qm_struct%o(i,j)
       enddo
    enddo
-
-   call cpu_time(t2)
-
-   write (ioutfile,'(" TIME of evaluation integral = ",F12.2)') T2-T1
-
-
+   
+   call cpu_time(timer_end%T2e)
+   timer_cumer%T2e=timer_cumer%T2e+timer_end%T2e-timer_begin%T2e
+  
    do Ibas=1,nbasis
       do Jbas=Ibas+1,nbasis
          quick_qm_struct%o(Ibas,Jbas) = quick_qm_struct%o(Jbas,Ibas)
       enddo
    enddo
 
+
+   call cpu_time(timer_begin%TE)
    if(quick_method%printEnergy)then
       do Ibas=1,nbasis
          do Jbas=1,nbasis
@@ -826,6 +858,10 @@ subroutine dftoperator
       quick_qm_struct%Eel=quick_qm_struct%Eel/2.0d0
    endif
 
+   call cpu_time(timer_end%TE)
+   timer_cumer%TE=timer_cumer%TE+timer_end%TE-timer_begin%TE
+   
+   write(*,*) "E2=",quick_qm_struct%Eel
    ! The next portion is the exchange/correlation functional.
    ! The angular grid code came from CCL.net.  The radial grid
    ! formulas (position and wieghts) is from Gill, Johnson and Pople,
@@ -851,9 +887,21 @@ subroutine dftoperator
 
    quick_qm_struct%aelec=0.d0
    quick_qm_struct%belec=0.d0
+   call cpu_time(timer_begin%TEx)
 
    if(quick_method%B3LYP)then
-      do Iatm=1,natom
+
+#ifdef CUDA
+     if(quick_method%bCUDA) then
+        call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
+                             quick_qm_struct%vec,quick_qm_struct%dense)
+        call gpu_getxc_b3lyp(quick_method%isg, sigrad2, Eelxc, &
+                             quick_qm_struct%aelec, quick_qm_struct%belec, &
+                             quick_qm_struct%o)
+     else
+#endif
+		 write(*,*)  Eelxc
+     do Iatm=1,natom
          if(quick_method%ISG.eq.1)then
             Iradtemp=50
          else
@@ -863,7 +911,6 @@ subroutine dftoperator
                Iradtemp=26
             endif
          endif
-
          do Irad=1,Iradtemp
             if(quick_method%ISG.eq.1)then
                call gridformnew(iatm,RGRID(Irad),iiangt)
@@ -882,20 +929,22 @@ subroutine dftoperator
                ! Next, calculate the weight of the grid point in the SSW scheme.  if
                ! the grid point has a zero weight, we can skip it.
 
-               weight=SSW(gridx,gridy,gridz,Iatm) &
-                     *WTANG(Iang)*RWT(Irad)*rad3
-
+               weight=SSW(gridx,gridy,gridz,Iatm)*WTANG(Iang)*RWT(Irad)*rad3
                if (weight < quick_method%DMCutoff ) then
                   continue
                else
 
                   do Ibas=1,nbasis
+                  
+                    !write(*,*) "c",gridx, gridy, gridz
                      call pteval(gridx,gridy,gridz,phi,dphidx,dphidy, &
                            dphidz,Ibas)
                      phixiao(Ibas)=phi
                      dphidxxiao(Ibas)=dphidx
                      dphidyxiao(Ibas)=dphidy
                      dphidzxiao(Ibas)=dphidz
+                     
+                    ! write(*,*) "b",phi, dphidx, dphidy, dphidz
                   enddo
 
                   ! Next, evaluate the densities at the grid point and the gradient
@@ -903,7 +952,11 @@ subroutine dftoperator
 
                   call denspt(gridx,gridy,gridz,density,densityb,gax,gay,gaz, &
                         gbx,gby,gbz)
-
+				  !write(*,*) density, gridx, gridy, gridz
+                    !write(*,*) "gridx",gridx
+                    !write(*,*) "gax",gax
+                    !write(*,*) "gbx",gbx
+                    !write(*,*) "DENSITY=",density
                   if (density < quick_method%DMCutoff ) then
                      continue
                   else
@@ -912,7 +965,6 @@ subroutine dftoperator
                      sigma=4.0d0*(gax*gax+gay*gay+gaz*gaz)
                      call b3lyp_e(densitysum,sigma,zkec)
                            Eelxc = Eelxc + zkec*weight
-
 
                      quick_qm_struct%aelec = weight*density+quick_qm_struct%aelec
                      quick_qm_struct%belec = weight*densityb+quick_qm_struct%belec
@@ -962,8 +1014,11 @@ subroutine dftoperator
             enddo
          enddo
       enddo
+#ifdef CUDA
+      endif
+#endif
    endif
-
+   print *,"Eelxc = ", Eelxc
    if(quick_method%BLYP)then
       do Iatm=1,natom
          if(quick_method%ISG.eq.1)then
@@ -1472,7 +1527,9 @@ subroutine dftoperator
       enddo
    endif
 
+   call cpu_time(timer_end%TEx)
 
+   timer_cumer%TEx=timer_cumer%TEx+timer_end%TEx-timer_begin%TEx
 
    do Ibas=1,nbasis
       do Jbas=Ibas+1,nbasis
@@ -1480,13 +1537,12 @@ subroutine dftoperator
       enddo
    enddo
 
-   call cpu_time(t3)
 
-   write (ioutfile,'(" TIME of evaluation numerical integral = ",F12.2)') &
-         T3-T2
+   !write (ioutfile,'(" TIME of evaluation numerical integral = ",F12.2)') &
+    !     T3-T2
 
    quick_qm_struct%Eel=quick_qm_struct%Eel+Eelxc
-
+   write(*,*) "E1+E2+Eelxc=",quick_qm_struct%eel
 
 
 
@@ -1605,16 +1661,6 @@ subroutine dftoperatordelta
 
    call cpu_time(t2)
 
-   !           write (ioutfile,'("TOTAL ENERGY OF CURRENT CYCLE=",F16.9)') Eel
-
-   if(quick_method%printEnergy)then
-      write (ioutfile,'("Time for one-electron energy evaluation=",F16.9)') t2-t1
-   endif
-
-   !    print*,'Eel=', Eel
-
-
-   ! The first part is the one elctron code.
 
    do I=1,nbasis
       do J=1,nbasis

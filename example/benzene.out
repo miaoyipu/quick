@@ -23,34 +23,55 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Fri Sep 16 16:20:00 2011
+ TASK STARTS ON: Thu Dec 22 13:57:17 2011
  INPUT FILE:     benzene.in
  OUTPUT FILE:    benzene.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GTX 580
+| CUDA DEVICE PM              :       16
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
+| CUDA DEVICE MEMORY SIZE (MB):     1535
+| SUPPORTING CUDA VERSION     :      2.0
+|--------------------------------------------
+
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=DIVCON HF NCYC=1000 ZMAKE BASIS=STO-3G ENERGY                                                                                                                                                           
+KEYWORD=B3LYP CUTOFF=1.0E-9 NCYC=1000 ZMAKE BASIS=6-31GSS  ENERGY                                                                                                                                               
   -------------------------------------
  ============== JOB CARD =============
-| METHOD = HATREE FOCK
+| METHOD = DENSTITY FUNCTIONAL THEORY
+| DENSITY FUNCTIONAL = B3LYP
 | SAD INITAL GUESS 
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
 | Z-MATRIX CONSTRUCTION
-| DIV & CON METHOD = DIV AND CON ON ATOM BASIS
+| STANDARD GRID = SG1
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
 | COMPUATIONAL CUTOFF: 
-|      TWO-e INTEGRAL   =  0.100E-06
-|      BASIS SET PRIME  =  0.100E-06
+|      TWO-e INTEGRAL   =  0.100E-08
+|      BASIS SET PRIME  =  0.100E-08
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
-| BASIS SET = STO-3G
-| BASIS FILE = /home/miao/Workspace/new_quick/basis/STO-3G
+| BASIS SET = 6-31GSS
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31GSS
 
  @ Finish reading job
 
@@ -59,16 +80,40 @@ KEYWORD=DIVCON HF NCYC=1000 ZMAKE BASIS=STO-3G ENERGY
 
  For Atom Kind =    1
  ELEMENT = C 
-BASIS FUNCTIONS =    5
+BASIS FUNCTIONS =   15
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.02
-RMS CHANGE     = 0.245482E+00  MAX CHANGE= 0.665739E+00
+SCF CYCLE      =        1      TIME      =     0.17
+RMS CHANGE     = 0.126285E+00  MAX CHANGE= 0.907564E+00
 
-SCF CYCLE      =        2      TIME      =     0.01
-RMS CHANGE     = 0.632563E-10  MAX CHANGE= 0.150058E-09
+SCF CYCLE      =        2      TIME      =     0.19
+RMS CHANGE     = 0.797580E-01  MAX CHANGE= 0.779886E+00
+
+SCF CYCLE      =        3      TIME      =   0.17
+DIIS CYCLE     =        1      MAX ERROR = 0.296498E-01
+RMS CHANGE     = 0.904537E-02  MAX CHANGE= 0.646919E-01
+
+SCF CYCLE      =        4      TIME      =   0.18
+DIIS CYCLE     =        2      MAX ERROR = 0.533745E-02
+RMS CHANGE     = 0.229206E-02  MAX CHANGE= 0.240656E-01
+
+SCF CYCLE      =        5      TIME      =   0.17
+DIIS CYCLE     =        3      MAX ERROR = 0.286206E-02
+RMS CHANGE     = 0.169286E-02  MAX CHANGE= 0.184409E-01
+
+SCF CYCLE      =        6      TIME      =   0.17
+DIIS CYCLE     =        4      MAX ERROR = 0.549189E-03
+RMS CHANGE     = 0.331939E-03  MAX CHANGE= 0.369677E-02
+
+SCF CYCLE      =        7      TIME      =   0.18
+DIIS CYCLE     =        5      MAX ERROR = 0.504681E-05
+RMS CHANGE     = 0.171284E-05  MAX CHANGE= 0.173367E-04
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =        8      TIME      =     0.17
+RMS CHANGE     = 0.436414E-06  MAX CHANGE= 0.476471E-05
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -78,13 +123,28 @@ TOTAL ENERGY         =     0.000000000
 
  For Atom Kind =    2
  ELEMENT = H 
-BASIS FUNCTIONS =    1
+BASIS FUNCTIONS =    5
 
  @ Begin Energy Calculation
 
 
 SCF CYCLE      =        1      TIME      =     0.00
-RMS CHANGE     = 0.100000E-07  MAX CHANGE= 0.100000E-07
+RMS CHANGE     = 0.124770E+00  MAX CHANGE= 0.375230E+00
+
+SCF CYCLE      =        2      TIME      =     0.00
+RMS CHANGE     = 0.225650E-01  MAX CHANGE= 0.909848E-01
+
+SCF CYCLE      =        3      TIME      =   0.00
+DIIS CYCLE     =        1      MAX ERROR = 0.192500E-01
+RMS CHANGE     = 0.706671E-02  MAX CHANGE= 0.282222E-01
+
+SCF CYCLE      =        4      TIME      =   0.00
+DIIS CYCLE     =        2      MAX ERROR = 0.619788E-02
+RMS CHANGE     = 0.332676E-02  MAX CHANGE= 0.132001E-01
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        5      TIME      =     0.00
+RMS CHANGE     = 0.643466E-10  MAX CHANGE= 0.254611E-09
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -146,108 +206,202 @@ TOTAL ENERGY         =     0.000000000
      12     4.71377     0.00000
 
 ============== BASIS INFOS ==============
-| BASIS FUNCTIONS =   36
-| NSHELL =   18 NPRIM  =   54
-| JSHELL =   18 JBASIS =   54
+| BASIS FUNCTIONS =  120
+| NSHELL =   42 NPRIM  =   96
+| JSHELL =   42 JBASIS =   96
 
+
+RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
+   1           2.728000
+   2           6.391000
+   3           6.635000
+   4           6.635000
+   5           6.635000
+   6          11.249000
+   7          11.692000
+   8          11.692000
+   9          11.692000
+  10           5.679000
+  11           5.679000
+  12           5.679000
+  13           5.679000
+  14           5.679000
+  15           5.679000
+  16           2.728000
+  17           6.391000
+  18           6.635000
+  19           6.635000
+  20           6.635000
+  21          11.249000
+  22          11.692000
+  23          11.692000
+  24          11.692000
+  25           5.679000
+  26           5.679000
+  27           5.679000
+  28           5.679000
+  29           5.679000
+  30           5.679000
+  31           2.728000
+  32           6.391000
+  33           6.635000
+  34           6.635000
+  35           6.635000
+  36          11.249000
+  37          11.692000
+  38          11.692000
+  39          11.692000
+  40           5.679000
+  41           5.679000
+  42           5.679000
+  43           5.679000
+  44           5.679000
+  45           5.679000
+  46           2.728000
+  47           6.391000
+  48           6.635000
+  49           6.635000
+  50           6.635000
+  51          11.249000
+  52          11.692000
+  53          11.692000
+  54          11.692000
+  55           5.679000
+  56           5.679000
+  57           5.679000
+  58           5.679000
+  59           5.679000
+  60           5.679000
+  61           2.728000
+  62           6.391000
+  63           6.635000
+  64           6.635000
+  65           6.635000
+  66          11.249000
+  67          11.692000
+  68          11.692000
+  69          11.692000
+  70           5.679000
+  71           5.679000
+  72           5.679000
+  73           5.679000
+  74           5.679000
+  75           5.679000
+  76           2.728000
+  77           6.391000
+  78           6.635000
+  79           6.635000
+  80           6.635000
+  81          11.249000
+  82          11.692000
+  83          11.692000
+  84          11.692000
+  85           5.679000
+  86           5.679000
+  87           5.679000
+  88           5.679000
+  89           5.679000
+  90           5.679000
+  91           5.909000
+  92          11.497000
+  93           4.719000
+  94           4.719000
+  95           4.719000
+  96           5.909000
+  97          11.497000
+  98           4.719000
+  99           4.719000
+ 100           4.719000
+ 101           5.909000
+ 102          11.497000
+ 103           4.719000
+ 104           4.719000
+ 105           4.719000
+ 106           5.909000
+ 107          11.497000
+ 108           4.719000
+ 109           4.719000
+ 110           4.719000
+ 111           5.909000
+ 112          11.497000
+ 113           4.719000
+ 114           4.719000
+ 115           4.719000
+ 116           5.909000
+ 117          11.497000
+ 118           4.719000
+ 119           4.719000
+ 120           4.719000
 
  @ End Reading Mol Info 
 
 
- @ Now Begin Div & Con Fragment
-
-NUMBER OF FRAG= 12
-RBuffer=   7.00 A
-============================================================
-The Core and Buffer Atoms before elimination
-============================================================
-Frag       CoreAtom     CoreTot     BufAtom       BufTot  SubTot
-    1  1                  1       2-12              11       12
-    2  2                  1       1,3-12            11       12
-    3  3                  1       1-2,4-12          11       12
-    4  4                  1       1-3,5-12          11       12
-    5  5                  1       1-4,6-12          11       12
-    6  6                  1       1-5,7-12          11       12
-    7  7                  1       1-6,8-12          11       12
-    8  8                  1       1-7,9-12          11       12
-    9  9                  1       1-8,10-12         11       12
-   10  10                 1       1-9,11-12         11       12
-   11  11                 1       1-10,12           11       12
-   12  12                 1       1-11              11       12
------------------------------------------------------------
-Total Frag=  12
-===========================================================
- move the subsystem            2  into            1
- move the subsystem            3  into            1
- move the subsystem            4  into            1
- move the subsystem            5  into            1
- move the subsystem            6  into            1
- move the subsystem            7  into            1
- move the subsystem            8  into            1
- move the subsystem            9  into            1
- move the subsystem           10  into            1
- move the subsystem           11  into            1
- move the subsystem           12  into            1
-============================================================
-The Core and Buffer Atoms
-============================================================
-Frag       CoreAtom     CoreTot     BufAtom       BufTot     SubAtom     SubTot    Elec    NBasis
-    1  1-12              12       1                  0       1-12              12    42    36
------------------------------------------------------------
-Total Frag=   1
-NBasis Max=  36
-===========================================================
-
- @ Now End Div & Con Fragment
-
-
  @ Begin Energy Calculation
 
- -------------------------------
-SCF CYCLE=    1
- Exceed the maximum interations
- IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
-E(Fermi)    = ************  AFTER 101 N.C. Cycles
-DIIS CYCLE     =        1
-DIIS TIME =         0.00
-RMS CHANGE     = 0.950446E+00  MAX CHANGE= 0.213148E+01
- -------------------------------
-SCF CYCLE=    2
- Exceed the maximum interations
- IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
-E(Fermi)    = ************  AFTER 101 N.C. Cycles
-DIIS CYCLE     =        2
-DIIS TIME =         0.00
-RMS CHANGE     =          NaN  MAX CHANGE= 0.000000E+00
- -------------------------------
-SCF CYCLE=    3
- Exceed the maximum interations
- IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
-E(Fermi)    = ************  AFTER 101 N.C. Cycles
-DIIS CYCLE     =        3
-DIIS TIME =         0.00
-RMS CHANGE     = 0.769053E+00  MAX CHANGE= 0.585132E+01
- -------------------------------
-SCF CYCLE=    4
- Exceed the maximum interations
- IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
-E(Fermi)    = ************  AFTER 101 N.C. Cycles
-DIIS CYCLE     =        4
-DIIS TIME =         0.00
-RMS CHANGE     =          NaN  MAX CHANGE= 0.000000E+00
- -------------------------------
-SCF CYCLE=    5
- Exceed the maximum interations
- IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
-E(Fermi)    = ************  AFTER 101 N.C. Cycles
-DIIS CYCLE     =        5
-DIIS TIME =         0.00
-RMS CHANGE     = 0.769053E+00  MAX CHANGE= 0.585132E+01
- -------------------------------
-SCF CYCLE=    6
- Exceed the maximum interations
- IF IT APPEARS AT LATE STEP MAY LEAD TO WRONG RESULT!
-E(Fermi)    = ************  AFTER 101 N.C. Cycles
-DIIS CYCLE     =        6
-DIIS TIME =         0.00
-RMS CHANGE     =          NaN  MAX CHANGE= 0.000000E+00
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+  1   -233.507066645      ------         1.670     1        0.02      1.65      0.02    0.1998E+01  0.3138E-01  0.5148E+00
+  2   -232.148505684  -.135856E+01       1.730     2        0.02      1.71      0.02    0.1219E+00  0.1140E-01  0.1910E+00
+  3   -232.159000122  0.104944E-01       1.720     3        0.02      1.70      0.02    0.1198E+00  0.6217E-02  0.1146E+00
+  4   -232.256725668  0.977255E-01       1.720     4        0.02      1.70      0.02    0.9739E-02  0.6957E-03  0.9656E-02
+  5   -232.257510481  0.784814E-03       1.730     5        0.03      1.70      0.01    0.3863E-02  0.2063E-03  0.4062E-02
+  6   -232.257559876  0.493944E-04       1.720     6        0.02      1.70      0.02    0.2568E-02  0.8455E-04  0.1613E-02
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER   6 CYLCES
+ MAX ERROR = 0.256792E-02   RMS CHANGE = 0.845505E-04   MAX CHANGE = 0.161328E-02
+ -----------------------------------------------
+ALPHA ELECTRON DENSITY    =   21.0002498389
+BETA ELECTRON DENSITY     =   21.0002498389
+ELECTRONIC ENERGY    =  -435.288259900
+CORE_CORE REPULSION  =   203.030700024
+TOTAL ENERGY         =  -232.257559876
+
+ @ End Energy calculation
+
+
+ @ Begin Zmake conversion
+
+  
+ Z-MATRIX:
+
+   ATOM  ELEMENTAL  BOND LENGTH    BOND ANGLE    DIHEDRAL ANGLE
+  NUMBER  SYMBOL    (ANGSTROMS)    (DEGREES)       (DEGREES)
+     I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
+
+     1      C        0.00000  0     0.00000  0      0.00000  0      0    0    0
+     2      C        1.39516  1     0.00000  0      0.00000  0      1    0    0
+     3      C        2.41621  1    29.99037  1      0.00000  0      1    2    0
+     4      C        2.79007  1    59.99972  1      0.02843  1      1    2    3
+     5      C        2.41618  1    89.99481  1      0.03979  1      1    2    3
+     6      C        1.39483  1   119.99846  1      0.03235  1      1    2    3
+     7      H        1.09961  1   119.99722  1   -179.97293  1      1    2    3
+     8      H        2.16541  1    26.09598  1   -179.92090  1      1    2    3
+     9      H        3.41323  1    20.72406  1     -0.03008  1      1    2    3
+    10      H        3.88975  1    59.99368  1      0.02140  1      1    2    3
+    11      H        3.41306  1    99.27177  1      0.04475  1      1    2    3
+    12      H        2.16537  1   146.08606  1      0.04088  1      1    2    3
+
+ @ End Zmake conversion
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     1.530000000( 12.24%)
+TOTAL SCF TIME     =    10.410000000( 83.28%)
+      TOTAL OP TIME      =    10.280000000( 82.24%)
+            TOTAL 1e TIME      =     1.560000000( 12.48%)
+            TOTAL 2e TIME      =     3.540000000( 28.32%)
+            TOTAL Exchange TIME=     5.170000000( 41.36%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.130000000(  1.04%)
+            TOTAL DIAG TIME    =     0.110000000(  0.88%)
+TOTAL TIME         =    12.500000000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes 12.5 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Thu Dec 22 13:57:30 2011

@@ -39,10 +39,11 @@ subroutine denspt(gridx, gridy, gridz, densitya, densityb, &
    gaz=0.d0
 
    do Ibas=1,nbasis
+      DENSEIJ=quick_qm_struct%dense(Ibas,Ibas)
       if(DABS(quick_qm_struct%dense(Ibas,Ibas)) < quick_method%DMCutoff) then
          continue
       else
-         DENSEBIJ=quick_qm_struct%denseB(Ibas,Ibas)
+         DENSEBIJ=quick_qm_struct%dense(Ibas,Ibas)
          phi=phixiao(Ibas)
          dphidx=dphidxxiao(Ibas)
          dphidy=dphidyxiao(Ibas)
@@ -52,6 +53,9 @@ subroutine denspt(gridx, gridy, gridz, densitya, densityb, &
          else
 
             densitya=densitya+DENSEIJ*phi*phi/2.0d0
+            
+              ! write(*,*) "a",densitya,DENSEIJ,phi,phi,quick_qm_struct%dense(Ibas,Ibas)
+               
             gax=gax+DENSEIJ*phi*dphidx
             gay=gay+DENSEIJ*phi*dphidy
             gaz=gaz+DENSEIJ*phi*dphidz
@@ -61,6 +65,7 @@ subroutine denspt(gridx, gridy, gridz, densitya, densityb, &
                phi2=phixiao(Jbas)
                
                densitya=densitya+DENSEIJ*phi*phi2
+             !  write(*,*) densitya,DENSEIJ,phi,phi2
                gax=gax+DENSEIJ*(phi*dphidxxiao(Jbas)+phi2*dphidx)
                gay=gay+DENSEIJ*(phi*dphidyxiao(Jbas)+phi2*dphidy)
                gaz=gaz+DENSEIJ*(phi*dphidzxiao(Jbas)+phi2*dphidz)
@@ -74,6 +79,8 @@ subroutine denspt(gridx, gridy, gridz, densitya, densityb, &
    gbx =gax
    gby =gay
    gbz =gaz
+   
+   !write(*,*) gax,gay,gaz,gbx,gby,gbz
 
 end subroutine denspt
 

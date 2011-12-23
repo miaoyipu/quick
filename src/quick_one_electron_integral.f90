@@ -1144,7 +1144,6 @@ double precision function repulsion(gi,gj,gk,gl,pos1,pos2,pos3,pos4) result(repi
          enddo
       enddo
    enddo
-
 end function repulsion
 
 

@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Fri Sep 16 16:16:22 2011
+ TASK STARTS ON: Fri Dec  9 00:47:12 2011
  INPUT FILE:     test3.in
  OUTPUT FILE:    test3.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -31,7 +31,7 @@
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=DIVCON HF ENERGY ZMAKE NCYC=1000  BASIS=6-31G                                                                                                                                                           
+KEYWORD=HF NCYC=1000 CUTOFF=1.0E-9 ENERGY ZMAKE  BASIS=6-31G                                                                                                                                                    
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
@@ -39,13 +39,12 @@ KEYWORD=DIVCON HF ENERGY ZMAKE NCYC=1000  BASIS=6-31G
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
 | Z-MATRIX CONSTRUCTION
-| DIV & CON METHOD = DIV AND CON ON ATOM BASIS
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
 | COMPUATIONAL CUTOFF: 
-|      TWO-e INTEGRAL   =  0.100E-06
-|      BASIS SET PRIME  =  0.100E-06
+|      TWO-e INTEGRAL   =  0.100E-08
+|      BASIS SET PRIME  =  0.100E-08
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
@@ -64,7 +63,7 @@ BASIS FUNCTIONS =    9
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.06
+SCF CYCLE      =        1      TIME      =     0.05
 RMS CHANGE     = 0.149950E+00  MAX CHANGE= 0.820200E+00
 
 SCF CYCLE      =        2      TIME      =     0.06
@@ -78,7 +77,7 @@ SCF CYCLE      =        4      TIME      =   0.06
 DIIS CYCLE     =        2      MAX ERROR = 0.746633E-02
 RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
 
-SCF CYCLE      =        5      TIME      =   0.06
+SCF CYCLE      =        5      TIME      =   0.07
 DIIS CYCLE     =        3      MAX ERROR = 0.308852E-02
 RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
 
@@ -118,7 +117,7 @@ DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
 RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
 
-SCF CYCLE      =        5      TIME      =     0.01
+SCF CYCLE      =        5      TIME      =     0.00
 RMS CHANGE     = 0.142040E-10  MAX CHANGE= 0.224882E-10
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
@@ -164,176 +163,69 @@ TOTAL ENERGY         =     0.000000000
  @ End Reading Mol Info 
 
 
- @ Now Begin Div & Con Fragment
-
-NUMBER OF FRAG=  5
-RBuffer=   2.00 A
-============================================================
-The Core and Buffer Atoms before elimination
-============================================================
-Frag       CoreAtom     CoreTot     BufAtom       BufTot  SubTot
-    1  1                  1       4-5                2        3
-    2  2                  1       2                  0        1
-    3  3                  1       3                  0        1
-    4  4                  1       1,5                2        3
-    5  5                  1       1,4                2        3
------------------------------------------------------------
-Total Frag=   5
-===========================================================
- move the subsystem            4  into            1
- move the subsystem            5  into            1
-============================================================
-The Core and Buffer Atoms
-============================================================
-Frag       CoreAtom     CoreTot     BufAtom       BufTot     SubAtom     SubTot    Elec    NBasis
-    1  1,4-5              3       1                  0       1,4-5              3     8    13
-    2  2                  1       2                  0       2                  1     1     2
-    3  3                  1       3                  0       3                  1     1     2
------------------------------------------------------------
-Total Frag=   3
-NBasis Max=  13
-===========================================================
-
- @ Now End Div & Con Fragment
-
-
  @ Begin Energy Calculation
 
- -------------------------------
-SCF CYCLE=    1
-E(Fermi)    =   -0.1906956  AFTER  32 N.C. Cycles
-DIIS CYCLE     =        1
-DIIS TIME =         0.00
-RMS CHANGE     = 0.109077E+00  MAX CHANGE= 0.292669E+00
- -------------------------------
-SCF CYCLE=    2
-E(Fermi)    =   -0.1975914  AFTER  33 N.C. Cycles
-DIIS CYCLE     =        2
-DIIS TIME =         0.00
-RMS CHANGE     = 0.678895E-01  MAX CHANGE= 0.343558E+00
- -------------------------------
-SCF CYCLE=    3
-E(Fermi)    =   -0.2133232  AFTER   7 N.C. Cycles
-DIIS CYCLE     =        3
-DIIS TIME =         0.00
-RMS CHANGE     = 0.105209E+00  MAX CHANGE= 0.856628E+00
- -------------------------------
-SCF CYCLE=    4
-E(Fermi)    =   -0.1406306  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        4
-DIIS TIME =         0.00
-RMS CHANGE     = 0.100243E+00  MAX CHANGE= 0.103807E+01
- -------------------------------
-SCF CYCLE=    5
-E(Fermi)    =   -0.1305266  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        5
-DIIS TIME =         0.00
-RMS CHANGE     = 0.960233E-01  MAX CHANGE= 0.885767E+00
- -------------------------------
-SCF CYCLE=    6
-E(Fermi)    =   -0.1461913  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        6
-DIIS TIME =         0.00
-RMS CHANGE     = 0.959214E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=    7
-E(Fermi)    =   -0.1379609  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        7
-DIIS TIME =         0.00
-RMS CHANGE     = 0.958137E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=    8
-E(Fermi)    =   -0.1526116  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        8
-DIIS TIME =         0.00
-RMS CHANGE     = 0.957328E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=    9
-E(Fermi)    =   -0.1433170  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        9
-DIIS TIME =         0.00
-RMS CHANGE     = 0.956228E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   10
-E(Fermi)    =   -0.1571272  AFTER   3 N.C. Cycles
-DIIS CYCLE     =       10
-DIIS TIME =         0.00
-RMS CHANGE     = 0.955593E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   11
-E(Fermi)    =   -0.1469166  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        1
-DIIS TIME =         0.00
-RMS CHANGE     = 0.954731E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   12
-E(Fermi)    =   -0.1600890  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        2
-DIIS TIME =         0.00
-RMS CHANGE     = 0.954285E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   13
-E(Fermi)    =   -0.1492062  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        3
-DIIS TIME =         0.00
-RMS CHANGE     = 0.953687E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   14
-E(Fermi)    =   -0.1619471  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        4
-DIIS TIME =         0.00
-RMS CHANGE     = 0.953404E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   15
-E(Fermi)    =   -0.1506110  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        5
-DIIS TIME =         0.00
-RMS CHANGE     = 0.953011E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   16
-E(Fermi)    =   -0.1630812  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        6
-DIIS TIME =         0.00
-RMS CHANGE     = 0.952845E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   17
-E(Fermi)    =   -0.1514534  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        7
-DIIS TIME =         0.00
-RMS CHANGE     = 0.952593E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   18
-E(Fermi)    =   -0.1637622  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        8
-DIIS TIME =         0.00
-RMS CHANGE     = 0.952502E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   19
-E(Fermi)    =   -0.1519512  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        9
-DIIS TIME =         0.00
-RMS CHANGE     = 0.952342E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   20
-E(Fermi)    =   -0.1641673  AFTER   3 N.C. Cycles
-DIIS CYCLE     =       10
-DIIS TIME =         0.00
-RMS CHANGE     = 0.952296E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   21
-E(Fermi)    =   -0.1522427  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        1
-DIIS TIME =         0.00
-RMS CHANGE     = 0.952193E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   22
-E(Fermi)    =   -0.1644072  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        2
-DIIS TIME =         0.00
-RMS CHANGE     = 0.952173E-01  MAX CHANGE= 0.885750E+00
- -------------------------------
-SCF CYCLE=   23
-E(Fermi)    =   -0.1524121  AFTER   3 N.C. Cycles
-DIIS CYCLE     =        3
-DIIS TIME =         0.00
-RMS CHANGE     = 0.952106E-01  MAX CHANGE= 0.885750E+00
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+  1    -39.639764558      ------         0.020     1        0.00      0.02      0.00    0.1489E+01  0.1037E+00  0.5681E+00
+  2    -39.322516045  -.317249E+00       0.010     2        0.00      0.01      0.00    0.1511E+00  0.4963E-01  0.4164E+00
+  3    -39.374324157  0.518081E-01       0.000     3        0.00      0.00      0.00    0.5432E-01  0.1356E-01  0.7171E-01
+  4    -39.386061469  0.117373E-01       0.010     4        0.00      0.01      0.00    0.4834E-01  0.1237E-01  0.9631E-01
+  5    -39.393513735  0.745227E-02       0.010     5        0.00      0.01      0.00    0.4662E-01  0.1158E-01  0.5585E-01
+  6    -39.405595960  0.120822E-01       0.010     6        0.00      0.01      0.00    0.4345E-01  0.1996E-01  0.9624E-01
+  7    -39.423963149  0.183672E-01       0.010     7        0.00      0.01      0.00    0.3561E-01  0.3883E-01  0.1971E+00
+  8    -39.450155014  0.261919E-01       0.010     8        0.00      0.01      0.00    0.1978E-01  0.1599E-01  0.6868E-01
+  9    -39.455564804  0.540979E-02       0.010     9        0.00      0.01      0.00    0.9023E-02  0.1461E-01  0.6061E-01
+ 10    -39.457085263  0.152046E-02       0.010    10        0.00      0.01      0.00    0.7521E-02  0.1976E-02  0.1403E-01
+ 11    -39.457198550  0.113287E-03       0.010     1        0.00      0.01      0.00    0.2898E-02  0.1491E-02  0.1069E-01
+ 12    -39.457219904  0.213548E-04       0.010     2        0.00      0.01      0.00    0.2353E-03  0.1144E-03  0.9558E-03
+ 13    -39.457220048  0.143496E-06       0.010     3        0.00      0.01      0.00    0.8298E-04  0.6476E-04  0.4841E-03
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER  13 CYLCES
+ MAX ERROR = 0.829792E-04   RMS CHANGE = 0.647558E-04   MAX CHANGE = 0.484139E-03
+ -----------------------------------------------
+ELECTRONIC ENERGY    =   -47.307086882
+CORE_CORE REPULSION  =     7.849866834
+TOTAL ENERGY         =   -39.457220048
+
+ @ End Energy calculation
+
+
+ @ Begin Zmake conversion
+
+  
+ Z-MATRIX:
+
+   ATOM  ELEMENTAL  BOND LENGTH    BOND ANGLE    DIHEDRAL ANGLE
+  NUMBER  SYMBOL    (ANGSTROMS)    (DEGREES)       (DEGREES)
+     I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
+
+     1      C        0.00000  0     0.00000  0      0.00000  0      0    0    0
+     2      H        7.48415  1     0.00000  0      0.00000  0      1    0    0
+     3      H        8.30928  1    27.67689  1      0.00000  0      1    2    0
+     4      H        1.09002  1    30.23049  1    104.24927  1      1    2    3
+     5      H        1.09006  1    45.63091  1     48.50451  1      1    2    3
+
+ @ End Zmake conversion
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     0.490000000( 66.22%)
+TOTAL SCF TIME     =     0.130000000( 17.57%)
+      TOTAL OP TIME      =     0.130000000( 17.57%)
+            TOTAL 1e TIME      =     0.000000000(  0.00%)
+            TOTAL 2e TIME      =     0.130000000( 17.57%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.000000000(  0.00%)
+            TOTAL DIAG TIME    =     0.000000000(  0.00%)
+TOTAL TIME         =     0.740000000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes  0.7 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Fri Dec  9 00:47:13 2011

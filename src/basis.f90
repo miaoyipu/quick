@@ -254,13 +254,13 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
    ! Allocate the arrays now that we know the sizes
 
    if(quick_method%ffunxiao)then
-      allocate(Yxiao(1296,56,56))
+      allocate(Yxiao(4096,56,56))
       allocate(Yxiaotemp(56,56,0:10))
-      allocate(Yxiaoprim(6,6,56,56))
+      allocate(Yxiaoprim(8,8,56,56))
       allocate(attraxiao(56,56,0:6))
       allocate(attraxiaoopt(3,56,56,0:5))
    else
-      allocate(Yxiao(1296,120,120))
+      allocate(Yxiao(4096,120,120))
       allocate(Yxiaotemp(120,120,0:14))
       allocate(Yxiaoprim(6,6,120,120))
       allocate(attraxiao(120,120,0:8))

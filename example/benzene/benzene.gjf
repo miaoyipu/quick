@@ -1,6 +1,6 @@
 %chk=benzene.chk
 %nproc=1
-# hf/sto-3g opt geom=connectivity
+# b3lyp/6-31g geom=connectivity
 
 Title Card Required
 

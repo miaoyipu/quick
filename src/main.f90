@@ -231,7 +231,7 @@
         if (quick_method%zmat) call zmake
         
         ! Calculate Dipole Moment
-        call dipole
+        if (quick_method%dipole) call dipole
         
     endif
     

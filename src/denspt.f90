@@ -86,5 +86,6 @@
         gbz =gaz
 !    ENDIF
 
+   write(*,*) gax,gay,gaz,gbx,gby,gbz
     END subroutine denspt
 
