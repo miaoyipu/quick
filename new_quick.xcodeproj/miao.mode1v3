@@ -202,6 +202,7 @@
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
+<<<<<<< HEAD
 				<string>0AA3B13C1487E53100EF42D8</string>
 				<key>PBXProjectModuleLabel</key>
 				<string>gpu_getxc.cu</string>
@@ -243,6 +244,9 @@
 			<dict>
 				<key>PBXProjectModuleGUID</key>
 				<string>0ACAAE3B1497AF020048D038</string>
+=======
+				<string>0A53E67A13BBD21F001B61CC</string>
+>>>>>>> cuda_branch
 				<key>PBXProjectModuleLabel</key>
 				<string>gpu_get2e.cu</string>
 				<key>PBXSplitModuleInNavigatorKey</key>
@@ -250,16 +254,27 @@
 					<key>Split0</key>
 					<dict>
 						<key>PBXProjectModuleGUID</key>
+<<<<<<< HEAD
 						<string>0ACAAE3C1497AF020048D038</string>
+=======
+						<string>0A53E67B13BBD21F001B61CC</string>
+>>>>>>> cuda_branch
 						<key>PBXProjectModuleLabel</key>
 						<string>gpu_get2e.cu</string>
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
+<<<<<<< HEAD
 						<string>0ACAAEA314983B1B0048D038</string>
 						<key>history</key>
 						<array>
 							<string>0ACAAE431497B2830048D038</string>
+=======
+						<string>0AD36CAE13C56D630025358D</string>
+						<key>history</key>
+						<array>
+							<string>0AD36C6613C566D00025358D</string>
+>>>>>>> cuda_branch
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -271,18 +286,30 @@
 			<key>Geometry</key>
 			<dict>
 				<key>Frame</key>
+<<<<<<< HEAD
 				<string>{{0, 20}, {1336, 888}}</string>
 				<key>PBXModuleWindowStatusBarHidden2</key>
 				<false/>
 				<key>RubberWindowFrame</key>
 				<string>344 99 1336 929 0 0 1680 1028 </string>
+=======
+				<string>{{0, 20}, {1171, 886}}</string>
+				<key>PBXModuleWindowStatusBarHidden2</key>
+				<false/>
+				<key>RubberWindowFrame</key>
+				<string>408 101 1171 927 0 0 1680 1028 </string>
+>>>>>>> cuda_branch
 			</dict>
 		</dict>
 		<dict>
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
+<<<<<<< HEAD
 				<string>0ACAAE98149817880048D038</string>
+=======
+				<string>0AD36C8F13C56B5D0025358D</string>
+>>>>>>> cuda_branch
 				<key>PBXProjectModuleLabel</key>
 				<string>gpu_common.h</string>
 				<key>PBXSplitModuleInNavigatorKey</key>
@@ -290,16 +317,27 @@
 					<key>Split0</key>
 					<dict>
 						<key>PBXProjectModuleGUID</key>
+<<<<<<< HEAD
 						<string>0ACAAE99149817880048D038</string>
+=======
+						<string>0AD36C9013C56B5D0025358D</string>
+>>>>>>> cuda_branch
 						<key>PBXProjectModuleLabel</key>
 						<string>gpu_common.h</string>
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
+<<<<<<< HEAD
 						<string>0ACAAEA414983B1B0048D038</string>
 						<key>history</key>
 						<array>
 							<string>0ACAAE9114980F030048D038</string>
+=======
+						<string>0AD36CAF13C56D630025358D</string>
+						<key>history</key>
+						<array>
+							<string>0AD36C8713C56A3E0025358D</string>
+>>>>>>> cuda_branch
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -315,21 +353,32 @@
 				<key>PBXModuleWindowStatusBarHidden2</key>
 				<false/>
 				<key>RubberWindowFrame</key>
+<<<<<<< HEAD
 				<string>19 101 1050 927 0 0 1680 1028 </string>
+=======
+				<string>477 101 1050 927 0 0 1680 1028 </string>
+>>>>>>> cuda_branch
 			</dict>
 		</dict>
 		<dict>
 			<key>Content</key>
 			<dict>
 				<key>PBXProjectModuleGUID</key>
+<<<<<<< HEAD
 				<string>0ACAAE6A1497BBE90048D038</string>
 				<key>PBXProjectModuleLabel</key>
 				<string>dft.f90</string>
+=======
+				<string>0AD36B5B13C4EF050025358D</string>
+				<key>PBXProjectModuleLabel</key>
+				<string>shell.f90</string>
+>>>>>>> cuda_branch
 				<key>PBXSplitModuleInNavigatorKey</key>
 				<dict>
 					<key>Split0</key>
 					<dict>
 						<key>PBXProjectModuleGUID</key>
+<<<<<<< HEAD
 						<string>0ACAAE6B1497BBE90048D038</string>
 						<key>PBXProjectModuleLabel</key>
 						<string>dft.f90</string>
@@ -340,6 +389,18 @@
 						<key>history</key>
 						<array>
 							<string>0ACAAE6C1497BBE90048D038</string>
+=======
+						<string>0AD36B5C13C4EF050025358D</string>
+						<key>PBXProjectModuleLabel</key>
+						<string>shell.f90</string>
+						<key>_historyCapacity</key>
+						<integer>0</integer>
+						<key>bookmark</key>
+						<string>0AD36CB013C56D630025358D</string>
+						<key>history</key>
+						<array>
+							<string>0AD36B5D13C4EF050025358D</string>
+>>>>>>> cuda_branch
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -351,11 +412,19 @@
 			<key>Geometry</key>
 			<dict>
 				<key>Frame</key>
+<<<<<<< HEAD
 				<string>{{0, 20}, {902, 883}}</string>
 				<key>PBXModuleWindowStatusBarHidden2</key>
 				<false/>
 				<key>RubberWindowFrame</key>
 				<string>23 104 902 924 0 0 1680 1028 </string>
+=======
+				<string>{{0, 20}, {750, 883}}</string>
+				<key>PBXModuleWindowStatusBarHidden2</key>
+				<false/>
+				<key>RubberWindowFrame</key>
+				<string>-67 104 750 924 0 0 1680 1028 </string>
+>>>>>>> cuda_branch
 			</dict>
 		</dict>
 	</array>
@@ -442,15 +511,23 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
+<<<<<<< HEAD
 									<integer>19</integer>
 									<integer>10</integer>
+=======
+									<integer>97</integer>
+>>>>>>> cuda_branch
 									<integer>7</integer>
 									<integer>2</integer>
 									<integer>0</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
+<<<<<<< HEAD
 							<string>{{0, 0}, {311, 870}}</string>
+=======
+							<string>{{0, 800}, {311, 866}}</string>
+>>>>>>> cuda_branch
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -462,14 +539,22 @@
 					<key>GeometryConfiguration</key>
 					<dict>
 						<key>Frame</key>
+<<<<<<< HEAD
 						<string>{{0, 0}, {328, 888}}</string>
+=======
+						<string>{{0, 0}, {328, 884}}</string>
+>>>>>>> cuda_branch
 						<key>GroupTreeTableConfiguration</key>
 						<array>
 							<string>MainColumn</string>
 							<real>311</real>
 						</array>
 						<key>RubberWindowFrame</key>
+<<<<<<< HEAD
 						<string>0 99 1680 929 0 0 1680 1028 </string>
+=======
+						<string>0 103 1680 925 0 0 1680 1028 </string>
+>>>>>>> cuda_branch
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -485,7 +570,11 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
+<<<<<<< HEAD
 								<string>gpu_type.cu</string>
+=======
+								<string>Makefile</string>
+>>>>>>> cuda_branch
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -493,29 +582,54 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
+<<<<<<< HEAD
 										<string>gpu_type.cu</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
 										<string>0ACAAEA114983B1B0048D038</string>
+=======
+										<string>Makefile</string>
+										<key>_historyCapacity</key>
+										<integer>0</integer>
+										<key>bookmark</key>
+										<string>0AD36CAD13C56D630025358D</string>
+>>>>>>> cuda_branch
 										<key>history</key>
 										<array>
 											<string>0A6A126D130EEDF0009B360A</string>
 											<string>0AB494B013159A090029EA94</string>
+<<<<<<< HEAD
+=======
+											<string>0A546C0813280172007CF0ED</string>
+											<string>0A546C2513280CD5007CF0ED</string>
+>>>>>>> cuda_branch
 											<string>0A0747CF132A94AC00CEC9FB</string>
 											<string>0A0748A1132AB63800CEC9FB</string>
+											<string>0A6A6400134C06F4002CA3E1</string>
 											<string>0A6A6756134F70DF002CA3E1</string>
+<<<<<<< HEAD
+=======
+											<string>0A6A69FF1358EAAE002CA3E1</string>
+											<string>0A160E3D136517F10046BA7B</string>
+>>>>>>> cuda_branch
 											<string>0A160E8213651C4A0046BA7B</string>
 											<string>0A06FC3B139D84CB005B96E5</string>
 											<string>0A2EECA313A456CD00E35D29</string>
 											<string>0A2EECA513A456CD00E35D29</string>
 											<string>0A2EECA713A456CD00E35D29</string>
 											<string>0A2EECAB13A456CD00E35D29</string>
+<<<<<<< HEAD
+=======
+											<string>0A2EECAC13A456CD00E35D29</string>
+											<string>0A2EECC513A45D9200E35D29</string>
+>>>>>>> cuda_branch
 											<string>0A2EECC613A45D9200E35D29</string>
 											<string>0A2EECC713A45D9200E35D29</string>
 											<string>0A2EECC813A45D9200E35D29</string>
 											<string>0A2EECCC13A45D9200E35D29</string>
 											<string>0A2EECD113A45D9200E35D29</string>
+<<<<<<< HEAD
 											<string>0AC2911D13A5D550003ED75D</string>
 											<string>0A92448F13A7C4F300199607</string>
 											<string>0ADE2B2813AB0BFF00701D21</string>
@@ -630,6 +744,93 @@
 											<string>0ACAAE92149817880048D038</string>
 											<string>0ACAAE93149817880048D038</string>
 											<string>0ACAAE94149817880048D038</string>
+=======
+											<string>0A2EECD213A45D9200E35D29</string>
+											<string>0A2EECD613A45D9200E35D29</string>
+											<string>0A2EECD713A45D9200E35D29</string>
+											<string>0A2EECD813A45D9200E35D29</string>
+											<string>0A2EECDD13A45D9200E35D29</string>
+											<string>0A2EED3F13A46C7C00E35D29</string>
+											<string>0A2EED4013A46C7C00E35D29</string>
+											<string>0AC290BB13A54344003ED75D</string>
+											<string>0AC290BC13A54344003ED75D</string>
+											<string>0AC290BE13A54344003ED75D</string>
+											<string>0AC290C013A54344003ED75D</string>
+											<string>0AC290C313A54344003ED75D</string>
+											<string>0AC290D513A545DE003ED75D</string>
+											<string>0AC290D613A545DE003ED75D</string>
+											<string>0AC2910D13A55929003ED75D</string>
+											<string>0AC2911913A5D550003ED75D</string>
+											<string>0AC2911C13A5D550003ED75D</string>
+											<string>0AC2911D13A5D550003ED75D</string>
+											<string>0AC2911E13A5D550003ED75D</string>
+											<string>0AC2911F13A5D550003ED75D</string>
+											<string>0AC2912113A5D550003ED75D</string>
+											<string>0A92448F13A7C4F300199607</string>
+											<string>0A9244B913A7EB9600199607</string>
+											<string>0ADE2B2513AB0BFF00701D21</string>
+											<string>0ADE2B2613AB0BFF00701D21</string>
+											<string>0ADE2B2813AB0BFF00701D21</string>
+											<string>0ADE2B2913AB0BFF00701D21</string>
+											<string>0ADE2B2A13AB0BFF00701D21</string>
+											<string>0ADE2B2B13AB0BFF00701D21</string>
+											<string>0ADE2B2C13AB0BFF00701D21</string>
+											<string>0ADE2B2E13AB0BFF00701D21</string>
+											<string>0ADE2B2F13AB0BFF00701D21</string>
+											<string>0ADE2B3013AB0BFF00701D21</string>
+											<string>0ADE2B3113AB0BFF00701D21</string>
+											<string>0ADE2B3213AB0BFF00701D21</string>
+											<string>0ADE2B3313AB0BFF00701D21</string>
+											<string>0ADE2B3413AB0BFF00701D21</string>
+											<string>0ADE2B3513AB0BFF00701D21</string>
+											<string>0ADE2B3613AB0BFF00701D21</string>
+											<string>0ADE2B3713AB0BFF00701D21</string>
+											<string>0AA6891013ABB9B5005D9B9C</string>
+											<string>0AA6891113ABB9B5005D9B9C</string>
+											<string>0AA6891213ABB9B5005D9B9C</string>
+											<string>0AA6898613ABBED3005D9B9C</string>
+											<string>0AA68A3913ABD61D005D9B9C</string>
+											<string>0AA68A5C13ABF55A005D9B9C</string>
+											<string>0AA68A5E13ABF55A005D9B9C</string>
+											<string>0AA68A6013ABF55A005D9B9C</string>
+											<string>0AFCC3D013AFC0CC002C5405</string>
+											<string>0AFCC3D213AFC0CC002C5405</string>
+											<string>0AFCC41913AFD931002C5405</string>
+											<string>0AFCC41A13AFD931002C5405</string>
+											<string>0AFCC55513B0046A002C5405</string>
+											<string>0AFCC5DC13B044DD002C5405</string>
+											<string>0A97429013B542B400B05051</string>
+											<string>0A05765D13B81BDF00E8D3FE</string>
+											<string>0A0576A813B81EB000E8D3FE</string>
+											<string>0A53E27D13BA3363001B61CC</string>
+											<string>0A53E28613BA33BD001B61CC</string>
+											<string>0A53E44113BB9270001B61CC</string>
+											<string>0A53E44D13BBADC9001B61CC</string>
+											<string>0A53E4EB13BBBC63001B61CC</string>
+											<string>0A53E4F613BBBC8A001B61CC</string>
+											<string>0A53E4F713BBBC8A001B61CC</string>
+											<string>0A53E50F13BBBD2B001B61CC</string>
+											<string>0A53E52113BBBE42001B61CC</string>
+											<string>0A53E68713BBD5C9001B61CC</string>
+											<string>0AD36B1413C4E79D0025358D</string>
+											<string>0AD36B1513C4E79D0025358D</string>
+											<string>0AD36B3713C4EB730025358D</string>
+											<string>0AD36B5513C4EF050025358D</string>
+											<string>0AD36B5713C4EF050025358D</string>
+											<string>0AD36B5813C4EF050025358D</string>
+											<string>0AD36BD713C4F8A50025358D</string>
+											<string>0AD36C0A13C54C8F0025358D</string>
+											<string>0AD36C0C13C54C8F0025358D</string>
+											<string>0AD36C0D13C54C8F0025358D</string>
+											<string>0AD36C0E13C54C8F0025358D</string>
+											<string>0AD36C3E13C556720025358D</string>
+											<string>0AD36C7013C567310025358D</string>
+											<string>0AD36C7113C567310025358D</string>
+											<string>0AD36CAA13C56D630025358D</string>
+											<string>0AD36CAB13C56D630025358D</string>
+											<string>0AD36CAC13C56D630025358D</string>
+											<string>0AD36A6E13C4C2360025358D</string>
+>>>>>>> cuda_branch
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -641,14 +842,24 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
+<<<<<<< HEAD
 								<string>{{0, 0}, {1347, 82}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 99 1680 929 0 0 1680 1028 </string>
+=======
+								<string>{{0, 0}, {1347, 331}}</string>
+								<key>RubberWindowFrame</key>
+								<string>0 103 1680 925 0 0 1680 1028 </string>
+>>>>>>> cuda_branch
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
+<<<<<<< HEAD
 							<string>82pt</string>
+=======
+							<string>331pt</string>
+>>>>>>> cuda_branch
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -661,14 +872,24 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
+<<<<<<< HEAD
 								<string>{{0, 87}, {1347, 801}}</string>
 								<key>RubberWindowFrame</key>
 								<string>0 99 1680 929 0 0 1680 1028 </string>
+=======
+								<string>{{0, 336}, {1347, 548}}</string>
+								<key>RubberWindowFrame</key>
+								<string>0 103 1680 925 0 0 1680 1028 </string>
+>>>>>>> cuda_branch
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
+<<<<<<< HEAD
 							<string>801pt</string>
+=======
+							<string>548pt</string>
+>>>>>>> cuda_branch
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -687,9 +908,15 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
+<<<<<<< HEAD
 				<string>0ACAADEA14979FD70048D038</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
 				<string>0ACAADEB14979FD70048D038</string>
+=======
+				<string>0AD369ED13C4BB8B0025358D</string>
+				<string>1CE0B1FE06471DED0097A5F4</string>
+				<string>0AD369EE13C4BB8B0025358D</string>
+>>>>>>> cuda_branch
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -828,6 +1055,7 @@
 	<key>WindowOrderList</key>
 	<array>
 		<string>1C530D57069F1CE1000CFCEE</string>
+<<<<<<< HEAD
 		<string>0A26859711A5C240002D1008</string>
 		<string>0ACAAE6A1497BBE90048D038</string>
 		<string>/Users/miao/Workspace/new_quick/new_quick.xcodeproj</string>
@@ -837,6 +1065,16 @@
 	</array>
 	<key>WindowString</key>
 	<string>0 99 1680 929 0 0 1680 1028 </string>
+=======
+		<string>0AD36B5B13C4EF050025358D</string>
+		<string>/Users/miao/Workspace/new_quick/new_quick.xcodeproj</string>
+		<string>0AD36C8F13C56B5D0025358D</string>
+		<string>0A26859711A5C240002D1008</string>
+		<string>0A53E67A13BBD21F001B61CC</string>
+	</array>
+	<key>WindowString</key>
+	<string>0 103 1680 925 0 0 1680 1028 </string>
+>>>>>>> cuda_branch
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
@@ -874,6 +1112,8 @@
 							<string>218pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -913,7 +1153,11 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>0A26859711A5C240002D1008</string>
+<<<<<<< HEAD
 				<string>0ACAADEF14979FD70048D038</string>
+=======
+				<string>0AD369E313C4BB8A0025358D</string>
+>>>>>>> cuda_branch
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -926,7 +1170,7 @@
 			<key>WindowToolGUID</key>
 			<string>0A26859711A5C240002D1008</string>
 			<key>WindowToolIsVisible</key>
-			<false/>
+			<true/>
 		</dict>
 		<dict>
 			<key>FirstTimeWindowDisplayed</key>
@@ -1073,7 +1317,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
+<<<<<<< HEAD
 										<string>dft.f90</string>
+=======
+										<string>gpu.cu</string>
+>>>>>>> cuda_branch
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -1131,8 +1379,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
+<<<<<<< HEAD
 				<string>0ACAAE011497A7D50048D038</string>
 				<string>0ACAAE021497A7D50048D038</string>
+=======
+				<string>0AD369E813C4BB8A0025358D</string>
+				<string>0AD369E913C4BB8A0025358D</string>
+>>>>>>> cuda_branch
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>
@@ -1597,7 +1850,7 @@
 								<key>ClassesTreeTableConfiguration</key>
 								<array>
 									<string>PBXClassNameColumnIdentifier</string>
-									<real>223</real>
+									<real>208</real>
 									<string>PBXClassBookColumnIdentifier</string>
 									<real>22</real>
 								</array>
@@ -1610,9 +1863,9 @@
 									<string>PBXMemberTypeIconColumnIdentifier</string>
 									<real>22</real>
 									<string>PBXMemberNameColumnIdentifier</string>
-									<real>224</real>
+									<real>216</real>
 									<string>PBXMemberTypeColumnIdentifier</string>
-									<real>108</real>
+									<real>101</real>
 									<string>PBXMemberBookColumnIdentifier</string>
 									<real>22</real>
 								</array>
@@ -1640,7 +1893,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C0AD2AF069F1E9B00FABCE6</string>
-				<string>0A1EEE9D13E1113D00251AA3</string>
+				<string>0A91A96B139EBF070065A8B5</string>
 				<string>1CA6456E063B45B4001379D8</string>
 			</array>
 			<key>ToolbarConfiguration</key>

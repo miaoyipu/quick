@@ -213,6 +213,10 @@ double precision function ssw(gridx,gridy,gridz,iparent)
   enddo
 
   ssw=wofparent/totalw
+<<<<<<< HEAD
     
   !print *,ssw
+=======
+
+>>>>>>> cuda_branch
 end function ssw

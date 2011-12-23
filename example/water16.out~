@@ -23,6 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
+<<<<<<< HEAD
  TASK STARTS ON: Thu Sep 15 11:10:30 2011
  INPUT FILE:     water16.in
  OUTPUT FILE:    water16.out
@@ -38,6 +39,45 @@ KEYWORD=HF BASIS=6-31G ENERGY
 | SAD INITAL GUESS 
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
+=======
+ TASK STARTS ON: Wed Dec 14 23:07:57 2011
+ INPUT FILE:     water16.in
+ OUTPUT FILE:    water16.out
+ BASIS SET PATH: /home/miao/Workspace/new_quick/basis
+
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GTX 580
+| CUDA DEVICE PM              :       16
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
+| CUDA DEVICE MEMORY SIZE (MB):     1535
+| SUPPORTING CUDA VERSION     :      2.0
+|--------------------------------------------
+
+ @ Read Job And Atom
+
+  -------------------------------------
+KEYWORD=B3LYP BASIS=6-31G ENERGY                                                                                                                                                                                
+  -------------------------------------
+ ============== JOB CARD =============
+| METHOD = DENSTITY FUNCTIONAL THEORY
+| DENSITY FUNCTIONAL = B3LYP
+| SAD INITAL GUESS 
+| USE DIIS SCF
+| PRINT ENERGY EVERY CYCLE
+| STANDARD GRID = SG1
+>>>>>>> cuda_branch
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
@@ -47,8 +87,13 @@ KEYWORD=HF BASIS=6-31G ENERGY
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+<<<<<<< HEAD
 | BASIS SET = 6-31G.BAS
 | BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31G.BAS
+=======
+| BASIS SET = 6-31G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
+>>>>>>> cuda_branch
 
  @ Finish reading job
 
@@ -62,6 +107,7 @@ BASIS FUNCTIONS =    9
  @ Begin Energy Calculation
 
 
+<<<<<<< HEAD
 SCF CYCLE      =        1      TIME      =     0.05
 RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
 
@@ -91,6 +137,37 @@ PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
 SCF CYCLE      =        8      TIME      =     0.05
 RMS CHANGE     = 0.515945E-05  MAX CHANGE= 0.268031E-04
+=======
+SCF CYCLE      =        1      TIME      =     0.07
+RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
+
+SCF CYCLE      =        2      TIME      =     0.06
+RMS CHANGE     = 0.813251E-01  MAX CHANGE= 0.292791E+00
+
+SCF CYCLE      =        3      TIME      =   0.06
+DIIS CYCLE     =        1      MAX ERROR = 0.237253E-01
+RMS CHANGE     = 0.640345E-02  MAX CHANGE= 0.247217E-01
+
+SCF CYCLE      =        4      TIME      =   0.06
+DIIS CYCLE     =        2      MAX ERROR = 0.717996E-02
+RMS CHANGE     = 0.233510E-02  MAX CHANGE= 0.921819E-02
+
+SCF CYCLE      =        5      TIME      =   0.06
+DIIS CYCLE     =        3      MAX ERROR = 0.298399E-02
+RMS CHANGE     = 0.133240E-02  MAX CHANGE= 0.503608E-02
+
+SCF CYCLE      =        6      TIME      =   0.06
+DIIS CYCLE     =        4      MAX ERROR = 0.110807E-02
+RMS CHANGE     = 0.986522E-03  MAX CHANGE= 0.381572E-02
+
+SCF CYCLE      =        7      TIME      =   0.06
+DIIS CYCLE     =        5      MAX ERROR = 0.364363E-04
+RMS CHANGE     = 0.292852E-04  MAX CHANGE= 0.127867E-03
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =        8      TIME      =     0.06
+RMS CHANGE     = 0.515945E-05  MAX CHANGE= 0.209008E-04
+>>>>>>> cuda_branch
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -197,6 +274,219 @@ TOTAL ENERGY         =     0.000000000
 | NSHELL =  112 NPRIM  =  288
 | JSHELL =  112 JBASIS =  288
 
+<<<<<<< HEAD
+=======
+
+RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
+   1           2.034000
+   2           4.731000
+   3           4.909000
+   4           4.909000
+   5           4.909000
+   6           8.965000
+   7           9.314000
+   8           9.314000
+   9           9.314000
+  10           2.034000
+  11           4.731000
+  12           4.909000
+  13           4.909000
+  14           4.909000
+  15           8.965000
+  16           9.314000
+  17           9.314000
+  18           9.314000
+  19           2.034000
+  20           4.731000
+  21           4.909000
+  22           4.909000
+  23           4.909000
+  24           8.965000
+  25           9.314000
+  26           9.314000
+  27           9.314000
+  28           2.034000
+  29           4.731000
+  30           4.909000
+  31           4.909000
+  32           4.909000
+  33           8.965000
+  34           9.314000
+  35           9.314000
+  36           9.314000
+  37           2.034000
+  38           4.731000
+  39           4.909000
+  40           4.909000
+  41           4.909000
+  42           8.965000
+  43           9.314000
+  44           9.314000
+  45           9.314000
+  46           2.034000
+  47           4.731000
+  48           4.909000
+  49           4.909000
+  50           4.909000
+  51           8.965000
+  52           9.314000
+  53           9.314000
+  54           9.314000
+  55           2.034000
+  56           4.731000
+  57           4.909000
+  58           4.909000
+  59           4.909000
+  60           8.965000
+  61           9.314000
+  62           9.314000
+  63           9.314000
+  64           2.034000
+  65           4.731000
+  66           4.909000
+  67           4.909000
+  68           4.909000
+  69           8.965000
+  70           9.314000
+  71           9.314000
+  72           9.314000
+  73           2.034000
+  74           4.731000
+  75           4.909000
+  76           4.909000
+  77           4.909000
+  78           8.965000
+  79           9.314000
+  80           9.314000
+  81           9.314000
+  82           2.034000
+  83           4.731000
+  84           4.909000
+  85           4.909000
+  86           4.909000
+  87           8.965000
+  88           9.314000
+  89           9.314000
+  90           9.314000
+  91           2.034000
+  92           4.731000
+  93           4.909000
+  94           4.909000
+  95           4.909000
+  96           8.965000
+  97           9.314000
+  98           9.314000
+  99           9.314000
+ 100           2.034000
+ 101           4.731000
+ 102           4.909000
+ 103           4.909000
+ 104           4.909000
+ 105           8.965000
+ 106           9.314000
+ 107           9.314000
+ 108           9.314000
+ 109           2.034000
+ 110           4.731000
+ 111           4.909000
+ 112           4.909000
+ 113           4.909000
+ 114           8.965000
+ 115           9.314000
+ 116           9.314000
+ 117           9.314000
+ 118           2.034000
+ 119           4.731000
+ 120           4.909000
+ 121           4.909000
+ 122           4.909000
+ 123           8.965000
+ 124           9.314000
+ 125           9.314000
+ 126           9.314000
+ 127           2.034000
+ 128           4.731000
+ 129           4.909000
+ 130           4.909000
+ 131           4.909000
+ 132           8.965000
+ 133           9.314000
+ 134           9.314000
+ 135           9.314000
+ 136           2.034000
+ 137           4.731000
+ 138           4.909000
+ 139           4.909000
+ 140           4.909000
+ 141           8.965000
+ 142           9.314000
+ 143           9.314000
+ 144           9.314000
+ 145           5.909000
+ 146          11.497000
+ 147           5.909000
+ 148          11.497000
+ 149           5.909000
+ 150          11.497000
+ 151           5.909000
+ 152          11.497000
+ 153           5.909000
+ 154          11.497000
+ 155           5.909000
+ 156          11.497000
+ 157           5.909000
+ 158          11.497000
+ 159           5.909000
+ 160          11.497000
+ 161           5.909000
+ 162          11.497000
+ 163           5.909000
+ 164          11.497000
+ 165           5.909000
+ 166          11.497000
+ 167           5.909000
+ 168          11.497000
+ 169           5.909000
+ 170          11.497000
+ 171           5.909000
+ 172          11.497000
+ 173           5.909000
+ 174          11.497000
+ 175           5.909000
+ 176          11.497000
+ 177           5.909000
+ 178          11.497000
+ 179           5.909000
+ 180          11.497000
+ 181           5.909000
+ 182          11.497000
+ 183           5.909000
+ 184          11.497000
+ 185           5.909000
+ 186          11.497000
+ 187           5.909000
+ 188          11.497000
+ 189           5.909000
+ 190          11.497000
+ 191           5.909000
+ 192          11.497000
+ 193           5.909000
+ 194          11.497000
+ 195           5.909000
+ 196          11.497000
+ 197           5.909000
+ 198          11.497000
+ 199           5.909000
+ 200          11.497000
+ 201           5.909000
+ 202          11.497000
+ 203           5.909000
+ 204          11.497000
+ 205           5.909000
+ 206          11.497000
+ 207           5.909000
+ 208          11.497000
+>>>>>>> cuda_branch
 
  @ End Reading Mol Info 
 
@@ -207,6 +497,7 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
+<<<<<<< HEAD
   1  -1216.281452071      ------        14.364     1        0.39     13.97      0.12    0.1782E+01  0.2564E-01  0.4248E+00
   2  -1215.467174156  -.814278E+00      23.607     2        0.39     23.21      0.11    0.2429E+00  0.6570E-02  0.1689E+00
   3  -1215.885095865  0.417922E+00      23.828     3        0.33     23.49      0.11    0.1015E+00  0.2326E-02  0.5902E-01
@@ -220,10 +511,27 @@ NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DI
 ELECTRONIC ENERGY    = -2729.476558352
 CORE_CORE REPULSION  =  1513.488913932
 TOTAL ENERGY         = -1215.987644420
+=======
+  1  -1222.663428180      ------         7.020     1        0.14      6.88      0.09    0.1707E+01  0.2684E-01  0.4222E+00
+  2  -1221.508459447  -.115497E+01       7.220     2        0.14      7.08      0.09    0.2498E+00  0.1610E-01  0.2921E+00
+  3  -1221.007379507  -.501080E+00       7.250     3        0.14      7.11      0.09    0.3220E+00  0.9022E-02  0.1719E+00
+  4  -1222.450577364  0.144320E+01       7.240     4        0.14      7.10      0.08    0.4884E-02  0.2024E-03  0.5106E-02
+  5  -1222.450686405  0.109041E-03       7.260     5        0.15      7.11      0.09    0.4847E-02  0.8270E-04  0.2905E-02
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER   5 CYLCES
+ MAX ERROR = 0.484656E-02   RMS CHANGE = 0.826973E-04   MAX CHANGE = 0.290452E-02
+ -----------------------------------------------
+ALPHA ELECTRON DENSITY    =   80.0001666836
+BETA ELECTRON DENSITY     =   80.0001666836
+ELECTRONIC ENERGY    = -2735.939600337
+CORE_CORE REPULSION  =  1513.488913932
+TOTAL ENERGY         = -1222.450686405
+>>>>>>> cuda_branch
 
  @ End Energy calculation
 
 
+<<<<<<< HEAD
  @ Begin Charge and Dipole Calculation
 
     ATOMIC CHARGES
@@ -304,3 +612,24 @@ TOTAL TIME         =   135.174767000
  @ Finish Output Timing Infomration
 
  Normal Terminatation. Task Finished on: Thu Sep 15 11:12:50 2011
+=======
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     1.340000000(  3.41%)
+TOTAL SCF TIME     =    37.530000000( 95.47%)
+      TOTAL OP TIME      =    36.820000000( 93.67%)
+            TOTAL 1e TIME      =    17.140000000( 43.60%)
+            TOTAL 2e TIME      =     4.920000000( 12.52%)
+            TOTAL Exchange TIME=    14.760000000( 37.55%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.710000000(  1.81%)
+            TOTAL DIAG TIME    =     0.440000000(  1.12%)
+TOTAL TIME         =    39.310000000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes 39.3 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Wed Dec 14 23:08:36 2011
+>>>>>>> cuda_branch

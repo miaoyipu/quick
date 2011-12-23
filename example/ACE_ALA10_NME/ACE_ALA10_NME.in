@@ -1,4 +1,4 @@
- HF divcon BASIS=6-31G DENSERMS=0.00001 NCYC=1000 ENERGY atombasis                                                                                                                               
+KEYWORD=DIVCON HF BASIS=STO-3G DENSERMS=0.00001 NCYC=1000 ENERGY ATOMBASIS
 
 H         -1.444  -0.592   1.363
 C         -0.882   0.323   1.178

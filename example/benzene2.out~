@@ -1,0 +1,51 @@
+  **************************************************************************
+  **                      QUICK-0.06 June 12                              **
+  **                                                                      **
+  **                        Copyright (c) 2011                            **
+  **                Regents of the University of Florida                  **
+  **                       All Rights Reserved.                           **
+  **                                                                      **
+  **  This software provided pursuant to a license agreement containing   **
+  **  restrictions on its disclosure, duplication, and use. This software **
+  **  contains confidential and proprietary information, and may not be   **
+  **  extracted or distributed, in whole or in part, for any purpose      **
+  **  whatsoever, without the express written permission of the authors.  **
+  **  This notice, and the associated author list, must be attached to    **
+  **  all copies, or extracts, of this software. Any additional           **
+  **  restrictions set forth in the license agreement also apply to this  **
+  **  software.                                                           **
+  **************************************************************************
+
+  Cite this work as:
+  Miao, Y.: He, X.: Ayers,K: Brothers, E.: Merz,K. M. QUICK;
+  University of Florida, Gainesville, FL, 2010
+
+  If you have any comment or queries, please send email for technic support:
+  quick@qtp.ufl.edu
+
+ TASK STARTS ON: Mon Oct 31 21:44:12 2011
+ INPUT FILE:     benzene2.in
+ OUTPUT FILE:    benzene2.out
+ BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
+
+ @ Read Job And Atom
+
+  -------------------------------------
+KEYWORD=DEBUG HF NCYC=1000 ZMAKE BASIS=6-31++GSS ENERGY                                                                                                                                                         
+  -------------------------------------
+ ============== JOB CARD =============
+| METHOD = HATREE FOCK
+| SAD INITAL GUESS 
+| USE DIIS SCF
+| PRINT ENERGY EVERY CYCLE
+| Z-MATRIX CONSTRUCTION
+| DEBUG MODE
+| MAX SCF CYCLES =    200
+| MAX DIIS CYCLES =   10
+| DELTA DENSITY START CYCLE = 1000
+| COMPUATIONAL CUTOFF: 
+|      TWO-e INTEGRAL   =  0.100E-06
+|      BASIS SET PRIME  =  0.100E-06
+|      MATRIX ELEMENTS  =  0.100E-09
+|      BASIS FUNCTION   =  0.100E-09
+| DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03

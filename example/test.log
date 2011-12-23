@@ -2,8 +2,13 @@
  Input=test.gjf
  Output=test.log
  Initial command:
+<<<<<<< HEAD
  /Users/miao/Workspace/g09/l1.exe /Users/miao/Workspace/new_quick/example/Gau-16352.inp -scrdir=/Users/miao/Workspace/new_quick/example/
  Entering Link 1 = /Users/miao/Workspace/g09/l1.exe PID=     16353.
+=======
+ /Users/miao/Workspace/g09/l1.exe /Users/miao/Workspace/new_quick/example/Gau-82581.inp -scrdir=/Users/miao/Workspace/new_quick/example/
+ Entering Link 1 = /Users/miao/Workspace/g09/l1.exe PID=     82582.
+>>>>>>> cuda_branch
   
  Copyright (c) 1988,1990,1992,1993,1995,1998,2003,2009, Gaussian, Inc.
                   All Rights Reserved.
@@ -76,7 +81,11 @@
  
  ******************************************
  Gaussian 09:  EM64M-G09RevA.02 11-Jun-2009
+<<<<<<< HEAD
                 31-Oct-2011 
+=======
+                 8-Mar-2011 
+>>>>>>> cuda_branch
  ******************************************
  ------------------------------------------------
  #p NoSymmetry gfinput HF/CC-PVDZ scf=tight nofmm
@@ -88,7 +97,11 @@
  5/5=2,32=2,38=5/2;
  6/7=2,8=2,9=2,10=2,28=1/1;
  99/5=1,9=1/99;
+<<<<<<< HEAD
  Leave Link    1 at Mon Oct 31 15:12:20 2011, MaxMem=          0 cpu:       0.0
+=======
+ Leave Link    1 at Tue Mar  8 15:05:58 2011, MaxMem=          0 cpu:       0.0
+>>>>>>> cuda_branch
  (Enter /Users/miao/Workspace/g09/l101.exe)
  -----
  water
@@ -128,7 +141,16 @@
  AtZEff=   0.0000000   0.0000000
  NQMom=    0.0000000   0.0000000
  NMagM=    2.7928460   0.0000000
+<<<<<<< HEAD
  Leave Link  101 at Mon Oct 31 15:12:22 2011, MaxMem=   33554432 cpu:       0.2
+=======
+ Background charge distribution read from input stream:
+ Point Charges:
+ XYZ=    1.2000   23.0000    3.4000 Q=    0.3000 A=    0.0000 R=    0.0000 C=    0.0000
+ Sum of input charges=            0.300000
+              Moments=            0.360000            6.900000            1.020000
+ Leave Link  101 at Tue Mar  8 15:05:59 2011, MaxMem=   33554432 cpu:       0.1
+>>>>>>> cuda_branch
  (Enter /Users/miao/Workspace/g09/l202.exe)
                           Input orientation:                          
  ---------------------------------------------------------------------
@@ -179,7 +201,11 @@
  Deg. of freedom    15
  Full point group                 CS      NOp   2
  Rotational constants (GHZ):     76.6722974      0.6230272      0.6190522
+<<<<<<< HEAD
  Leave Link  202 at Mon Oct 31 15:12:22 2011, MaxMem=   33554432 cpu:       0.0
+=======
+ Leave Link  202 at Tue Mar  8 15:05:59 2011, MaxMem=   33554432 cpu:       0.0
+>>>>>>> cuda_branch
  (Enter /Users/miao/Workspace/g09/l301.exe)
  Standard basis: CC-pVDZ (5D, 7F)
  Ernie: Thresh=  0.10000D-02 Tol=  0.10000D-05 Strict=F.
@@ -387,17 +413,41 @@
  IExCor=    0 DFT=F Ex=HF Corr=None ExCW=0 ScaHFX=  1.000000
  ScaDFX=  1.000000  1.000000  1.000000  1.000000 ScalE2=  1.000000  1.000000
  IRadAn=      0 IRanWt=     -1 IRanGd=            0 ICorTp=0
+<<<<<<< HEAD
  Leave Link  301 at Mon Oct 31 15:12:23 2011, MaxMem=   33554432 cpu:       0.1
+=======
+ Background charge distribution read from rwf.
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=         800
+         NFxFlg=           0 DoJE=F BraDBF=T KetDBF=T FulRan=T
+         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=    1100 IOpCl=  0
+         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+         I1Cent=    10001006 NGrid=          13.
+ Symmetry not used in FoFCou.
+ Self energy of the charges =         0.0000000000 a.u.
+ MM   energy of the charges =         0.0000000000 a.u.
+ Nuclei-charges interaction =         0.2726397566 a.u.
+ Nuclear repulsion after external point charges =      116.7834094956 Hartrees.
+ Leave Link  301 at Tue Mar  8 15:06:00 2011, MaxMem=   33554432 cpu:       0.1
+>>>>>>> cuda_branch
  (Enter /Users/miao/Workspace/g09/l302.exe)
  NPDir=0 NMtPBC=     1 NCelOv=     1 NCel=       1 NClECP=     1 NCelD=      1
          NCelK=      1 NCelE2=     1 NClLst=     1 CellRange=     0.0.
  One-electron integrals computed using PRISM.
+<<<<<<< HEAD
  NBasis=    96 RedAO= T  NBF=    96
  NBsUse=    96 1.00D-06 NBFU=    96
  Leave Link  302 at Mon Oct 31 15:12:25 2011, MaxMem=   33554432 cpu:       0.2
  (Enter /Users/miao/Workspace/g09/l303.exe)
  DipDrv:  MaxL=1.
  Leave Link  303 at Mon Oct 31 15:12:26 2011, MaxMem=   33554432 cpu:       0.1
+=======
+ NBasis=    28 RedAO= T  NBF=    28
+ NBsUse=    28 1.00D-06 NBFU=    28
+ Leave Link  302 at Tue Mar  8 15:06:01 2011, MaxMem=   33554432 cpu:       0.2
+ (Enter /Users/miao/Workspace/g09/l303.exe)
+ DipDrv:  MaxL=1.
+ Leave Link  303 at Tue Mar  8 15:06:01 2011, MaxMem=   33554432 cpu:       0.0
+>>>>>>> cuda_branch
  (Enter /Users/miao/Workspace/g09/l401.exe)
  Harris functional with IExCor=  205 diagonalized for initial guess.
  ExpMin= 1.22D-01 ExpMax= 1.17D+04 ExpMxC= 4.01D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
@@ -409,8 +459,13 @@
          NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
          I1Cent=           4 NGrid=           0.
  Symmetry not used in FoFCou.
+<<<<<<< HEAD
  Harris En= -303.560826882601    
  Leave Link  401 at Mon Oct 31 15:12:28 2011, MaxMem=   33554432 cpu:       0.5
+=======
+ Harris En= -298.850471827722    
+ Leave Link  401 at Tue Mar  8 15:06:02 2011, MaxMem=   33554432 cpu:       0.3
+>>>>>>> cuda_branch
  (Enter /Users/miao/Workspace/g09/l502.exe)
  Closed shell SCF:
  Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
@@ -578,10 +633,17 @@
  Gap=     0.568 Goal=   None    Shift=    0.000
  RMSDP=7.81D-09 MaxDP=1.79D-07 DE=-1.48D-12 OVMax= 3.41D-07
 
+<<<<<<< HEAD
  SCF Done:  E(RHF) =  -303.043509369     A.U. after   12 cycles
              Convg  =    0.7813D-08             -V/T =  1.9892
  KE= 3.063535972674D+02 PE=-9.551374760932D+02 EE= 2.292295997176D+02
  Leave Link  502 at Mon Oct 31 15:12:37 2011, MaxMem=   33554432 cpu:       1.4
+=======
+ SCF Done:  E(RHF) =  -298.384888379     A.U. after   12 cycles
+             Convg  =    0.1698D-08             -V/T =  1.9914
+ KE= 3.009646860377D+02 PE=-9.461833969313D+02 EE= 2.300504130193D+02
+ Leave Link  502 at Tue Mar  8 15:06:04 2011, MaxMem=   33554432 cpu:       0.1
+>>>>>>> cuda_branch
  (Enter /Users/miao/Workspace/g09/l601.exe)
  Copying SCF densities to generalized density rwf, IOpCl= 0 IROHF=0.
 
@@ -681,6 +743,7 @@
  XXYZ=             -6.2868 YYXZ=              0.0932 ZZXY=             10.9405
  N-N= 1.165107697389D+02 E-N=-9.551374759504D+02  KE= 3.063535972674D+02
  No NMR shielding tensors so no spin-rotation constants.
+<<<<<<< HEAD
  Leave Link  601 at Mon Oct 31 15:12:39 2011, MaxMem=   33554432 cpu:       0.2
  (Enter /Users/miao/Workspace/g09/l9999.exe)
  1\1\GINC-QTPCLNT135\SP\RHF\CC-pVDZ\H8O4\MIAO\31-Oct-2011\0\\#p NoSymme
@@ -698,3 +761,24 @@
  Job cpu time:  0 days  0 hours  0 minutes  2.8 seconds.
  File lengths (MBytes):  RWF=      9 Int=      0 D2E=      0 Chk=      1 Scr=      1
  Normal termination of Gaussian 09 at Mon Oct 31 15:12:39 2011.
+=======
+ Leave Link  601 at Tue Mar  8 15:06:04 2011, MaxMem=   33554432 cpu:       0.1
+ (Enter /Users/miao/Workspace/g09/l9999.exe)
+
+ Test job not archived.
+ 1\1\GINC-QTPCLNT135\SP\RHF\STO-3G\H8O4\MIAO\08-Mar-2011\0\\#p charge N
+ oSymmetry gfinput HF/sto-3g scf=tight nofmm\\water\\0,1\H,0,0.3032,-0.
+ 494,0.\H,0,-0.3032,-0.9088,0.\O,0,0.,0.1753,0.\H,0,0.3032,-0.494,3.\H,
+ 0,-0.3032,-0.9088,3.\O,0,0.,0.1753,3.\H,0,0.3032,-0.494,6.\H,0,-0.3032
+ ,-0.9088,6.\O,0,0.,0.1753,6.\H,0,0.3032,-0.494,9.\H,0,-0.3032,-0.9088,
+ 9.\O,0,0.,0.1753,9.\\Version=EM64M-G09RevA.02\HF=-298.3848884\RMSD=1.6
+ 98e-09\Dipole=0.6269663,-3.0414678,0.0000008\Quadrupole=-0.7989868,2.4
+ 693259,-1.6703392,0.2250114,5.331682,-25.8634995\PG=CS [X(H8O4)]\\@
+
+
+ Fatherhood is pretending the present you love most is soap-on-a-rope.
+ -- Bill Cosby
+ Job cpu time:  0 days  0 hours  0 minutes  1.3 seconds.
+ File lengths (MBytes):  RWF=      5 Int=      0 D2E=      0 Chk=      1 Scr=      1
+ Normal termination of Gaussian 09 at Tue Mar  8 15:06:05 2011.
+>>>>>>> cuda_branch

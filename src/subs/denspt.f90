@@ -39,10 +39,18 @@ subroutine denspt(gridx, gridy, gridz, densitya, densityb, &
    gaz=0.d0
 
    do Ibas=1,nbasis
+<<<<<<< HEAD
       if(DABS(quick_qm_struct%dense(Ibas,Ibas)) < quick_method%DMCutoff) then
          continue
       else
          DENSEIJ=quick_qm_struct%dense(Ibas,Ibas)
+=======
+      DENSEIJ=quick_qm_struct%dense(Ibas,Ibas)
+      if(DABS(quick_qm_struct%dense(Ibas,Ibas)) < quick_method%DMCutoff) then
+         continue
+      else
+         DENSEBIJ=quick_qm_struct%dense(Ibas,Ibas)
+>>>>>>> cuda_branch
          phi=phixiao(Ibas)
          dphidx=dphidxxiao(Ibas)
          dphidy=dphidyxiao(Ibas)
@@ -52,6 +60,12 @@ subroutine denspt(gridx, gridy, gridz, densitya, densityb, &
          else
 
             densitya=densitya+DENSEIJ*phi*phi/2.0d0
+<<<<<<< HEAD
+=======
+            
+              ! write(*,*) "a",densitya,DENSEIJ,phi,phi,quick_qm_struct%dense(Ibas,Ibas)
+               
+>>>>>>> cuda_branch
             gax=gax+DENSEIJ*phi*dphidx
             gay=gay+DENSEIJ*phi*dphidy
             gaz=gaz+DENSEIJ*phi*dphidz
@@ -59,15 +73,34 @@ subroutine denspt(gridx, gridy, gridz, densitya, densityb, &
             do Jbas=Ibas+1,nbasis
                DENSEIJ=quick_qm_struct%dense(Jbas,Ibas)
                phi2=phixiao(Jbas)
+<<<<<<< HEAD
                densitya=densitya+DENSEIJ*phi*phi2
                gax=gax+DENSEIJ*(phi*dphidxxiao(Jbas)+phi2*dphidx)
                gay=gay+DENSEIJ*(phi*dphidyxiao(Jbas)+phi2*dphidy)
                gaz=gaz+DENSEIJ*(phi*dphidzxiao(Jbas)+phi2*dphidz)
+=======
+               
+               densitya=densitya+DENSEIJ*phi*phi2
+             !  write(*,*) densitya,DENSEIJ,phi,phi2
+               gax=gax+DENSEIJ*(phi*dphidxxiao(Jbas)+phi2*dphidx)
+               gay=gay+DENSEIJ*(phi*dphidyxiao(Jbas)+phi2*dphidy)
+               gaz=gaz+DENSEIJ*(phi*dphidzxiao(Jbas)+phi2*dphidz)
+
+>>>>>>> cuda_branch
             enddo
          endif
       endif
    enddo
 
+<<<<<<< HEAD
+=======
+   densityb=densitya
+   gbx =gax
+   gby =gay
+   gbz =gaz
+   
+   !write(*,*) gax,gay,gaz,gbx,gby,gbz
+>>>>>>> cuda_branch
 
 end subroutine denspt
 

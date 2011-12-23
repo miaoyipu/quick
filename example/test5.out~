@@ -1,0 +1,264 @@
+  **************************************************************************
+  **                      QUICK-0.06 June 12                              **
+  **                                                                      **
+  **                        Copyright (c) 2011                            **
+  **                Regents of the University of Florida                  **
+  **                       All Rights Reserved.                           **
+  **                                                                      **
+  **  This software provided pursuant to a license agreement containing   **
+  **  restrictions on its disclosure, duplication, and use. This software **
+  **  contains confidential and proprietary information, and may not be   **
+  **  extracted or distributed, in whole or in part, for any purpose      **
+  **  whatsoever, without the express written permission of the authors.  **
+  **  This notice, and the associated author list, must be attached to    **
+  **  all copies, or extracts, of this software. Any additional           **
+  **  restrictions set forth in the license agreement also apply to this  **
+  **  software.                                                           **
+  **************************************************************************
+
+  Cite this work as:
+  Miao, Y.: He, X.: Ayers,K: Brothers, E.: Merz,K. M. QUICK;
+  University of Florida, Gainesville, FL, 2010
+
+  If you have any comment or queries, please send email for technic support:
+  quick@qtp.ufl.edu
+
+ TASK STARTS ON: Thu Oct 13 23:11:05 2011
+ INPUT FILE:     test5.in
+ OUTPUT FILE:    test5.out
+ BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
+
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GT 330M
+| CUDA DEVICE PM              :        6
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.10
+| CUDA DEVICE MEMORY SIZE (MB):      255
+| SUPPORTING CUDA VERSION     :      1.2
+|--------------------------------------------
+
+ ! WARNING: Selected GPU does not support double-precision computation.
+
+
+ @ Read Job And Atom
+
+  -------------------------------------
+KEYWORD=HF ENERGY ZMAKE NCYC=1000  BASIS=6-31GS                                                                                                                                                                 
+  -------------------------------------
+ ============== JOB CARD =============
+| METHOD = HATREE FOCK
+| SAD INITAL GUESS 
+| USE DIIS SCF
+| PRINT ENERGY EVERY CYCLE
+| Z-MATRIX CONSTRUCTION
+| MAX SCF CYCLES =    200
+| MAX DIIS CYCLES =   10
+| DELTA DENSITY START CYCLE = 1000
+| COMPUATIONAL CUTOFF: 
+|      TWO-e INTEGRAL   =  0.100E-06
+|      BASIS SET PRIME  =  0.100E-06
+|      MATRIX ELEMENTS  =  0.100E-09
+|      BASIS FUNCTION   =  0.100E-09
+| DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+| BASIS SET = 6-31GS
+| BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31GS
+
+ @ Finish reading job
+
+
+ @ Begin SAD initial guess
+
+ For Atom Kind =    1
+ ELEMENT = H 
+BASIS FUNCTIONS =    2
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.00
+RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
+
+SCF CYCLE      =        2      TIME      =     0.00
+RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
+
+SCF CYCLE      =        3      TIME      =   0.00
+DIIS CYCLE     =        1      MAX ERROR = 0.543720E-02
+RMS CHANGE     = 0.492246E-02  MAX CHANGE= 0.776945E-02
+
+SCF CYCLE      =        4      TIME      =   0.00
+DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
+RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        5      TIME      =     0.00
+RMS CHANGE     = 0.142040E-10  MAX CHANGE= 0.224882E-10
+CONVERGED!!!!!
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
+
+ @ End Energy calculation
+
+ For Atom Kind =    2
+ ELEMENT = O 
+BASIS FUNCTIONS =   15
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.14
+RMS CHANGE     = 0.118420E+00  MAX CHANGE= 0.838819E+00
+
+SCF CYCLE      =        2      TIME      =     0.14
+RMS CHANGE     = 0.664013E-01  MAX CHANGE= 0.387698E+00
+
+SCF CYCLE      =        3      TIME      =   0.13
+DIIS CYCLE     =        1      MAX ERROR = 0.356956E-01
+RMS CHANGE     = 0.559975E-02  MAX CHANGE= 0.350833E-01
+
+SCF CYCLE      =        4      TIME      =   0.14
+DIIS CYCLE     =        2      MAX ERROR = 0.993170E-02
+RMS CHANGE     = 0.202852E-02  MAX CHANGE= 0.142921E-01
+
+SCF CYCLE      =        5      TIME      =   0.13
+DIIS CYCLE     =        3      MAX ERROR = 0.326239E-02
+RMS CHANGE     = 0.128171E-02  MAX CHANGE= 0.854475E-02
+
+SCF CYCLE      =        6      TIME      =   0.14
+DIIS CYCLE     =        4      MAX ERROR = 0.132951E-02
+RMS CHANGE     = 0.829518E-03  MAX CHANGE= 0.492449E-02
+
+SCF CYCLE      =        7      TIME      =   0.14
+DIIS CYCLE     =        5      MAX ERROR = 0.801345E-04
+RMS CHANGE     = 0.452590E-04  MAX CHANGE= 0.284833E-03
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =        8      TIME      =     0.14
+RMS CHANGE     = 0.705490E-05  MAX CHANGE= 0.415242E-04
+CONVERGED!!!!!
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
+
+ @ End Energy calculation
+
+
+ @ Finish SAD initial guess
+
+
+ @ Begin to Read Mol Info
+
+
+ =========== Molecule Input ==========
+| TOTAL MOLECULAR CHARGE  =    0    MULTIPLICITY                =    1
+| TOTOAL ATOM NUMBER      =    3    NUMBER OF ATOM TYPES        =    2
+| NUMBER OF HYDROGEN ATOM =    2    NUMBER OF NON-HYDROGEN ATOM =    1
+| NUMBER OF ELECTRONS     =   10
+
+ -- INPUT GEOMETRY -- :
+    H           0.3032      -0.4940       0.0000
+    H          -0.3032      -0.9088       0.0000
+    O           0.0000       0.1753       0.0000
+
+ -- DISTANCE MATRIX -- :
+              1           2           3
+      1     0.00000
+      2     1.38838     0.00000
+      3     1.38852     2.12727     0.00000
+
+============== BASIS INFOS ==============
+| BASIS FUNCTIONS =   19
+| NSHELL =    8 NPRIM  =   19
+| JSHELL =    8 JBASIS =   19
+
+
+ @ End Reading Mol Info 
+
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+  1    -76.148228504      ------         0.543     1        0.00      0.54      0.00    0.2586E+01  0.7585E-01  0.3913E+00
+  2    -75.693838024  -.454390E+00       0.551     2        0.00      0.55      0.00    0.1873E+00  0.3232E-01  0.2492E+00
+  3    -75.731842422  0.380044E-01       0.548     3        0.00      0.55      0.00    0.1042E+00  0.1061E-01  0.8085E-01
+  4    -75.743301300  0.114589E-01       0.545     4        0.00      0.54      0.00    0.1042E-01  0.2399E-02  0.1259E-01
+  5    -75.743692947  0.391646E-03       0.547     5        0.00      0.55      0.00    0.5263E-02  0.1482E-02  0.8246E-02
+  6    -75.743796542  0.103595E-03       0.544     6        0.00      0.54      0.00    0.2117E-02  0.8496E-03  0.4273E-02
+  7    -75.743821215  0.246737E-04       0.543     7        0.00      0.54      0.00    0.6201E-03  0.2656E-03  0.1870E-02
+  8    -75.743823408  0.219285E-05       0.545     8        0.00      0.54      0.00    0.1364E-03  0.6051E-04  0.4536E-03
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER   8 CYLCES
+ MAX ERROR = 0.136376E-03   RMS CHANGE = 0.605087E-04   MAX CHANGE = 0.453640E-03
+ -----------------------------------------------
+ELECTRONIC ENERGY    =   -85.986304862
+CORE_CORE REPULSION  =    10.242481453
+TOTAL ENERGY         =   -75.743823408
+
+ @ End Energy calculation
+
+
+ @ Begin Zmake conversion
+
+  
+ Z-MATRIX:
+
+   ATOM  ELEMENTAL  BOND LENGTH    BOND ANGLE    DIHEDRAL ANGLE
+  NUMBER  SYMBOL    (ANGSTROMS)    (DEGREES)       (DEGREES)
+     I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
+
+     1      H        0.00000  0     0.00000  0      0.00000  0      0    0    0
+     2      H        0.73470  1     0.00000  0      0.00000  0      1    0    0
+     3      O        0.73477  1   100.00254  1      0.00000  0      1    2    0
+
+ @ End Zmake conversion
+
+
+ @ Begin Charge and Dipole Calculation
+
+    ATOMIC CHARGES
+   ATOM          MULLIKEN            LOWDIN
+   H              0.3647             0.3297
+   H              0.3332             0.3829
+   O             -0.6979            -0.7126
+   TOTAL         0.0000             0.0000
+
+    DIPOLE (DEBYE)
+      X         Y         Z        TOTAL
+    0.2973   -2.9235    0.0000    2.9386
+
+ @ End Charge and Dipole Calculation
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     1.101608000( 19.96%)
+TOTAL SCF TIME     =     4.366288000( 79.11%)
+      TOTAL OP TIME      =     4.362944000( 79.05%)
+            TOTAL 1e TIME      =     0.001796000(  0.03%)
+            TOTAL 2e TIME      =     0.000000000(  0.00%)
+            TOTAL ENERGY TIME  =     0.000072000(  0.00%)
+      TOTAL DII TIME     =     0.003239000(  0.06%)
+            TOTAL DIAG TIME    =     0.001368000(  0.02%)
+      DIPOLE TIME        =     0.000960000(  0.02%)
+TOTAL TIME         =     5.519062000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes  5.5 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Thu Oct 13 23:11:10 2011

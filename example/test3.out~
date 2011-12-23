@@ -23,15 +23,23 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
+<<<<<<< HEAD
  TASK STARTS ON: Fri Nov  4 16:33:38 2011
+=======
+ TASK STARTS ON: Fri Dec  9 00:46:39 2011
+>>>>>>> cuda_branch
  INPUT FILE:     test3.in
  OUTPUT FILE:    test3.out
- BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
+ BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
  @ Read Job And Atom
 
   -------------------------------------
+<<<<<<< HEAD
 KEYWORD=B3LYP ENERGY ZMAKE NCYC=1000  BASIS=6-31GS                                                                                                                                                              
+=======
+KEYWORD=HF NCYC=1000 CUTOFF=1.0E-9 ENERGY ZMAKE  BASIS=CC-PVDZ                                                                                                                                                  
+>>>>>>> cuda_branch
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = DENSTITY FUNCTIONAL THEORY
@@ -40,18 +48,26 @@ KEYWORD=B3LYP ENERGY ZMAKE NCYC=1000  BASIS=6-31GS
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
 | Z-MATRIX CONSTRUCTION
+<<<<<<< HEAD
 | STANDARD GRID = SG1
+=======
+>>>>>>> cuda_branch
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
 | COMPUATIONAL CUTOFF: 
-|      TWO-e INTEGRAL   =  0.100E-06
-|      BASIS SET PRIME  =  0.100E-06
+|      TWO-e INTEGRAL   =  0.100E-08
+|      BASIS SET PRIME  =  0.100E-08
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+<<<<<<< HEAD
 | BASIS SET = 6-31GS
 | BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31GS
+=======
+| BASIS SET = CC-PVDZ
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/CC-PVDZ
+>>>>>>> cuda_branch
 
  @ Finish reading job
 
@@ -65,6 +81,7 @@ BASIS FUNCTIONS =   15
  @ Begin Energy Calculation
 
 
+<<<<<<< HEAD
 SCF CYCLE      =        1      TIME      =     0.13
 RMS CHANGE     = 0.126285E+00  MAX CHANGE= 0.907565E+00
 
@@ -94,6 +111,37 @@ PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
 SCF CYCLE      =        8      TIME      =     0.13
 RMS CHANGE     = 0.440613E-06  MAX CHANGE= 0.478130E-05
+=======
+SCF CYCLE      =        1      TIME      =     0.32
+RMS CHANGE     = 0.115935E+00  MAX CHANGE= 0.904313E+00
+
+SCF CYCLE      =        2      TIME      =     0.31
+RMS CHANGE     = 0.634703E-01  MAX CHANGE= 0.451370E+00
+
+SCF CYCLE      =        3      TIME      =   0.32
+DIIS CYCLE     =        1      MAX ERROR = 0.471031E-01
+RMS CHANGE     = 0.963974E-02  MAX CHANGE= 0.704678E-01
+
+SCF CYCLE      =        4      TIME      =   0.31
+DIIS CYCLE     =        2      MAX ERROR = 0.890914E-02
+RMS CHANGE     = 0.264127E-02  MAX CHANGE= 0.301559E-01
+
+SCF CYCLE      =        5      TIME      =   0.32
+DIIS CYCLE     =        3      MAX ERROR = 0.426798E-02
+RMS CHANGE     = 0.211135E-02  MAX CHANGE= 0.245808E-01
+
+SCF CYCLE      =        6      TIME      =   0.32
+DIIS CYCLE     =        4      MAX ERROR = 0.588165E-03
+RMS CHANGE     = 0.340721E-03  MAX CHANGE= 0.404255E-02
+
+SCF CYCLE      =        7      TIME      =   0.31
+DIIS CYCLE     =        5      MAX ERROR = 0.146608E-04
+RMS CHANGE     = 0.123336E-04  MAX CHANGE= 0.150703E-03
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =        8      TIME      =     0.32
+RMS CHANGE     = 0.116637E-05  MAX CHANGE= 0.129445E-04
+>>>>>>> cuda_branch
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -103,28 +151,36 @@ TOTAL ENERGY         =     0.000000000
 
  For Atom Kind =    2
  ELEMENT = H 
+<<<<<<< HEAD
 BASIS FUNCTIONS =    2
+=======
+BASIS FUNCTIONS =    5
+>>>>>>> cuda_branch
 
  @ Begin Energy Calculation
 
 
 SCF CYCLE      =        1      TIME      =     0.00
+<<<<<<< HEAD
 RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
+=======
+RMS CHANGE     = 0.114405E+00  MAX CHANGE= 0.285522E+00
+>>>>>>> cuda_branch
 
 SCF CYCLE      =        2      TIME      =     0.00
-RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
+RMS CHANGE     = 0.277097E-01  MAX CHANGE= 0.104675E+00
 
 SCF CYCLE      =        3      TIME      =   0.00
-DIIS CYCLE     =        1      MAX ERROR = 0.543720E-02
-RMS CHANGE     = 0.492246E-02  MAX CHANGE= 0.776945E-02
+DIIS CYCLE     =        1      MAX ERROR = 0.201387E-01
+RMS CHANGE     = 0.100224E-01  MAX CHANGE= 0.358651E-01
 
 SCF CYCLE      =        4      TIME      =   0.00
-DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
-RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
+DIIS CYCLE     =        2      MAX ERROR = 0.734371E-02
+RMS CHANGE     = 0.575793E-02  MAX CHANGE= 0.213025E-01
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
 
 SCF CYCLE      =        5      TIME      =     0.00
-RMS CHANGE     = 0.142040E-10  MAX CHANGE= 0.224882E-10
+RMS CHANGE     = 0.641593E-10  MAX CHANGE= 0.239553E-09
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -161,6 +217,7 @@ TOTAL ENERGY         =     0.000000000
       5     2.05992    12.78761    14.01826     1.28055     0.00000
 
 ============== BASIS INFOS ==============
+<<<<<<< HEAD
 | BASIS FUNCTIONS =   23
 | NSHELL =   12 NPRIM  =   27
 | JSHELL =   12 JBASIS =   27
@@ -190,9 +247,116 @@ RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
   21          11.497000
   22           5.909000
   23          11.497000
+=======
+| BASIS FUNCTIONS =   35
+| NSHELL =   18 NPRIM  =   40
+| JSHELL =   18 JBASIS =   40
+
+>>>>>>> cuda_branch
 
  @ End Reading Mol Info 
 
 
  @ Begin Energy Calculation
 
+<<<<<<< HEAD
+=======
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+  1    -24.015257402      ------         0.110     1        0.00      0.11      0.00    0.3267E+01  0.3434E+00  0.5473E+01
+  2    -30.621151384  0.660589E+01       0.120     2        0.00      0.12      0.00    0.7351E+00  0.2052E+00  0.2565E+01
+  3    -25.776621678  -.484453E+01       0.130     3        0.00      0.13      0.00    0.7416E+00  0.1938E+00  0.2565E+01
+  4    -31.471935579  0.569531E+01       0.130     4        0.00      0.13      0.00    0.4100E+00  0.7257E-01  0.9662E+00
+  5    -31.511897944  0.399624E-01       0.120     5        0.00      0.12      0.00    0.3076E+00  0.8217E-02  0.9996E-01
+  6    -31.613673834  0.101776E+00       0.130     6        0.00      0.13      0.00    0.2449E+00  0.7486E-01  0.1064E+01
+  7    -31.221663518  -.392010E+00       0.130     7        0.00      0.13      0.00    0.5282E+00  0.1504E-03  0.1977E-02
+  8    -31.224579987  0.291647E-02       0.120     8        0.00      0.12      0.00    0.5270E+00  0.8992E-02  0.1201E+00
+  9    -31.040795598  -.183784E+00       0.130     9        0.00      0.13      0.00    0.5974E+00  0.8580E-02  0.9660E-01
+ 10    -31.175355929  0.134560E+00       0.120    10        0.00      0.12      0.00    0.5413E+00  0.5593E-02  0.4885E-01
+ 11    -31.226010545  0.506546E-01       0.130     1        0.00      0.13      0.00    0.5243E+00  0.3253E-03  0.3642E-02
+ 12    -31.229156616  0.314607E-02       0.130     2        0.00      0.13      0.00    0.5231E+00  0.2326E-02  0.3070E-01
+ 13    -31.186827828  -.423288E-01       0.120     3        0.00      0.12      0.00    0.5405E+00  0.5052E-02  0.6420E-01
+ 14    -31.268284892  0.814571E-01       0.130     4        0.00      0.13      0.00    0.5070E+00  0.6859E-02  0.6918E-01
+ 15    -31.319336842  0.510519E-01       0.130     5        0.00      0.13      0.00    0.4864E+00  0.7605E-01  0.9795E+00
+ 16    -31.624869880  0.305533E+00       0.130     6        0.01      0.12      0.00    0.2501E+00  0.1795E-02  0.1880E-01
+ 17    -31.606094379  -.187755E-01       0.130     7        0.00      0.13      0.00    0.2604E+00  0.7548E-01  0.1043E+01
+ 18    -31.186305091  -.419789E+00       0.130     8        0.00      0.13      0.00    0.5401E+00  0.3315E-02  0.4140E-01
+ 19    -31.117419708  -.688854E-01       0.130     9        0.01      0.12      0.00    0.5662E+00  0.3873E-02  0.6130E-01
+ 20    -31.204238474  0.868188E-01       0.120    10        0.00      0.12      0.00    0.5356E+00  0.7323E-02  0.1094E+00
+ 21    -31.055262295  -.148976E+00       0.130     1        0.00      0.13      0.00    0.5864E+00  0.5351E-02  0.6782E-01
+ 22    -31.158640369  0.103378E+00       0.130     2        0.01      0.12      0.00    0.5505E+00  0.3474E-02  0.3565E-01
+ 23    -31.207294941  0.486546E-01       0.120     3        0.00      0.12      0.00    0.5321E+00  0.2672E-02  0.3786E-01
+ 24    -31.145518021  -.617769E-01       0.130     4        0.00      0.13      0.00    0.5560E+00  0.3633E-02  0.4303E-01
+ 25    -31.191824310  0.463063E-01       0.130     5        0.00      0.13      0.00    0.5365E+00  0.1206E-02  0.1653E-01
+ 26    -31.200908178  0.908387E-02       0.120     6        0.00      0.12      0.00    0.5335E+00  0.7526E-01  0.1030E+01
+ 27    -31.602657554  0.401749E+00       0.130     7        0.00      0.13      0.00    0.2658E+00  0.5899E-03  0.6870E-02
+ 28    -31.597057539  -.560002E-02       0.130     8        0.00      0.13      0.00    0.2693E+00  0.7462E-01  0.7946E+00
+ 29    -31.530197346  -.668602E-01       0.130     9        0.01      0.12      0.00    0.3718E+00  0.7444E-01  0.8223E+00
+ 30    -31.662933679  0.132736E+00       0.130    10        0.00      0.13      0.00    0.2326E+00  0.7443E-03  0.6700E-02
+ 31    -31.665868672  0.293499E-02       0.130     1        0.00      0.13      0.00    0.2283E+00  0.7432E-01  0.9036E+00
+ 32    -31.433624208  -.232244E+00       0.130     2        0.00      0.13      0.00    0.4259E+00  0.3188E-02  0.4079E-01
+ 33    -31.447465588  0.138414E-01       0.130     3        0.01      0.12      0.00    0.4210E+00  0.1754E-02  0.2214E-01
+ 34    -31.462410999  0.149454E-01       0.130     4        0.00      0.13      0.00    0.4103E+00  0.5117E-01  0.8039E+00
+ 35    -32.838908118  0.137650E+01       0.130     5        0.00      0.13      0.00    0.6417E-01  0.1484E-01  0.1950E+00
+ 36    -32.833221721  -.568640E-02       0.130     6        0.00      0.13      0.00    0.1076E+00  0.8976E-02  0.1449E+00
+ 37    -32.849884053  0.166623E-01       0.130     7        0.01      0.12      0.00    0.4976E-01  0.4952E-02  0.4329E-01
+ 38    -32.846641174  -.324288E-02       0.130     8        0.00      0.13      0.00    0.6970E-01  0.1672E-02  0.2594E-01
+ 39    -32.850254147  0.361297E-02       0.130     9        0.00      0.13      0.00    0.5515E-01  0.3097E-02  0.4681E-01
+ 40    -32.854997902  0.474376E-02       0.130    10        0.00      0.13      0.00    0.3014E-01  0.3398E-02  0.4077E-01
+ 41    -32.857147623  0.214972E-02       0.130     1        0.00      0.13      0.00    0.6403E-02  0.7595E-03  0.7966E-02
+ 42    -32.857357208  0.209585E-03       0.130     2        0.01      0.12      0.01    0.5189E-02  0.1835E-02  0.2060E-01
+ 43    -32.857686980  0.329772E-03       0.130     3        0.00      0.13      0.00    0.2792E-02  0.7348E-03  0.7991E-02
+ 44    -32.857761590  0.746098E-04       0.130     4        0.00      0.13      0.00    0.2281E-02  0.7459E-03  0.9673E-02
+ 45    -32.857814976  0.533861E-04       0.130     5        0.00      0.13      0.00    0.1389E-02  0.7299E-03  0.1076E-01
+ 46    -32.857839103  0.241263E-04       0.130     6        0.00      0.13      0.00    0.2115E-03  0.1182E-03  0.1665E-02
+ 47    -32.857839693  0.590565E-06       0.140     7        0.01      0.13      0.00    0.3804E-04  0.1776E-04  0.1924E-03
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER  47 CYLCES
+ MAX ERROR = 0.380383E-04   RMS CHANGE = 0.177583E-04   MAX CHANGE = 0.192361E-03
+ -----------------------------------------------
+ELECTRONIC ENERGY    =   -40.707706527
+CORE_CORE REPULSION  =     7.849866834
+TOTAL ENERGY         =   -32.857839693
+
+ @ End Energy calculation
+
+
+ @ Begin Zmake conversion
+
+  
+ Z-MATRIX:
+
+   ATOM  ELEMENTAL  BOND LENGTH    BOND ANGLE    DIHEDRAL ANGLE
+  NUMBER  SYMBOL    (ANGSTROMS)    (DEGREES)       (DEGREES)
+     I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
+
+     1      C        0.00000  0     0.00000  0      0.00000  0      0    0    0
+     2      H        7.48415  1     0.00000  0      0.00000  0      1    0    0
+     3      H        8.30928  1    27.67689  1      0.00000  0      1    2    0
+     4      H        1.09002  1    30.23049  1    104.24927  1      1    2    3
+     5      H        1.09006  1    45.63091  1     48.50451  1      1    2    3
+
+ @ End Zmake conversion
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     2.580000000( 28.60%)
+TOTAL SCF TIME     =     6.030000000( 66.85%)
+      TOTAL OP TIME      =     5.950000000( 65.96%)
+            TOTAL 1e TIME      =     0.010000000(  0.11%)
+            TOTAL 2e TIME      =     5.940000000( 65.85%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.080000000(  0.89%)
+            TOTAL DIAG TIME    =     0.010000000(  0.11%)
+TOTAL TIME         =     9.020000000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes  9.0 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Fri Dec  9 00:46:48 2011
+>>>>>>> cuda_branch

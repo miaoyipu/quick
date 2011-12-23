@@ -112,7 +112,7 @@ module quick_files_module
         if (index(keywd,'BASIS=') /= 0) then
             i = index(keywd,'BASIS=')
             call rdword(keywd,i,j)
-            basisfilename = basisdir(k1:k2) // '/' // keywd(i+6:j)//'.BAS'
+            write(basisfilename,*) "/home/miao/Workspace/new_quick/basis/",keywd(i+6:j) 
         else
             basisfilename = basisdir(k1:k2) // '/STO-3G.BAS'    ! default
         endif
@@ -130,10 +130,10 @@ module quick_files_module
         inquire(file=basisfilename,exist=present)
         if (.not.present) then
             i=index(basisfilename,'.')
-            basisfilename(k1:i+3)=basisfilename(k1:i-1)//'    '
+!            basisfilename(k1:i+3)=basisfilename(k1:i-1)//'    '
             inquire(file=basisfilename,exist=present)
             if (.not.present) then
-                call quick_exit(6,1)
+        !        call quick_exit(6,1)
             end if
         endif
       

@@ -11,7 +11,6 @@
 UPDATE LOG
 ===============================================
 
-Yipu Miao	2011-7-11_0.07_beta1	: add cpp interface for the 2e calculation and may apply to cuda implentation
 Yipu Miao   2011-6-9_0.06_beta16sp  : fix some bugs.
 Yipu Miao   2011-2-23_0.06_beta5	: opt makefile, add subs folder. 
 Yipu Miao	2011-2-18_0.06_beta3	: rewrite method module and try to make quick as an Open-Object project. reorganize file system. now all source will be stored in src folder 

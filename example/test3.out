@@ -23,15 +23,23 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
+<<<<<<< HEAD
  TASK STARTS ON: Wed Nov 30 13:41:26 2011
+=======
+ TASK STARTS ON: Fri Dec  9 00:47:12 2011
+>>>>>>> cuda_branch
  INPUT FILE:     test3.in
  OUTPUT FILE:    test3.out
- BASIS SET PATH: /Users/miao/Workspace/new_quick/basis
+ BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
  @ Read Job And Atom
 
   -------------------------------------
+<<<<<<< HEAD
 KEYWORD=B3LYP ENERGY ZMAKE NCYC=1000  BASIS=6-31GS                                                                                                                                                              
+=======
+KEYWORD=HF NCYC=1000 CUTOFF=1.0E-9 ENERGY ZMAKE  BASIS=6-31G                                                                                                                                                    
+>>>>>>> cuda_branch
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = DENSTITY FUNCTIONAL THEORY
@@ -40,18 +48,26 @@ KEYWORD=B3LYP ENERGY ZMAKE NCYC=1000  BASIS=6-31GS
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
 | Z-MATRIX CONSTRUCTION
+<<<<<<< HEAD
 | STANDARD GRID = SG1
+=======
+>>>>>>> cuda_branch
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
 | COMPUATIONAL CUTOFF: 
-|      TWO-e INTEGRAL   =  0.100E-06
-|      BASIS SET PRIME  =  0.100E-06
+|      TWO-e INTEGRAL   =  0.100E-08
+|      BASIS SET PRIME  =  0.100E-08
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+<<<<<<< HEAD
 | BASIS SET = 6-31GS
 | BASIS FILE = /Users/miao/Workspace/new_quick/basis/6-31GS
+=======
+| BASIS SET = 6-31G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
+>>>>>>> cuda_branch
 
  @ Finish reading job
 
@@ -60,6 +76,7 @@ KEYWORD=B3LYP ENERGY ZMAKE NCYC=1000  BASIS=6-31GS
 
  For Atom Kind =    1
  ELEMENT = C 
+<<<<<<< HEAD
 BASIS FUNCTIONS =   15
 
  @ Begin Energy Calculation
@@ -86,14 +103,45 @@ RMS CHANGE     = 0.169325E-02  MAX CHANGE= 0.184420E-01
 SCF CYCLE      =        6      TIME      =   0.13
 DIIS CYCLE     =        4      MAX ERROR = 0.549087E-03
 RMS CHANGE     = 0.331952E-03  MAX CHANGE= 0.369618E-02
+=======
+BASIS FUNCTIONS =    9
+
+ @ Begin Energy Calculation
+
+>>>>>>> cuda_branch
 
 SCF CYCLE      =        7      TIME      =   0.13
 DIIS CYCLE     =        5      MAX ERROR = 0.801222E-05
 RMS CHANGE     = 0.174161E-05  MAX CHANGE= 0.173664E-04
 PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
+<<<<<<< HEAD
 SCF CYCLE      =        8      TIME      =     0.13
 RMS CHANGE     = 0.440613E-06  MAX CHANGE= 0.478130E-05
+=======
+SCF CYCLE      =        2      TIME      =     0.06
+RMS CHANGE     = 0.797517E-01  MAX CHANGE= 0.320914E+00
+
+SCF CYCLE      =        3      TIME      =   0.06
+DIIS CYCLE     =        1      MAX ERROR = 0.394445E-01
+RMS CHANGE     = 0.137215E-01  MAX CHANGE= 0.589123E-01
+
+SCF CYCLE      =        4      TIME      =   0.06
+DIIS CYCLE     =        2      MAX ERROR = 0.746633E-02
+RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
+
+SCF CYCLE      =        5      TIME      =   0.07
+DIIS CYCLE     =        3      MAX ERROR = 0.308852E-02
+RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
+
+SCF CYCLE      =        6      TIME      =   0.06
+DIIS CYCLE     =        4      MAX ERROR = 0.299208E-03
+RMS CHANGE     = 0.311349E-03  MAX CHANGE= 0.215704E-02
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        7      TIME      =     0.06
+RMS CHANGE     = 0.153492E-04  MAX CHANGE= 0.106143E-03
+>>>>>>> cuda_branch
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -161,6 +209,7 @@ TOTAL ENERGY         =     0.000000000
       5     2.05992    12.78761    14.01826     1.28055     0.00000
 
 ============== BASIS INFOS ==============
+<<<<<<< HEAD
 | BASIS FUNCTIONS =   23
 | NSHELL =   12 NPRIM  =   27
 | JSHELL =   12 JBASIS =   27
@@ -190,6 +239,12 @@ RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
   21          11.497000
   22           5.909000
   23          11.497000
+=======
+| BASIS FUNCTIONS =   17
+| NSHELL =   11 NPRIM  =   26
+| JSHELL =   11 JBASIS =   26
+
+>>>>>>> cuda_branch
 
  @ End Reading Mol Info 
 
@@ -200,6 +255,7 @@ RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
+<<<<<<< HEAD
   1    -40.011927562      ------         0.195     1        0.00      0.19      0.00    0.1406E+01  0.8688E-01  0.5067E+00
   2    -39.859583685  -.152344E+00       0.194     2        0.00      0.19      0.00    0.8740E-01  0.5276E-01  0.4806E+00
   3    -39.798220788  -.613629E-01       0.203     3        0.00      0.20      0.00    0.2366E+00  0.5881E-01  0.6699E+00
@@ -264,3 +320,65 @@ NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DI
  62    -39.558656364  -.770460E-02       0.195     2        0.00      0.19      0.00    0.1315E+00  0.2208E-02  0.3891E-01
  63    -39.553284549  -.537181E-02       0.195     3        0.00      0.19      0.00    0.1553E+00  0.2850E-01  0.5064E+00
  64    -39.403988930  
+=======
+  1    -39.639764558      ------         0.020     1        0.00      0.02      0.00    0.1489E+01  0.1037E+00  0.5681E+00
+  2    -39.322516045  -.317249E+00       0.010     2        0.00      0.01      0.00    0.1511E+00  0.4963E-01  0.4164E+00
+  3    -39.374324157  0.518081E-01       0.000     3        0.00      0.00      0.00    0.5432E-01  0.1356E-01  0.7171E-01
+  4    -39.386061469  0.117373E-01       0.010     4        0.00      0.01      0.00    0.4834E-01  0.1237E-01  0.9631E-01
+  5    -39.393513735  0.745227E-02       0.010     5        0.00      0.01      0.00    0.4662E-01  0.1158E-01  0.5585E-01
+  6    -39.405595960  0.120822E-01       0.010     6        0.00      0.01      0.00    0.4345E-01  0.1996E-01  0.9624E-01
+  7    -39.423963149  0.183672E-01       0.010     7        0.00      0.01      0.00    0.3561E-01  0.3883E-01  0.1971E+00
+  8    -39.450155014  0.261919E-01       0.010     8        0.00      0.01      0.00    0.1978E-01  0.1599E-01  0.6868E-01
+  9    -39.455564804  0.540979E-02       0.010     9        0.00      0.01      0.00    0.9023E-02  0.1461E-01  0.6061E-01
+ 10    -39.457085263  0.152046E-02       0.010    10        0.00      0.01      0.00    0.7521E-02  0.1976E-02  0.1403E-01
+ 11    -39.457198550  0.113287E-03       0.010     1        0.00      0.01      0.00    0.2898E-02  0.1491E-02  0.1069E-01
+ 12    -39.457219904  0.213548E-04       0.010     2        0.00      0.01      0.00    0.2353E-03  0.1144E-03  0.9558E-03
+ 13    -39.457220048  0.143496E-06       0.010     3        0.00      0.01      0.00    0.8298E-04  0.6476E-04  0.4841E-03
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER  13 CYLCES
+ MAX ERROR = 0.829792E-04   RMS CHANGE = 0.647558E-04   MAX CHANGE = 0.484139E-03
+ -----------------------------------------------
+ELECTRONIC ENERGY    =   -47.307086882
+CORE_CORE REPULSION  =     7.849866834
+TOTAL ENERGY         =   -39.457220048
+
+ @ End Energy calculation
+
+
+ @ Begin Zmake conversion
+
+  
+ Z-MATRIX:
+
+   ATOM  ELEMENTAL  BOND LENGTH    BOND ANGLE    DIHEDRAL ANGLE
+  NUMBER  SYMBOL    (ANGSTROMS)    (DEGREES)       (DEGREES)
+     I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
+
+     1      C        0.00000  0     0.00000  0      0.00000  0      0    0    0
+     2      H        7.48415  1     0.00000  0      0.00000  0      1    0    0
+     3      H        8.30928  1    27.67689  1      0.00000  0      1    2    0
+     4      H        1.09002  1    30.23049  1    104.24927  1      1    2    3
+     5      H        1.09006  1    45.63091  1     48.50451  1      1    2    3
+
+ @ End Zmake conversion
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     0.490000000( 66.22%)
+TOTAL SCF TIME     =     0.130000000( 17.57%)
+      TOTAL OP TIME      =     0.130000000( 17.57%)
+            TOTAL 1e TIME      =     0.000000000(  0.00%)
+            TOTAL 2e TIME      =     0.130000000( 17.57%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.000000000(  0.00%)
+            TOTAL DIAG TIME    =     0.000000000(  0.00%)
+TOTAL TIME         =     0.740000000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes  0.7 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Fri Dec  9 00:47:13 2011
+>>>>>>> cuda_branch

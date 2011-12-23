@@ -1342,6 +1342,7 @@ subroutine vertical(NABCDTYPE)
       call PSSS(0)
       call PSSS(1)
       call DSSS(0)
+<<<<<<< HEAD
       call PSSS(2)
       call DSSS(1)
       call FSSS(0)
@@ -1366,16 +1367,73 @@ subroutine vertical(NABCDTYPE)
       call SSPS(0)
       call SSPS(1)
       call PSPS(0)
+=======
+
+      call PSSS(2)
+      call DSSS(1)
+
+      call FSSS(0)
+
+      call PSSS(3)
+      call DSSS(2)
+
+      call FSSS(1)
+
+      call GSSS(0)
+
+      call PSSS(4)
+      call DSSS(3)
+
+      call FSSS(2)
+
+      call GSSS(1)
+
+      call DSPS(0)
+
+      call FSPS(0)
+
+      call GSPS(0)
+
+      call PSSS(5)
+      call DSSS(4)
+      call FSSS(3)
+
+      call GSSS(2)
+      call DSPS(1)
+
+      call FSPS(1)
+
+      call GSPS(1)
+
+
+      call SSPS(0)
+      call SSPS(1)
+      call PSPS(0)
+
+>>>>>>> cuda_branch
       call SSDS(0)
       call SSPS(2)
       call SSDS(1)
       call PSDS(0)
+<<<<<<< HEAD
       call SSPS(3)
       call SSDS(2)
       call PSDS(1)
       call PSPS(1)
       call DSDS(0)
       call FSDS(0)
+=======
+
+      call SSPS(3)
+      call SSDS(2)
+      call PSDS(1)
+
+      call PSPS(1)
+      call DSDS(0)
+
+      call FSDS(0)
+
+>>>>>>> cuda_branch
       call GSDS(0)
 
 
