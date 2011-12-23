@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for i in $*; do
+	quick $i
+	echo "FILE NAME="$i
+	now=$(date "+%Y-%m-%d_%H%M%S")
+	echo $now
+	FOLDER=$now'_'$i
+	echo 'FINISH JOB, SAVE IT TO SCRATCH'
+	mkdir ~/Workspace/new_quick/scratch/$FOLDER
+	cp $i ${i/.in/.out} ~/Workspace/new_quick/scratch/$FOLDER
+done;
