@@ -224,4 +224,5 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
+#contain dependent information
 include depend
