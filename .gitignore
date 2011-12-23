@@ -5,3 +5,5 @@ src/*.mod
 src/_*
 src/*.bak
 example
+src/cuda/*.o
+src/subs/*.o
