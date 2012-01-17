@@ -1,6 +1,4 @@
 
-
-
 !
 !	quick_calculated_module.f90
 !	new_quick

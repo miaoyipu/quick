@@ -1,16 +1,8 @@
 #/bin/bash
 
-ver=2011-12-22-new_quick_0.07sp4_beta11
+ver=2012-1-17-new_quick_0.07sp4_beta15
 machine=cm
 
 cp -a ../src/ ../archieve/$ver-$machine
 cp -a ../src/ ~/Dropbox/Backup/quick/$ver-$machine
 
-<<<<<<< HEAD
-ver=2011-12-22-new_quick_0.07sp4_beta11
-=======
->>>>>>> cuda_branch
-
-cp -a ../src/ ../archieve/$ver-lm
-cp -a ../src/ ~/Dropbox/Backup/quick/$ver-lm
-cp -a ../src/ /Volumes/iDisk/Documents/quick_backup/$ver-lm

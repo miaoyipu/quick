@@ -401,7 +401,7 @@ void cuda_buffer_type<T> :: Allocate()
         size_t index_f = 0;
         for (size_t j=0; j<_length2; j++) {
             for (size_t i=0; i<_length; i++) {
-                index_c = i*_length2+j;
+                index_c = j * _length + i;
                 _hostData[index_c] = _f90Data[index_f++];
             }
         }

@@ -36,7 +36,7 @@ fflush(stdout);\
 
 #define MAXPRIM 6
 // Macro for two- and three- dimension array, d1,d2 and d3 are the dimension and i1,i2 and i3 are the indices
-#define LOC2(A,i1,i2,d1,d2)  A[i2+(i1)*(d2)]
+#define LOC2(A,i1,i2,d1,d2)  A[i1+(i2)*(d1)]
 #define LOC3(A,i1,i2,i3,d1,d2,d3) A[i3+((i2)+(i1)*(d2))*(d3)]
 #define LOC4(A,i1,i2,i3,i4,d1,d2,d3,d4) A[i4+(i3+((i2)+(i1)*(d2))*(d3))*(d4)]
 

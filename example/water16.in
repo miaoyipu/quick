@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-divcon HF BASIS=sto-3G energy
-=======
-B3LYP cutoff=1.0e-9 BASIS=6-31g energy
->>>>>>> cuda_branch
+HF cutoff=1.0e-7 BASIS=6-31gss energy
 
  O                 -0.56428200   -0.57338900   -2.52729000
  O                 -3.55903200   -1.84346700   -2.14561800

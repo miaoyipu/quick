@@ -257,7 +257,9 @@ __device__ void vertical_case_44(int I, int J, int K, int L, QUICKDouble* YVerti
                                  QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
                                  QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 
-__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm);
+//__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm);
+__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm, QUICKDouble XAng, QUICKDouble YAng, QUICKDouble ZAng, QUICKDouble WAng);
+
 __device__ int gridFormSG1(int iitype, QUICKDouble distance, \
                            QUICKDouble* XAng, QUICKDouble* YAng, QUICKDouble* ZAng, QUICKDouble* WAng);
 

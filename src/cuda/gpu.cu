@@ -194,10 +194,23 @@ extern "C" void gpu_upload_xyz_(QUICKDouble* atom_xyz)
     gpu -> gpu_calculated -> distance = new cuda_buffer_type<QUICKDouble>(gpu->natom, gpu->natom);
 
     gpu -> xyz = new cuda_buffer_type<QUICKDouble>(atom_xyz, 3, gpu->natom);
-    gpu -> xyz -> Upload();
     
+    for (int i = 0; i < gpu->natom; i++) {
+        for (int j = 0; j < gpu->natom; j++) {
+            QUICKDouble distance = 0;
+            for (int k = 0; k<3; k++) {
+                distance += pow(LOC2(gpu->xyz->_hostData, k, i, 3, gpu->natom)
+                                -LOC2(gpu->xyz->_hostData, k, j, 3, gpu->natom),2);
+            }
+            LOC2(gpu->gpu_calculated->distance->_hostData, i, j, gpu->natom, gpu->natom) = sqrt(distance);
+        }
+    }
+    
+    gpu -> xyz -> Upload();
+    gpu -> gpu_calculated -> distance -> Upload();
 
     gpu -> gpu_sim.xyz =  gpu -> xyz -> _devData;
+    gpu -> gpu_sim.distance = gpu -> gpu_calculated -> distance -> _devData;
 
 #ifdef DEBUG
     cudaEventRecord(end, 0);

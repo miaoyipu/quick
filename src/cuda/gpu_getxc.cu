@@ -85,34 +85,16 @@ void getb3lyp(_gpu_type gpu)
 #endif
     
 }
-
-
 __global__ void getb3lyp_kernel()
 {
-    /*
-    int blk = blockIdx.x;
-    if (blk < devSim_dft.natom) {
-        int radTotal;
-        if (devSim_dft.isg == 1) {
-            radTotal = 50;
-        }else {
-            if (devSim_dft.iattype[blk]<=10) {
-                radTotal = 23;
-            }else {
-                radTotal = 26;
-            }
-        }
-        
-        for (int i = 1; i<=radTotal; i++) {
-            gpu_grid_b3lyp(i, radTotal, blk+1);
-        }
-    }*/
-    
-    //int2 target[100];
-    int target_num = 0;
     int total_num = 0;
+    unsigned int offset = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned int totalThreads = blockDim.x * gridDim.x;
+    QUICKULL currentPoint = 0;
+    QUICKULL myPoint = offset;
     
     int radTotal;
+    int iiangt;
     
     for (int i = 0; i< devSim_dft.natom; i++) {
         if (devSim_dft.isg == 1) {
@@ -125,120 +107,125 @@ __global__ void getb3lyp_kernel()
             }
         }
         for (int j = 0; j<radTotal; j++) {
-            if (total_num == blockIdx.x) {
-                 gpu_grid_b3lyp(j+1, radTotal, i+1);
+            
+            QUICKDouble XAng[194];
+            QUICKDouble YAng[194];
+            QUICKDouble ZAng[194];
+            QUICKDouble WAng[194]; 
+            // Generates grids points according to central atom type and distance to atoms. See subroutines for details.
+            if (devSim_dft.isg == 1){ // SG1 scheme
+                iiangt = gridFormSG1(i+1, RGRID[j], XAng, YAng, ZAng, WAng);
+            }else {                   // SG0 scheme
+                // iiangt = gridFormSG0(*atm, *iradtemp+1-*irad, RGRID, RWT);
             }
-            total_num++;
-            if (total_num == gridDim.x) {
-                total_num = 0;
+            
+            if (currentPoint <= myPoint && currentPoint + iiangt > myPoint) {
+                int pointId = myPoint - currentPoint;
+                gpu_grid_b3lyp(j+1, radTotal, i+1, XAng[pointId], YAng[pointId], ZAng[pointId], WAng[pointId]);
+                myPoint = myPoint + totalThreads;
             }
+            currentPoint = currentPoint + iiangt;
         }
-        
     }
     
 }
 
 
-__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm){
 
-    
-QUICKDouble XAng[194];
-QUICKDouble YAng[194];
-QUICKDouble ZAng[194];
-QUICKDouble WAng[194];
-QUICKDouble rad, rad3;
-    
-int iiangt;
-    
-QUICKDouble atomx, atomy, atomz;
+/*
+ This subroutine is to get energy, electron density, deviation and operator change
+ if given a point in grid.
+ */
+__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm, QUICKDouble XAng, QUICKDouble YAng, QUICKDouble ZAng, QUICKDouble WAng){
     
     
-    //if (threadIdx.x == 0) {
-        atomx = LOC2(devSim_dft.xyz, 0, iatm-1, 3, devSim_dft.natom);
-        atomy = LOC2(devSim_dft.xyz, 1, iatm-1, 3, devSim_dft.natom);
-        atomz = LOC2(devSim_dft.xyz, 2, iatm-1, 3, devSim_dft.natom);
-    //}
+    QUICKDouble rad, rad3;    
+    QUICKDouble atomx, atomy, atomz;
+    
+    /*
+     Read atom coordinates(atomx, atomy and atomz) from global memory (DRAM). If the atom is shared by the 
+     whole block, we could put these variables into block memory (shared memory)
+     */
+    atomx = LOC2(devSim_dft.xyz, 0, iatm-1, 3, devSim_dft.natom);
+    atomy = LOC2(devSim_dft.xyz, 1, iatm-1, 3, devSim_dft.natom);
+    atomz = LOC2(devSim_dft.xyz, 2, iatm-1, 3, devSim_dft.natom);
     
     if (devSim_dft.isg == 1){
-//        if (threadIdx.x == 0){
-            iiangt = gridFormSG1(iatm, RGRID[irad-1], XAng, YAng, ZAng, WAng);
-            rad = radii[devSim_dft.iattype[iatm-1]-1];
-            rad3 = pow(rad,3);
-  //      }
+        rad = radii[devSim_dft.iattype[iatm-1]-1];
+        rad3 = pow(rad,3) * RWT[irad-1];
+        
     }else {
-       // iiangt = gridFormSG0(*atm, *iradtemp+1-*irad, RGRID, RWT);
         rad = radii2[devSim_dft.iattype[iatm-1]-1];
-        rad3 = pow(rad,3);
+        rad3 = pow(rad,3) * RWT[irad-1];
     }
     
-    //__syncthreads();
+    // grid point coordinates.
+    QUICKDouble gridx = atomx + rad * RGRID[irad-1] * XAng;
+    QUICKDouble gridy = atomy + rad * RGRID[irad-1] * YAng;
+    QUICKDouble gridz = atomz + rad * RGRID[irad-1] * ZAng;
     
-//    for (int i = 0; i<iiangt; i++) {
-    if (threadIdx.x < iiangt){
-        int i = threadIdx.x;
-        QUICKDouble gridx = atomx + rad * RGRID[irad-1] * XAng[i];
-        QUICKDouble gridy = atomy + rad * RGRID[irad-1] * YAng[i];
-        QUICKDouble gridz = atomz + rad * RGRID[irad-1] * ZAng[i];
-        QUICKDouble weight = SSW(gridx, gridy, gridz, iatm) * WAng[i] * RWT[irad-1] * rad3;
-        if (weight > devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
+    // calculate Scuseria-Stratmann weights, and times rad3 and the point basic weights to get comprhensive point weight
+    QUICKDouble weight = SSW(gridx, gridy, gridz, iatm) * WAng * rad3;
+    
+    if (weight > devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
+        
+        QUICKDouble density, densityb;
+        QUICKDouble gax, gay, gaz;
+        QUICKDouble gbx, gby, gbz;
+        denspt(gridx, gridy, gridz, &density, &densityb, &gax, &gay, &gaz, &gbx, &gby, &gbz);
+        
+        if (density > devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
+            QUICKDouble sigma = 4.0 * (gax * gax + gay * gay + gaz * gaz);
+            
+            QUICKDouble _tmp = b3lyp_e(2.0*density, sigma) * weight;
+            
+            QUICKULL val1 = (QUICKULL) (fabs( _tmp * OSCALE) + (QUICKDouble)0.5);
+            if ( _tmp * weight < (QUICKDouble)0.0)
+                val1 = 0ull - val1;                               
+            QUICKADD(devSim_dft.DFT_calculated[0].Eelxc, val1);
 
-            QUICKDouble density, densityb;
-            QUICKDouble gax, gay, gaz;
-            QUICKDouble gbx, gby, gbz;
-            denspt(gridx, gridy, gridz, &density, &densityb, &gax, &gay, &gaz, &gbx, &gby, &gbz);
-    
-            if (density > devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
-                QUICKDouble sigma = 4.0 * (gax * gax + gay * gay + gaz * gaz);
+            _tmp = weight*density;
+            val1 = (QUICKULL) (fabs( _tmp * OSCALE) + (QUICKDouble)0.5);
+            if ( _tmp * weight < (QUICKDouble)0.0)
+                val1 = 0ull - val1;                               
+            QUICKADD(devSim_dft.DFT_calculated[0].aelec, val1);
+            
+            
+            _tmp = weight*densityb;
+            val1 = (QUICKULL) (fabs( _tmp * OSCALE) + (QUICKDouble)0.5);
+            if ( _tmp * weight < (QUICKDouble)0.0)
+                val1 = 0ull - val1;                               
+            QUICKADD(devSim_dft.DFT_calculated[0].belec, val1);
+            
+            QUICKDouble dfdr;
+            QUICKDouble dot = b3lypf(2.0*density, sigma, &dfdr);
+            QUICKDouble xdot = dot * gax;
+            QUICKDouble ydot = dot * gay;
+            QUICKDouble zdot = dot * gaz;
+            for (int i = 0; i< devSim_dft.nbasis; i++) {
+                QUICKDouble phi, dphidx, dphidy, dphidz;
+                pteval(gridx, gridy, gridz, &phi, &dphidx, &dphidy, &dphidz, i+1);
                 
-                QUICKDouble _tmp = b3lyp_e(2.0*density, sigma) * weight;
-                QUICKULL val1 = (QUICKULL) (fabs(_tmp*OSCALE) + (QUICKDouble)0.5);
-                if ( _tmp< (QUICKDouble)0.0)
-                        val1 = 0ull - val1;                               
-                QUICKADD(devSim_dft.DFT_calculated[0].Eelxc, val1);
-                
-                _tmp = weight*density;
-                val1 = (QUICKULL) (fabs(_tmp*OSCALE) + (QUICKDouble)0.5);
-                if ( _tmp< (QUICKDouble)0.0)
-                        val1 = 0ull - val1;                               
-                QUICKADD(devSim_dft.DFT_calculated[0].aelec, val1);
-                
-                
-                _tmp = weight*densityb;
-                val1 = (QUICKULL) (fabs(_tmp*OSCALE) + (QUICKDouble)0.5);
-                if ( _tmp< (QUICKDouble)0.0)
-                        val1 = 0ull - val1;                               
-                QUICKADD(devSim_dft.DFT_calculated[0].belec, val1);
-                
-                
-                QUICKDouble dfdr;
-                QUICKDouble dot = b3lypf(2.0*density, sigma, &dfdr);
-                QUICKDouble xdot = dot * gax;
-                QUICKDouble ydot = dot * gay;
-                QUICKDouble zdot = dot * gaz;
-                for (int i = 0; i< devSim_dft.nbasis; i++) {
-                    QUICKDouble phi, dphidx, dphidy, dphidz;
-                    pteval(gridx, gridy, gridz, &phi, &dphidx, &dphidy, &dphidz, i+1);
-                    
-                    if (abs(phi+dphidx+dphidy+dphidz)> devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
-                        for (int j = i; j<devSim_dft.nbasis; j++) {
-                            QUICKDouble phi2, dphidx2, dphidy2, dphidz2;
-                            pteval(gridx, gridy, gridz, &phi2, &dphidx2, &dphidy2, &dphidz2, j+1);
-                            
-                            QUICKDouble _tmp = (phi * phi2 * dfdr + xdot * (phi*dphidx2 + phi2*dphidx) \
-                                                + ydot * (phi*dphidy2 + phi2*dphidy) + zdot * (phi*dphidz2 + phi2*dphidz))*weight;
-                            
-                            QUICKULL val1 = (QUICKULL) (fabs( _tmp * OSCALE) + (QUICKDouble)0.5);
-                            if ( _tmp * weight < (QUICKDouble)0.0)
-                                val1 = 0ull - val1;                               
-                            QUICKADD(LOC2(devSim_dft.oULL, j, i, devSim_dft.nbasis, devSim_dft.nbasis), val1);
-                            
-                        }
+                if (abs(phi+dphidx+dphidy+dphidz)> devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
+                    for (int j = i; j<devSim_dft.nbasis; j++) {
+                        QUICKDouble phi2, dphidx2, dphidy2, dphidz2;
+                        pteval(gridx, gridy, gridz, &phi2, &dphidx2, &dphidy2, &dphidz2, j+1);
+                        
+                        QUICKDouble _tmp = (phi * phi2 * dfdr + xdot * (phi*dphidx2 + phi2*dphidx) \
+                                            + ydot * (phi*dphidy2 + phi2*dphidy) + zdot * (phi*dphidz2 + phi2*dphidz))*weight;
+                        
+                        QUICKULL val1 = (QUICKULL) (fabs( _tmp * OSCALE) + (QUICKDouble)0.5);
+                        if ( _tmp * weight < (QUICKDouble)0.0)
+                            val1 = 0ull - val1;                               
+                        QUICKADD(LOC2(devSim_dft.oULL, j, i, devSim_dft.nbasis, devSim_dft.nbasis), val1);
+                        
                     }
                 }
             }
         }
     }
 }
+
 
 __device__ int gridFormSG1(int iitype, QUICKDouble distance, \
     QUICKDouble* XAng, QUICKDouble* YAng, QUICKDouble* ZAng, QUICKDouble* WAng){
@@ -309,11 +296,25 @@ __device__ int gridFormSG1(int iitype, QUICKDouble distance, \
 
 __device__ QUICKDouble SSW( QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gridz, int atm)
 {
+    
+    /*
+     This subroutie calculates the Scuseria-Stratmann wieghts.  There are
+     two conditions that cause the weights to be unity: If there is only
+     one atom:
+    */
     QUICKDouble ssw;
     if (devSim_dft.natom == 1) {
         ssw = 1.0e0;
         return ssw;
     }
+    
+    /*
+     Another time the weight is unity is r(iparent,g)<.5*(1-a)*R(i,n)
+     where r(iparent,g) is the distance from the parent atom to the grid
+     point, a is a parameter (=.64) and R(i,n) is the distance from the
+     parent atom to it's nearest neighbor.
+    */
+    
     QUICKDouble xparent = LOC2(devSim_dft.xyz, 0, atm-1, 3, devSim_dft.natom);
     QUICKDouble yparent = LOC2(devSim_dft.xyz, 1, atm-1, 3, devSim_dft.natom);
     QUICKDouble zparent = LOC2(devSim_dft.xyz, 2, atm-1, 3, devSim_dft.natom);
@@ -322,7 +323,7 @@ __device__ QUICKDouble SSW( QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gr
                            pow((gridy-yparent),2) + 
                            pow((gridz-zparent),2)); 
 
-    /* this part can be done in CPU*/
+    /* !!!! this part can be done in CPU*/
     QUICKDouble distnbor = 1e3;
     for (int i = 0; i<devSim_dft.natom; i++) {
         if (i != atm-1) {        
@@ -338,7 +339,20 @@ __device__ QUICKDouble SSW( QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gr
         return ssw;
     }
     
-    QUICKDouble wofparent = 1.0e0;
+    /*
+     If neither of those are the case, we have to actually calculate the
+     weight.  First we must calculate the unnormalized wieght of the grid point
+     with respect to the parent atom.
+    
+     Step one of calculating the unnormalized weight is finding the confocal
+     elliptical coordinate between each cell.  This it the mu with subscripted
+     i and j in the paper:
+     Stratmann, Scuseria, and Frisch, Chem. Phys. Lett., v 257,
+     1996, pg 213-223.
+     */
+    QUICKDouble wofparent = 1.0e0; // weight of parents
+    
+    //!!! this part should be rewrite
     int jatm = 1;
     while (jatm != atm && wofparent != 0.0e0) {
         QUICKDouble xjatm = LOC2(devSim_dft.xyz, 0, jatm-1, 3, devSim_dft.natom) ;
@@ -387,6 +401,13 @@ __device__ QUICKDouble SSW( QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gr
         return ssw;
     }
     
+    /*    
+     Now we have the unnormalized weight of the grid point with regard to the
+     parent atom.  Now we have to do this for all other atom pairs to
+     normalize the grid weight.
+     */
+    
+    // !!!! this part should be rewrite
     for (int i = 0; i<devSim_dft.natom; i++) {
         if (i!=atm-1) {
             QUICKDouble xiatm = LOC2(devSim_dft.xyz, 0, i, 3, devSim_dft.natom) ;
@@ -444,6 +465,14 @@ __device__ void pteval(QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gridz,
             QUICKDouble* phi, QUICKDouble* dphidx, QUICKDouble* dphidy,  QUICKDouble* dphidz, 
             int ibas)
 {
+    
+    /*
+      Given a point in space, this function calculates the value of basis
+      function I and the value of its cartesian derivatives in all three
+      derivatives.
+     */
+    
+    // relative coordinates between grid point and basis function I.
     QUICKDouble x1 = gridx - LOC2(devSim_dft.xyz, 0, devSim_dft.ncenter[ibas-1]-1, 3, devSim_dft.natom);
     QUICKDouble y1 = gridy - LOC2(devSim_dft.xyz, 1, devSim_dft.ncenter[ibas-1]-1, 3, devSim_dft.natom);
     QUICKDouble z1 = gridz - LOC2(devSim_dft.xyz, 2, devSim_dft.ncenter[ibas-1]-1, 3, devSim_dft.natom);
@@ -516,6 +545,12 @@ __device__ void pteval(QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gridz,
 __device__ void denspt(QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gridz, QUICKDouble* density, QUICKDouble* densityb, 
             QUICKDouble* gax,   QUICKDouble* gay,   QUICKDouble* gaz,   QUICKDouble* gbx,     QUICKDouble* gby,     QUICKDouble* gbz)
 {
+    /*
+     Given a point in space, this function calculates the densities and
+     gradient  at that point.  The gradients are stored in the common block
+     three element arrays ga and gb for alpha and beta electron gradients. Thus
+     the x, y, z component of the alpha density is stored in gax, gay, gaz.
+     */
     *density = 0.0;
     *gax = 0.0;
     *gay = 0.0;
@@ -554,6 +589,36 @@ __device__ void denspt(QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gridz, 
 
 __device__ QUICKDouble b3lyp_e(QUICKDouble rho, QUICKDouble sigma)
 {
+  /*
+  P.J. Stephens, F.J. Devlin, C.F. Chabalowski, M.J. Frisch
+  Ab initio calculation of vibrational absorption and circular
+  dichroism spectra using density functional force fields
+  J. Phys. Chem. 98 (1994) 11623-11627
+  
+  CITATION:
+  Functionals were obtained from the Density Functional Repository
+  as developed and distributed by the Quantum Chemistry Group,
+  CCLRC Daresbury Laboratory, Daresbury, Cheshire, WA4 4AD
+  United Kingdom. Contact Huub van Dam (h.j.j.vandam@dl.ac.uk) or
+  Paul Sherwood for further information.
+  
+  COPYRIGHT:
+  
+  Users may incorporate the source code into software packages and
+  redistribute the source code provided the source code is not
+  changed in anyway and is properly cited in any documentation or
+  publication related to its use.
+  
+  ACKNOWLEDGEMENT:
+  
+  The source code was generated using Maple 8 through a modified
+  version of the dfauto script published in:
+  
+  R. Strange, F.R. Manby, P.J. Knowles
+  Automatic code generation in density functional theory
+  Comp. Phys. Comm. 136 (2001) 310-318.
+  
+  */
     QUICKDouble Eelxc = 0.0e0;
     QUICKDouble t2 = pow(rho, (1.e0/3.e0));
     QUICKDouble t3 = t2*rho;
@@ -588,6 +653,36 @@ __device__ QUICKDouble b3lyp_e(QUICKDouble rho, QUICKDouble sigma)
             
 __device__ QUICKDouble b3lypf(QUICKDouble rho, QUICKDouble sigma, QUICKDouble* dfdr)
 {
+    /*
+     P.J. Stephens, F.J. Devlin, C.F. Chabalowski, M.J. Frisch
+     Ab initio calculation of vibrational absorption and circular
+     dichroism spectra using density functional force fields
+     J. Phys. Chem. 98 (1994) 11623-11627
+     
+     CITATION:
+     Functionals were obtained from the Density Functional Repository
+     as developed and distributed by the Quantum Chemistry Group,
+     CCLRC Daresbury Laboratory, Daresbury, Cheshire, WA4 4AD
+     United Kingdom. Contact Huub van Dam (h.j.j.vandam@dl.ac.uk) or
+     Paul Sherwood for further information.
+     
+     COPYRIGHT:
+     
+     Users may incorporate the source code into software packages and
+     redistribute the source code provided the source code is not
+     changed in anyway and is properly cited in any documentation or
+     publication related to its use.
+     
+     ACKNOWLEDGEMENT:
+     
+     The source code was generated using Maple 8 through a modified
+     version of the dfauto script published in:
+     
+     R. Strange, F.R. Manby, P.J. Knowles
+     Automatic code generation in density functional theory
+     Comp. Phys. Comm. 136 (2001) 310-318.
+     
+     */
     QUICKDouble dot;
     QUICKDouble t2 = pow(rho, (1.e0/3.e0));
     QUICKDouble t3 = t2*rho;
@@ -679,6 +774,67 @@ __device__ QUICKDouble b3lypf(QUICKDouble rho, QUICKDouble sigma, QUICKDouble* d
 
 __device__ int gen_oh(int code, int num, QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, QUICKDouble a, QUICKDouble b, QUICKDouble v)
 {
+    /*
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     ! w
+     ! w    Given a point on a sphere (specified by a and b), generate all
+     ! w    the equivalent points under Oh symmetry, making grid points with
+     ! w    weight v.
+     ! w    The variable num is increased by the number of different points
+     ! w    generated.
+     ! w
+     ! w    Depending on code, there are 6...48 different but equivalent
+     ! w    points.
+     ! w
+     ! w    code=1:   (0,0,1) etc                                (  6 points)
+     ! w    code=2:   (0,a,a) etc, a=1/sqrt(2)                   ( 12 points)
+     ! w    code=3:   (a,a,a) etc, a=1/sqrt(3)                   (  8 points)
+     ! w    code=4:   (a,a,b) etc, b=sqrt(1-2 a^2)               ( 24 points)
+     ! w    code=5:   (a,b,0) etc, b=sqrt(1-a^2), a input        ( 24 points)
+     ! w    code=6:   (a,b,c) etc, c=sqrt(1-a^2-b^2), a/b input  ( 48 points)
+     ! w
+     */
     QUICKDouble c;
     switch (code) {
         case 1:
@@ -1214,6 +1370,54 @@ __device__ int gen_oh(int code, int num, QUICKDouble* x, QUICKDouble* y, QUICKDo
 
 __device__ void LD0006(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    6-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1224,6 +1428,54 @@ __device__ void LD0006(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0014(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    14-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1236,6 +1488,54 @@ __device__ void LD0014(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0026(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    26-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1249,6 +1549,54 @@ __device__ void LD0026(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0038(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    38-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1263,6 +1611,54 @@ __device__ void LD0038(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0050(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    50-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1279,6 +1675,54 @@ __device__ void LD0050(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0074(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    74-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1299,6 +1743,54 @@ __device__ void LD0074(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0086(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    86-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1319,6 +1811,54 @@ __device__ void LD0086(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0110(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    110-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1347,6 +1887,54 @@ __device__ void LD0110(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0146(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    146-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1379,6 +1967,54 @@ __device__ void LD0146(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0170(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    170-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;
@@ -1409,6 +2045,54 @@ __device__ void LD0170(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 
 __device__ void LD0194(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N)
 {
+    /*
+     ! W
+     ! W    LEBEDEV    194-POINT ANGULAR GRID
+     ! W
+     ! vd
+     ! vd   This subroutine is part of a set of subroutines that generate
+     ! vd   Lebedev grids [1-6] for integration on a sphere. The original
+     ! vd   C-code [1] was kindly provided by Dr. Dmitri N. Laikov and
+     ! vd   translated into fortran by Dr. Christoph van Wuellen.
+     ! vd   
+     ! vd
+     ! vd   Users of this code are asked to include reference [1] in their
+     ! vd   publications, and in the user- and programmers-manuals
+     ! vd   describing their codes.
+     ! vd
+     ! vd   This code was distributed through CCL (http://www.ccl.net/).
+     ! vd
+     ! vd   [1] V.I. Lebedev, and D.N. Laikov
+     ! vd       "A quadrature formula for the sphere of the 131st
+     ! vd        algebraic order of accuracy"
+     ! vd       doklady Mathematics, Vol. 59, No. 3, 1999, pp. 477-481.
+     ! vd
+     ! vd   [2] V.I. Lebedev
+     ! vd       "A quadrature formula for the sphere of 59th algebraic
+     ! vd        order of accuracy"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 50, 1995, pp. 283-286.
+     ! vd
+     ! vd   [3] V.I. Lebedev, and A.L. Skorokhodov
+     ! vd       "Quadrature formulas of orders 41, 47, and 53 for the sphere"
+     ! vd       Russian Acad. Sci. dokl. Math., Vol. 45, 1992, pp. 587-592.
+     ! vd
+     ! vd   [4] V.I. Lebedev
+     ! vd       "Spherical quadrature formulas exact to orders 25-29"
+     ! vd       Siberian Mathematical Journal, Vol. 18, 1977, pp. 99-107.
+     ! vd
+     ! vd   [5] V.I. Lebedev
+     ! vd       "Quadratures on a sphere"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 16,
+     ! vd       1976, pp. 10-24.
+     ! vd
+     ! vd   [6] V.I. Lebedev
+     ! vd       "Values of the nodes and weights of ninth to seventeenth
+     ! vd        order Gauss-Markov quadrature formulae invariant under the
+     ! vd        octahedron group with inversion"
+     ! vd       Computational Mathematics and Mathematical Physics, Vol. 15,
+     ! vd       1975, pp. 44-51.
+     ! vd
+     */
     N = 0;
     QUICKDouble a = 0;
     QUICKDouble b = 0;

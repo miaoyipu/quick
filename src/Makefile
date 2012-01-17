@@ -140,7 +140,7 @@ quick_modules:
 #=========== targets for cuda =========================================
 quick_cuda:
 	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_getxc.cu
-#cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c *.cu
+#	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c *.cu
 	cd $(cudafolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
 	cp $(cudafolder)/*.o ./
 	
@@ -224,9 +224,4 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
-<<<<<<< HEAD
 #include depend
-=======
-#contain dependent information
-include depend
->>>>>>> cuda_branch

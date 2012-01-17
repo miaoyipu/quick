@@ -1,6 +1,4 @@
 
-
-
 !
 !	quick_molspec_module.f90
 !	new_quick

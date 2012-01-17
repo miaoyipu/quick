@@ -327,14 +327,14 @@ __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int
     RDy = LOC2(devSim.xyz, 1 , devSim.katom[LL]-1, 3, devSim.natom);
     RDz = LOC2(devSim.xyz, 2 , devSim.katom[LL]-1, 3, devSim.natom);
     
-    int III1 = LOC2(devSim.Qsbasis, II, I, nshell, 4);
-    int III2 = LOC2(devSim.Qfbasis, II, I, nshell, 4);
-    int JJJ1 = LOC2(devSim.Qsbasis, JJ, J, nshell, 4);
-    int JJJ2 = LOC2(devSim.Qfbasis, JJ, J, nshell, 4);
-    int KKK1 = LOC2(devSim.Qsbasis, KK, K, nshell, 4);
-    int KKK2 = LOC2(devSim.Qfbasis, KK, K, nshell, 4);
-    int LLL1 = LOC2(devSim.Qsbasis, LL, L, nshell, 4);
-    int LLL2 = LOC2(devSim.Qfbasis, LL, L, nshell, 4);
+    int III1 = LOC2(devSim.Qsbasis, II, I, devSim.nshell, 4);
+    int III2 = LOC2(devSim.Qfbasis, II, I, devSim.nshell, 4);
+    int JJJ1 = LOC2(devSim.Qsbasis, JJ, J, devSim.nshell, 4);
+    int JJJ2 = LOC2(devSim.Qfbasis, JJ, J, devSim.nshell, 4);
+    int KKK1 = LOC2(devSim.Qsbasis, KK, K, devSim.nshell, 4);
+    int KKK2 = LOC2(devSim.Qfbasis, KK, K, devSim.nshell, 4);
+    int LLL1 = LOC2(devSim.Qsbasis, LL, L, devSim.nshell, 4);
+    int LLL2 = LOC2(devSim.Qfbasis, LL, L, devSim.nshell, 4);
     
     
     // maxIJKL is the max of I,J,K,L
