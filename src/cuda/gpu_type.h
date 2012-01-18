@@ -53,6 +53,7 @@ struct gpu_cutoff_type {
     // Cutoff criteria
     QUICKDouble                     integralCutoff;
     QUICKDouble                     primLimit;
+    QUICKDouble                     DMCutoff;
     
 };
 
@@ -145,6 +146,7 @@ struct gpu_simulation_type {
     QUICKDouble*                    cutPrim;
     QUICKDouble                     integralCutoff;
     QUICKDouble                     primLimit;
+    QUICKDouble                     DMCutoff;
 };
 
 struct gpu_basis_type {
@@ -221,6 +223,8 @@ struct gpu_type {
     int                             gpu_dev_id;  // set 0 for master GPU
     unsigned int                    blocks;
     unsigned int                    threadsPerBlock;
+    unsigned int                    twoEThreadsPerBlock;
+    unsigned int                    b3lypThreadsPerBlock;
     
     // Molecule specification part
     int                             natom;

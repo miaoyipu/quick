@@ -71,9 +71,10 @@ void getb3lyp(_gpu_type gpu)
     cudaEventRecord(start, 0);
 #endif
     
-    getb3lyp_kernel<<<gpu->blocks, gpu->threadsPerBlock>>>();
+    getb3lyp_kernel<<<gpu->blocks, gpu->b3lypThreadsPerBlock>>>();
     
 #ifdef DEBUG
+    printf("Running getb3lyp_kernel with BLOCK = %i, THREADS PER BLOCK = %i \n", gpu->blocks, gpu->b3lypThreadsPerBlock);
     cudaEventRecord(end, 0);
     cudaEventSynchronize(end);
     float time;
@@ -96,6 +97,11 @@ __global__ void getb3lyp_kernel()
     int radTotal;
     int iiangt;
     
+    QUICKDouble XAng[MAX_GRID];
+    QUICKDouble YAng[MAX_GRID];
+    QUICKDouble ZAng[MAX_GRID];
+    QUICKDouble WAng[MAX_GRID];
+    
     for (int i = 0; i< devSim_dft.natom; i++) {
         if (devSim_dft.isg == 1) {
             radTotal = 50;
@@ -107,11 +113,7 @@ __global__ void getb3lyp_kernel()
             }
         }
         for (int j = 0; j<radTotal; j++) {
-            
-            QUICKDouble XAng[194];
-            QUICKDouble YAng[194];
-            QUICKDouble ZAng[194];
-            QUICKDouble WAng[194]; 
+             
             // Generates grids points according to central atom type and distance to atoms. See subroutines for details.
             if (devSim_dft.isg == 1){ // SG1 scheme
                 iiangt = gridFormSG1(i+1, RGRID[j], XAng, YAng, ZAng, WAng);
@@ -120,7 +122,7 @@ __global__ void getb3lyp_kernel()
             }
             
             if (currentPoint <= myPoint && currentPoint + iiangt > myPoint) {
-                int pointId = myPoint - currentPoint;
+                unsigned int pointId = (unsigned int) myPoint - currentPoint;
                 gpu_grid_b3lyp(j+1, radTotal, i+1, XAng[pointId], YAng[pointId], ZAng[pointId], WAng[pointId]);
                 myPoint = myPoint + totalThreads;
             }
@@ -167,14 +169,14 @@ __device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm, QUICKDouble XAn
     // calculate Scuseria-Stratmann weights, and times rad3 and the point basic weights to get comprhensive point weight
     QUICKDouble weight = SSW(gridx, gridy, gridz, iatm) * WAng * rad3;
     
-    if (weight > devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
+    if (weight > devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
         
         QUICKDouble density, densityb;
         QUICKDouble gax, gay, gaz;
         QUICKDouble gbx, gby, gbz;
         denspt(gridx, gridy, gridz, &density, &densityb, &gax, &gay, &gaz, &gbx, &gby, &gbz);
         
-        if (density > devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
+        if (density > devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
             QUICKDouble sigma = 4.0 * (gax * gax + gay * gay + gaz * gaz);
             
             QUICKDouble _tmp = b3lyp_e(2.0*density, sigma) * weight;
@@ -206,7 +208,7 @@ __device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm, QUICKDouble XAn
                 QUICKDouble phi, dphidx, dphidy, dphidz;
                 pteval(gridx, gridy, gridz, &phi, &dphidx, &dphidy, &dphidz, i+1);
                 
-                if (abs(phi+dphidx+dphidy+dphidz)> devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
+                if (abs(phi+dphidx+dphidy+dphidz)> devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
                     for (int j = i; j<devSim_dft.nbasis; j++) {
                         QUICKDouble phi2, dphidx2, dphidy2, dphidz2;
                         pteval(gridx, gridy, gridz, &phi2, &dphidx2, &dphidy2, &dphidz2, j+1);
@@ -557,11 +559,11 @@ __device__ void denspt(QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gridz, 
     *gaz = 0.0;
     
     for (int i = 0; i<devSim_dft.nbasis; i++) {
-        if (abs(LOC2(devSim_dft.dense, i, i, devSim_dft.nbasis, devSim_dft.nbasis)) >= devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
+        if (abs(LOC2(devSim_dft.dense, i, i, devSim_dft.nbasis, devSim_dft.nbasis)) >= devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
             QUICKDouble phi, dphidx, dphidy, dphidz;
             pteval(gridx, gridy, gridz, &phi, &dphidx, &dphidy, &dphidz, i+1);
             
-            if (abs(phi+dphidx+dphidy+dphidz) >= devSim_dft.integralCutoff * 0.1 ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMcutoff!!!!
+            if (abs(phi+dphidx+dphidy+dphidz) >= devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
                 QUICKDouble denseii = LOC2(devSim_dft.dense, i, i, devSim_dft.nbasis, devSim_dft.nbasis) * phi;
                 *density = *density + denseii * phi / 2.0;
                 *gax = *gax + denseii * dphidx;

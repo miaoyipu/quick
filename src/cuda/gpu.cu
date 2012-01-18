@@ -85,13 +85,17 @@ extern "C" void gpu_init_(void)
                 exit(-1);
                 break;
             default:
-                gpu -> sm_version         =   SM_13;
-                gpu -> threadsPerBlock    =   SM_13_THREADS_PER_BLOCK;
+                gpu -> sm_version           =   SM_13;
+                gpu -> threadsPerBlock      =   SM_13_THREADS_PER_BLOCK;
+                gpu -> twoEThreadsPerBlock  =   SM_13_2E_THREADS_PER_BLOCK;
+                gpu -> b3lypThreadsPerBlock =   SM_13_B3LYP_THREADS_PER_BLOCK;
                 break;
         }
     }else {
         gpu -> sm_version               = SM_2X;
         gpu -> threadsPerBlock          = SM_2X_THREADS_PER_BLOCK;
+        gpu -> twoEThreadsPerBlock      = SM_2X_2E_THREADS_PER_BLOCK;
+        gpu -> b3lypThreadsPerBlock     = SM_2X_B3LYP_THREADS_PER_BLOCK;
     }
 
     PRINTDEBUG("FINISH INIT")
@@ -252,7 +256,7 @@ extern "C" void gpu_upload_atom_and_chg_(int* atom, QUICKDouble* atom_chg)
 //  upload cutoff criteria, will update every 
 //  interation
 //-----------------------------------------------
-extern "C" void gpu_upload_cutoff_(QUICKDouble* cutMatrix, QUICKDouble* integralCutoff,QUICKDouble* primLimit)
+extern "C" void gpu_upload_cutoff_(QUICKDouble* cutMatrix, QUICKDouble* integralCutoff,QUICKDouble* primLimit, QUICKDouble* DMCutoff)
 {
 
 #ifdef DEBUG
@@ -265,7 +269,9 @@ extern "C" void gpu_upload_cutoff_(QUICKDouble* cutMatrix, QUICKDouble* integral
     PRINTDEBUG("BEGIN TO UPLOAD CUTOFF")
     
     gpu -> gpu_cutoff -> integralCutoff = *integralCutoff;
-    gpu -> gpu_cutoff -> primLimit  = *primLimit;
+    gpu -> gpu_cutoff -> primLimit      = *primLimit;
+    gpu -> gpu_cutoff -> DMCutoff       = *DMCutoff;
+    
     gpu -> gpu_cutoff -> cutMatrix  = new cuda_buffer_type<QUICKDouble>(cutMatrix, gpu->nshell, gpu->nshell);
     
     gpu -> gpu_cutoff -> cutMatrix  -> Upload();
@@ -273,6 +279,7 @@ extern "C" void gpu_upload_cutoff_(QUICKDouble* cutMatrix, QUICKDouble* integral
     gpu -> gpu_sim.cutMatrix        = gpu -> gpu_cutoff -> cutMatrix -> _devData;
     gpu -> gpu_sim.integralCutoff   = gpu -> gpu_cutoff -> integralCutoff;
     gpu -> gpu_sim.primLimit        = gpu -> gpu_cutoff -> primLimit;
+    gpu -> gpu_sim.DMCutoff         = gpu -> gpu_cutoff -> DMCutoff;
 
 #ifdef DEBUG
     cudaEventRecord(end, 0);

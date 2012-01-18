@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Mon Jan  9 12:48:11 2012
+ TASK STARTS ON: Tue Jan 17 15:17:56 2012
  INPUT FILE:     test4.in
  OUTPUT FILE:    test4.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -93,11 +93,11 @@ SCF CYCLE      =        3      TIME      =   0.06
 DIIS CYCLE     =        1      MAX ERROR = 0.394445E-01
 RMS CHANGE     = 0.137215E-01  MAX CHANGE= 0.589123E-01
 
-SCF CYCLE      =        4      TIME      =   0.06
+SCF CYCLE      =        4      TIME      =   0.07
 DIIS CYCLE     =        2      MAX ERROR = 0.746633E-02
 RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
 
-SCF CYCLE      =        5      TIME      =   0.07
+SCF CYCLE      =        5      TIME      =   0.06
 DIIS CYCLE     =        3      MAX ERROR = 0.308852E-02
 RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
 
@@ -185,61 +185,3 @@ TOTAL ENERGY         =     0.000000000
 
  @ Begin Energy Calculation
 
-                                         SCF ENERGY
-------------------------------------------------------------------------------------------------------------------------
-NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
-------------------------------------------------------------------------------------------------------------------------
-  1   3167.293527365      ------         0.010     1        0.00      0.01      0.00    0.2492E+04  0.1117E+01  0.1015E+02
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
-  2  -7344.524697013  0.105118E+05       0.010     2        0.00      0.01      0.00    0.2227E+04  0.1642E+01  0.1013E+02
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
-  3 -26440.809328234  0.190963E+05       0.010     3        0.00      0.01      0.00    0.6821E+03  0.2655E+00  0.1720E+01
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
-  4 -27265.475399064  0.824666E+03       0.010     4        0.00      0.01      0.00    0.3174E-09  0.9948E-13  0.8153E-12
-------------------------------------------------------------------------------------------------------------------------
- REACH CONVERGENCE AFTER   4 CYLCES
- MAX ERROR = 0.317414E-09   RMS CHANGE = 0.994763E-13   MAX CHANGE = 0.815348E-12
- -----------------------------------------------
-ELECTRONIC ENERGY    =-27273.325265898
-CORE_CORE REPULSION  =     7.849866834
-TOTAL ENERGY         =-27265.475399064
-
- @ End Energy calculation
-
-
- @ Begin Zmake conversion
-
-  
- Z-MATRIX:
-
-   ATOM  ELEMENTAL  BOND LENGTH    BOND ANGLE    DIHEDRAL ANGLE
-  NUMBER  SYMBOL    (ANGSTROMS)    (DEGREES)       (DEGREES)
-     I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
-
-     1      C        0.00000  0     0.00000  0      0.00000  0      0    0    0
-     2      H        7.48415  1     0.00000  0      0.00000  0      1    0    0
-     3      H        8.30928  1    27.67689  1      0.00000  0      1    2    0
-     4      H        1.09002  1    30.23049  1    104.24927  1      1    2    3
-     5      H        1.09006  1    45.63091  1     48.50451  1      1    2    3
-
- @ End Zmake conversion
-
-
- @ Output Timing Infomration
-
-------------- TIMING ---------------
-INITIAL GUESS TIME =     0.510000000( 49.51%)
-TOTAL SCF TIME     =     0.040000000(  3.88%)
-      TOTAL OP TIME      =     0.040000000(  3.88%)
-            TOTAL 1e TIME      =     0.000000000(  0.00%)
-            TOTAL 2e TIME      =     0.040000000(  3.88%)
-            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     0.000000000(  0.00%)
-            TOTAL DIAG TIME    =     0.000000000(  0.00%)
-TOTAL TIME         =     1.030000000
-------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes  1.0 seconds.
-
- @ Finish Output Timing Infomration
-
- Normal Terminatation. Task Finished on: Mon Jan  9 12:48:12 2012

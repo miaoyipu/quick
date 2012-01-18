@@ -109,16 +109,29 @@ typedef float  QUICKSingle;
 #define QUICKULL \
 unsigned long long int
 
-// constant define
+/* 
+ ****************************************************************
+ *  constant define
+ ****************************************************************
+ */
+// constant for general purpose
 static const int SM_13_THREADS_PER_BLOCK    =   256;
 static const int SM_2X_THREADS_PER_BLOCK    =   512;
+
+// constant for 2e-integral
+static const int SM_13_2E_THREADS_PER_BLOCK =   256;
+static const int SM_2X_2E_THREADS_PER_BLOCK =   512;
+
+// constant for B3LYP Exchange-Correlation part
+static const int MAX_GRID                      =   194;
+static const int SM_13_B3LYP_THREADS_PER_BLOCK =   256;
+static const int SM_2X_B3LYP_THREADS_PER_BLOCK =   386;
+
 
 // physical constant, the same with quick_constants_module
 //static const QUICKDouble PI                 =   (QUICKDouble)3.1415926535897932384626433832795;
 //static const QUICKSingle PI_FLOAT           =   (QUICKSingle)3.1415926535897932384626433832795;
 #define PI (3.1415926535897932384626433832795)
-
-
 #define X0 (5.9149671727956128778234784350536)//sqrt(2*PI^2.5)
 
 

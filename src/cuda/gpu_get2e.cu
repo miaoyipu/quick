@@ -50,7 +50,7 @@ void get2e(_gpu_type gpu)
 #endif
 
     printf("METHOD = %i\n", gpu->gpu_sim.method);
-    get2e_kernel<<<gpu->blocks, gpu->threadsPerBlock>>>();
+    get2e_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>();
 
     
 #ifdef DEBUG
@@ -153,7 +153,7 @@ __global__ void get2e_kernel()
 /*
  sqr for double precision. there no internal function to do that in fast-math-lib of CUDA
  */
-__device__ QUICKDouble quick_dsqr(QUICKDouble a)
+__device__ __forceinline__ QUICKDouble quick_dsqr(QUICKDouble a)
 {
     return a*a;
 }
@@ -6048,7 +6048,9 @@ __device__ void vertical(int I, int J, int K, int L, QUICKDouble* YVerticalTemp,
 
 __device__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerticalTemp)
 {
+    
     const QUICKDouble PIE4 = (QUICKDouble) PI/4.0 ;
+    
     const QUICKDouble XINV = (QUICKDouble) 1.0 /X;
     const QUICKDouble E = (QUICKDouble) exp(-X);
     QUICKDouble WW1;
@@ -6101,7 +6103,6 @@ __device__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerticalTemp)
     }else {
         WW1 = (1.0 -X)/(QUICKDouble)(2.0 * MaxM+1);
     }
-    
     if (X > 3.0E-7 ) {
         LOC3(YVerticalTemp, 0, 0, 0, VDIM1, VDIM2, VDIM3) = WW1;
         for (int m = 1; m<= MaxM; m++) {

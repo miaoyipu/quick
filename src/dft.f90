@@ -748,7 +748,7 @@ write(*,*) "E0=",quick_qm_struct%Eel
         call gpu_upload_method(1)
         call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
                   quick_qm_struct%vec,quick_qm_struct%dense)
-        call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
+        call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit, quick_method%DMCutoff)
         call gpu_get2e(quick_qm_struct%o);
       else
 #endif
@@ -790,7 +790,7 @@ write(*,*) "E0=",quick_qm_struct%Eel
         call gpu_upload_method(2)
         call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
                   quick_qm_struct%vec,quick_qm_struct%dense)
-        call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
+        call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit, quick_method%DMCutoff)
         call gpu_get2e(quick_qm_struct%o);
       else
 #endif

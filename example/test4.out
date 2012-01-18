@@ -23,10 +23,30 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Mon Jan  9 12:48:27 2012
+ TASK STARTS ON: Tue Jan 17 15:19:47 2012
  INPUT FILE:     test4.in
  OUTPUT FILE:    test4.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
+
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GTX 580
+| CUDA DEVICE PM              :       16
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
+| CUDA DEVICE MEMORY SIZE (MB):     1535
+| SUPPORTING CUDA VERSION     :      2.0
+|--------------------------------------------
 
  @ Read Job And Atom
 
@@ -63,7 +83,7 @@ BASIS FUNCTIONS =    9
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.05
+SCF CYCLE      =        1      TIME      =     0.06
 RMS CHANGE     = 0.149950E+00  MAX CHANGE= 0.820200E+00
 
 SCF CYCLE      =        2      TIME      =     0.06
@@ -73,7 +93,7 @@ SCF CYCLE      =        3      TIME      =   0.06
 DIIS CYCLE     =        1      MAX ERROR = 0.394445E-01
 RMS CHANGE     = 0.137215E-01  MAX CHANGE= 0.589123E-01
 
-SCF CYCLE      =        4      TIME      =   0.07
+SCF CYCLE      =        4      TIME      =   0.06
 DIIS CYCLE     =        2      MAX ERROR = 0.746633E-02
 RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
 
@@ -81,7 +101,7 @@ SCF CYCLE      =        5      TIME      =   0.06
 DIIS CYCLE     =        3      MAX ERROR = 0.308852E-02
 RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
 
-SCF CYCLE      =        6      TIME      =   0.06
+SCF CYCLE      =        6      TIME      =   0.07
 DIIS CYCLE     =        4      MAX ERROR = 0.299208E-03
 RMS CHANGE     = 0.311349E-03  MAX CHANGE= 0.215704E-02
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
@@ -169,14 +189,14 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1    -39.639764558      ------         0.020     1        0.00      0.02      0.00    0.1489E+01  0.1037E+00  0.5681E+00
+  1    -39.639764558      ------         0.010     1        0.00      0.01      0.00    0.1489E+01  0.1037E+00  0.5681E+00
   2    -39.322516045  -.317249E+00       0.010     2        0.00      0.01      0.00    0.1511E+00  0.4963E-01  0.4164E+00
   3    -39.374324157  0.518081E-01       0.010     3        0.00      0.01      0.00    0.5432E-01  0.1356E-01  0.7171E-01
   4    -39.386061469  0.117373E-01       0.010     4        0.00      0.01      0.00    0.4834E-01  0.1237E-01  0.9631E-01
   5    -39.393513735  0.745227E-02       0.010     5        0.00      0.01      0.00    0.4662E-01  0.1158E-01  0.5585E-01
   6    -39.405595960  0.120822E-01       0.010     6        0.00      0.01      0.00    0.4345E-01  0.1996E-01  0.9624E-01
   7    -39.423963149  0.183672E-01       0.010     7        0.00      0.01      0.00    0.3561E-01  0.3883E-01  0.1971E+00
-  8    -39.450155014  0.261919E-01       0.000     8        0.00      0.00      0.00    0.1978E-01  0.1599E-01  0.6868E-01
+  8    -39.450155014  0.261919E-01       0.010     8        0.00      0.01      0.00    0.1978E-01  0.1599E-01  0.6868E-01
   9    -39.455564804  0.540979E-02       0.010     9        0.00      0.01      0.00    0.9023E-02  0.1461E-01  0.6061E-01
  10    -39.457085263  0.152046E-02       0.010    10        0.00      0.01      0.00    0.7521E-02  0.1976E-02  0.1403E-01
  11    -39.457198550  0.113287E-03       0.010     1        0.00      0.01      0.00    0.2898E-02  0.1491E-02  0.1069E-01
@@ -214,18 +234,18 @@ TOTAL ENERGY         =   -39.457220048
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     0.490000000( 66.22%)
-TOTAL SCF TIME     =     0.130000000( 17.57%)
-      TOTAL OP TIME      =     0.130000000( 17.57%)
+INITIAL GUESS TIME =     0.500000000( 26.88%)
+TOTAL SCF TIME     =     0.130000000(  6.99%)
+      TOTAL OP TIME      =     0.130000000(  6.99%)
             TOTAL 1e TIME      =     0.000000000(  0.00%)
-            TOTAL 2e TIME      =     0.130000000( 17.57%)
+            TOTAL 2e TIME      =     0.130000000(  6.99%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
       TOTAL DII TIME     =     0.000000000(  0.00%)
             TOTAL DIAG TIME    =     0.000000000(  0.00%)
-TOTAL TIME         =     0.740000000
+TOTAL TIME         =     1.860000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes  0.7 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes  1.9 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Mon Jan  9 12:48:28 2012
+ Normal Terminatation. Task Finished on: Tue Jan 17 15:19:49 2012

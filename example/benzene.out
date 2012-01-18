@@ -23,35 +23,15 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Tue Jan 17 11:49:05 2012
+ TASK STARTS ON: Tue Jan 17 17:29:11 2012
  INPUT FILE:     benzene.in
  OUTPUT FILE:    benzene.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
-|------------ CUDA INFORMATION ---------------
-|  CUDA version of Quick in use
-|  Implemented by
-|                      Yipu Miao (Florida)
-|  CAUTION: CUDA Quick is currently experimental
-|           and you may at risk to use it. Be sure
-|           to check result carelly. Advise or 
-|           bug report are welcome.
-|---------------------------------------------
-
-|------------ GPU INFORMATION ---------------
-| CUDA ENABLED DEVICE         :        1
-| CUDA DEVICE IN USE          :        0
-| CUDA DEVICE NAME            : GeForce GTX 580
-| CUDA DEVICE PM              :       16
-| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
-| CUDA DEVICE MEMORY SIZE (MB):     1535
-| SUPPORTING CUDA VERSION     :      2.0
-|--------------------------------------------
-
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=CUTOFF=1.0E-9 B3LYP NCYC=1000 ZMAKE BASIS=6-31GSS ENERGY                                                                                                                                                
+KEYWORD=B3LYP NCYC=1000 ZMAKE BASIS=6-31GSS ENERGY                                                                                                                                                              
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = DENSTITY FUNCTIONAL THEORY
@@ -65,8 +45,8 @@ KEYWORD=CUTOFF=1.0E-9 B3LYP NCYC=1000 ZMAKE BASIS=6-31GSS ENERGY
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE = 1000
 | COMPUATIONAL CUTOFF: 
-|      TWO-e INTEGRAL   =  0.100E-08
-|      BASIS SET PRIME  =  0.100E-08
+|      TWO-e INTEGRAL   =  0.100E-06
+|      BASIS SET PRIME  =  0.100E-06
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
@@ -85,7 +65,7 @@ BASIS FUNCTIONS =   15
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.18
+SCF CYCLE      =        1      TIME      =     0.17
 RMS CHANGE     = 0.126285E+00  MAX CHANGE= 0.907564E+00
 
 SCF CYCLE      =        2      TIME      =     0.17
@@ -134,7 +114,7 @@ RMS CHANGE     = 0.124770E+00  MAX CHANGE= 0.375230E+00
 SCF CYCLE      =        2      TIME      =     0.00
 RMS CHANGE     = 0.225650E-01  MAX CHANGE= 0.909848E-01
 
-SCF CYCLE      =        3      TIME      =   0.00
+SCF CYCLE      =        3      TIME      =   0.01
 DIIS CYCLE     =        1      MAX ERROR = 0.192500E-01
 RMS CHANGE     = 0.706671E-02  MAX CHANGE= 0.282222E-01
 
@@ -143,7 +123,7 @@ DIIS CYCLE     =        2      MAX ERROR = 0.619788E-02
 RMS CHANGE     = 0.332676E-02  MAX CHANGE= 0.132001E-01
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
 
-SCF CYCLE      =        5      TIME      =     0.01
+SCF CYCLE      =        5      TIME      =     0.00
 RMS CHANGE     = 0.643466E-10  MAX CHANGE= 0.254611E-09
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
@@ -342,21 +322,21 @@ RADII OF SIGNifIGANCE FOR THE BASIS FUNCTIONS
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1   -233.507361361      ------         1.490     1        0.03      1.46      0.02    0.1998E+01  0.3138E-01  0.5148E+00
-  2   -232.148504969  -.135886E+01       1.550     2        0.03      1.52      0.02    0.1220E+00  0.1140E-01  0.1910E+00
-  3   -232.158995563  0.104906E-01       1.540     3        0.02      1.52      0.02    0.1198E+00  0.6218E-02  0.1147E+00
-  4   -232.256738971  0.977434E-01       1.550     4        0.02      1.53      0.02    0.9739E-02  0.6954E-03  0.9643E-02
-  5   -232.257523493  0.784522E-03       1.560     5        0.03      1.53      0.02    0.3864E-02  0.2063E-03  0.4048E-02
-  6   -232.257572811  0.493178E-04       1.550     6        0.03      1.52      0.02    0.2571E-02  0.8452E-04  0.1624E-02
+  1   -233.507361247      ------        16.170     1        0.04     16.13      0.02    0.1998E+01  0.3138E-01  0.5148E+00
+  2   -232.148498302  -.135886E+01      21.750     2        0.04     21.71      0.02    0.1220E+00  0.1140E-01  0.1910E+00
+  3   -232.158988860  0.104906E-01      21.700     3        0.03     21.67      0.02    0.1198E+00  0.6218E-02  0.1147E+00
+  4   -232.256733873  0.977450E-01      21.720     4        0.04     21.68      0.02    0.9740E-02  0.6957E-03  0.9657E-02
+  5   -232.257518557  0.784684E-03      21.710     5        0.04     21.67      0.01    0.3863E-02  0.2063E-03  0.4048E-02
+  6   -232.257567865  0.493089E-04      21.710     6        0.04     21.67      0.01    0.2570E-02  0.8452E-04  0.1624E-02
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   6 CYLCES
- MAX ERROR = 0.257069E-02   RMS CHANGE = 0.845177E-04   MAX CHANGE = 0.162443E-02
+ MAX ERROR = 0.257037E-02   RMS CHANGE = 0.845162E-04   MAX CHANGE = 0.162432E-02
  -----------------------------------------------
-ALPHA ELECTRON DENSITY    =   21.0002499078
-BETA ELECTRON DENSITY     =   21.0002499078
-ELECTRONIC ENERGY    =  -435.292970879
+ALPHA ELECTRON DENSITY    =   21.0002499059
+BETA ELECTRON DENSITY     =   21.0002499059
+ELECTRONIC ENERGY    =  -435.292965933
 CORE_CORE REPULSION  =   203.035398068
-TOTAL ENERGY         =  -232.257572811
+TOTAL ENERGY         =  -232.257567865
 
  @ End Energy calculation
 
@@ -389,19 +369,19 @@ TOTAL ENERGY         =  -232.257572811
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     1.520000000( 13.52%)
-TOTAL SCF TIME     =     9.360000000( 83.27%)
-      TOTAL OP TIME      =     9.200000000( 81.85%)
-            TOTAL 1e TIME      =     1.550000000( 13.79%)
-            TOTAL 2e TIME      =     3.440000000( 30.60%)
-            TOTAL Exchange TIME=     4.200000000( 37.37%)
+INITIAL GUESS TIME =     1.500000000(  1.19%)
+TOTAL SCF TIME     =   124.880000000( 98.76%)
+      TOTAL OP TIME      =   124.650000000( 98.58%)
+            TOTAL 1e TIME      =     1.570000000(  1.24%)
+            TOTAL 2e TIME      =    74.640000000( 59.03%)
+            TOTAL Exchange TIME=    48.400000000( 38.28%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     0.160000000(  1.42%)
-            TOTAL DIAG TIME    =     0.120000000(  1.07%)
-TOTAL TIME         =    11.240000000
+      TOTAL DII TIME     =     0.230000000(  0.18%)
+            TOTAL DIAG TIME    =     0.100000000(  0.08%)
+TOTAL TIME         =   126.450000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes 11.2 seconds.
+ Job cpu time:  0 days  0 hours  2 minutes  6.4 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Tue Jan 17 11:49:16 2012
+ Normal Terminatation. Task Finished on: Tue Jan 17 17:31:17 2012
