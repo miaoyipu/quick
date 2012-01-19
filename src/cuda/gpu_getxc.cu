@@ -86,35 +86,37 @@ void getb3lyp(_gpu_type gpu)
 #endif
     
 }
+
+
 __global__ void getb3lyp_kernel()
 {
-    int total_num = 0;
     unsigned int offset = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int totalThreads = blockDim.x * gridDim.x;
     QUICKULL currentPoint = 0;
     QUICKULL myPoint = offset;
     
-    int radTotal;
-    int iiangt;
+    int radTotal = 50; // SG1 default value.
+    int iiangt = 0;    // number of ;angular point for every radical.  
     
+    // x, y, z value and weight value.
     QUICKDouble XAng[MAX_GRID];
     QUICKDouble YAng[MAX_GRID];
     QUICKDouble ZAng[MAX_GRID];
     QUICKDouble WAng[MAX_GRID];
     
     for (int i = 0; i< devSim_dft.natom; i++) {
-        if (devSim_dft.isg == 1) {
-            radTotal = 50;
-        }else {
+        if (devSim_dft.isg == 0) {
             if (devSim_dft.iattype[i]<=10) {
                 radTotal = 23;
             }else {
                 radTotal = 26;
             }
         }
+        
         for (int j = 0; j<radTotal; j++) {
              
-            // Generates grids points according to central atom type and distance to atoms. See subroutines for details.
+            // Generates grids points according to central atom type and 
+            // distance to atoms. See subroutines for details.
             if (devSim_dft.isg == 1){ // SG1 scheme
                 iiangt = gridFormSG1(i+1, RGRID[j], XAng, YAng, ZAng, WAng);
             }else {                   // SG0 scheme
@@ -130,8 +132,8 @@ __global__ void getb3lyp_kernel()
         }
     }
     
+    
 }
-
 
 
 /*
@@ -155,7 +157,6 @@ __device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm, QUICKDouble XAn
     if (devSim_dft.isg == 1){
         rad = radii[devSim_dft.iattype[iatm-1]-1];
         rad3 = pow(rad,3) * RWT[irad-1];
-        
     }else {
         rad = radii2[devSim_dft.iattype[iatm-1]-1];
         rad3 = pow(rad,3) * RWT[irad-1];
@@ -169,14 +170,14 @@ __device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm, QUICKDouble XAn
     // calculate Scuseria-Stratmann weights, and times rad3 and the point basic weights to get comprhensive point weight
     QUICKDouble weight = SSW(gridx, gridy, gridz, iatm) * WAng * rad3;
     
-    if (weight > devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
+    if (weight > devSim_dft.DMCutoff ) { 
         
         QUICKDouble density, densityb;
         QUICKDouble gax, gay, gaz;
         QUICKDouble gbx, gby, gbz;
         denspt(gridx, gridy, gridz, &density, &densityb, &gax, &gay, &gaz, &gbx, &gby, &gbz);
         
-        if (density > devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
+        if (density > devSim_dft.DMCutoff ) { 
             QUICKDouble sigma = 4.0 * (gax * gax + gay * gay + gaz * gaz);
             
             QUICKDouble _tmp = b3lyp_e(2.0*density, sigma) * weight;
@@ -208,7 +209,7 @@ __device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm, QUICKDouble XAn
                 QUICKDouble phi, dphidx, dphidy, dphidz;
                 pteval(gridx, gridy, gridz, &phi, &dphidx, &dphidy, &dphidz, i+1);
                 
-                if (abs(phi+dphidx+dphidy+dphidz)> devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
+                if (abs(phi+dphidx+dphidy+dphidz)> devSim_dft.DMCutoff ) { 
                     for (int j = i; j<devSim_dft.nbasis; j++) {
                         QUICKDouble phi2, dphidx2, dphidy2, dphidz2;
                         pteval(gridx, gridy, gridz, &phi2, &dphidx2, &dphidy2, &dphidz2, j+1);
@@ -235,61 +236,55 @@ __device__ int gridFormSG1(int iitype, QUICKDouble distance, \
     int N = 0;
     
     if (devSim_dft.iattype[iitype-1] >= 1 && devSim_dft.iattype[iitype-1] <=2) {
-    
         if (distance<hpartpara[0]) {
-            LD0006(XAng, YAng, ZAng, WAng, N);
             iiang = 6;
         }else if (distance<hpartpara[1]) {
-            LD0038(XAng, YAng, ZAng, WAng, N);
             iiang = 38;
         }else if (distance<hpartpara[2]) {
-            LD0086(XAng, YAng, ZAng, WAng, N);
             iiang = 86;
         }else if (distance<hpartpara[3]) {
-            LD0194(XAng, YAng, ZAng, WAng, N);
             iiang = 194;
         }else{
-            LD0086(XAng, YAng, ZAng, WAng, N);
             iiang = 86;
         }
     }else if (devSim_dft.iattype[iitype-1] >= 3 && devSim_dft.iattype[iitype-1] <=10) {
         if (distance<lpartpara[0]) {
-            LD0006(XAng, YAng, ZAng, WAng, N);
             iiang = 6;
         }else if (distance<lpartpara[1]) {
-            LD0038(XAng, YAng, ZAng, WAng, N);
             iiang = 38;
         }else if (distance<lpartpara[2]) {
-            LD0086(XAng, YAng, ZAng, WAng, N);
             iiang = 86;
         }else if (distance<lpartpara[3]) {
-            LD0194(XAng, YAng, ZAng, WAng, N);
             iiang = 194;
         }else{
-            LD0086(XAng, YAng, ZAng, WAng, N);
             iiang = 86;
         }
     }else if (devSim_dft.iattype[iitype-1]>= 11 && devSim_dft.iattype[iitype-1]<=18) {
         if (distance<npartpara[0]) {
-            LD0006(XAng, YAng, ZAng, WAng, N);
             iiang = 6;
         }else if (distance<npartpara[1]) {
-            LD0038(XAng, YAng, ZAng, WAng, N);
             iiang = 38;
         }else if (distance<npartpara[2]) {
-            LD0086(XAng, YAng, ZAng, WAng, N);
             iiang = 86;
         }else if (distance<npartpara[3]) {
-            LD0194(XAng, YAng, ZAng, WAng, N);
             iiang = 194;
         }else{
-            LD0086(XAng, YAng, ZAng, WAng, N);
             iiang = 86;
         }
     } else {
-        LD0194(XAng, YAng, ZAng, WAng, N);
         iiang = 194;
     }
+    
+    if (iiang == 6) {
+        LD0006(XAng, YAng, ZAng, WAng, N);
+    }else if (iiang == 38)  {
+        LD0038(XAng, YAng, ZAng, WAng, N);
+    }else if (iiang == 86)  {
+        LD0086(XAng, YAng, ZAng, WAng, N);
+    }else if (iiang == 194) {
+        LD0194(XAng, YAng, ZAng, WAng, N);
+    }
+    
     for (int i = 0; i<iiang; i++) {
         WAng[i] = WAng[i] * 12.56637061435917295385;
     }
@@ -354,48 +349,26 @@ __device__ QUICKDouble SSW( QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gr
      */
     QUICKDouble wofparent = 1.0e0; // weight of parents
     
-    //!!! this part should be rewrite
-    int jatm = 1;
-    while (jatm != atm && wofparent != 0.0e0) {
-        QUICKDouble xjatm = LOC2(devSim_dft.xyz, 0, jatm-1, 3, devSim_dft.natom) ;
-        QUICKDouble yjatm = LOC2(devSim_dft.xyz, 1, jatm-1, 3, devSim_dft.natom) ;
-        QUICKDouble zjatm = LOC2(devSim_dft.xyz, 2, jatm-1, 3, devSim_dft.natom) ;
-        
-        QUICKDouble rjg = sqrt(pow((gridx-xjatm),2) + pow((gridy-yjatm),2) + pow((gridz-zjatm),2)); 
-        QUICKDouble rij = sqrt(pow((xparent-xjatm),2) + pow((yparent-yjatm),2) + pow((zparent-zjatm),2)); 
-        QUICKDouble confocal = (rig - rjg)/rij;
-     
-        if (confocal >= 0.64) {
-            wofparent = 0.0e0;
-        }else if (confocal>=-0.64e0) {
-            QUICKDouble frctn = confocal/0.64;
-            QUICKDouble gofconfocal = (35.0*frctn-35.0*pow(frctn,3)+21.0*pow(frctn,5)-5.0*pow(frctn,7))/16.0;
-            wofparent = wofparent*0.5*(1.0-gofconfocal);
+    for (int jatm = 1; jatm <= devSim_dft.natom; jatm ++)
+    {
+        if (jatm != atm && wofparent != 0.0e0){
+            QUICKDouble xjatm = LOC2(devSim_dft.xyz, 0, jatm-1, 3, devSim_dft.natom) ;
+            QUICKDouble yjatm = LOC2(devSim_dft.xyz, 1, jatm-1, 3, devSim_dft.natom) ;
+            QUICKDouble zjatm = LOC2(devSim_dft.xyz, 2, jatm-1, 3, devSim_dft.natom) ;
+            
+            QUICKDouble rjg = sqrt(pow((gridx-xjatm),2) + pow((gridy-yjatm),2) + pow((gridz-zjatm),2)); 
+            QUICKDouble rij = sqrt(pow((xparent-xjatm),2) + pow((yparent-yjatm),2) + pow((zparent-zjatm),2)); 
+            QUICKDouble confocal = (rig - rjg)/rij;
+            
+            if (confocal >= 0.64) {
+                wofparent = 0.0e0;
+            }else if (confocal>=-0.64e0) {
+                QUICKDouble frctn = confocal/0.64;
+                QUICKDouble gofconfocal = (35.0*frctn-35.0*pow(frctn,3)+21.0*pow(frctn,5)-5.0*pow(frctn,7))/16.0;
+                wofparent = wofparent*0.5*(1.0-gofconfocal);
+            }
         }
-        jatm++;
     }
-    
-    jatm = atm+1;
-    
-    
-    while (jatm <= devSim_dft.natom && wofparent != 0.0e0) {
-        QUICKDouble xjatm = LOC2(devSim_dft.xyz, 0, jatm-1, 3, devSim_dft.natom) ;
-        QUICKDouble yjatm = LOC2(devSim_dft.xyz, 1, jatm-1, 3, devSim_dft.natom) ;
-        QUICKDouble zjatm = LOC2(devSim_dft.xyz, 2, jatm-1, 3, devSim_dft.natom) ;
-        
-        QUICKDouble rjg = sqrt(pow((gridx-xjatm),2) + pow((gridy-yjatm),2) + pow((gridz-zjatm),2)); 
-        QUICKDouble rij = sqrt(pow((xparent-xjatm),2) + pow((yparent-yjatm),2) + pow((zparent-zjatm),2)); 
-        QUICKDouble confocal = (rig - rjg)/rij;
-        if (confocal >= 0.64) {
-            wofparent = 0.0e0;
-        }else if (confocal>=-0.64e0) {
-            QUICKDouble frctn = confocal/0.64;
-            QUICKDouble gofconfocal = (35.0*frctn-35.0*pow(frctn,3)+21.0*pow(frctn,5)-5.0*pow(frctn,7))/16.0;
-            wofparent = wofparent*0.5*(1.0-gofconfocal);
-        }
-        jatm++;
-    }
-    
     
     QUICKDouble totalw = wofparent;
     if (wofparent == 0.0e0) {
@@ -417,44 +390,24 @@ __device__ QUICKDouble SSW( QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gr
             QUICKDouble ziatm = LOC2(devSim_dft.xyz, 2, i, 3, devSim_dft.natom) ;
             
             rig = sqrt(pow((gridx-xiatm),2) + pow((gridy-yiatm),2) + pow((gridz-ziatm),2)); 
-            jatm = 1;
             QUICKDouble wofiatom = 1.0;
-            while (jatm != i+1 && wofiatom != 0.0e0) {
-                QUICKDouble xjatm = LOC2(devSim_dft.xyz, 0, jatm-1, 3, devSim_dft.natom) ;
-                QUICKDouble yjatm = LOC2(devSim_dft.xyz, 1, jatm-1, 3, devSim_dft.natom) ;
-                QUICKDouble zjatm = LOC2(devSim_dft.xyz, 2, jatm-1, 3, devSim_dft.natom) ;
-                
-                QUICKDouble rjg = sqrt(pow((gridx-xjatm),2) + pow((gridy-yjatm),2) + pow((gridz-zjatm),2)); 
-                QUICKDouble rij = sqrt(pow((xiatm-xjatm),2) + pow((yiatm-yjatm),2) + pow((ziatm-zjatm),2)); 
-                QUICKDouble confocal = (rig - rjg)/rij;
-                if (confocal >= 0.64) {
-                    wofiatom = 0.0e0;
-                }else if (confocal>=-0.64e0) {
-                    QUICKDouble frctn = confocal/0.64;
-                    QUICKDouble gofconfocal = (35.0*frctn-35.0*pow(frctn,3)+21.0*pow(frctn,5)-5.0*pow(frctn,7))/16.0;
-                    wofiatom = wofiatom*0.5*(1.0-gofconfocal);
+            for (int jatm = 1; jatm<=devSim_dft.natom;jatm++){
+                if (jatm != i+1 && wofiatom != 0.0e0) {
+                    QUICKDouble xjatm = LOC2(devSim_dft.xyz, 0, jatm-1, 3, devSim_dft.natom) ;
+                    QUICKDouble yjatm = LOC2(devSim_dft.xyz, 1, jatm-1, 3, devSim_dft.natom) ;
+                    QUICKDouble zjatm = LOC2(devSim_dft.xyz, 2, jatm-1, 3, devSim_dft.natom) ;
+                    
+                    QUICKDouble rjg = sqrt(pow((gridx-xjatm),2) + pow((gridy-yjatm),2) + pow((gridz-zjatm),2)); 
+                    QUICKDouble rij = sqrt(pow((xiatm-xjatm),2) + pow((yiatm-yjatm),2) + pow((ziatm-zjatm),2)); 
+                    QUICKDouble confocal = (rig - rjg)/rij;
+                    if (confocal >= 0.64) {
+                        wofiatom = 0.0e0;
+                    }else if (confocal>=-0.64e0) {
+                        QUICKDouble frctn = confocal/0.64;
+                        QUICKDouble gofconfocal = (35.0*frctn-35.0*pow(frctn,3)+21.0*pow(frctn,5)-5.0*pow(frctn,7))/16.0;
+                        wofiatom = wofiatom*0.5*(1.0-gofconfocal);
+                    }
                 }
-                jatm++;
-            }
-            
-            jatm = i+2;
-            while (jatm <= devSim_dft.natom && wofiatom != 0.0e0) {
-                QUICKDouble xjatm = LOC2(devSim_dft.xyz, 0, jatm-1, 3, devSim_dft.natom) ;
-                QUICKDouble yjatm = LOC2(devSim_dft.xyz, 1, jatm-1, 3, devSim_dft.natom) ;
-                QUICKDouble zjatm = LOC2(devSim_dft.xyz, 2, jatm-1, 3, devSim_dft.natom) ;
-                
-                QUICKDouble rjg = sqrt(pow((gridx-xjatm),2) + pow((gridy-yjatm),2) + pow((gridz-zjatm),2)); 
-                QUICKDouble rij = sqrt(pow((xiatm-xjatm),2) + pow((yiatm-yjatm),2) + pow((ziatm-zjatm),2)); 
-                QUICKDouble confocal = (rig - rjg)/rij;
-                
-                if (confocal >= 0.64) {
-                    wofiatom = 0.0e0;
-                }else if (confocal>=-0.64e0) {
-                    QUICKDouble frctn = confocal/0.64;
-                    QUICKDouble gofconfocal = (35.0*frctn-35.0*pow(frctn,3)+21.0*pow(frctn,5)-5.0*pow(frctn,7))/16.0;
-                    wofiatom = wofiatom*0.5*(1.0-gofconfocal);
-                }
-                jatm++;
             }
             totalw = totalw + wofiatom;
         }
@@ -559,11 +512,11 @@ __device__ void denspt(QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gridz, 
     *gaz = 0.0;
     
     for (int i = 0; i<devSim_dft.nbasis; i++) {
-        if (abs(LOC2(devSim_dft.dense, i, i, devSim_dft.nbasis, devSim_dft.nbasis)) >= devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
+        if (abs(LOC2(devSim_dft.dense, i, i, devSim_dft.nbasis, devSim_dft.nbasis)) >= devSim_dft.DMCutoff ) { 
             QUICKDouble phi, dphidx, dphidy, dphidz;
             pteval(gridx, gridy, gridz, &phi, &dphidx, &dphidy, &dphidz, i+1);
             
-            if (abs(phi+dphidx+dphidy+dphidz) >= devSim_dft.DMCutoff ) { //!!!! remember to change gpu -> gpu_cutoff -> integralCutoff * 0.1 to DMCutoff!!!!
+            if (abs(phi+dphidx+dphidy+dphidz) >= devSim_dft.DMCutoff ) { 
                 QUICKDouble denseii = LOC2(devSim_dft.dense, i, i, devSim_dft.nbasis, devSim_dft.nbasis) * phi;
                 *density = *density + denseii * phi / 2.0;
                 *gax = *gax + denseii * dphidx;
@@ -842,524 +795,158 @@ __device__ int gen_oh(int code, int num, QUICKDouble* x, QUICKDouble* y, QUICKDo
         case 1:
         {
             a=1.0e0;
-            x[0+num] =  a;
-            y[0+num] =  0.0e0;
-            z[0+num] =  0.0e0;
-            w[0+num] =  v;
-            x[1+num] = -a;
-            y[1+num] =  0.0e0;
-            z[1+num] =  0.0e0;
-            w[1+num] =  v;
-            x[2+num] =  0.0e0;
-            y[2+num] =  a;
-            z[2+num] =  0.0e0;
-            w[2+num] =  v;
-            x[3+num] =  0.0e0;
-            y[3+num] = -a;
-            z[3+num] =  0.0e0;
-            w[3+num] =  v;
-            x[4+num] =  0.0e0;
-            y[4+num] =  0.0e0;
-            z[4+num] =  a;
-            w[4+num] =  v;
-            x[5+num] =  0.0e0;
-            y[5+num] =  0.0e0;
-            z[5+num] = -a;
-            w[5+num] =  v;
+            x[0 + num] =      a; y[0 + num] =  0.0e0; z[0 + num] =  0.0e0; w[0 + num] =  v;
+            x[1 + num] =     -a; y[1 + num] =  0.0e0; z[1 + num] =  0.0e0; w[1 + num] =  v;
+            x[2 + num] =  0.0e0; y[2 + num] =      a; z[2 + num] =  0.0e0; w[2 + num] =  v;
+            x[3 + num] =  0.0e0; y[3 + num] =     -a; z[3 + num] =  0.0e0; w[3 + num] =  v;
+            x[4 + num] =  0.0e0; y[4 + num] =  0.0e0; z[4 + num] =      a; w[4 + num] =  v;
+            x[5 + num] =  0.0e0; y[5 + num] =  0.0e0; z[5 + num] =     -a; w[5 + num] =  v;
             num=num+6;
             break;
         }
         case 2:
         {
             a=sqrt(0.5e0);
-            x[0+num] =  0e0;
-            y[0+num] =  a;
-            z[0+num] =  a;
-            w[0+num] =  v;
-            x[1+num] =  0e0;
-            y[1+num] = -a;
-            z[1+num] =  a;
-            w[1+num] =  v;
-            x[2+num] =  0e0;
-            y[2+num] =  a;
-            z[2+num] = -a;
-            w[2+num] =  v;
-            x[3+num] =  0e0;
-            y[3+num] = -a;
-            z[3+num] = -a;
-            w[3+num] =  v;
-            x[4+num] =  a;
-            y[4+num] =  0e0;
-            z[4+num] =  a;
-            w[4+num] =  v;
-            x[5+num] = -a;
-            y[5+num] =  0e0;
-            z[5+num] =  a;
-            w[5+num] =  v;
-            x[6+num] =  a;
-            y[6+num] =  0e0;
-            z[6+num] = -a;
-            w[6+num] =  v;
-            x[7+num] = -a;
-            y[7+num] =  0e0;
-            z[7+num] = -a;
-            w[7+num] =  v;
-            x[8+num] =  a;
-            y[8+num] =  a;
-            z[8+num] =  0e0;
-            w[8+num] =  v;
-            x[9+num] = -a;
-            y[9+num] =  a;
-            z[9+num] =  0e0;
-            w[9+num] =  v;
-            x[10+num] =  a;
-            y[10+num] = -a;
-            z[10+num] =  0e0;
-            w[10+num] =  v;
-            x[11+num] = -a;
-            y[11+num] = -a;
-            z[11+num] =  0e0;
-            w[11+num] =  v;
+            x[0  + num] =  0e0;  y[0  + num] =    a;  z[0  + num] =    a;  w[0  + num] =  v;
+            x[1  + num] =  0e0;  y[1  + num] =   -a;  z[1  + num] =    a;  w[1  + num] =  v;
+            x[2  + num] =  0e0;  y[2  + num] =    a;  z[2  + num] =   -a;  w[2  + num] =  v;
+            x[3  + num] =  0e0;  y[3  + num] =   -a;  z[3  + num] =   -a;  w[3  + num] =  v;
+            x[4  + num] =    a;  y[4  + num] =  0e0;  z[4  + num] =    a;  w[4  + num] =  v;
+            x[5  + num] =   -a;  y[5  + num] =  0e0;  z[5  + num] =    a;  w[5  + num] =  v;
+            x[6  + num] =    a;  y[6  + num] =  0e0;  z[6  + num] =   -a;  w[6  + num] =  v;
+            x[7  + num] =   -a;  y[7  + num] =  0e0;  z[7  + num] =   -a;  w[7  + num] =  v;
+            x[8  + num] =    a;  y[8  + num] =    a;  z[8  + num] =  0e0;  w[8  + num] =  v;
+            x[9  + num] =   -a;  y[9  + num] =    a;  z[9  + num] =  0e0;  w[9  + num] =  v;
+            x[10 + num] =    a;  y[10 + num] =   -a;  z[10 + num] =  0e0;  w[10 + num] =  v;
+            x[11 + num] =   -a;  y[11 + num] =   -a;  z[11 + num] =  0e0;  w[11 + num] =  v;
             num=num+12;
             break;
         }
         case 3:
         {
             a = sqrt(1e0/3e0);
-            x[0+num] =  a;
-            y[0+num] =  a;
-            z[0+num] =  a;
-            w[0+num] =  v;
-            x[1+num] = -a;
-            y[1+num] =  a;
-            z[1+num] =  a;
-            w[1+num] =  v;
-            x[2+num] =  a;
-            y[2+num] = -a;
-            z[2+num] =  a;
-            w[2+num] =  v;
-            x[3+num] = -a;
-            y[3+num] = -a;
-            z[3+num] =  a;
-            w[3+num] =  v;
-            x[4+num] =  a;
-            y[4+num] =  a;
-            z[4+num] = -a;
-            w[4+num] =  v;
-            x[5+num] = -a;
-            y[5+num] =  a;
-            z[5+num] = -a;
-            w[5+num] =  v;
-            x[6+num] =  a;
-            y[6+num] = -a;
-            z[6+num] = -a;
-            w[6+num] =  v;
-            y[7+num] = -a;
-            x[7+num] = -a;
-            z[7+num] = -a;
-            w[7+num] =  v;
+            x[0 + num] =  a;  y[0 + num] =  a;  z[0 + num] =  a;  w[0 + num] =  v;
+            x[1 + num] = -a;  y[1 + num] =  a;  z[1 + num] =  a;  w[1 + num] =  v;
+            x[2 + num] =  a;  y[2 + num] = -a;  z[2 + num] =  a;  w[2 + num] =  v;
+            x[3 + num] = -a;  y[3 + num] = -a;  z[3 + num] =  a;  w[3 + num] =  v;
+            x[4 + num] =  a;  y[4 + num] =  a;  z[4 + num] = -a;  w[4 + num] =  v;
+            x[5 + num] = -a;  y[5 + num] =  a;  z[5 + num] = -a;  w[5 + num] =  v;
+            x[6 + num] =  a;  y[6 + num] = -a;  z[6 + num] = -a;  w[6 + num] =  v;  
+            x[7 + num] = -a;  y[7 + num] = -a;  z[7 + num] = -a;  w[7 + num] =  v;
             num=num+8;
             break;
         }
         case 4:
         {
             b = sqrt(1e0 - 2e0*a*a);
-            x[0+num] =  a;
-            y[0+num] =  a;
-            z[0+num] =  b;
-            w[0+num] =  v;
-            x[1+num] = -a;
-            y[1+num] =  a;
-            z[1+num] =  b;
-            w[1+num] =  v;
-            x[2+num] =  a;
-            y[2+num] = -a;
-            z[2+num] =  b;
-            w[2+num] =  v;
-            x[3+num] = -a;
-            y[3+num] = -a;
-            z[3+num] =  b;
-            w[3+num] =  v;
-            x[4+num] =  a;
-            y[4+num] =  a;
-            z[4+num] = -b;
-            w[4+num] =  v;
-            x[5+num] = -a;
-            y[5+num] =  a;
-            z[5+num] = -b;
-            w[5+num] =  v;
-            x[6+num] =  a;
-            y[6+num] = -a;
-            z[6+num] = -b;
-            w[6+num] =  v;
-            x[7+num] = -a;
-            y[7+num] = -a;
-            z[7+num] = -b;
-            w[7+num] =  v;
-            x[8+num] =  a;
-            y[8+num] =  b;
-            z[8+num] =  a;
-            w[8+num] =  v;
-            x[9+num] = -a;
-            y[9+num] =  b;
-            z[9+num] =  a;
-            w[9+num] =  v;
-            x[10+num] =  a;
-            y[10+num] = -b;
-            z[10+num] =  a;
-            w[10+num] =  v;
-            x[11+num] = -a;
-            y[11+num] = -b;
-            z[11+num] =  a;
-            w[11+num] =  v;
-            x[12+num] =  a;
-            y[12+num] =  b;
-            z[12+num] = -a;
-            w[12+num] =  v;
-            x[13+num] = -a;
-            y[13+num] =  b;
-            z[13+num] = -a;
-            w[13+num] =  v;
-            x[14+num] =  a;
-            y[14+num] = -b;
-            z[14+num] = -a;
-            w[14+num] =  v;
-            x[15+num] = -a;
-            y[15+num] = -b;
-            z[15+num] = -a;
-            w[15+num] =  v;
-            x[16+num] =  b;
-            y[16+num] =  a;
-            z[16+num] =  a;
-            w[16+num] =  v;
-            x[17+num] = -b;
-            y[17+num] =  a;
-            z[17+num] =  a;
-            w[17+num] =  v;
-            x[18+num] =  b;
-            y[18+num] = -a;
-            z[18+num] =  a;
-            w[18+num] =  v;
-            x[19+num] = -b;
-            y[19+num] = -a;
-            z[19+num] =  a;
-            w[19+num] =  v;
-            x[20+num] =  b;
-            y[20+num] =  a;
-            z[20+num] = -a;
-            w[20+num] =  v;
-            x[21+num] = -b;
-            y[21+num] =  a;
-            z[21+num] = -a;
-            w[21+num] =  v;
-            x[22+num] =  b;
-            y[22+num] = -a;
-            z[22+num] = -a;
-            w[22+num] =  v;
-            x[23+num] = -b;
-            y[23+num] = -a;
-            z[23+num] = -a;
-            w[23+num] =  v;
+            x[0  + num] =  a;  y[0  + num] =  a;  z[0  + num] =  b;  w[0  + num] =  v;
+            x[1  + num] = -a;  y[1  + num] =  a;  z[1  + num] =  b;  w[1  + num] =  v;
+            x[2  + num] =  a;  y[2  + num] = -a;  z[2  + num] =  b;  w[2  + num] =  v;
+            x[3  + num] = -a;  y[3  + num] = -a;  z[3  + num] =  b;  w[3  + num] =  v;
+            x[4  + num] =  a;  y[4  + num] =  a;  z[4  + num] = -b;  w[4  + num] =  v;
+            x[5  + num] = -a;  y[5  + num] =  a;  z[5  + num] = -b;  w[5  + num] =  v;
+            x[6  + num] =  a;  y[6  + num] = -a;  z[6  + num] = -b;  w[6  + num] =  v;
+            x[7  + num] = -a;  y[7  + num] = -a;  z[7  + num] = -b;  w[7  + num] =  v;
+            x[8  + num] =  a;  y[8  + num] =  b;  z[8  + num] =  a;  w[8  + num] =  v;
+            x[9  + num] = -a;  y[9  + num] =  b;  z[9  + num] =  a;  w[9  + num] =  v;
+            x[10 + num] =  a;  y[10 + num] = -b;  z[10 + num] =  a;  w[10 + num] =  v;
+            x[11 + num] = -a;  y[11 + num] = -b;  z[11 + num] =  a;  w[11 + num] =  v;
+            x[12 + num] =  a;  y[12 + num] =  b;  z[12 + num] = -a;  w[12 + num] =  v;
+            x[13 + num] = -a;  y[13 + num] =  b;  z[13 + num] = -a;  w[13 + num] =  v;
+            x[14 + num] =  a;  y[14 + num] = -b;  z[14 + num] = -a;  w[14 + num] =  v;
+            x[15 + num] = -a;  y[15 + num] = -b;  z[15 + num] = -a;  w[15 + num] =  v;
+            x[16 + num] =  b;  y[16 + num] =  a;  z[16 + num] =  a;  w[16 + num] =  v;
+            x[17 + num] = -b;  y[17 + num] =  a;  z[17 + num] =  a;  w[17 + num] =  v;
+            x[18 + num] =  b;  y[18 + num] = -a;  z[18 + num] =  a;  w[18 + num] =  v;
+            x[19 + num] = -b;  y[19 + num] = -a;  z[19 + num] =  a;  w[19 + num] =  v;
+            x[20 + num] =  b;  y[20 + num] =  a;  z[20 + num] = -a;  w[20 + num] =  v;
+            x[21 + num] = -b;  y[21 + num] =  a;  z[21 + num] = -a;  w[21 + num] =  v;
+            x[22 + num] =  b;  y[22 + num] = -a;  z[22 + num] = -a;  w[22 + num] =  v;
+            x[23 + num] = -b;  y[23 + num] = -a;  z[23 + num] = -a;  w[23 + num] =  v;
             num = num + 24;
             break;
         }
         case 5:
         {
             b=sqrt(1e0-a*a);
-            x[0+num] =  a;
-            y[0+num] =  b;
-            z[0+num] =  0e0;
-            w[0+num] =  v;
-            x[1+num] = -a;
-            y[1+num] =  b;
-            z[1+num] =  0e0;
-            w[1+num] =  v;
-            x[2+num] =  a;
-            y[2+num] = -b;
-            z[2+num] =  0e0;
-            w[2+num] =  v;
-            x[3+num] = -a;
-            y[3+num] = -b;
-            z[3+num] =  0e0;
-            w[3+num] =  v;
-            x[4+num] =  b;
-            y[4+num] =  a;
-            z[4+num] =  0e0;
-            w[4+num] =  v;
-            x[5+num] = -b;
-            y[5+num] =  a;
-            z[5+num] =  0e0;
-            w[5+num] =  v;
-            x[6+num] =  b;
-            y[6+num] = -a;
-            z[6+num] =  0e0;
-            w[6+num] =  v;
-            x[7+num] = -b;
-            y[7+num] = -a;
-            z[7+num] =  0e0;
-            w[7+num] =  v;
-            x[8+num] =  a;
-            y[8+num] =  0e0;
-            z[8+num] =  b;
-            w[8+num] =  v;
-            x[9+num] = -a;
-            y[9+num] =  0e0;
-            z[9+num] =  b;
-            w[9+num] =  v;
-            x[10+num] =  a;
-            y[10+num] =  0e0;
-            z[10+num] = -b;
-            w[10+num] =  v;
-            x[11+num] = -a;
-            y[11+num] =  0e0;
-            z[11+num] = -b;
-            w[11+num] =  v;
-            x[12+num] =  b;
-            y[12+num] =  0e0;
-            z[12+num] =  a;
-            w[12+num] =  v;
-            x[13+num] = -b;
-            y[13+num] =  0e0;
-            z[13+num] =  a;
-            w[13+num] =  v;
-            x[14+num] =  b;
-            y[14+num] =  0e0;
-            z[14+num] = -a;
-            w[14+num] =  v;
-            x[15+num] = -b;
-            y[15+num] =  0e0;
-            z[15+num] = -a;
-            w[15+num] =  v;
-            x[16+num] =  0e0;
-            y[16+num] =  a;
-            z[16+num] =  b;
-            w[16+num] =  v;
-            x[17+num] =  0e0;
-            y[17+num] = -a;
-            z[17+num] =  b;
-            w[17+num] =  v;
-            x[18+num] =  0e0;
-            y[18+num] =  a;
-            z[18+num] = -b;
-            w[18+num] =  v;
-            x[19+num] =  0e0;
-            y[19+num] = -a;
-            z[19+num] = -b;
-            w[19+num] =  v;
-            x[20+num] =  0e0;
-            y[20+num] =  b;
-            z[20+num] =  a;
-            w[20+num] =  v;
-            x[21+num] =  0e0;
-            y[21+num] = -b;
-            z[21+num] =  a;
-            w[21+num] =  v;
-            x[22+num] =  0e0;
-            y[22+num] =  b;
-            z[22+num] = -a;
-            w[22+num] =  v;
-            x[23+num] =  0e0;
-            y[23+num] = -b;
-            z[23+num] = -a;
-            w[23+num] =  v;
-            num=num+24;
-            break;
+            x[0  + num] =    a;  y[0  + num] =    b;  z[0  + num] =  0e0;  w[0  + num] =  v;
+            x[1  + num] =   -a;  y[1  + num] =    b;  z[1  + num] =  0e0;  w[1  + num] =  v;
+            x[2  + num] =    a;  y[2  + num] =   -b;  z[2  + num] =  0e0;  w[2  + num] =  v;
+            x[3  + num] =   -a;  y[3  + num] =   -b;  z[3  + num] =  0e0;  w[3  + num] =  v;
+            x[4  + num] =    b;  y[4  + num] =    a;  z[4  + num] =  0e0;  w[4  + num] =  v;
+            x[5  + num] =   -b;  y[5  + num] =    a;  z[5  + num] =  0e0;  w[5  + num] =  v;
+            x[6  + num] =    b;  y[6  + num] =   -a;  z[6  + num] =  0e0;  w[6  + num] =  v;
+            x[7  + num] =   -b;  y[7  + num] =   -a;  z[7  + num] =  0e0;  w[7  + num] =  v;
+            x[8  + num] =    a;  y[8  + num] =  0e0;  z[8  + num] =    b;  w[8  + num] =  v;
+            x[9  + num] =   -a;  y[9  + num] =  0e0;  z[9  + num] =    b;  w[9  + num] =  v;
+            x[10 + num] =    a;  y[10 + num] =  0e0;  z[10 + num] =   -b;  w[10 + num] =  v;
+            x[11 + num] =   -a;  y[11 + num] =  0e0;  z[11 + num] =   -b;  w[11 + num] =  v;
+            x[12 + num] =    b;  y[12 + num] =  0e0;  z[12 + num] =    a;  w[12 + num] =  v;
+            x[13 + num] =   -b;  y[13 + num] =  0e0;  z[13 + num] =    a;  w[13 + num] =  v;
+            x[14 + num] =    b;  y[14 + num] =  0e0;  z[14 + num] =   -a;  w[14 + num] =  v;
+            x[15 + num] =   -b;  y[15 + num] =  0e0;  z[15 + num] =   -a;  w[15 + num] =  v;
+            x[16 + num] =  0e0;  y[16 + num] =    a;  z[16 + num] =    b;  w[16 + num] =  v;
+            x[17 + num] =  0e0;  y[17 + num] =   -a;  z[17 + num] =    b;  w[17 + num] =  v;
+            x[18 + num] =  0e0;  y[18 + num] =    a;  z[18 + num] =   -b;  w[18 + num] =  v;
+            x[19 + num] =  0e0;  y[19 + num] =   -a;  z[19 + num] =   -b;  w[19 + num] =  v;
+            x[20 + num] =  0e0;  y[20 + num] =    b;  z[20 + num] =    a;  w[20 + num] =  v;
+            x[21 + num] =  0e0;  y[21 + num] =   -b;  z[21 + num] =    a;  w[21 + num] =  v;
+            x[22 + num] =  0e0;  y[22 + num] =    b;  z[22 + num] =   -a;  w[22 + num] =  v;
+            x[23 + num] =  0e0;  y[23 + num] =   -b;  z[23 + num] =   -a;  w[23 + num] =  v;
+            num=num+24  ;
+            break  ;
         }
         case 6:
         {
             c=sqrt(1e0 - a*a - b*b);
-            x[0+num] =  a;
-            y[0+num] =  b;
-            z[0+num] =  c;
-            w[0+num] =  v;
-            x[1+num] = -a;
-            y[1+num] =  b;
-            z[1+num] =  c;
-            w[1+num] =  v;
-            x[2+num] =  a;
-            y[2+num] = -b;
-            z[2+num] =  c;
-            w[2+num] =  v;
-            x[3+num] = -a;
-            y[3+num] = -b;
-            z[3+num] =  c;
-            w[3+num] =  v;
-            x[4+num] =  a;
-            y[4+num] =  b;
-            z[4+num] = -c;
-            w[4+num] =  v;
-            x[5+num] = -a;
-            y[5+num] =  b;
-            z[5+num] = -c;
-            w[5+num] =  v;
-            x[6+num] =  a;
-            y[6+num] = -b;
-            z[6+num] = -c;
-            w[6+num] =  v;
-            x[7+num] = -a;
-            y[7+num] = -b;
-            z[7+num] = -c;
-            w[7+num] =  v;
-            x[8+num] =  a;
-            y[8+num] =  c;
-            z[8+num] =  b;
-            w[8+num] =  v;
-            x[9+num] = -a;
-            y[9+num] =  c;
-            z[9+num] =  b;
-            w[9+num] =  v;
-            x[10+num] =  a;
-            y[10+num] = -c;
-            z[10+num] =  b;
-            w[10+num] =  v;
-            x[11+num] = -a;
-            y[11+num] = -c;
-            z[11+num] =  b;
-            w[11+num] =  v;
-            x[12+num] =  a;
-            y[12+num] =  c;
-            z[12+num] = -b;
-            w[12+num] =  v;
-            x[13+num] = -a;
-            y[13+num] =  c;
-            z[13+num] = -b;
-            w[13+num] =  v;
-            x[14+num] =  a;
-            y[14+num] = -c;
-            z[14+num] = -b;
-            w[14+num] =  v;
-            x[15+num] = -a;
-            y[15+num] = -c;
-            z[15+num] = -b;
-            w[15+num] =  v;
-            x[16+num] =  b;
-            y[16+num] =  a;
-            z[16+num] =  c;
-            w[16+num] =  v;
-            x[17+num] = -b;
-            y[17+num] =  a;
-            z[17+num] =  c;
-            w[17+num] =  v;
-            x[18+num] =  b;
-            y[18+num] = -a;
-            z[18+num] =  c;
-            w[18+num] =  v;
-            x[19+num] = -b;
-            y[19+num] = -a;
-            z[19+num] =  c;
-            w[19+num] =  v;
-            x[20+num] =  b;
-            y[20+num] =  a;
-            z[20+num] = -c;
-            w[20+num] =  v;
-            x[21+num] = -b;
-            y[21+num] =  a;
-            z[21+num] = -c;
-            w[21+num] =  v;
-            x[22+num] =  b;
-            y[22+num] = -a;
-            z[22+num] = -c;
-            w[22+num] =  v;
-            x[23+num] = -b;
-            y[23+num] = -a;
-            z[23+num] = -c;
-            w[23+num] =  v;
-            x[24+num] =  b;
-            y[24+num] =  c;
-            z[24+num] =  a;
-            w[24+num] =  v;
-            x[25+num] = -b;
-            y[25+num] =  c;
-            z[25+num] =  a;
-            w[25+num] =  v;
-            x[26+num] =  b;
-            y[26+num] = -c;
-            z[26+num] =  a;
-            w[26+num] =  v;
-            x[27+num] = -b;
-            y[27+num] = -c;
-            z[27+num] =  a;
-            w[27+num] =  v;
-            x[28+num] =  b;
-            y[28+num] =  c;
-            z[28+num] = -a;
-            w[28+num] =  v;
-            x[29+num] = -b;
-            y[29+num] =  c;
-            z[29+num] = -a;
-            w[29+num] =  v;
-            x[30+num] =  b;
-            y[30+num] = -c;
-            z[30+num] = -a;
-            w[30+num] =  v;
-            x[31+num] = -b;
-            y[31+num] = -c;
-            z[31+num] = -a;
-            w[31+num] =  v;
-            x[32+num] =  c;
-            y[32+num] =  a;
-            z[32+num] =  b;
-            w[32+num] =  v;
-            x[33+num] = -c;
-            y[33+num] =  a;
-            z[33+num] =  b;
-            w[33+num] =  v;
-            x[34+num] =  c;
-            y[34+num] = -a;
-            z[34+num] =  b;
-            w[34+num] =  v;
-            x[35+num] = -c;
-            y[35+num] = -a;
-            z[35+num] =  b;
-            w[35+num] =  v;
-            x[36+num] =  c;
-            y[36+num] =  a;
-            z[36+num] = -b;
-            w[36+num] =  v;
-            x[37+num] = -c;
-            y[37+num] =  a;
-            z[37+num] = -b;
-            w[37+num] =  v;
-            x[38+num] =  c;
-            y[38+num] = -a;
-            z[38+num] = -b;
-            w[38+num] =  v;
-            x[39+num] = -c;
-            y[39+num] = -a;
-            z[39+num] = -b;
-            w[39+num] =  v;
-            x[40+num] =  c;
-            y[40+num] =  b;
-            z[40+num] =  a;
-            w[40+num] =  v;
-            x[41+num] = -c;
-            y[41+num] =  b;
-            z[41+num] =  a;
-            w[41+num] =  v;
-            x[42+num] =  c;
-            y[42+num] = -b;
-            z[42+num] =  a;
-            w[42+num] =  v;
-            x[43+num] = -c;
-            y[43+num] = -b;
-            z[43+num] =  a;
-            w[43+num] =  v;
-            x[44+num] =  c;
-            y[44+num] =  b;
-            z[44+num] = -a;
-            w[44+num] =  v;
-            x[45+num] = -c;
-            y[45+num] =  b;
-            z[45+num] = -a;
-            w[45+num] =  v;
-            x[46+num] =  c;
-            y[46+num] = -b;
-            z[46+num] = -a;
-            w[46+num] =  v;
-            x[47+num] = -c;
-            y[47+num] = -b;
-            z[47+num] = -a;
-            w[47+num] =  v;
+            x[0  + num] =  a;  y[0  + num] =  b;  z[0  + num] =  c;  w[0  + num] =  v;
+            x[1  + num] = -a;  y[1  + num] =  b;  z[1  + num] =  c;  w[1  + num] =  v;
+            x[2  + num] =  a;  y[2  + num] = -b;  z[2  + num] =  c;  w[2  + num] =  v;
+            x[3  + num] = -a;  y[3  + num] = -b;  z[3  + num] =  c;  w[3  + num] =  v;
+            x[4  + num] =  a;  y[4  + num] =  b;  z[4  + num] = -c;  w[4  + num] =  v;
+            x[5  + num] = -a;  y[5  + num] =  b;  z[5  + num] = -c;  w[5  + num] =  v;
+            x[6  + num] =  a;  y[6  + num] = -b;  z[6  + num] = -c;  w[6  + num] =  v;
+            x[7  + num] = -a;  y[7  + num] = -b;  z[7  + num] = -c;  w[7  + num] =  v;
+            x[8  + num] =  a;  y[8  + num] =  c;  z[8  + num] =  b;  w[8  + num] =  v;
+            x[9  + num] = -a;  y[9  + num] =  c;  z[9  + num] =  b;  w[9  + num] =  v;
+            x[10 + num] =  a;  y[10 + num] = -c;  z[10 + num] =  b;  w[10 + num] =  v;
+            x[11 + num] = -a;  y[11 + num] = -c;  z[11 + num] =  b;  w[11 + num] =  v;
+            x[12 + num] =  a;  y[12 + num] =  c;  z[12 + num] = -b;  w[12 + num] =  v;
+            x[13 + num] = -a;  y[13 + num] =  c;  z[13 + num] = -b;  w[13 + num] =  v;
+            x[14 + num] =  a;  y[14 + num] = -c;  z[14 + num] = -b;  w[14 + num] =  v;
+            x[15 + num] = -a;  y[15 + num] = -c;  z[15 + num] = -b;  w[15 + num] =  v;
+            x[16 + num] =  b;  y[16 + num] =  a;  z[16 + num] =  c;  w[16 + num] =  v;
+            x[17 + num] = -b;  y[17 + num] =  a;  z[17 + num] =  c;  w[17 + num] =  v;
+            x[18 + num] =  b;  y[18 + num] = -a;  z[18 + num] =  c;  w[18 + num] =  v;
+            x[19 + num] = -b;  y[19 + num] = -a;  z[19 + num] =  c;  w[19 + num] =  v;
+            x[20 + num] =  b;  y[20 + num] =  a;  z[20 + num] = -c;  w[20 + num] =  v;
+            x[21 + num] = -b;  y[21 + num] =  a;  z[21 + num] = -c;  w[21 + num] =  v;
+            x[22 + num] =  b;  y[22 + num] = -a;  z[22 + num] = -c;  w[22 + num] =  v;
+            x[23 + num] = -b;  y[23 + num] = -a;  z[23 + num] = -c;  w[23 + num] =  v;
+            x[24 + num] =  b;  y[24 + num] =  c;  z[24 + num] =  a;  w[24 + num] =  v;
+            x[25 + num] = -b;  y[25 + num] =  c;  z[25 + num] =  a;  w[25 + num] =  v;
+            x[26 + num] =  b;  y[26 + num] = -c;  z[26 + num] =  a;  w[26 + num] =  v;
+            x[27 + num] = -b;  y[27 + num] = -c;  z[27 + num] =  a;  w[27 + num] =  v;
+            x[28 + num] =  b;  y[28 + num] =  c;  z[28 + num] = -a;  w[28 + num] =  v;
+            x[29 + num] = -b;  y[29 + num] =  c;  z[29 + num] = -a;  w[29 + num] =  v;
+            x[30 + num] =  b;  y[30 + num] = -c;  z[30 + num] = -a;  w[30 + num] =  v;
+            x[31 + num] = -b;  y[31 + num] = -c;  z[31 + num] = -a;  w[31 + num] =  v;
+            x[32 + num] =  c;  y[32 + num] =  a;  z[32 + num] =  b;  w[32 + num] =  v;
+            x[33 + num] = -c;  y[33 + num] =  a;  z[33 + num] =  b;  w[33 + num] =  v;
+            x[34 + num] =  c;  y[34 + num] = -a;  z[34 + num] =  b;  w[34 + num] =  v;
+            x[35 + num] = -c;  y[35 + num] = -a;  z[35 + num] =  b;  w[35 + num] =  v;
+            x[36 + num] =  c;  y[36 + num] =  a;  z[36 + num] = -b;  w[36 + num] =  v;
+            x[37 + num] = -c;  y[37 + num] =  a;  z[37 + num] = -b;  w[37 + num] =  v;
+            x[38 + num] =  c;  y[38 + num] = -a;  z[38 + num] = -b;  w[38 + num] =  v;
+            x[39 + num] = -c;  y[39 + num] = -a;  z[39 + num] = -b;  w[39 + num] =  v;
+            x[40 + num] =  c;  y[40 + num] =  b;  z[40 + num] =  a;  w[40 + num] =  v;
+            x[41 + num] = -c;  y[41 + num] =  b;  z[41 + num] =  a;  w[41 + num] =  v;
+            x[42 + num] =  c;  y[42 + num] = -b;  z[42 + num] =  a;  w[42 + num] =  v;
+            x[43 + num] = -c;  y[43 + num] = -b;  z[43 + num] =  a;  w[43 + num] =  v;
+            x[44 + num] =  c;  y[44 + num] =  b;  z[44 + num] = -a;  w[44 + num] =  v;
+            x[45 + num] = -c;  y[45 + num] =  b;  z[45 + num] = -a;  w[45 + num] =  v;
+            x[46 + num] =  c;  y[46 + num] = -b;  z[46 + num] = -a;  w[46 + num] =  v;
+            x[47 + num] = -c;  y[47 + num] = -b;  z[47 + num] = -a;  w[47 + num] =  v;
             num=num+48;
             break;
         default:

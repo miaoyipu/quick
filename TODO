@@ -1,4 +1,3 @@
-Add DGEMM to GPUGP quick
-Add d,f..orbitals
+Add f..orbitals
 Add GPU support D&C
 Add multi-GPU support quick

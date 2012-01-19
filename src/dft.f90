@@ -608,7 +608,7 @@ subroutine get_sigrad
       ! denisty calculator works in.
 
       sigrad2(Ibas)=radial*radial
-      write (iOutFile,'(I4,7x,F12.6)') Ibas,radial
+     ! write (iOutFile,'(I4,7x,F12.6)') Ibas,radial
    enddo
 end subroutine
 
@@ -933,7 +933,7 @@ write(*,*) "E0=",quick_qm_struct%Eel
                if (weight < quick_method%DMCutoff ) then
                   continue
                else
-
+!	write(*,*)"atom =",iatm, "rad=",irad,"angel=",iang,"weight=",weight
                   do Ibas=1,nbasis
                   
                     !write(*,*) "c",gridx, gridy, gridz

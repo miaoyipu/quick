@@ -344,304 +344,313 @@ __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int
         IJKLTYPE = 999;
     }
     
+    QUICKDouble hybrid_coeff = 0.0;
     if (devSim.method == HF){
-        
-        if ((II < JJ) && (II < KK) && (KK < LL)) {
-            for (int III = III1; III <= III2; III++) {
-                for (int JJJ = JJJ1; JJJ <= JJJ2; JJJ++) {
-                    for (int KKK = KKK1; KKK <= KKK2 ; KKK++) {
-                        for (int LLL = LLL1; LLL <= LLL2; LLL++) {
-                            QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L, \
+        hybrid_coeff = 1.0;
+    }else if (devSim.method == B3LYP){
+        hybrid_coeff = 0.2;
+    }else if (devSim.method == DFT){
+        hybrid_coeff = 0.0;
+    }
+    
+    //if (devSim.method == HF){
+    
+    if ((II < JJ) && (II < KK) && (KK < LL)) {
+        for (int III = III1; III <= III2; III++) {
+            for (int JJJ = JJJ1; JJJ <= JJJ2; JJJ++) {
+                for (int KKK = KKK1; KKK <= KKK2 ; KKK++) {
+                    for (int LLL = LLL1; LLL <= LLL2; LLL++) {
+                        QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L, \
+                                                               III, JJJ, KKK, LLL, IJKLTYPE, store, \
+                                                               RAx, RAy, RAz, RBx, RBy, RBz, \
+                                                               RCx, RCy, RCz, RDx, RDy, RDz);
+                        // if (fabs(Y)>devSim.integralCutoff * 1e-2){
+                        QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
+                        QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis);
+                        QUICKDouble DENSELJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis);
+                        QUICKDouble DENSELI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
+                        QUICKDouble DENSELK = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis);
+                        QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
+                        
+                        // Find the (ij|kl) integrals where j>i, k>i, l>k, and k and j are equal.
+                        QUICKULL val1 = (QUICKULL) (fabs(2.0*DENSELK*Y*OSCALE) + (QUICKDouble)0.5);
+                        if ( DENSELK*Y < (QUICKDouble)0.0)
+                        val1 = 0ull - val1;
+                        
+                        QUICKULL val2 = (QUICKULL) (fabs(2.0*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
+                        if ( DENSEJI*Y < (QUICKDouble)0.0)
+                        val2 = 0ull - val2;
+                        
+                        QUICKULL val3 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSELJ*Y*OSCALE) + (QUICKDouble)0.5);
+                        if ( DENSELJ*Y < (QUICKDouble)0.0)
+                        val3 = 0ull - val3;
+                        
+                        QUICKULL val4 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
+                        if ( DENSEKJ*Y < (QUICKDouble)0.0)
+                        val4 = 0ull - val4;
+                        
+                        QUICKULL val5 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSELI*Y*OSCALE) + (QUICKDouble)0.5);
+                        if ( DENSELI*Y < (QUICKDouble)0.0)
+                        val5 = 0ull - val5;
+                        
+                        QUICKULL val6 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
+                        if ( DENSEKI*Y < (QUICKDouble)0.0)
+                        val6 = 0ull - val6;
+                        
+                        QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
+                        QUICKADD(LOC2(devSim.oULL, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis), val2);
+                        QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
+                        QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
+                        QUICKADD(LOC2(devSim.oULL, JJJ-1, KKK-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
+                        QUICKADD(LOC2(devSim.oULL, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
+                        QUICKADD(LOC2(devSim.oULL, JJJ-1, LLL-1, devSim.nbasis, devSim.nbasis), 0ull-val6);
+                        QUICKADD(LOC2(devSim.oULL, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val6);               
+                    }
+                    //}
+                }
+            }
+        }
+    }else {
+        for (int III = III1; III <= III2; III++) {
+            for (int JJJ = MAX(III,JJJ1); JJJ <= JJJ2; JJJ++) {
+                for (int KKK = MAX(III,KKK1); KKK <= KKK2; KKK++) {
+                    for (int LLL = MAX(KKK,LLL1); LLL <= LLL2; LLL++) {
+                        if (III < KKK) {
+                            QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L,\
                                                                    III, JJJ, KKK, LLL, IJKLTYPE, store, \
                                                                    RAx, RAy, RAz, RBx, RBy, RBz, \
                                                                    RCx, RCy, RCz, RDx, RDy, RDz);
-                            // if (fabs(Y)>devSim.integralCutoff * 1e-2){
-                            QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSELJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSELI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSELK = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
                             
-                            // Find the (ij|kl) integrals where j>i, k>i, l>k, and k and j are equal.
-                            QUICKULL val1 = (QUICKULL) (fabs(2.0*DENSELK*Y*OSCALE) + (QUICKDouble)0.5);
-                            if ( DENSELK*Y < (QUICKDouble)0.0)
-                            val1 = 0ull - val1;
-                            
-                            QUICKULL val2 = (QUICKULL) (fabs(2.0*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
-                            if ( DENSEJI*Y < (QUICKDouble)0.0)
-                            val2 = 0ull - val2;
-                            
-                            QUICKULL val3 = (QUICKULL) (fabs(0.5*DENSELJ*Y*OSCALE) + (QUICKDouble)0.5);
-                            if ( DENSELJ*Y < (QUICKDouble)0.0)
-                            val3 = 0ull - val3;
-                            
-                            QUICKULL val4 = (QUICKULL) (fabs(0.5*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
-                            if ( DENSEKJ*Y < (QUICKDouble)0.0)
-                            val4 = 0ull - val4;
-                            
-                            QUICKULL val5 = (QUICKULL) (fabs(0.5*DENSELI*Y*OSCALE) + (QUICKDouble)0.5);
-                            if ( DENSELI*Y < (QUICKDouble)0.0)
-                            val5 = 0ull - val5;
-                            
-                            QUICKULL val6 = (QUICKULL) (fabs(0.5*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
-                            if ( DENSEKI*Y < (QUICKDouble)0.0)
-                            val6 = 0ull - val6;
-                            
-                            QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                            QUICKADD(LOC2(devSim.oULL, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis), val2);
-                            QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
-                            QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
-                            QUICKADD(LOC2(devSim.oULL, JJJ-1, KKK-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
-                            QUICKADD(LOC2(devSim.oULL, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
-                            QUICKADD(LOC2(devSim.oULL, JJJ-1, LLL-1, devSim.nbasis, devSim.nbasis), 0ull-val6);
-                            QUICKADD(LOC2(devSim.oULL, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val6);               
-                        }
-                        //}
-                    }
-                }
-            }
-        }else {
-            for (int III = III1; III <= III2; III++) {
-                for (int JJJ = MAX(III,JJJ1); JJJ <= JJJ2; JJJ++) {
-                    for (int KKK = MAX(III,KKK1); KKK <= KKK2; KKK++) {
-                        for (int LLL = MAX(KKK,LLL1); LLL <= LLL2; LLL++) {
-                            if (III < KKK) {
-                                QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L,\
+                            //      if (fabs(Y)>devSim.integralCutoff * 1e-2){
+                            if ((III < JJJ)&&(KKK < LLL)) {
+                                QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSELJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSELI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSELK = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
+                                // Find the (ij|kl) integrals where j>i, k>i, l>k, and k and j are equal.
+                                QUICKULL val1 = (QUICKULL) (fabs(2.0*DENSELK*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSELK*Y < (QUICKDouble)0.0)
+                                val1 = 0ull - val1;
+                                
+                                QUICKULL val2 = (QUICKULL) (fabs(2.0*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEJI*Y < (QUICKDouble)0.0)
+                                val2 = 0ull - val2;
+                                
+                                QUICKULL val3 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSELJ*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSELJ*Y < (QUICKDouble)0.0)
+                                val3 = 0ull - val3;
+                                
+                                QUICKULL val4 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEKJ*Y < (QUICKDouble)0.0)
+                                val4 = 0ull - val4;
+                                
+                                QUICKULL val5 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSELI*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSELI*Y < (QUICKDouble)0.0)
+                                val5 = 0ull - val5;
+                                
+                                QUICKULL val6 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEKI*Y < (QUICKDouble)0.0)
+                                val6 = 0ull - val6;
+                                
+                                QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
+                                QUICKADD(LOC2(devSim.oULL, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis), val2);
+                                QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
+                                QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
+                                QUICKADD(LOC2(devSim.oULL, JJJ-1, KKK-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
+                                QUICKADD(LOC2(devSim.oULL, JJJ-1, LLL-1, devSim.nbasis, devSim.nbasis), 0ull-val6);
+                                QUICKADD(LOC2(devSim.oULL, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
+                                QUICKADD(LOC2(devSim.oULL, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val6);                              
+                                
+                            }else if ((III == JJJ)&&(KKK == LLL)) {
+                                
+                                // Find  all the (ii|jj) integrals.
+                                QUICKDouble DENSEJI = LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEJJ = LOC2(devSim.dense, KKK-1, KKK-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEII = LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
+                                
+                                QUICKULL val1 = (QUICKULL) (fabs(DENSEJJ*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEJJ*Y < (QUICKDouble)0.0)
+                                val1 = 0ull - val1;                               
+                                
+                                QUICKULL val2 = (QUICKULL) (fabs(DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEII*Y < (QUICKDouble)0.0)
+                                val2 = 0ull - val2;
+                                
+                                QUICKULL val3 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEJI*Y < (QUICKDouble)0.0)
+                                val3 = 0ull - val3;
+                                
+                                QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), val1);
+                                QUICKADD(LOC2(devSim.oULL, KKK-1, KKK-1, devSim.nbasis, devSim.nbasis), val2);
+                                QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
+                                
+                            }else if ((JJJ == KKK)&&(JJJ==LLL)) {
+                                
+                                // Find all the (ij|jj) integrals.
+                                QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEJJ = (QUICKDouble) LOC2(devSim.dense, JJJ-1, JJJ-1, devSim.nbasis, devSim.nbasis);
+                                
+                                QUICKULL val1 = (QUICKULL) (fabs((1.0-hybrid_coeff*0.5)*DENSEJJ*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEJJ*Y < (QUICKDouble)0.0)
+                                val1 = 0ull - val1;                               
+                                
+                                QUICKULL val2 = (QUICKULL) (fabs((2.0-hybrid_coeff)*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEJI*Y < (QUICKDouble)0.0)
+                                val2 = 0ull - val2;
+                                
+                                QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
+                                QUICKADD(LOC2(devSim.oULL, JJJ-1, JJJ-1, devSim.nbasis, devSim.nbasis), val2);
+                                
+                            }else if ((KKK == LLL)&&(III<JJJ)&&(JJJ!=KKK)) {
+                                
+                                //Find all the (ij|kk) integrals where j>i, k>j.
+                                QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEKK = (QUICKDouble) LOC2(devSim.dense, KKK-1, KKK-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
+                                
+                                QUICKULL val1 = (QUICKULL) (fabs(DENSEKK*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEKK*Y < (QUICKDouble)0.0)
+                                val1 = 0ull - val1;                               
+                                
+                                QUICKULL val2 = (QUICKULL) (fabs(2.0*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEJI*Y < (QUICKDouble)0.0)
+                                val2 = 0ull - val2;
+                                
+                                QUICKULL val3 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEKJ*Y < (QUICKDouble)0.0)
+                                val3 = 0ull - val3;
+                                
+                                QUICKULL val4 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEKI*Y < (QUICKDouble)0.0)
+                                val4 = 0ull - val4;
+                                
+                                QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
+                                QUICKADD(LOC2(devSim.oULL, KKK-1, KKK-1, devSim.nbasis, devSim.nbasis), val2);
+                                QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
+                                QUICKADD(LOC2(devSim.oULL, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
+                                QUICKADD(LOC2(devSim.oULL, JJJ-1, KKK-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
+                                
+                            }else if ((III==JJJ)&&(KKK<LLL)) {
+                                
+                                //Find all the (ii|jk) integrals where j>i, k>j.
+                                QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
+                                QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis);
+                                
+                                QUICKULL val1 = (QUICKULL) (fabs(DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEII*Y < (QUICKDouble)0.0)
+                                val1 = 0ull - val1;                               
+                                
+                                QUICKULL val2 = (QUICKULL) (fabs(2.0*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEKJ*Y < (QUICKDouble)0.0)
+                                val2 = 0ull - val2;
+                                
+                                QUICKULL val3 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEKI*Y < (QUICKDouble)0.0)
+                                val3 = 0ull - val3;
+                                
+                                QUICKULL val4 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
+                                if ( DENSEJI*Y < (QUICKDouble)0.0)
+                                val4 = 0ull - val4;
+                                
+                                QUICKADD(LOC2(devSim.oULL, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis), val1);
+                                QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), val2);
+                                QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
+                                QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
+                            } 
+                            //    }
+                        }else {
+                            if (JJJ <= LLL) {
+                                QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L, \
                                                                        III, JJJ, KKK, LLL, IJKLTYPE, store, \
                                                                        RAx, RAy, RAz, RBx, RBy, RBz, \
                                                                        RCx, RCy, RCz, RDx, RDy, RDz);
-                                
                                 //      if (fabs(Y)>devSim.integralCutoff * 1e-2){
-                                if ((III < JJJ)&&(KKK < LLL)) {
-                                    QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSELJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSELI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSELK = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
-                                    // Find the (ij|kl) integrals where j>i, k>i, l>k, and k and j are equal.
-                                    QUICKULL val1 = (QUICKULL) (fabs(2.0*DENSELK*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSELK*Y < (QUICKDouble)0.0)
-                                    val1 = 0ull - val1;
+                                if((III==JJJ)&&(III==KKK)&&(III==LLL)){
+                                    // do all the (ii|ii) integrals
+                                    QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
+                                    QUICKULL val1 = (QUICKULL) (fabs((1.0-hybrid_coeff*0.5)*DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
+                                    if ( DENSEII*Y < (QUICKDouble)0.0)
+                                    val1 = 0ull - val1;                               
+                                    QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), val1);
+                                }else if ((III == JJJ) && (III == KKK) && (III < LLL)){
                                     
-                                    QUICKULL val2 = (QUICKULL) (fabs(2.0*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEJI*Y < (QUICKDouble)0.0)
-                                    val2 = 0ull - val2;
+                                    QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
+                                    QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
                                     
-                                    QUICKULL val3 = (QUICKULL) (fabs(0.5*DENSELJ*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSELJ*Y < (QUICKDouble)0.0)
-                                    val3 = 0ull - val3;
                                     
-                                    QUICKULL val4 = (QUICKULL) (fabs(0.5*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEKJ*Y < (QUICKDouble)0.0)
-                                    val4 = 0ull - val4;
-                                    
-                                    QUICKULL val5 = (QUICKULL) (fabs(0.5*DENSELI*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSELI*Y < (QUICKDouble)0.0)
-                                    val5 = 0ull - val5;
-                                    
-                                    QUICKULL val6 = (QUICKULL) (fabs(0.5*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEKI*Y < (QUICKDouble)0.0)
-                                    val6 = 0ull - val6;
-                                    
-                                    QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                                    QUICKADD(LOC2(devSim.oULL, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis), val2);
-                                    QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
-                                    QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
-                                    QUICKADD(LOC2(devSim.oULL, JJJ-1, KKK-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
-                                    QUICKADD(LOC2(devSim.oULL, JJJ-1, LLL-1, devSim.nbasis, devSim.nbasis), 0ull-val6);
-                                    QUICKADD(LOC2(devSim.oULL, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
-                                    QUICKADD(LOC2(devSim.oULL, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val6);                              
-                                    
-                                }else if ((III == JJJ)&&(KKK == LLL)) {
-                                    
-                                    // Find  all the (ii|jj) integrals.
-                                    QUICKDouble DENSEJI = LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSEJJ = LOC2(devSim.dense, KKK-1, KKK-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSEII = LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
-                                    
-                                    QUICKULL val1 = (QUICKULL) (fabs(DENSEJJ*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEJJ*Y < (QUICKDouble)0.0)
+                                    QUICKULL val1 = (QUICKULL) (fabs((1-hybrid_coeff*0.5)*DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
+                                    if ( DENSEII*Y < (QUICKDouble)0.0)
                                     val1 = 0ull - val1;                               
                                     
-                                    QUICKULL val2 = (QUICKULL) (fabs(DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEII*Y < (QUICKDouble)0.0)
-                                    val2 = 0ull - val2;
-                                    
-                                    QUICKULL val3 = (QUICKULL) (fabs(0.5*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
+                                    QUICKULL val2 = (QUICKULL) (fabs((2.0-hybrid_coeff)*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
                                     if ( DENSEJI*Y < (QUICKDouble)0.0)
-                                    val3 = 0ull - val3;
+                                    val2 = 0ull - val2;                               
                                     
-                                    QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                                    QUICKADD(LOC2(devSim.oULL, KKK-1, KKK-1, devSim.nbasis, devSim.nbasis), val2);
-                                    QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
+                                    QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), val1);
+                                    QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), val2);
                                     
-                                }else if ((JJJ == KKK)&&(JJJ==LLL)) {
+                                }else if ((III == KKK) && (JJJ == LLL) && (III < JJJ)){
                                     
-                                    // Find all the (ij|jj) integrals.
                                     QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
                                     QUICKDouble DENSEJJ = (QUICKDouble) LOC2(devSim.dense, JJJ-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                                    
-                                    QUICKULL val1 = (QUICKULL) (fabs(0.5*DENSEJJ*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEJJ*Y < (QUICKDouble)0.0)
+                                    QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
+                                    QUICKULL val1 = (QUICKULL) (fabs((2.0-hybrid_coeff*0.5)*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
+                                    if ( DENSEJI*Y < (QUICKDouble)0.0)
                                     val1 = 0ull - val1;                               
                                     
-                                    QUICKULL val2 = (QUICKULL) (fabs(DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEJI*Y < (QUICKDouble)0.0)
-                                    val2 = 0ull - val2;
+                                    QUICKULL val2 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
+                                    if ( DENSEII*Y < (QUICKDouble)0.0)
+                                    val2 = 0ull - val2;                               
+                                    
+                                    QUICKULL val3 = (QUICKULL) (fabs(hybrid_coeff*0.5*DENSEJJ*Y*OSCALE) + (QUICKDouble)0.5);
+                                    if ( DENSEJJ*Y < (QUICKDouble)0.0)
+                                    val3 = 0ull - val3;                               
+                                    
                                     
                                     QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                                    QUICKADD(LOC2(devSim.oULL, JJJ-1, JJJ-1, devSim.nbasis, devSim.nbasis), val2);
+                                    QUICKADD(LOC2(devSim.oULL, JJJ-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val2);
+                                    QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
+                                }else if ((III == KKK) && (III <  JJJ) && (JJJ < LLL)){
                                     
-                                }else if ((KKK == LLL)&&(III<JJJ)&&(JJJ!=KKK)) {
-                                    
-                                    //Find all the (ij|kk) integrals where j>i, k>j.
-                                    QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSEKK = (QUICKDouble) LOC2(devSim.dense, KKK-1, KKK-1, devSim.nbasis, devSim.nbasis);
+                                    QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
+                                    QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis);
+                                    QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
                                     QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
                                     
-                                    QUICKULL val1 = (QUICKULL) (fabs(DENSEKK*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEKK*Y < (QUICKDouble)0.0)
+                                    QUICKULL val1 = (QUICKULL) (fabs((2.0-0.5*hybrid_coeff)*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
+                                    if ( DENSEKI*Y < (QUICKDouble)0.0)
                                     val1 = 0ull - val1;                               
                                     
-                                    QUICKULL val2 = (QUICKULL) (fabs(2.0*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
+                                    QUICKULL val2 = (QUICKULL) (fabs((2.0-0.5*hybrid_coeff)*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
                                     if ( DENSEJI*Y < (QUICKDouble)0.0)
-                                    val2 = 0ull - val2;
+                                    val2 = 0ull - val2;                               
                                     
-                                    QUICKULL val3 = (QUICKULL) (fabs(0.5*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
+                                    QUICKULL val3 = (QUICKULL) (fabs(hybrid_coeff*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
                                     if ( DENSEKJ*Y < (QUICKDouble)0.0)
-                                    val3 = 0ull - val3;
+                                    val3 = 0ull - val3;                               
                                     
-                                    QUICKULL val4 = (QUICKULL) (fabs(0.5*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEKI*Y < (QUICKDouble)0.0)
-                                    val4 = 0ull - val4;
-                                    
-                                    QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                                    QUICKADD(LOC2(devSim.oULL, KKK-1, KKK-1, devSim.nbasis, devSim.nbasis), val2);
-                                    QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
-                                    QUICKADD(LOC2(devSim.oULL, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
-                                    QUICKADD(LOC2(devSim.oULL, JJJ-1, KKK-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
-                                    
-                                }else if ((III==JJJ)&&(KKK<LLL)) {
-                                    
-                                    //Find all the (ii|jk) integrals where j>i, k>j.
-                                    QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
-                                    QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis);
-                                    
-                                    QUICKULL val1 = (QUICKULL) (fabs(DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
+                                    QUICKULL val4 = (QUICKULL) (fabs(0.5*hybrid_coeff*DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
                                     if ( DENSEII*Y < (QUICKDouble)0.0)
-                                    val1 = 0ull - val1;                               
-                                    
-                                    QUICKULL val2 = (QUICKULL) (fabs(2.0*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEKJ*Y < (QUICKDouble)0.0)
-                                    val2 = 0ull - val2;
-                                    
-                                    QUICKULL val3 = (QUICKULL) (fabs(0.5*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEKI*Y < (QUICKDouble)0.0)
-                                    val3 = 0ull - val3;
-                                    
-                                    QUICKULL val4 = (QUICKULL) (fabs(0.5*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
-                                    if ( DENSEJI*Y < (QUICKDouble)0.0)
                                     val4 = 0ull - val4;
-                                    
-                                    QUICKADD(LOC2(devSim.oULL, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis), val1);
-                                    QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), val2);
-                                    QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
-                                    QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
-                                } 
-                                //    }
-                            }else {
-                                if (JJJ <= LLL) {
-                                    QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L, \
-                                                                           III, JJJ, KKK, LLL, IJKLTYPE, store, \
-                                                                           RAx, RAy, RAz, RBx, RBy, RBz, \
-                                                                           RCx, RCy, RCz, RDx, RDy, RDz);
-                                    //      if (fabs(Y)>devSim.integralCutoff * 1e-2){
-                                    if((III==JJJ)&&(III==KKK)&&(III==LLL)){
-                                        // do all the (ii|ii) integrals
-                                        QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
-                                        QUICKULL val1 = (QUICKULL) (fabs(0.5*DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEII*Y < (QUICKDouble)0.0)
-                                        val1 = 0ull - val1;                               
-                                        QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                                    }else if ((III == JJJ) && (III == KKK) && (III < LLL)){
-                                        
-                                        QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
-                                        QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
-                                        
-                                        
-                                        QUICKULL val1 = (QUICKULL) (fabs(0.5*DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEII*Y < (QUICKDouble)0.0)
-                                        val1 = 0ull - val1;                               
-                                        
-                                        QUICKULL val2 = (QUICKULL) (fabs(DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEJI*Y < (QUICKDouble)0.0)
-                                        val2 = 0ull - val2;                               
-                                        
-                                        QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                                        QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), val2);
-                                        
-                                    }else if ((III == KKK) && (JJJ == LLL) && (III < JJJ)){
-                                        
-                                        QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
-                                        QUICKDouble DENSEJJ = (QUICKDouble) LOC2(devSim.dense, JJJ-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                                        QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
-                                        QUICKULL val1 = (QUICKULL) (fabs(1.5*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEJI*Y < (QUICKDouble)0.0)
-                                        val1 = 0ull - val1;                               
-                                        
-                                        QUICKULL val2 = (QUICKULL) (fabs(0.5*DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEII*Y < (QUICKDouble)0.0)
-                                        val2 = 0ull - val2;                               
-                                        
-                                        QUICKULL val3 = (QUICKULL) (fabs(0.5*DENSEJJ*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEJJ*Y < (QUICKDouble)0.0)
-                                        val3 = 0ull - val3;                               
-                                        
-                                        
-                                        QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                                        QUICKADD(LOC2(devSim.oULL, JJJ-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val2);
-                                        QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
-                                    }else if ((III == KKK) && (III <  JJJ) && (JJJ < LLL)){
-                                        
-                                        QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
-                                        QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                                        QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, devSim.nbasis, devSim.nbasis);
-                                        QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
-                                        
-                                        QUICKULL val1 = (QUICKULL) (fabs(1.5*DENSEKI*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEKI*Y < (QUICKDouble)0.0)
-                                        val1 = 0ull - val1;                               
-                                        
-                                        QUICKULL val2 = (QUICKULL) (fabs(1.5*DENSEJI*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEJI*Y < (QUICKDouble)0.0)
-                                        val2 = 0ull - val2;                               
-                                        
-                                        QUICKULL val3 = (QUICKULL) (fabs(1.0*DENSEKJ*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEKJ*Y < (QUICKDouble)0.0)
-                                        val3 = 0ull - val3;                               
-                                        
-                                        QUICKULL val4 = (QUICKULL) (fabs(0.5*DENSEII*Y*OSCALE) + (QUICKDouble)0.5);
-                                        if ( DENSEII*Y < (QUICKDouble)0.0)
-                                        val4 = 0ull - val4;
-                                        QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                                        QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), val2);
-                                        QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
-                                        QUICKADD(LOC2(devSim.oULL, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
-                                    }
+                                    QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
+                                    QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), val2);
+                                    QUICKADD(LOC2(devSim.oULL, III-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
+                                    QUICKADD(LOC2(devSim.oULL, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
                                 }
-                                //}
                             }
+                            //}
                         }
                     }
                 }
             }
         }
-    }else if (devSim.method == B3LYP) {
+    }
+    /*}else if (devSim.method == B3LYP) {
         if ((II < JJ) && (II < KK) && (KK < LL)) {
             for (int III = III1; III <= III2; III++) {
                 for (int JJJ = JJJ1; JJJ <= JJJ2; JJJ++) {
@@ -1129,7 +1138,7 @@ __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int
             }
         }
     }
-
+    */
     return;
 }
 

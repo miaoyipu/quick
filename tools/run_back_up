@@ -1,6 +1,6 @@
 #/bin/bash
 
-ver=2012-1-18-new_quick_0.07sp4_beta16
+ver=2012-1-19-new_quick_0.08_beta_120119
 machine=cm
 
 cp -a ../src/ ../archieve/$ver-$machine
