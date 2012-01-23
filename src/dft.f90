@@ -608,7 +608,7 @@ subroutine get_sigrad
       ! denisty calculator works in.
 
       sigrad2(Ibas)=radial*radial
-     ! write (iOutFile,'(I4,7x,F12.6)') Ibas,radial
+      write (iOutFile,'(I4,7x,F12.6)') Ibas,radial
    enddo
 end subroutine
 
@@ -889,17 +889,19 @@ write(*,*) "E0=",quick_qm_struct%Eel
    quick_qm_struct%belec=0.d0
    call cpu_time(timer_begin%TEx)
 
-   if(quick_method%B3LYP)then
 
 #ifdef CUDA
      if(quick_method%bCUDA) then
         call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
                              quick_qm_struct%vec,quick_qm_struct%dense)
-        call gpu_getxc_b3lyp(quick_method%isg, sigrad2, Eelxc, &
+        call gpu_getxc(quick_method%isg, sigrad2, Eelxc, &
                              quick_qm_struct%aelec, quick_qm_struct%belec, &
                              quick_qm_struct%o)
      else
 #endif
+
+   if(quick_method%B3LYP)then
+
 		 write(*,*)  Eelxc
      do Iatm=1,natom
          if(quick_method%ISG.eq.1)then
@@ -933,7 +935,7 @@ write(*,*) "E0=",quick_qm_struct%Eel
                if (weight < quick_method%DMCutoff ) then
                   continue
                else
-!	write(*,*)"atom =",iatm, "rad=",irad,"angel=",iang,"weight=",weight
+
                   do Ibas=1,nbasis
                   
                     !write(*,*) "c",gridx, gridy, gridz
@@ -1014,11 +1016,7 @@ write(*,*) "E0=",quick_qm_struct%Eel
             enddo
          enddo
       enddo
-#ifdef CUDA
-      endif
-#endif
    endif
-   print *,"Eelxc = ", Eelxc
    if(quick_method%BLYP)then
       do Iatm=1,natom
          if(quick_method%ISG.eq.1)then
@@ -1526,6 +1524,12 @@ write(*,*) "E0=",quick_qm_struct%Eel
          enddo
       enddo
    endif
+
+#ifdef CUDA
+      endif
+#endif
+
+   print *,"Eelxc = ", Eelxc
 
    call cpu_time(timer_end%TEx)
 

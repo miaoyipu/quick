@@ -224,7 +224,7 @@ struct gpu_type {
     unsigned int                    blocks;
     unsigned int                    threadsPerBlock;
     unsigned int                    twoEThreadsPerBlock;
-    unsigned int                    b3lypThreadsPerBlock;
+    unsigned int                    XCThreadsPerBlock;
     
     // Molecule specification part
     int                             natom;

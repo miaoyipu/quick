@@ -139,8 +139,8 @@ quick_modules:
 	mv ${modfolder}/*.mod ${modfolder}/*.o ./
 #=========== targets for cuda =========================================
 quick_cuda:
-#	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_getxc.cu
-	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c *.cu
+	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_getxc.cu
+#	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c *.cu
 	cd $(cudafolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
 	cp $(cudafolder)/*.o ./
 	

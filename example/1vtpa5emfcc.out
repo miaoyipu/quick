@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Fri Oct 21 17:34:23 2011
+ TASK STARTS ON: Thu Jan 19 15:46:13 2012
  INPUT FILE:     1vtpa5emfcc.in
  OUTPUT FILE:    1vtpa5emfcc.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -113,7 +113,7 @@ DIIS CYCLE     =        1      MAX ERROR = 0.183130E-05
 RMS CHANGE     = 0.808789E-06  MAX CHANGE= 0.533082E-05
 PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
-SCF CYCLE      =        9      TIME      =     0.07
+SCF CYCLE      =        9      TIME      =     0.06
 RMS CHANGE     = 0.462530E-06  MAX CHANGE= 0.311564E-05
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
@@ -215,10 +215,10 @@ BASIS FUNCTIONS =    9
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.07
+SCF CYCLE      =        1      TIME      =     0.06
 RMS CHANGE     = 0.150543E+00  MAX CHANGE= 0.709514E+00
 
-SCF CYCLE      =        2      TIME      =     0.06
+SCF CYCLE      =        2      TIME      =     0.07
 RMS CHANGE     = 0.813251E-01  MAX CHANGE= 0.292791E+00
 
 SCF CYCLE      =        3      TIME      =   0.06

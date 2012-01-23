@@ -37,13 +37,13 @@ extern "C" void gpu_upload_basis_(int* nshell, int* nprim, int* jshell, int* jba
 
 
 void get2e(_gpu_type gpu);
-void getb3lyp(_gpu_type gpu);
+void getxc(_gpu_type gpu);
 
 extern "C" void gpu_get2e_(QUICKDouble* o);
-extern "C" void gpu_getxc_b3lyp_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, QUICKDouble* aelec, QUICKDouble* belec, QUICKDouble *o);
+extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, QUICKDouble* aelec, QUICKDouble* belec, QUICKDouble *o);
 
 __global__ void get2e_kernel();
-__global__ void getb3lyp_kernel();
+__global__ void getxc_kernel();
 
 __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 
@@ -258,7 +258,7 @@ __device__ void vertical_case_44(int I, int J, int K, int L, QUICKDouble* YVerti
                                  QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 
 //__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm);
-__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm, QUICKDouble XAng, QUICKDouble YAng, QUICKDouble ZAng, QUICKDouble WAng);
+__device__ void gpu_grid_xc(int irad, int iradtemp, int iatm, QUICKDouble XAng, QUICKDouble YAng, QUICKDouble ZAng, QUICKDouble WAng);
 
 __device__ int gridFormSG1(int iitype, QUICKDouble distance, \
                            QUICKDouble* XAng, QUICKDouble* YAng, QUICKDouble* ZAng, QUICKDouble* WAng);

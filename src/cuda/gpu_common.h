@@ -122,10 +122,10 @@ static const int SM_2X_THREADS_PER_BLOCK    =   512;
 static const int SM_13_2E_THREADS_PER_BLOCK =   256;
 static const int SM_2X_2E_THREADS_PER_BLOCK =   512;
 
-// constant for B3LYP Exchange-Correlation part
-static const int MAX_GRID                      =   194;
-static const int SM_13_B3LYP_THREADS_PER_BLOCK =   256;
-static const int SM_2X_B3LYP_THREADS_PER_BLOCK =   386;
+// constant for DFT Exchange-Correlation part
+static const int MAX_GRID                   =   194;
+static const int SM_13_XC_THREADS_PER_BLOCK =   256;
+static const int SM_2X_XC_THREADS_PER_BLOCK =   386;
 
 
 // physical constant, the same with quick_constants_module

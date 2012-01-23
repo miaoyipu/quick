@@ -62,7 +62,7 @@ void upload_sim_to_constant_dft(_gpu_type gpu){
 static float totTime;
 #endif
 
-void getb3lyp(_gpu_type gpu)
+void getxc(_gpu_type gpu)
 {
 #ifdef DEBUG
     cudaEvent_t start,end;
@@ -71,10 +71,10 @@ void getb3lyp(_gpu_type gpu)
     cudaEventRecord(start, 0);
 #endif
     
-    getb3lyp_kernel<<<gpu->blocks, gpu->b3lypThreadsPerBlock>>>();
+    getxc_kernel<<<gpu->blocks, gpu->XCThreadsPerBlock>>>();
     
 #ifdef DEBUG
-    printf("Running getb3lyp_kernel with BLOCK = %i, THREADS PER BLOCK = %i \n", gpu->blocks, gpu->b3lypThreadsPerBlock);
+    printf("Running getxc_kernel with BLOCK = %i, THREADS PER BLOCK = %i \n", gpu->blocks, gpu->XCThreadsPerBlock);
     cudaEventRecord(end, 0);
     cudaEventSynchronize(end);
     float time;
@@ -88,7 +88,7 @@ void getb3lyp(_gpu_type gpu)
 }
 
 
-__global__ void getb3lyp_kernel()
+__global__ void getxc_kernel()
 {
     unsigned int offset = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int totalThreads = blockDim.x * gridDim.x;
@@ -125,7 +125,7 @@ __global__ void getb3lyp_kernel()
             
             if (currentPoint <= myPoint && currentPoint + iiangt > myPoint) {
                 unsigned int pointId = (unsigned int) myPoint - currentPoint;
-                gpu_grid_b3lyp(j+1, radTotal, i+1, XAng[pointId], YAng[pointId], ZAng[pointId], WAng[pointId]);
+                gpu_grid_xc(j+1, radTotal, i+1, XAng[pointId], YAng[pointId], ZAng[pointId], WAng[pointId]);
                 myPoint = myPoint + totalThreads;
             }
             currentPoint = currentPoint + iiangt;
@@ -140,7 +140,7 @@ __global__ void getb3lyp_kernel()
  This subroutine is to get energy, electron density, deviation and operator change
  if given a point in grid.
  */
-__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm, QUICKDouble XAng, QUICKDouble YAng, QUICKDouble ZAng, QUICKDouble WAng){
+__device__ void gpu_grid_xc(int irad, int iradtemp, int iatm, QUICKDouble XAng, QUICKDouble YAng, QUICKDouble ZAng, QUICKDouble WAng){
     
     
     QUICKDouble rad, rad3;    

@@ -88,14 +88,14 @@ extern "C" void gpu_init_(void)
                 gpu -> sm_version           =   SM_13;
                 gpu -> threadsPerBlock      =   SM_13_THREADS_PER_BLOCK;
                 gpu -> twoEThreadsPerBlock  =   SM_13_2E_THREADS_PER_BLOCK;
-                gpu -> b3lypThreadsPerBlock =   SM_13_B3LYP_THREADS_PER_BLOCK;
+                gpu -> XCThreadsPerBlock    =   SM_13_XC_THREADS_PER_BLOCK;
                 break;
         }
     }else {
         gpu -> sm_version               = SM_2X;
         gpu -> threadsPerBlock          = SM_2X_THREADS_PER_BLOCK;
         gpu -> twoEThreadsPerBlock      = SM_2X_2E_THREADS_PER_BLOCK;
-        gpu -> b3lypThreadsPerBlock     = SM_2X_B3LYP_THREADS_PER_BLOCK;
+        gpu -> XCThreadsPerBlock        = SM_2X_XC_THREADS_PER_BLOCK;
     }
 
     PRINTDEBUG("FINISH INIT")
@@ -830,7 +830,7 @@ extern "C" void gpu_get2e_(QUICKDouble* o)
     PRINTDEBUG("COMPLETE RUNNING GET2E")
 }
 
-extern "C" void gpu_getxc_b3lyp_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, QUICKDouble* aelec, QUICKDouble* belec, QUICKDouble *o)
+extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, QUICKDouble* aelec, QUICKDouble* belec, QUICKDouble *o)
 {
     PRINTDEBUG("BEGIN TO RUN GETXC")
 
@@ -875,7 +875,7 @@ extern "C" void gpu_getxc_b3lyp_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Ee
     upload_sim_to_constant_dft(gpu);
     PRINTDEBUG("BEGIN TO RUN KERNEL")
     
-    getb3lyp(gpu);
+    getxc(gpu);
     gpu -> gpu_calculated -> oULL -> Download();
     gpu -> DFT_calculated -> Download();
     
