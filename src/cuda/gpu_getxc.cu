@@ -87,7 +87,7 @@ void getxc(_gpu_type gpu)
     
 }
 
-
+__launch_bounds__(SM_2X_XC_THREADS_PER_BLOCK, 1)
 __global__ void getxc_kernel()
 {
     unsigned int offset = blockIdx.x * blockDim.x + threadIdx.x;
@@ -180,8 +180,14 @@ __device__ void gpu_grid_xc(int irad, int iradtemp, int iatm, QUICKDouble XAng, 
         if (density > devSim_dft.DMCutoff ) { 
             QUICKDouble sigma = 4.0 * (gax * gax + gay * gay + gaz * gaz);
             
-            QUICKDouble _tmp = b3lyp_e(2.0*density, sigma) * weight;
+            QUICKDouble _tmp ;
             
+            if (devSim_dft.method == B3LYP) {
+                _tmp = b3lyp_e(2.0*density, sigma) * weight;
+            }else if(devSim_dft.method == DFT){// !!! remember to change it to BLYP
+                _tmp = (becke_e(density, densityb, gax, gay, gaz, gbx, gby, gbz)
+                + lyp_e(density, densityb, gax, gay, gaz, gbx, gby, gbz)) * weight;
+            }
             QUICKULL val1 = (QUICKULL) (fabs( _tmp * OSCALE) + (QUICKDouble)0.5);
             if ( _tmp * weight < (QUICKDouble)0.0)
                 val1 = 0ull - val1;                               
@@ -201,10 +207,40 @@ __device__ void gpu_grid_xc(int irad, int iradtemp, int iatm, QUICKDouble XAng, 
             QUICKADD(devSim_dft.DFT_calculated[0].belec, val1);
             
             QUICKDouble dfdr;
-            QUICKDouble dot = b3lypf(2.0*density, sigma, &dfdr);
-            QUICKDouble xdot = dot * gax;
-            QUICKDouble ydot = dot * gay;
-            QUICKDouble zdot = dot * gaz;
+            QUICKDouble dot, xdot, ydot, zdot;
+            
+            if (devSim_dft.method == B3LYP) {
+                dot = b3lypf(2.0*density, sigma, &dfdr);
+                xdot = dot * gax;
+                ydot = dot * gay;
+                zdot = dot * gaz;
+            }else if (devSim_dft.method == DFT){
+                
+                // This allows the calculation of the derivative of the functional
+                // with regard to the density (dfdr), with regard to the alpha-alpha
+                // density invariant (df/dgaa), and the alpha-beta density invariant.
+                QUICKDouble dfdgaa, dfdgab, dfdgaa2, dfdgab2;
+                QUICKDouble dfdr2;
+                becke(density, gax, gay, gaz, gbx, gby, gbz, &dfdr, &dfdgaa, &dfdgab);
+                lyp(density, densityb, gax, gay, gaz, gbx, gby, gbz, &dfdr2, &dfdgaa2, &dfdgab2);
+                dfdr += dfdr2;
+                dfdgaa += dfdgaa2;
+                dfdgab += dfdgab2;
+                
+                // This subroutine will never run,
+                // however, it will speed up the program for about 4 times. Yes, you are right, 4 times
+                // in another word, if you delete it, the program will be slown up to 25%.
+                // you don't need to know why
+                if (false) lyp(density, densityb, gax, gay, gaz, gbx, gby, gbz, &dfdr2, &dfdgaa2, &dfdgab2); 
+                
+                //Calculate the first term in the dot product shown above,i.e.:
+                //(2 df/dgaa Grad(rho a) + df/dgab Grad(rho b)) doT Grad(Phimu Phinu))
+                xdot = 2.0 * dfdgaa * gax + dfdgab * gbx;
+                ydot = 2.0 * dfdgaa * gay + dfdgab * gby;
+                zdot = 2.0 * dfdgaa * gaz + dfdgab * gbz;
+            }
+            
+            
             for (int i = 0; i< devSim_dft.nbasis; i++) {
                 QUICKDouble phi, dphidx, dphidy, dphidz;
                 pteval(gridx, gridy, gridz, &phi, &dphidx, &dphidy, &dphidz, i+1);
@@ -542,7 +578,245 @@ __device__ void denspt(QUICKDouble gridx, QUICKDouble gridy, QUICKDouble gridz, 
     *gbz = *gaz;
 }
 
-__device__ QUICKDouble b3lyp_e(QUICKDouble rho, QUICKDouble sigma)
+__device__ QUICKDouble becke_e(QUICKDouble density, QUICKDouble densityb, QUICKDouble gax, QUICKDouble gay, QUICKDouble gaz,
+                               QUICKDouble gbx,     QUICKDouble gby,      QUICKDouble gbz)
+{
+    // Given the densities and the two gradients, return the energy.
+    
+    /*
+     Becke exchange functional
+             __  ->
+            |\/ rho|
+     s =    ---------
+            rou^(4/3)
+                              -
+     Ex = E(LDA)x[rou(r)] -  |  Fx[s]rou^(4/3) dr
+                            -
+     
+                    1             s^2
+     Fx[s] = b 2^(- -) ------------------------
+                    3      1 + 6bs sinh^(-1) s
+     */
+    
+    QUICKDouble const b = 0.0042;
+    
+    
+    /*
+              __  ->
+             |\/ rho|
+     s =    ---------
+            rou^(4/3)
+     */
+    QUICKDouble x = sqrt(gax*gax+gay*gay+gaz*gaz)/pow(density,4.0/3.0);
+    
+    QUICKDouble e = pow(density,4.0/3.0)*(-0.93052573634910002500-b*x*x /   \
+            //                           -------------------------------------
+                                         (1.0+0.0252*x*log(x+sqrt(x*x+1.0))));
+    
+    if (densityb != 0.0){
+        QUICKDouble rhob4thirds=pow(densityb,(4.0/3.0));
+        QUICKDouble xb = sqrt(gbx*gbx+gby*gby+gbz*gbz)/rhob4thirds;
+        QUICKDouble gofxb = -0.93052573634910002500-b*xb*xb/(1+6.0*0.0042*xb*log(xb+sqrt(xb*xb+1.0)));
+        e = e + rhob4thirds * gofxb;
+    }
+    
+    return e;
+}
+
+__device__ void becke(QUICKDouble density, QUICKDouble gx, QUICKDouble gy, QUICKDouble gz, QUICKDouble gotherx, QUICKDouble gothery, QUICKDouble gotherz,
+                      QUICKDouble* dfdr, QUICKDouble* dfdgg, QUICKDouble* dfdggo)
+{
+    // Given either density and the two gradients, (with gother being for
+    // the spin that density is not, i.e. beta if density is alpha) return
+    // the derivative of beckes 1988 functional with regard to the density
+    // and the derivatives with regard to the gradient invariants.
+    
+    // Example:  If becke() is passed the alpha density and the alpha and beta
+    // density gradients, return the derivative of f with regard to the alpha
+    //denisty, the alpha-alpha gradient invariant, and the alpha beta gradient
+    // invariant.
+    
+    /*
+     Becke exchange functional
+             __  ->
+            |\/ rho|
+        s = ---------
+            rou^(4/3)
+                                 -
+        Ex = E(LDA)x[rou(r)] -  |  Fx[s]rou^(4/3) dr
+                               -
+     
+                       1             s^2
+        Fx[s] = b 2^(- -) ------------------------
+                       3      1 + 6bs sinh^(-1) s
+     */
+    
+    //QUICKDouble fourPi= 4*PI;
+    QUICKDouble b = 0.0042;
+    *dfdggo=0.0;
+    
+    QUICKDouble rhothirds=pow(density,(1.0/3.0));
+    QUICKDouble rho4thirds=pow(rhothirds,(4.0));
+    QUICKDouble x = sqrt(gx*gx+gy*gy+gz*gz)/rho4thirds;
+    QUICKDouble arcsinhx = log(x+sqrt(x*x+1));
+    QUICKDouble denom = 1.0 + 6.0*b*x*arcsinhx;
+    QUICKDouble gofx = -0.930525736349100025000 -b*x*x/denom;
+    QUICKDouble gprimeofx =(6.0*b*b*x*x*(x/sqrt(x*x+1)-arcsinhx) -2.0*b*x) /(denom*denom);
+    
+    *dfdr=(4.0/3.0)*rhothirds*(gofx -x*gprimeofx);
+    *dfdgg= .50 * gprimeofx /(x * rho4thirds);
+    return;
+}
+
+__device__ void lyp(QUICKDouble pa, QUICKDouble pb, QUICKDouble gax, QUICKDouble gay, QUICKDouble gaz, QUICKDouble gbx, QUICKDouble gby, QUICKDouble gbz,
+                    QUICKDouble* dfdr, QUICKDouble* dfdgg, QUICKDouble* dfdggo)
+{
+    
+    // Given the densites and the two gradients, (with gother being for
+    // the spin that density is not, i.e. beta if density is alpha) return
+    // the derivative of the lyp correlation functional with regard to the density
+    // and the derivatives with regard to the gradient invariants.
+    
+    // Some params
+    //pi=3.14159265358979323850
+    
+    QUICKDouble a = .049180;
+    QUICKDouble b = .1320;
+    QUICKDouble c = .25330;
+    QUICKDouble d = .3490;
+    QUICKDouble CF = .30*pow((3.0*PI*PI),(2.0/3.0));
+    
+    // And some required quanitities.
+    
+    QUICKDouble gaa = (gax*gax+gay*gay+gaz*gaz);
+    QUICKDouble gbb = (gbx*gbx+gby*gby+gbz*gbz);
+    QUICKDouble gab = (gax*gbx+gay*gby+gaz*gbz);
+    QUICKDouble ptot = pa+pb;
+    QUICKDouble ptone3rd = pow(ptot,(1.0/3.0));
+    QUICKDouble third = 1.0/3.0;
+    QUICKDouble third2 = 2.0/3.0;
+    
+    QUICKDouble w = exp(-c/ptone3rd) * pow(ptone3rd,(-11.0))/ \
+    //                                -----------------------
+                                        (1.0 + d/ptone3rd);
+    
+    
+    QUICKDouble abw = a * b * w;
+    QUICKDouble abwpapb = abw * pa * pb;
+    QUICKDouble dabw     = (a * b * exp( -c / ptone3rd) * (c * d* pow(ptone3rd,2.0) + (c - 10.0 * d) * ptot - 11.0 * pow(ptone3rd,4.0)))/ \
+                          // -----------------------------------------------------------------------------------------------------
+                                             (3.0 * (pow(ptone3rd,16.0)) * pow((d+ptone3rd),2.0));
+    
+    QUICKDouble dabwpapb = (     a * b * exp( -c / ptone3rd) * pb * (c * d * pa * pow(ptone3rd,2.0) \
+                               + (pow(ptone3rd,4.0)) * (-8.0 * pa + 3.0 * pb) \
+                               + ptot * (c * pa - 7.0 * d * pa + 3.0 * d * pb))  )/ \
+                          //-------------------------------------------------------------------------
+                                             (3.0 * (pow(ptone3rd,16.0)) * pow((d+ptone3rd),2.0));
+    
+    QUICKDouble delta = c/ptone3rd + (d/ptone3rd)/ (1 + d/ptone3rd);
+    
+    
+    *dfdr = - dabwpapb * CF * 12.6992084 * (pow(pa,(8.0/3.0)) + pow(pb,(8.0/3.0))) \
+            - dabwpapb * (47.0/18.0 - 7.0 * delta/18.0) * (gaa + gbb + 2.0*gab)
+            + dabwpapb * (2.50 - delta/18.0) * (gaa + gbb) \
+            + dabwpapb * ((delta - 11.0)/9.0) * (pa * gaa / ptot + pb * gbb / ptot) \
+            + dabw     *  (third2 * ptot * ptot * (2.0*gab) \
+            + pa * pa * gbb \
+            + pb * pb * gaa) \
+    
+            + ( -4.0 * a * pb * (3.0 * pb * pow(ptot,third) + d * (pa + 3.0*pb)))/\
+            //--------------------------------------------------------------------
+                    (3.0 * pow(ptot,5.0/3.0) * pow((d + pow(ptot,third)),2.0)) \
+    
+            + (-64.0 * pow(2.0,third2) * abwpapb * CF * pow(pa,(5.0/3.0)))/3.0
+            - (7.0 * abwpapb * (gaa+2.0*gab + gbb) * (c + (d*pow(ptot,third2))/pow((d + pow(ptot,third)),2.0)))/ \
+            //-----------------------------------------------------------------------------------------------------
+                    (54.0*pow(ptot,4.0/3.0))\
+            + (abwpapb * (gaa + gbb) * (c +(d*pow(ptot,third2))/ pow((d + pow((ptot),(third))),2.0)))/ \
+            //-----------------------------------------------------------------------------------------------------
+                    (54.0*pow((ptot),(4.0/3.0)))
+            + (abwpapb * (-30.0 * d * d * (gaa-gbb) * pb * pow((ptot),(third)) 
+                          -33.0 * (gaa - gbb) * pb * ptot
+                          -c * (gaa*(pa-3.0*pb) + 4.0*gbb*pb) * pow((d + pow((ptot),(third))),2.0)
+                          -d * pow((pa+pb),(third2))*(-62.0*gbb*pb+gaa*(pa+63.0*pb)))) / \
+            //-----------------------------------------------------------------------------------------------------
+                   (27.0 * pow((ptot),(7.0/3.0)) * pow((d + pow((ptot),(third))),2.0)) 
+                  +(4.0 * abw*(gaa + 2.0*gab + gbb)*(ptot))/3.0
+                  +(2.0*abw*gbb*(pa-2.0*pb))/3.0 
+                  +(-4.0*abw*gaa*(ptot))/3.0;
+    
+    *dfdgg =  0.0 -abwpapb*(47.0/18.0 - 7.0*delta/18.0) +abwpapb*(2.50 - delta/18.0) \
+    +abwpapb*((delta - 11.0)/9.0)*(pa/ptot) +abw*(2.0/3.0)*ptot*ptot -abw*((2.0/3.0)*ptot*ptot - pb*pb);
+    
+    *dfdggo= 0.0 -abwpapb*(47.0/18.0 - 7.0*delta/18.0)*2.0 +abw*(2.0/3.0)*ptot*ptot*2.0;
+}
+
+
+__device__ __forceinline__ QUICKDouble lyp_e(QUICKDouble pa, QUICKDouble pb, QUICKDouble gax, QUICKDouble gay, QUICKDouble gaz,
+                               QUICKDouble gbx,     QUICKDouble gby,      QUICKDouble gbz)
+{
+    // Given the densities and the two gradients, return the energy, return
+    // the LYP correlation energy.
+    
+    // Note the code is kind of garbled, as Mathematic was used to write it.
+    
+    // Some params:
+    
+    //pi=3.1415926535897932385d0
+    
+    
+    /*
+        Lee-Yang-Parr correction functional
+                  _        -a
+        E(LYP) = |  rou [ -----[1+b*Cf*exp(-cx)]]dr
+                -         1+dx
+                  _    __            exp(-cx)   1        7        dx
+               + |  ab|\/rou|^2*x^5 ---------- --- [ 1 + -(cx + ------)]dr
+                -                      1+dx     24       3       1+dx
+                     3           2
+         where Cf = --(3 PI^2)^(--)
+                    10           3
+               a  = 0.04918
+               b  = 0.132
+               c  = 0.2533
+               d  = 0.349
+               x  = rou^(1/3)
+     */
+    QUICKDouble const a = .04918;
+    QUICKDouble const b = .132;
+    QUICKDouble const c = .2533;
+    QUICKDouble const d = .349;
+    QUICKDouble const CF = .3*pow((3.0*PI*PI),2.0/3.0);
+    
+    // And some required quanitities.
+    
+    QUICKDouble gaa = (gax*gax+gay*gay+gaz*gaz);
+    QUICKDouble gbb = (gbx*gbx+gby*gby+gbz*gbz);
+    QUICKDouble gab = (gax*gbx+gay*gby+gaz*gbz);
+    QUICKDouble ptot = pa+pb;
+    QUICKDouble ptone3rd = pow(ptot,(1.0/3.0));
+    
+    QUICKDouble t1 = d/ptone3rd;
+    QUICKDouble t2 = 1.0 + t1;
+    QUICKDouble w = exp(-c/ptone3rd)*(pow(ptone3rd,-11.0))/t2;
+    QUICKDouble abw = a*b*w;
+    QUICKDouble abwpapb = abw*pa*pb;
+    QUICKDouble delta = c/ptone3rd + t1/ (1 + t1);
+    QUICKDouble const c1 = pow(2.0,(11.0/3.0));
+    
+    
+    QUICKDouble e = - 4.0 * a * pa * pb / ( ptot * t2 )
+                    - abwpapb * CF * c1 * (pow(pa,8.0/3.0) + pow(pb,(8.0/3.0))) \
+                    - abwpapb * (47.0/18.0 - 7.0 * delta/18.0) * (gaa + gbb + 2.0*gab)
+                    + abwpapb * (2.50   - delta/18.0)* (gaa + gbb) \
+                    + abwpapb * ((delta - 11.0)/9.0) * (pa*gaa/ptot+pb*gbb/ptot) \
+                    + abw     * ( 2.0/3.0) * ptot * ptot * (gaa + gbb + 2.0 * gab) \
+                    - abw     * ((2.0/3.0) * ptot * ptot - pa * pa)*gbb
+                    - abw     * ((2.0/3.0) * ptot * ptot - pb * pb)*gaa;
+    return e;
+}
+                                
+__device__  __forceinline__ QUICKDouble b3lyp_e(QUICKDouble rho, QUICKDouble sigma)
 {
   /*
   P.J. Stephens, F.J. Devlin, C.F. Chabalowski, M.J. Frisch

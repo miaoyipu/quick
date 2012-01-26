@@ -1,7 +1,7 @@
   **************************************************************************
-  **                      QUICK 0.01-2010-Jul                             **
+  **                      QUICK-0.06 June 12                              **
   **                                                                      **
-  **                        Copyright (c) 2010                            **
+  **                        Copyright (c) 2011                            **
   **                Regents of the University of Florida                  **
   **                       All Rights Reserved.                           **
   **                                                                      **
@@ -19,38 +19,46 @@
   Cite this work as:
   Miao, Y.: He, X.: Ayers,K: Brothers, E.: Merz,K. M. QUICK;
   University of Florida, Gainesville, FL, 2010
- Task starts on: Mon Feb 14 17:51:03 2011
- INPUT FILE:   h2.in                         
- OUTPUT FILE:  h2.out                        
- TOTAL PROCESSOR =     1
- MASTER NAME     = qtpclnt135.qtp.ufl.edu        
 
- @  Read Atom types 
+  If you have any comment or queries, please send email for technic support:
+  quick@qtp.ufl.edu
 
-ATOM TYPES=   1
-ATOM NUMBER=   2
+ TASK STARTS ON: Thu Jan 26 13:28:22 2012
+ INPUT FILE:     h2.in
+ OUTPUT FILE:    h2.out
+ BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
- @ Read Job Type
+ @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF  ZMAKE  BASIS=STO-3G ENERGY                                                                                                                                                                          
+KEYWORD=HF OPT ZMAKE  BASIS=STO-3G ENERGY                                                                                                                                                                       
   -------------------------------------
- ====== JOB CARD =====
-METHOD = HATREE FOCK
-SAD INITAL GUESS
-PRINT ENERGY EVERY CYCLE
-USE DIIS SCF
-Z-MATRIX CONSTRUCTION
-BASIS FILE=/Users/miao/Workspace/new_quick/basis/STO-3G                                    
-TOTAL MOLECULAR CHARGE =  0 (DEFAULT)
-MULTIPLICITY = 1 (DEFAULT)
-MAX SCF CYCLES = 200 (DEFAULT)
-DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  = 1E-4 (DEFAULT)
-MAX DIIS CYCLES = 10 (DEFAULT)
-DELTA DENSITY IMPLEMENTATION STARTS FROM CYCLE 2 (DEFAULT)
-MATRIX ELEMENTS LESS THAN 0.100E-09 CONSIDERED ZERO. (DEFAULT)
-BASIS FUNCTION MAGNITUDE LESS THAN   0.1E-09 A.U. CONSIDERED ZERO. (DEFAULT)
-THRESHOLD FOR ECP-INTEGRALS PRESCREENING =     0.10000E-11  (DEFAULT)
+ ============== JOB CARD =============
+| METHOD = HATREE FOCK
+| SAD INITAL GUESS 
+| USE DIIS SCF
+| PRINT ENERGY EVERY CYCLE
+| Z-MATRIX CONSTRUCTION
+| GEOMETRY OPTIMIZATION| NUMERICAL GRADIENT
+| REQUEST CRITERIA FOR GEOMETRY CONVERGENCE: 
+|      MAX ALLOWED GEO CHANGE  =  0.189E+00
+|      MAX GEOMETRY CHANGE     =  0.180E-02
+|      GEOMETRY CHANGE RMS     =  0.120E-02
+|      MAX GRADIENT CHANGE     =  0.450E-03
+|      GRADIENT NORMALIZATION  =  0.300E-03
+| GRADIENT CALCULATION
+| MAX SCF CYCLES =    200
+| MAX DIIS CYCLES =   10
+| DELTA DENSITY START CYCLE = 1000
+| COMPUATIONAL CUTOFF: 
+|      TWO-e INTEGRAL   =  0.100E-06
+|      BASIS SET PRIME  =  0.100E-06
+|      MATRIX ELEMENTS  =  0.100E-09
+|      BASIS FUNCTION   =  0.100E-09
+|      GRADIENT CUTOFF  =  0.100E-06
+| DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+| BASIS SET = STO-3G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/STO-3G
 
  @ Finish reading job
 
@@ -59,8 +67,9 @@ THRESHOLD FOR ECP-INTEGRALS PRESCREENING =     0.10000E-11  (DEFAULT)
 
  For Atom Kind =    1
  ELEMENT = H 
-NUMBER OF ALPHA ELECTRONS =    1
-NUMBER OF BETA ELECTRONS  =    0
+
+ ! WARNING:  ONLY ONE ATOM, TURN OFF OPTIMIZATION.
+
 BASIS FUNCTIONS =    1
 
  @ Begin Energy Calculation
@@ -69,9 +78,9 @@ BASIS FUNCTIONS =    1
 SCF CYCLE      =        1      TIME      =     0.00
 RMS CHANGE     = 0.100000E-07  MAX CHANGE= 0.100000E-07
 CONVERGED!!!!!
-ELECTRONIC ENERGY  =     0.000000000
-CORE_CORE REPULSION=     0.000000000
-TOTAL ENERGY       =     0.000000000
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
 
  @ End Energy calculation
 
@@ -81,26 +90,43 @@ TOTAL ENERGY       =     0.000000000
 
  @ Begin to Read Mol Info
 
-TOTOAL ATOM NUMBER =    2
-NUMBER OF HYDROGEN ATOM =    2
-NUMBER OF NON-HYDROGEN ATOM =    0
-DEGREE OF FREEdoM =     0
 
-NUMBER OF ELECTRONS =    2
-BASIS FUNCTIONS =    2
+ =========== Molecule Input ==========
+| TOTAL MOLECULAR CHARGE  =    0    MULTIPLICITY                =    1
+| TOTOAL ATOM NUMBER      =    2    NUMBER OF ATOM TYPES        =    1
+| NUMBER OF HYDROGEN ATOM =    2    NUMBER OF NON-HYDROGEN ATOM =    0
+| NUMBER OF ELECTRONS     =    2
 
+ -- INPUT GEOMETRY -- :
+    H           0.0000       0.0000       0.0000
+    H           0.7000       0.0000       0.0000
 
-INPUT GEOMETRY:
-H           0.0000       0.0000       0.0000
-H           0.7000       0.0000       0.0000
+ -- DISTANCE MATRIX -- :
+              1           2
+      1     0.00000
+      2     1.32281     0.00000
 
-DISTANCE MATRIX:
-            1         2
-      1    0.0000
-      2    0.7000    0.0000
+============== BASIS INFOS ==============
+| BASIS FUNCTIONS =    2
+| NSHELL =    2 NPRIM  =    6
+| JSHELL =    2 JBASIS =    6
+
 
  @ End Reading Mol Info 
 
+
+ @ Begin Optimization Job
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP   1 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H        0.0000    0.0000    0.0000
+  H        0.7000    0.0000    0.0000
 
  @ Begin Energy Calculation
 
@@ -108,22 +134,850 @@ DISTANCE MATRIX:
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1     -0.729336418      ------         0.000     1        0.00      0.00      0.00    0.0000E+00  0.5086E+00  0.5931E+00
-  2     -1.117349035  0.388013E+00       0.000     2        0.00      0.00      0.00    0.8913E-12  0.2482E-11  0.3510E-11
+  1     -0.729336375      ------         0.000     1        0.00      0.00      0.00    0.0000E+00  0.5086E+00  0.5931E+00
+  2     -1.117349039  0.388013E+00       0.000     2        0.00      0.00      0.00    0.8907E-10  0.2481E-09  0.3509E-09
 DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
-  3     -1.117349035  -.111022E-15       0.000     3        0.00      0.00      0.00    0.1542E-11  0.0000E+00  0.0000E+00
+  3     -1.117349039  -.555112E-15       0.000     3        0.00      0.00      0.00    0.1293E-09  0.2534E-10  0.3583E-10
 DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
-  4     -1.117349035  -.111022E-15       0.000     4        0.00      0.00      0.00    0.1542E-11  0.0000E+00  0.0000E+00
+  4     -1.117349039  0.333067E-15       0.000     4        0.00      0.00      0.00    0.1516E-09  0.2575E-09  0.3642E-09
 DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   4 CYLCES
- MAX ERROR = 0.154166E-11   RMS CHANGE = 0.000000E+00   MAX CHANGE = 0.000000E+00
+ MAX ERROR = 0.151624E-09   RMS CHANGE = 0.257517E-09   MAX CHANGE = 0.364184E-09
  -----------------------------------------------
-ELECTRONIC ENERGY  =    -1.873316476
-CORE_CORE REPULSION=     0.755967440
-TOTAL ENERGY       =    -1.117349035
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.755967261
+TOTAL ENERGY         =    -1.117349039
 
  @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X     0.0000000000     0.0000000000     0.0137427586    -0.1000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     0.7000002196     0.0000000000    -0.0137427586     0.8000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ MAXIMUM GRADIENT ELEMENT=    0.1374275863E-01(REQUEST=    0.4500000000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP   2 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -0.1000    0.0000    0.0000
+  H        0.8000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.587974578
+TOTAL ENERGY         =    -1.285341723
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -0.1000000000     0.0137427586     0.0561904299    -0.2000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     0.8000002196    -0.0137427586    -0.0561904299     0.9000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.1679926838E+00
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.5619042986E-01(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.3244155980E-01(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP   3 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -0.2000    0.0000    0.0000
+  H        0.9000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.481070130
+TOTAL ENERGY         =    -1.392246170
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -0.2000000000     0.0561904299     0.1747967983    -0.3000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     0.9000002196    -0.0561904299    -0.1747967983     1.0000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.1069044473E+00
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.1747967983E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.1009189786E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP   4 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -0.3000    0.0000    0.0000
+  H        1.0000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.407059354
+TOTAL ENERGY         =    -1.466256947
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -0.3000000000     0.1747967983     0.2999646742    -0.4000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.0000002196    -0.1747967983    -0.2999646742     1.1000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.7401077678E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.2999646742E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.1731846854E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP   5 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -0.4000    0.0000    0.0000
+  H        1.1000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.352784781
+TOTAL ENERGY         =    -1.520531520
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -0.4000000000     0.2999646742     0.4125393187    -0.5000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.1000002196    -0.2999646742    -0.4125393187     1.2000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.5427457253E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.4125393187E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.2381796867E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP   6 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -0.5000    0.0000    0.0000
+  H        1.2000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.311280694
+TOTAL ENERGY         =    -1.562035606
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -0.5000000000     0.4125393187     0.5075890859    -0.6000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.2000002196    -0.4125393187    -0.5075890859     1.3000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.4150408652E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.5075890859E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.2930566954E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP   7 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -0.6000    0.0000    0.0000
+  H        1.3000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.278514309
+TOTAL ENERGY         =    -1.594801991
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -0.6000000000     0.5075890859     0.5860903562    -0.7000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.3000002196    -0.5075890859    -0.5860903562     1.4000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.3276638511E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.5860903562E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.3383794249E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP   8 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -0.7000    0.0000    0.0000
+  H        1.4000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.251989140
+TOTAL ENERGY         =    -1.621327161
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -0.7000000000     0.5860903562     0.6508364002    -0.8000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.4000002196    -0.5860903562    -0.6508364002     1.5000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.2652516955E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.6508364002E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.3757605708E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP   9 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -0.8000    0.0000    0.0000
+  H        1.5000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.230077043
+TOTAL ENERGY         =    -1.643239258
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -0.8000000000     0.6508364002     0.7046446881    -0.9000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.5000002196    -0.6508364002    -0.7046446881     1.6000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.2191209702E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.7046446881E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.4068268003E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  10 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -0.9000    0.0000    0.0000
+  H        1.6000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.211670881
+TOTAL ENERGY         =    -1.661645420
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -0.9000000000     0.7046446881     0.7499451639    -1.0000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.6000002196    -0.7046446881    -0.7499451639     1.7000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.1840616181E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.7499451639E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.4329810423E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  11 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -1.0000    0.0000    0.0000
+  H        1.7000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.195991558
+TOTAL ENERGY         =    -1.677324743
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -1.0000000000     0.7499451639     0.7887303333    -1.1000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.7000002196    -0.7499451639    -0.7887303333     1.8000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.1567932324E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.7887303333E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.4553736702E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  12 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -1.1000    0.0000    0.0000
+  H        1.8000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.182474900
+TOTAL ENERGY         =    -1.690841401
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -1.1000000000     0.7887303333     0.8225463475    -1.2000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.8000002196    -0.7887303333    -0.8225463475     1.9000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.1351665813E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.8225463475E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.4748973551E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  13 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -1.2000    0.0000    0.0000
+  H        1.9000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.170702326
+TOTAL ENERGY         =    -1.702613975
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -1.2000000000     0.8225463475     0.8525348407    -1.3000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     1.9000002196    -0.8225463475    -0.8525348407     2.0000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.1177257334E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.8525348407E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.4922112198E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  14 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -1.3000    0.0000    0.0000
+  H        2.0000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.160356731
+TOTAL ENERGY         =    -1.712959569
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -1.3000000000     0.8525348407     0.8795247495    -1.4000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     2.0000002196    -0.8525348407    -0.8795247495     2.1000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.1034559484E-01
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.8795247495E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.5077938509E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  15 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -1.4000    0.0000    0.0000
+  H        2.1000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.151193490
+TOTAL ENERGY         =    -1.722122811
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -1.4000000000     0.8795247495     0.9041294158    -1.5000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     2.1000002196    -0.8795247495    -0.9041294158     2.2000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.9163241222E-02
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.9041294158E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.5219993616E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  16 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -1.5000    0.0000    0.0000
+  H        2.2000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.143020870
+TOTAL ENERGY         =    -1.730295431
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -1.5000000000     0.9041294158     0.9268173009    -1.6000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     2.2000002196    -0.9041294158    -0.9268173009     2.3000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.8172620608E-02
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.9268173009E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.5350982181E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  17 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -1.6000    0.0000    0.0000
+  H        2.3000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.135686466
+TOTAL ENERGY         =    -1.737629834
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -1.6000000000     0.9268173009     0.9479538730    -1.7000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     2.3000002196    -0.9268173009    -0.9479538730     2.4000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.7334403157E-02
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.9479538730E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.5473014237E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  18 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -1.7000    0.0000    0.0000
+  H        2.4000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.129067615
+TOTAL ENERGY         =    -1.744248686
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -1.7000000000     0.9479538730     0.9678257501    -1.8000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     2.4000002196    -0.9479538730    -0.9678257501     2.5000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.6618851668E-02
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.9678257501E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.5587744574E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+
+ @ Optimize for New Step
+
+
+============  GEOMETRY FOR OPTIMIZATION STEP  19 OUT OF   18  ============
+
+GEOMETRY INPUT
+ELEMENT      X         Y         Z
+  H       -1.8000    0.0000    0.0000
+  H        2.5000    0.0000    0.0000
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+ELECTRONIC ENERGY    =    -1.873316301
+CORE_CORE REPULSION  =     0.123064470
+TOTAL ENERGY         =    -1.750251831
+
+ @ End Energy calculation
+
+
+ ANALYTICAL GRADIENT: 
+----------------------------------------------------------------------------
+ VARIBLES    OLD_X            OLD_GRAD        NEW_GRAD          NEW_X
+----------------------------------------------------------------------------
+    1X    -1.8000000000     0.9678257501     0.9866570798    -1.9000000000
+    1Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    1Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2X     2.5000002196    -0.9678257501    -0.9866570798     2.6000002196
+    2Y     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+    2Z     0.0000000000     0.0000000000     0.0000000000     0.0000000000
+----------------------------------------------------------------------------
+ OPTIMZATION STATISTICS:
+ ENERGY CHANGE           =   -0.6003144568E-02
+ MAXIMUM GEOMETRY CHANGE =    0.1000000000E+00(REQUEST= 0.18000E-02)
+ GEOMETRY CHANGE RMS     =    0.5773502692E-01(REQUEST= 0.12000E-02)
+ MAXIMUM GRADIENT ELEMENT=    0.9866570798E+00(REQUEST= 0.45000E-03)
+ GRADIENT NORM           =    0.5696467306E+00(REQUEST= 0.30000E-03)
+
+ @ Finish Optimization for This Step
+
+ WARNING: REACH MAX OPT CYCLE BUT CANNOT GET OPTIMIZED GEOMETRY
+          BUT STILL OUTPUT THE GEOMETRY WE GET.
+============= GEOMETRY INFORMATION (NOT OPTIMIZED) ===========
+
+ OPTIMIZED GEOMETRY IN CARTESIAN
+ ELEMENT      X         Y         Z
+  H       -1.9000    0.0000    0.0000
+  H        2.6000    0.0000    0.0000
+
+ FORCE
+ ELEMENT      X         Y         Z
+  H       -0.5221   -0.0000   -0.0000
+  H        0.5221   -0.0000   -0.0000
+
+ MINIMIZED ENERGY=  -1.7502518306
+===============================================================
+
+ @ Finish Optimization Job
 
 
  @ Begin Zmake conversion
@@ -136,42 +990,27 @@ TOTAL ENERGY       =    -1.117349035
      I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
 
      1      H        0.00000  0     0.00000  0      0.00000  0      0    0    0
-     2      H        0.70000  1     0.00000  0      0.00000  0      1    0    0
+     2      H        4.50000  1     0.00000  0      0.00000  0      1    0    0
 
  @ End Zmake conversion
-
-
- @ Begin Charge and Dipole Calculation
-
-    ATOMIC CHARGES
-   ATOM          MULLIKEN            LOWDIN
-   H              0.0000            -0.0000
-   H             -0.0000             0.0000
-   TOTAL        -0.0000            -0.0000
-
-    DIPOLE (DEBYE)
-      X         Y         Z        TOTAL
-   -0.0000    0.0000    0.0000    0.0000
-
- @ End Charge and Dipole Calculation
 
 
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     0.023513000( 39.58%)
-TOTAL SCF TIME     =     0.000964000(  1.62%)
-      TOTAL OP TIME      =     0.000215000(  0.36%)
-            TOTAL 1e TIME      =     0.000160000(  0.27%)
-            TOTAL 2e TIME      =     0.000197000(  0.33%)
-            TOTAL ENERGY TIME  =     0.000003000(  0.01%)
-      TOTAL DII TIME     =     0.000081000(  0.14%)
-            TOTAL DIAG TIME    =     0.000011000(  0.02%)
-      DIPOLE TIME        =     0.000108000(  0.18%)
-TOTAL TIME         =     0.059409000
+INITIAL GUESS TIME =     0.010000000( 25.00%)
+TOTAL SCF TIME     =     0.000000000(  0.00%)
+      TOTAL OP TIME      =     0.000000000(  0.00%)
+            TOTAL 1e TIME      =     0.000000000(  0.00%)
+            TOTAL 2e TIME      =     0.000000000(  0.00%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.000000000(  0.00%)
+            TOTAL DIAG TIME    =     0.000000000(  0.00%)
+GRADIENT TIME      =     0.010000000( 25.00%)
+TOTAL TIME         =     0.040000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes  0.1 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes  0.0 seconds.
 
  @ Finish Output Timing Infomration
 
- Task Finished on: Mon Feb 14 17:51:03 2011
+ Normal Terminatation. Task Finished on: Thu Jan 26 13:28:22 2012

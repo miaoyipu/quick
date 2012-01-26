@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Tue Jan 17 15:17:56 2012
+ TASK STARTS ON: Tue Jan 17 15:19:47 2012
  INPUT FILE:     test4.in
  OUTPUT FILE:    test4.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -93,7 +93,7 @@ SCF CYCLE      =        3      TIME      =   0.06
 DIIS CYCLE     =        1      MAX ERROR = 0.394445E-01
 RMS CHANGE     = 0.137215E-01  MAX CHANGE= 0.589123E-01
 
-SCF CYCLE      =        4      TIME      =   0.07
+SCF CYCLE      =        4      TIME      =   0.06
 DIIS CYCLE     =        2      MAX ERROR = 0.746633E-02
 RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
 
@@ -101,7 +101,7 @@ SCF CYCLE      =        5      TIME      =   0.06
 DIIS CYCLE     =        3      MAX ERROR = 0.308852E-02
 RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
 
-SCF CYCLE      =        6      TIME      =   0.06
+SCF CYCLE      =        6      TIME      =   0.07
 DIIS CYCLE     =        4      MAX ERROR = 0.299208E-03
 RMS CHANGE     = 0.311349E-03  MAX CHANGE= 0.215704E-02
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
@@ -185,3 +185,67 @@ TOTAL ENERGY         =     0.000000000
 
  @ Begin Energy Calculation
 
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+  1    -39.639764558      ------         0.010     1        0.00      0.01      0.00    0.1489E+01  0.1037E+00  0.5681E+00
+  2    -39.322516045  -.317249E+00       0.010     2        0.00      0.01      0.00    0.1511E+00  0.4963E-01  0.4164E+00
+  3    -39.374324157  0.518081E-01       0.010     3        0.00      0.01      0.00    0.5432E-01  0.1356E-01  0.7171E-01
+  4    -39.386061469  0.117373E-01       0.010     4        0.00      0.01      0.00    0.4834E-01  0.1237E-01  0.9631E-01
+  5    -39.393513735  0.745227E-02       0.010     5        0.00      0.01      0.00    0.4662E-01  0.1158E-01  0.5585E-01
+  6    -39.405595960  0.120822E-01       0.010     6        0.00      0.01      0.00    0.4345E-01  0.1996E-01  0.9624E-01
+  7    -39.423963149  0.183672E-01       0.010     7        0.00      0.01      0.00    0.3561E-01  0.3883E-01  0.1971E+00
+  8    -39.450155014  0.261919E-01       0.010     8        0.00      0.01      0.00    0.1978E-01  0.1599E-01  0.6868E-01
+  9    -39.455564804  0.540979E-02       0.010     9        0.00      0.01      0.00    0.9023E-02  0.1461E-01  0.6061E-01
+ 10    -39.457085263  0.152046E-02       0.010    10        0.00      0.01      0.00    0.7521E-02  0.1976E-02  0.1403E-01
+ 11    -39.457198550  0.113287E-03       0.010     1        0.00      0.01      0.00    0.2898E-02  0.1491E-02  0.1069E-01
+ 12    -39.457219904  0.213548E-04       0.010     2        0.00      0.01      0.00    0.2353E-03  0.1144E-03  0.9558E-03
+ 13    -39.457220048  0.143496E-06       0.010     3        0.00      0.01      0.00    0.8298E-04  0.6476E-04  0.4841E-03
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER  13 CYLCES
+ MAX ERROR = 0.829792E-04   RMS CHANGE = 0.647558E-04   MAX CHANGE = 0.484139E-03
+ -----------------------------------------------
+ELECTRONIC ENERGY    =   -47.307086882
+CORE_CORE REPULSION  =     7.849866834
+TOTAL ENERGY         =   -39.457220048
+
+ @ End Energy calculation
+
+
+ @ Begin Zmake conversion
+
+  
+ Z-MATRIX:
+
+   ATOM  ELEMENTAL  BOND LENGTH    BOND ANGLE    DIHEDRAL ANGLE
+  NUMBER  SYMBOL    (ANGSTROMS)    (DEGREES)       (DEGREES)
+     I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
+
+     1      C        0.00000  0     0.00000  0      0.00000  0      0    0    0
+     2      H        7.48415  1     0.00000  0      0.00000  0      1    0    0
+     3      H        8.30928  1    27.67689  1      0.00000  0      1    2    0
+     4      H        1.09002  1    30.23049  1    104.24927  1      1    2    3
+     5      H        1.09006  1    45.63091  1     48.50451  1      1    2    3
+
+ @ End Zmake conversion
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     0.500000000( 26.88%)
+TOTAL SCF TIME     =     0.130000000(  6.99%)
+      TOTAL OP TIME      =     0.130000000(  6.99%)
+            TOTAL 1e TIME      =     0.000000000(  0.00%)
+            TOTAL 2e TIME      =     0.130000000(  6.99%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.000000000(  0.00%)
+            TOTAL DIAG TIME    =     0.000000000(  0.00%)
+TOTAL TIME         =     1.860000000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes  1.9 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Tue Jan 17 15:19:49 2012

@@ -287,4 +287,14 @@ __device__ void LD0146(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDoub
 __device__ void LD0170(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N);
 __device__ void LD0194(QUICKDouble* x, QUICKDouble* y, QUICKDouble* z, QUICKDouble* w, int N);
 
+
+__device__ void lyp(QUICKDouble pa, QUICKDouble pb, QUICKDouble gax, QUICKDouble gay, QUICKDouble gaz, QUICKDouble gbx, QUICKDouble gby, QUICKDouble gbz,
+                    QUICKDouble* dfdr, QUICKDouble* dfdgg, QUICKDouble* dfdggo);
+__device__ void becke(QUICKDouble density, QUICKDouble gx, QUICKDouble gy, QUICKDouble gz, QUICKDouble gotherx, QUICKDouble gothery, QUICKDouble gotherz,
+                      QUICKDouble* dfdr, QUICKDouble* dfdgg, QUICKDouble* dfdggo);
+__device__ QUICKDouble lyp_e(QUICKDouble pa, QUICKDouble pb, QUICKDouble gax, QUICKDouble gay, QUICKDouble gaz,
+                             QUICKDouble gbx,     QUICKDouble gby,      QUICKDouble gbz);
+
+__device__ QUICKDouble becke_e(QUICKDouble density, QUICKDouble densityb, QUICKDouble gax, QUICKDouble gay, QUICKDouble gaz,
+                               QUICKDouble gbx,     QUICKDouble gby,      QUICKDouble gbz);
 #endif

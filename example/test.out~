@@ -23,10 +23,30 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Mon Jan  9 13:05:42 2012
+ TASK STARTS ON: Mon Jan  9 13:06:30 2012
  INPUT FILE:     test.in
  OUTPUT FILE:    test.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
+
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :        0
+| CUDA DEVICE NAME            : GeForce GTX 580
+| CUDA DEVICE PM              :       16
+| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
+| CUDA DEVICE MEMORY SIZE (MB):     1535
+| SUPPORTING CUDA VERSION     :      2.0
+|--------------------------------------------
 
  @ Read Job And Atom
 
@@ -97,14 +117,14 @@ BASIS FUNCTIONS =   15
 SCF CYCLE      =        1      TIME      =     0.17
 RMS CHANGE     = 0.118420E+00  MAX CHANGE= 0.838819E+00
 
-SCF CYCLE      =        2      TIME      =     0.18
+SCF CYCLE      =        2      TIME      =     0.17
 RMS CHANGE     = 0.664019E-01  MAX CHANGE= 0.387316E+00
 
-SCF CYCLE      =        3      TIME      =   0.17
+SCF CYCLE      =        3      TIME      =   0.18
 DIIS CYCLE     =        1      MAX ERROR = 0.360626E-01
 RMS CHANGE     = 0.560015E-02  MAX CHANGE= 0.349127E-01
 
-SCF CYCLE      =        4      TIME      =   0.18
+SCF CYCLE      =        4      TIME      =   0.17
 DIIS CYCLE     =        2      MAX ERROR = 0.993170E-02
 RMS CHANGE     = 0.202861E-02  MAX CHANGE= 0.142921E-01
 
@@ -261,17 +281,17 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1   -609.467003123      ------         4.300     1        0.08      4.22      0.02    0.2588E+01  0.2748E-01  0.3799E+00
-  2   -605.329935198  -.413707E+01       5.830     2        0.09      5.74      0.04    0.2514E+00  0.1456E-01  0.3287E+00
-  3   -605.733914750  0.403980E+00       5.930     3        0.09      5.84      0.04    0.1275E+00  0.5418E-02  0.1254E+00
-  4   -605.876622590  0.142708E+00       5.890     4        0.08      5.81      0.03    0.1679E-01  0.1263E-02  0.1501E-01
-  5   -605.885186804  0.856421E-02       5.880     5        0.08      5.80      0.03    0.9192E-02  0.1049E-02  0.1337E-01
-  6   -605.888520989  0.333419E-02       5.880     6        0.09      5.79      0.04    0.3866E-02  0.6032E-03  0.1009E-01
-  7   -605.889286427  0.765438E-03       5.880     7        0.09      5.79      0.04    0.1336E-02  0.1542E-03  0.3101E-02
-  8   -605.889354821  0.683940E-04       5.890     8        0.09      5.80      0.04    0.5910E-03  0.8984E-04  0.1864E-02
+  1   -609.467003123      ------         0.610     1        0.09      0.52      0.04    0.2588E+01  0.2748E-01  0.3799E+00
+  2   -605.329935198  -.413707E+01       0.700     2        0.10      0.60      0.03    0.2514E+00  0.1456E-01  0.3287E+00
+  3   -605.733914746  0.403980E+00       0.720     3        0.10      0.62      0.03    0.1275E+00  0.5418E-02  0.1254E+00
+  4   -605.876622590  0.142708E+00       0.720     4        0.10      0.62      0.04    0.1679E-01  0.1263E-02  0.1501E-01
+  5   -605.885186804  0.856421E-02       0.720     5        0.10      0.62      0.04    0.9192E-02  0.1049E-02  0.1337E-01
+  6   -605.888520989  0.333419E-02       0.730     6        0.11      0.62      0.03    0.3866E-02  0.6032E-03  0.1009E-01
+  7   -605.889286427  0.765438E-03       0.730     7        0.10      0.63      0.04    0.1336E-02  0.1542E-03  0.3101E-02
+  8   -605.889354821  0.683940E-04       0.740     8        0.10      0.64      0.04    0.5910E-03  0.8984E-04  0.1864E-02
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   8 CYLCES
- MAX ERROR = 0.591011E-03   RMS CHANGE = 0.898378E-04   MAX CHANGE = 0.186392E-02
+ MAX ERROR = 0.591011E-03   RMS CHANGE = 0.898378E-04   MAX CHANGE = 0.186391E-02
  -----------------------------------------------
 ELECTRONIC ENERGY    =  -928.046748573
 CORE_CORE REPULSION  =   322.157393752
@@ -320,18 +340,18 @@ TOTAL ENERGY         =  -605.889354821
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     1.590000000(  3.34%)
-TOTAL SCF TIME     =    45.880000000( 96.41%)
-      TOTAL OP TIME      =    45.190000000( 94.96%)
-            TOTAL 1e TIME      =     0.400000000(  0.84%)
-            TOTAL 2e TIME      =    44.790000000( 94.12%)
+INITIAL GUESS TIME =     1.620000000( 19.54%)
+TOTAL SCF TIME     =     6.070000000( 73.22%)
+      TOTAL OP TIME      =     5.270000000( 63.57%)
+            TOTAL 1e TIME      =     0.400000000(  4.83%)
+            TOTAL 2e TIME      =     4.870000000( 58.75%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     0.690000000(  1.45%)
-            TOTAL DIAG TIME    =     0.280000000(  0.59%)
-TOTAL TIME         =    47.590000000
+      TOTAL DII TIME     =     0.800000000(  9.65%)
+            TOTAL DIAG TIME    =     0.290000000(  3.50%)
+TOTAL TIME         =     8.290000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes 47.6 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes  8.3 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Mon Jan  9 13:06:30 2012
+ Normal Terminatation. Task Finished on: Mon Jan  9 13:06:39 2012

@@ -1,6 +1,8 @@
 #!/bin/sh
-runquick.cuda.SP 1fgd.in
-runquick.cuda.SP 1akg.in
-runquick 1fgd.in
-runquick 1akg.in
+runquick.cuda ACE_ALA10_NME.in 
+runquick.cuda ACE_GLY6_NME.in
+runquick.cuda taxol.in
+runquick ACE_ALA10_NME.in 
+runquick ACE_GLY6_NME.in
+runquick taxol.in
 
