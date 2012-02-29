@@ -54,21 +54,61 @@ extern "C" void gpu_init_(void)
         exit(-1);
     }
     
-    cudaGetDeviceProperties(&deviceProp, gpu->gpu_dev_id);
-    if ( (deviceProp.major >=2) || ((deviceProp.major == 1) && (deviceProp.minor == 3))) 
+    if (gpu->gpu_dev_id == -1){
+	device = 0;
+        // if gpu count is greater than 1(multi-gpu) select one with bigger free memory, or available. 
+        if (gpuCount > 1) {
+            size_t maxMem = 0;
+            for (int i = gpuCount-1; i>=0; i--) {
+                /*status = cudaSetDevice(i);
+            	size_t free_mem = 0;
+                size_t tot_mem  = 0;
+                
+                status = cudaMemGetInfo(&free_mem, &tot_mem); // If error returns, that is to say this device is unavailable.
+                // Else, use one with larger memory.
+                if (free_mem >= maxMem) {
+                	maxMem = free_mem;
+                	device = i;
+                }
+                cudaThreadExit();*/
+		cudaGetDeviceProperties(&deviceProp, i);
+
+                if (((deviceProp.major >= 2) || ((deviceProp.major == 1) && (deviceProp.minor == 3))) &&
+                     (deviceProp.totalGlobalMem >= maxMem))
+                {
+                    maxMem                          = deviceProp.totalGlobalMem;
+                    device                          = i;
+                }
+
+            }
+    	    gpu->gpu_dev_id = device;
+        }       
+
+    }else{
+        if ( gpu->gpu_dev_id >= gpuCount)
+	{
+		printf("GPU ID IS ILLEGAL, PLEASE SELECT FROM 0 TO %i.\n", gpuCount-1);
+		cudaThreadExit();
+		exit(-1);
+	}
+
+    	cudaGetDeviceProperties(&deviceProp, gpu->gpu_dev_id);
+    	if ( (deviceProp.major >=2) || ((deviceProp.major == 1) && (deviceProp.minor == 3)))
+        	device = gpu->gpu_dev_id;
+    	else {
+        	printf("SELECT GPU HAS CUDA SUPPORTING VERSION UNDER 1.3. EXITING. \n");
+        	cudaThreadExit();
+        	exit(-1);
+    	}
         device = gpu->gpu_dev_id;
-    else {
-        printf("SELECT GPU HAS CUDA SUPPORTING VERSION UNDER 1.3. EXITING. \n");
-        cudaThreadExit();
-        exit(-1);
     }
-   
+    
     if (device == -1) {
-        printf("NO CUDA 1.3 SUPPORTED GPU IS FOUND\n");
+        printf("NO CUDA 1.3 (OR ABOVE) SUPPORTED GPU IS FOUND\n");
         gpu_shutdown_();
         exit(-1);
     }
-
+   
     status = cudaSetDevice(device);
     PRINTERROR(status, "cudaSetDevice gpu_init failed!");
     cudaThreadSynchronize();
@@ -101,6 +141,34 @@ extern "C" void gpu_init_(void)
     PRINTDEBUG("FINISH INIT")
 
     return;
+}
+
+extern "C" void gpu_get_device_info_(int* gpu_dev_count, int* gpu_dev_id,int* gpu_dev_mem,
+                                     int* gpu_num_proc,double* gpu_core_freq,char* gpu_dev_name,int* name_len, int* majorv, int* minorv)
+{
+    cudaError_t cuda_error;
+    cudaDeviceProp prop;
+    size_t device_mem;
+    
+    *gpu_dev_id = gpu->gpu_dev_id;  // currently one single GPU is supported
+    cuda_error = cudaGetDeviceCount(gpu_dev_count);
+    PRINTERROR(cuda_error,"cudaGetDeviceCount gpu_get_device_info failed!");
+    if (*gpu_dev_count == 0) 
+    {
+        printf("NO CUDA DEVICE FOUNDED \n");
+        cudaThreadExit();
+        exit(-1);
+    }
+    cudaGetDeviceProperties(&prop,*gpu_dev_id);
+    device_mem = (prop.totalGlobalMem/(1024*1024));
+    *gpu_dev_mem = (int) device_mem;
+    *gpu_num_proc = (int) (prop.multiProcessorCount);
+    *gpu_core_freq = (double) (prop.clockRate * 1e-6f);
+    strcpy(gpu_dev_name,prop.name);
+    *name_len = strlen(gpu_dev_name);
+    *majorv = prop.major;
+    *minorv = prop.minor;
+    
 }
 
 //-----------------------------------------------
@@ -332,7 +400,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
             for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
                 for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
                     if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == q && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == p) {
-                        if (LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) > 1E-15 && 
+                        if (LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) > 1E-9 && 
                             gpu->gpu_basis->sorted_Q->_hostData[i] <= gpu->gpu_basis->sorted_Q->_hostData[j]) {
                             gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].x = i;
                             gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].y = j;

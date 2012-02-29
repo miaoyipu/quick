@@ -89,7 +89,7 @@ configfolder = ./config
 # cuda files
 #----------------------
 cudafolder = ./cuda
-cudaobj = gpu_info.o gpu_write_info.o gpu.o gpu_type.o gpu_get2e.o gpu_getxc.o
+cudaobj = gpu_write_info.o gpu.o gpu_type.o gpu_get2e.o gpu_getxc.o
 
 #----------------------
 # quick modules and object files
@@ -139,7 +139,7 @@ quick_modules:
 	mv ${modfolder}/*.mod ${modfolder}/*.o ./
 #=========== targets for cuda =========================================
 quick_cuda:
-	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_getxc.cu
+	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu
 #	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c *.cu
 	cd $(cudafolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
 	cp $(cudafolder)/*.o ./
@@ -191,8 +191,8 @@ quick: cpconfig quick_modules quick_subs $(OBJ) fake_amber_interface.o
 quick.cuda: cpconfig.cuda quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o fortran_thunking.o
 	$(CXX) -o ${exefile}.cuda $(OBJ) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o fortran_thunking.o $(CFLAGS) 
 
-quick.cuda.SP: cpconfig.cuda.SP quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o
-	$(CXX) -o ${exefile}.cuda.SP $(OBJ) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o $(CFLAGS) 
+quick.cuda.SP: cpconfig.cuda.SP quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o fortran_thunking.o
+	$(CXX) -o ${exefile}.cuda.SP $(OBJ) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o fortran_thunking.o $(CFLAGS) 
 
 quick_lib:$(OBJ) ambermod amber_interface.o
 

@@ -1154,8 +1154,8 @@ __device__ void vertical(int I, int J, int K, int L, QUICKDouble* YVerticalTemp,
 {
     
     LOC2(store, 0, 0, STOREDIM, STOREDIM) += VY( 0, 0, 0);
-    switch ((I+J)*10+K+L){
-        case 1:
+	switch ((I+J)*10+K+L){
+	case 1:
         {
             //SSPS(0, YVerticalTemp, Qtempx, Qtempy, Qtempz, WQtempx, WQtempy, WQtempz);
             LOC2(store, 0, 1, STOREDIM, STOREDIM) += Qtempx * VY( 0, 0, 0) + WQtempx * VY( 0, 0, 1);
@@ -6052,7 +6052,7 @@ __device__ void vertical(int I, int J, int K, int L, QUICKDouble* YVerticalTemp,
 #endif
             break;
         }
-    }   
+    }  
 }
 
 __device__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerticalTemp)

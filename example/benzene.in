@@ -1,4 +1,4 @@
-cutoff=1.0e-9 BLYP ncyc=1000 zmake BASIS=6-31GSS ENERGY
+cutoff=1.0e-9 HF ncyc=1000 zmake BASIS=6-31GSS ENERGY
 
 C          -0.4241       1.5178       0.0000
 H          -0.9738       0.5655       0.0005
