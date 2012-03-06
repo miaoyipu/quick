@@ -1,4 +1,4 @@
-HF cutoff=1.0e-9 energy zmake NCYC=1000  BASIS=6-31g
+HF cutoff=1.0e-9 denserms=1.0e-8 energy zmake NCYC=4  BASIS=6-31g
 
 C           4.5916       2.6127       4.3145
 H           6.8049       4.5138      -2.5775

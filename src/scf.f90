@@ -26,7 +26,6 @@ subroutine scf(failed)
    ! Each location in the code that the step is occurring will be marked.
    ! The cycles stop when prms  is less than pmaxrms or when the maximum
    ! number of scfcycles has been reached.
-
    jscf=0
 
 
@@ -40,6 +39,7 @@ subroutine scf(failed)
    if (quick_method%diisscf .and. quick_method%divcon) call electdiisdc(jscf,PRMS)     ! div & con scf
 
    jscf=jscf+1
+   
    failed = failed.and.(jscf.gt.quick_method%iscf)
    if (quick_method%debug)  call debug_SCF(jscf)
    
@@ -207,6 +207,7 @@ subroutine electdiis(jscf)
          ! Begin Delta Densitry Matrix
          ! Xiao HE, Delta density matrix increase is implemented here. 07/07/07 version
          if(jscf.ge.quick_method%ncyc)then
+         
             ! save density matrix
             call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseSave,nbasis)
             call CopyDMat(quick_qm_struct%oSave,quick_qm_struct%o,nbasis)
@@ -215,9 +216,13 @@ subroutine electdiis(jscf)
                   quick_qm_struct%dense(J,I)=quick_qm_struct%dense(J,I)-quick_qm_struct%denseOld(J,I)
             enddo; enddo
 
-            if (quick_method%HF) call hfoperatordelta
+            call cpu_time(timer_begin%TOp)
+            
+            if (quick_method%HF) call hfoperatordelta(oneElecO)
             if (quick_method%DFT) call dftoperatordelta
 
+            call cpu_time(timer_end%TOp)
+            
             ! recover density
             call CopyDMat(quick_qm_struct%denseSave,quick_qm_struct%dense,nbasis)
          endif

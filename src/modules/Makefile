@@ -48,7 +48,7 @@ FC=gfortran
 #FFLAGS = -O3
 #FFLAGS = -i4 -O3 -auto -assume byterecl -w95 -cm 
 #FFLAGS = -g -O3 -traceback
-FFLAGS = -std=gnu -W
+FFLAGS = -O3
 LD = $(FC)
 LDFLAGS = $(FFLAGS)
 #LDFLAGS = $(FFLAGS)

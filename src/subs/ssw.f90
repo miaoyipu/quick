@@ -33,7 +33,7 @@ double precision function ssw(gridx,gridy,gridz,iparent)
   rig=rig+(gridy-yparent)*(gridy-yparent)
   rig=rig+(gridz-zparent)*(gridz-zparent)
   rig=Dsqrt(rig)
-  
+
   if (rig < 0.18d0*quick_molspec%distnbor(iparent)) then
      ssw=1.d0
      return
@@ -86,7 +86,6 @@ double precision function ssw(gridx,gridy,gridz,iparent)
   enddo
 
   Jatm=iparent+1
-  
   do while (Jatm.le.natom.and.wofparent.ne.0.d0)
      xJatm=xyz(1,Jatm)
      yJatm=xyz(2,Jatm)
@@ -121,8 +120,6 @@ double precision function ssw(gridx,gridy,gridz,iparent)
      Jatm=Jatm+1
   enddo
 
-
-     
   totalw=wofparent
   if (wofparent == 0.d0) then
      ssw=0.d0
@@ -213,10 +210,5 @@ double precision function ssw(gridx,gridy,gridz,iparent)
   enddo
 
   ssw=wofparent/totalw
-<<<<<<< HEAD
-    
-  !print *,ssw
-=======
 
->>>>>>> cuda_branch
 end function ssw

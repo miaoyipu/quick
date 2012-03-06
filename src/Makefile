@@ -48,7 +48,7 @@ FC=gfortran
 #FFLAGS = -O3
 #FFLAGS = -i4 -O3 -auto -assume byterecl -w95 -cm 
 #FFLAGS = -g -O3 -traceback
-FFLAGS = 
+FFLAGS = -O3 
 LD = $(FC)
 LDFLAGS = $(FFLAGS)
 #LDFLAGS = $(FFLAGS)
@@ -89,7 +89,7 @@ configfolder = ./config
 # cuda files
 #----------------------
 cudafolder = ./cuda
-cudaobj = gpu_write_info.o gpu.o gpu_type.o gpu_get2e.o gpu_getxc.o
+cudaobj = gpu_info.o gpu_write_info.o gpu.o gpu_type.o gpu_get2e.o gpu_getxc.o
 
 #----------------------
 # quick modules and object files
@@ -128,10 +128,10 @@ all: quick quick.cuda
 
 #================= common subroutine library ============================
 quick_subs:
-#	cp *.mod ./subs
-#	cd ./subs && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
-#	ar -r $(libfolder)/quicklib.a ./subs/*.o
-#	rm ./subs/*.mod
+	cp *.mod ./subs
+	cd ./subs && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
+	ar -r $(libfolder)/quicklib.a ./subs/*.o
+	rm ./subs/*.mod
 
 #================= quick module library =================================
 quick_modules:
@@ -224,4 +224,4 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
-#include depend
+include depend

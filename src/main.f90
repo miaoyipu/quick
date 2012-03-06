@@ -37,11 +37,6 @@
     logical :: failed = .false.         ! flag to indicates SCF fail or OPT fail 
     integer :: ierr                     ! return error info
     integer :: i,j,k
-    integer :: iarg
-    character(80) :: arg
-#ifdef CUDA
-    integer :: gpu_device_id = -1
-#endif
     double precision t1_t, t2_t
     common /timer/ t1_t, t2_t
     !------------------------------------------------------------------
@@ -55,6 +50,7 @@
 
       ! read input argument
       call set_quick_files(ierr)    ! from quick_file_module
+
 
       ! open output file
       call quick_open(iOutFile,outFileName,'U','F','R',.false.)
@@ -80,25 +76,7 @@
     !------------------- CUDA -------------------------------------------
     ! startup cuda device
     call gpu_startup()
-
-#ifdef CUDA
-    iarg = iargc()
-    call gpu_set_device(-1)
-    if (iarg == 0) then
-        gpu_device_id = -1
-    else
-        do i = 1, iarg
-            call getarg(i, arg)
-            if (arg.eq."-gpu") then
-                call getarg (i+1, arg)
-                read(arg, '(I2)') gpu_device_id
-                write(*,'(a,i2)') "gpu=",gpu_device_id
-                call gpu_set_device(gpu_device_id)
-            endif
-        enddo
-    endif
-#endif
-
+    call gpu_set_device(0)
     call gpu_init()
     
     ! write cuda information

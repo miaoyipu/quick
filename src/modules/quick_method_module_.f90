@@ -78,7 +78,7 @@ module quick_method_module
         integer :: maxdiisscf = 10
         
         ! start cycle for delta density cycle
-        integer :: ncyc =1000
+        integer :: ncyc =10
         
         ! following are some cutoff criteria
         double precision :: integralCutoff = 1.0d-6   ! integral cutoff

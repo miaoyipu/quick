@@ -4,6 +4,7 @@ src/*.o
 src/*.mod
 src/_*
 src/*.bak
+src/Makefile
 example
 src/cuda/*.o
 src/subs/*.o

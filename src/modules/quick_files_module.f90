@@ -61,7 +61,6 @@ module quick_files_module
         
         ! Local Varibles
         integer i
-        
         ierr=1
         
         ! Read enviromental variables: QUICK_BASIS and ECPs
@@ -99,15 +98,16 @@ module quick_files_module
         ! local variables
         integer i,j,k1,k2,k3,k4
         logical present
-        
-        
+
+        call getenv("QUICK_BASIS",basisdir)
+        i = 0
+        j = 100 
         ! read basis directory and ECP basis directory
         call rdword(basisdir,i,j)
         call EffChar(basisdir,i,j,k1,k2)
-        
+       
         call rdword(ecpdir,i,j) !AG 03/05/2007
         call EffChar(ecpdir,i,j,k3,k4)
-              
         ! Gaussian Style Basis. Written by Alessandro GENONI 03/07/2007
         if (index(keywd,'BASIS=') /= 0) then
             i = index(keywd,'BASIS=')
@@ -124,7 +124,6 @@ module quick_files_module
             basisfilename = basisdir(k1:k2) // '/' //keywd(i+4:j)
             if (keywd(i+4:j) == "CUSTOM") BasisCustName = basisdir(k1:k2)// '/CUSTOM'
         endif
-        
         ! a compatible mode for basis set file if files like STO-3G.BAS didn't exist, 
         ! the program will search STO-3G
         inquire(file=basisfilename,exist=present)
