@@ -78,7 +78,7 @@ module quick_method_module
         integer :: maxdiisscf = 10
         
         ! start cycle for delta density cycle
-        integer :: ncyc =10
+        integer :: ncyc =1000
         
         ! following are some cutoff criteria
         double precision :: integralCutoff = 1.0d-6   ! integral cutoff
@@ -100,7 +100,7 @@ module quick_method_module
         double precision :: gNormCrt      = .00030d0 ! gradient normalization
         
 
-
+        logical :: bCUDA                ! if  is used here
 
         
     end type quick_method_type
@@ -471,6 +471,7 @@ module quick_method_module
             self%gNormCrt       = .00030d0 ! gradient normalization
             self%gridSpacing    = 0.1
             self%lapgridspacing = 0.1
+            self%bCUDA  = .false.
             
         end subroutine init_quick_method
         

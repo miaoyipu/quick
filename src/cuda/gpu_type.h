@@ -291,6 +291,9 @@ struct cuda_buffer_type {
     void Upload();      
     void Download();
     void Download(T* f90Data);
+    
+    void DeleteCPU();
+    void DeleteGPU();
 };
 
 
@@ -423,18 +426,22 @@ void cuda_buffer_type<T> :: Deallocate()
 
     PRINTDEBUG(">>BEGIN TO DEALLOCATE TEMPLATE")
 
-    cudaError_t status;
-    status = cudaFree(_devData);
-//	status = cudaFreeHost(_hostData);
-    PRINTERROR(status, " cudaFree cuda_buffer_type :: Deallocate failed!");
+    if (_devData != NULL) {
+        cudaError_t status;
+        status = cudaFree(_devData);
+        //	status = cudaFreeHost(_hostData);
+        PRINTERROR(status, " cudaFree cuda_buffer_type :: Deallocate failed!");
+        gpu->totalGPUMemory -= _length*_length2*sizeof(T);
+    }
     
-    free(_hostData);
+    if (_hostData != NULL) {
+        free(_hostData);
+        gpu->totalCPUMemory -= _length*_length2*sizeof(T);
+    }
     _hostData = NULL;
     _devData = NULL;
     _f90Data = NULL;
 #ifdef DEBUG
-    gpu->totalGPUMemory -= _length*_length2*sizeof(T);
-    gpu->totalCPUMemory -= _length*_length2*sizeof(T);
     
     PRINTMEM("GPU--",gpu->totalGPUMemory);
     PRINTMEM("CPU--",gpu->totalCPUMemory);
@@ -481,4 +488,42 @@ void cuda_buffer_type<T> :: Download(T* f90Data)
         }
     }
     PRINTDEBUG("<<FINISH DOWNLOADING TEMPLATE TO FORTRAN ARRAY")
+}
+
+template <typename T>
+void cuda_buffer_type<T> :: DeleteCPU()
+{
+    
+    PRINTDEBUG(">>BEGIN TO DELETE CPU")
+    
+    if (_hostData != NULL) {
+        free(_hostData);
+        _hostData = NULL;
+#ifdef DEBUG
+        gpu->totalCPUMemory -= _length*_length2*sizeof(T);
+        
+        PRINTMEM("GPU  ",gpu->totalGPUMemory);
+        PRINTMEM("CPU--",gpu->totalCPUMemory);
+        
+#endif
+    }
+    PRINTDEBUG("<<FINSH DELETE CPU")
+}
+
+template <typename T>
+void cuda_buffer_type<T> :: DeleteGPU()
+{
+    
+    PRINTDEBUG(">>BEGIN TO DELETE GPU")
+    
+    cudaFree(_devData);
+    _devData = NULL;
+#ifdef DEBUG
+    gpu->totalGPUMemory -= _length*_length2*sizeof(T);
+    
+    PRINTMEM("GPU--",gpu->totalGPUMemory);
+    PRINTMEM("CPU  ",gpu->totalCPUMemory);
+    
+#endif
+    PRINTDEBUG("<<FINSH DELETE CPU")
 }

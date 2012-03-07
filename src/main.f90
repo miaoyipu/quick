@@ -29,7 +29,6 @@
     use divPB_Private, only: initialize_DivPBVars
 
     implicit none
-
 #ifdef MPI
     include 'mpif.h'
 #endif
@@ -37,20 +36,24 @@
     logical :: failed = .false.         ! flag to indicates SCF fail or OPT fail 
     integer :: ierr                     ! return error info
     integer :: i,j,k
+    integer*4 :: iarg
+    character(80) :: arg
+#ifdef CUDA
+    integer :: gpu_device_id = -1
+#endif
+
     double precision t1_t, t2_t
     common /timer/ t1_t, t2_t
     !------------------------------------------------------------------
     ! 1. The first thing that must be done is to initialize and prepare files
     !------------------------------------------------------------------
-
-    ! Initial neccessary variables
+ ! Initial neccessary variables
     call initialize1(ierr)    
     !-------------------MPI/MASTER---------------------------------------
     masterwork_readInput: if (master) then
 
       ! read input argument
       call set_quick_files(ierr)    ! from quick_file_module
-
 
       ! open output file
       call quick_open(iOutFile,outFileName,'U','F','R',.false.)
@@ -76,7 +79,24 @@
     !------------------- CUDA -------------------------------------------
     ! startup cuda device
     call gpu_startup()
-    call gpu_set_device(0)
+
+    iarg = iargc()
+    call gpu_set_device(-1)
+    if (iarg == 0) then
+        gpu_device_id = -1
+    else
+        do i = 1, iarg
+            call getarg(int(i,4), arg)
+            if (arg.eq."-gpu") then
+                call getarg (int(i+1,4), arg)
+                read(arg, '(I2)') gpu_device_id
+                call gpu_set_device(gpu_device_id)
+                write(*,*) "read -gpu from argument=",gpu_device_id
+                exit 
+            endif
+        enddo
+    endif
+    write(*,*) "gpu_device_id=",gpu_device_id
     call gpu_init()
     
     ! write cuda information
