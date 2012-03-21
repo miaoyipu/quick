@@ -15,15 +15,15 @@
   **  restrictions set forth in the license agreement also apply to this  **
   **  software.                                                           **
   **************************************************************************
- 
+
   Cite this work as:
   Miao, Y.: He, X.: Ayers,K: Brothers, E.: Merz,K. M. QUICK;
   University of Florida, Gainesville, FL, 2010
- 
+
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
- 
- TASK STARTS ON: Thu Mar  1 21:44:03 2012
+
+ TASK STARTS ON: Wed Mar 21 15:52:34 2012
  INPUT FILE:     test.in
  OUTPUT FILE:    test.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -31,7 +31,7 @@
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF OPT ENERGY ZMAKE NCYC=1000  BASIS=6-31GS                                                                                                                                                             
+KEYWORD=HF ENERGY ZMAKE NCYC=100 CUTOFF=1.0E-9 BASIS=6-311GSS DENSERMS=1.0E-6                                                                                                                                   
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
@@ -39,21 +39,249 @@ KEYWORD=HF OPT ENERGY ZMAKE NCYC=1000  BASIS=6-31GS
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
 | Z-MATRIX CONSTRUCTION
-| GEOMETRY OPTIMIZATION| NUMERICAL GRADIENT
-| REQUEST CRITERIA FOR GEOMETRY CONVERGENCE: 
-|      MAX ALLOWED GEO CHANGE  =  0.189E+00
-|      MAX GEOMETRY CHANGE     =  0.180E-02
-|      GEOMETRY CHANGE RMS     =  0.120E-02
-|      MAX GRADIENT CHANGE     =  0.450E-03
-|      GRADIENT NORMALIZATION  =  0.300E-03
-| GRADIENT CALCULATION
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
-| DELTA DENSITY START CYCLE = 1000
+| DELTA DENSITY START CYCLE =  100
 | COMPUATIONAL CUTOFF: 
-|      TWO-e INTEGRAL   =  0.100E-06
-|      BASIS SET PRIME  =  0.100E-06
+|      TWO-e INTEGRAL   =  0.100E-08
+|      BASIS SET PRIME  =  0.100E-08
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
-|      GRADIENT CUTOFF  =  0.100E-06
-| DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-03
+| DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-05
+| BASIS SET = 6-311GSS
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-311GSS
+
+ @ Finish reading job
+
+
+ @ Begin SAD initial guess
+
+ For Atom Kind =    1
+ ELEMENT = H 
+BASIS FUNCTIONS =    6
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.00
+RMS CHANGE     = 0.814172E-01  MAX CHANGE= 0.204065E+00
+
+SCF CYCLE      =        2      TIME      =   0.00
+DIIS CYCLE     =        1      MAX ERROR = 0.534382E-01
+RMS CHANGE     = 0.212306E-01  MAX CHANGE= 0.999452E-01
+
+SCF CYCLE      =        3      TIME      =   0.00
+DIIS CYCLE     =        2      MAX ERROR = 0.209209E-01
+RMS CHANGE     = 0.130397E-01  MAX CHANGE= 0.532177E-01
+
+SCF CYCLE      =        4      TIME      =   0.00
+DIIS CYCLE     =        3      MAX ERROR = 0.149569E-03
+RMS CHANGE     = 0.810753E-04  MAX CHANGE= 0.384887E-03
+
+SCF CYCLE      =        5      TIME      =   0.00
+DIIS CYCLE     =        4      MAX ERROR = 0.160418E-04
+RMS CHANGE     = 0.669656E-05  MAX CHANGE= 0.261289E-04
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        6      TIME      =     0.00
+RMS CHANGE     = 0.526195E-09  MAX CHANGE= 0.244591E-08
+CONVERGED!!!!!
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
+
+ @ End Energy calculation
+
+ For Atom Kind =    2
+ ELEMENT = O 
+BASIS FUNCTIONS =   19
+
+ @ Begin Energy Calculation
+
+
+SCF CYCLE      =        1      TIME      =     0.28
+RMS CHANGE     = 0.716880E-01  MAX CHANGE= 0.511906E+00
+
+SCF CYCLE      =        2      TIME      =   0.28
+DIIS CYCLE     =        1      MAX ERROR = 0.539605E+00
+RMS CHANGE     = 0.272098E-01  MAX CHANGE= 0.307729E+00
+
+SCF CYCLE      =        3      TIME      =   0.28
+DIIS CYCLE     =        2      MAX ERROR = 0.117276E+00
+RMS CHANGE     = 0.103718E-01  MAX CHANGE= 0.104053E+00
+
+SCF CYCLE      =        4      TIME      =   0.28
+DIIS CYCLE     =        3      MAX ERROR = 0.326784E-01
+RMS CHANGE     = 0.358951E-02  MAX CHANGE= 0.330721E-01
+
+SCF CYCLE      =        5      TIME      =   0.29
+DIIS CYCLE     =        4      MAX ERROR = 0.106153E-01
+RMS CHANGE     = 0.246707E-02  MAX CHANGE= 0.218182E-01
+
+SCF CYCLE      =        6      TIME      =   0.28
+DIIS CYCLE     =        5      MAX ERROR = 0.239526E-02
+RMS CHANGE     = 0.806494E-03  MAX CHANGE= 0.613326E-02
+
+SCF CYCLE      =        7      TIME      =   0.28
+DIIS CYCLE     =        6      MAX ERROR = 0.931445E-04
+RMS CHANGE     = 0.723481E-04  MAX CHANGE= 0.536073E-03
+
+SCF CYCLE      =        8      TIME      =   0.28
+DIIS CYCLE     =        7      MAX ERROR = 0.252022E-04
+RMS CHANGE     = 0.165380E-04  MAX CHANGE= 0.116453E-03
+
+SCF CYCLE      =        9      TIME      =   0.28
+DIIS CYCLE     =        8      MAX ERROR = 0.887620E-05
+RMS CHANGE     = 0.853209E-05  MAX CHANGE= 0.590126E-04
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =       10      TIME      =     0.28
+RMS CHANGE     = 0.138505E-05  MAX CHANGE= 0.103490E-04
+
+SCF CYCLE      =       11      TIME      =   0.28
+DIIS CYCLE     =        1      MAX ERROR = 0.380604E-05
+RMS CHANGE     = 0.607600E-06  MAX CHANGE= 0.453097E-05
+PREPARED FOR FINAL NO INTERPOLATION ITERATION
+
+SCF CYCLE      =       12      TIME      =     0.28
+RMS CHANGE     = 0.373709E-06  MAX CHANGE= 0.313851E-05
+CONVERGED!!!!!
+ELECTRONIC ENERGY    =     0.000000000
+CORE_CORE REPULSION  =     0.000000000
+TOTAL ENERGY         =     0.000000000
+
+ @ End Energy calculation
+
+
+ @ Finish SAD initial guess
+
+
+ @ Begin to Read Mol Info
+
+
+ =========== Molecule Input ==========
+| TOTAL MOLECULAR CHARGE  =    0    MULTIPLICITY                =    1
+| TOTOAL ATOM NUMBER      =   12    NUMBER OF ATOM TYPES        =    2
+| NUMBER OF HYDROGEN ATOM =    8    NUMBER OF NON-HYDROGEN ATOM =    4
+| NUMBER OF ELECTRONS     =   40
+
+ -- INPUT GEOMETRY -- :
+    H           0.3032      -0.4940       0.0000
+    H          -0.3032      -0.9088       0.0000
+    O           0.0000       0.1753       0.0000
+    H           0.3032      -0.4940       3.0000
+    H          -0.3032      -0.9088       3.0000
+    O           0.0000       0.1753       3.0000
+    H           0.3032      -0.4940       6.0000
+    H          -0.3032      -0.9088       6.0000
+    O           0.0000       0.1753       6.0000
+    H           0.3032      -0.4940       9.0000
+    H          -0.3032      -0.9088       9.0000
+    O           0.0000       0.1753       9.0000
+
+ -- DISTANCE MATRIX -- :
+              1           2           3           4           5
+      1     0.00000
+      2     1.38838     0.00000
+      3     1.38852     2.12727     0.00000
+      4     5.66918     5.83671     5.83674     0.00000
+      5     5.83671     5.66918     6.05515     1.38838     0.00000
+      6     5.83674     6.05515     5.66918     1.38852     2.12727
+      7    11.33836    11.42305    11.42306     5.66918     5.83671
+      8    11.42305    11.33836    11.53619     5.83671     5.66918
+      9    11.42306    11.53619    11.33836     5.83674     6.05515
+     10    17.00754    17.06411    17.06413    11.33836    11.42305
+     11    17.06411    17.00754    17.14006    11.42305    11.33836
+     12    17.06413    17.14006    17.00754    11.42306    11.53619
+              6           7           8           9          10
+      6     0.00000
+      7     5.83674     0.00000
+      8     6.05515     1.38838     0.00000
+      9     5.66918     1.38852     2.12727     0.00000
+     10    11.42306     5.66918     5.83671     5.83674     0.00000
+     11    11.53619     5.83671     5.66918     6.05515     1.38838
+     12    11.33836     5.83674     6.05515     5.66918     1.38852
+             11          12
+     11     0.00000
+     12     2.12727     0.00000
+
+============== BASIS INFOS ==============
+| BASIS FUNCTIONS =  124
+| NSHELL =   52 NPRIM  =   96
+| JSHELL =   52 JBASIS =   96
+
+
+ @ End Reading Mol Info 
+
+
+ @ Begin Energy Calculation
+
+                                         SCF ENERGY
+------------------------------------------------------------------------------------------------------------------------
+NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
+------------------------------------------------------------------------------------------------------------------------
+  1   -305.054044794      ------         2.130     1        0.02      2.11      0.01    0.2579E+01  0.1860E-01  0.2304E+00
+  2   -302.900837431  -.215321E+01       3.470     2        0.03      3.44      0.00    0.2212E+00  0.1159E-01  0.3252E+00
+  3   -303.072802537  0.171965E+00       3.520     3        0.03      3.49      0.00    0.1642E+00  0.3365E-02  0.9871E-01
+  4   -303.143614059  0.708115E-01       3.510     4        0.03      3.48      0.00    0.1622E-01  0.5942E-03  0.1110E-01
+  5   -303.144831478  0.121742E-02       3.510     5        0.03      3.48      0.00    0.7042E-02  0.2840E-03  0.5304E-02
+  6   -303.144996623  0.165145E-03       3.510     6        0.02      3.48      0.00    0.1481E-02  0.7435E-04  0.1113E-02
+  7   -303.145008314  0.116906E-04       3.500     7        0.02      3.48      0.01    0.5777E-03  0.1892E-04  0.2686E-03
+  8   -303.145010015  0.170153E-05       3.500     8        0.03      3.47      0.01    0.1981E-03  0.1441E-04  0.1998E-03
+  9   -303.145010739  0.723857E-06       3.500     9        0.03      3.47      0.01    0.8116E-04  0.7931E-05  0.1290E-03
+ 10   -303.145010886  0.147008E-06       3.500    10        0.03      3.47      0.01    0.1411E-04  0.1648E-05  0.3103E-04
+ 11   -303.145010891  0.498514E-08       3.500     1        0.04      3.46      0.01    0.2739E-05  0.3331E-06  0.5672E-05
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER  11 CYLCES
+ MAX ERROR = 0.273914E-05   RMS CHANGE = 0.333136E-06   MAX CHANGE = 0.567158E-05
+ -----------------------------------------------
+ELECTRONIC ENERGY    =  -419.655752978
+CORE_CORE REPULSION  =   116.510742087
+TOTAL ENERGY         =  -303.145010891
+
+ @ End Energy calculation
+
+
+ @ Begin Zmake conversion
+
+  
+ Z-MATRIX:
+
+   ATOM  ELEMENTAL  BOND LENGTH    BOND ANGLE    DIHEDRAL ANGLE
+  NUMBER  SYMBOL    (ANGSTROMS)    (DEGREES)       (DEGREES)
+     I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
+
+     1      H        0.00000  0     0.00000  0      0.00000  0      0    0    0
+     2      H        0.73470  1     0.00000  0      0.00000  0      1    0    0
+     3      O        0.73477  1   100.00254  1      0.00000  0      1    2    0
+     4      H        3.00000  1    90.00000  1     90.00000  1      1    2    3
+     5      H        3.08865  1    76.23915  1     90.00000  1      1    2    3
+     6      O        3.08867  1    92.36814  1     76.43918  1      1    2    3
+     7      H        6.00000  1    90.00000  1     90.00000  1      1    2    3
+     8      H        6.04482  1    83.01891  1     90.00000  1      1    2    3
+     9      O        6.04483  1    91.20977  1     83.12329  1      1    2    3
+    10      H        9.00000  1    90.00000  1     90.00000  1      1    2    3
+    11      H        9.02994  1    85.33312  1     90.00000  1      1    2    3
+    12      O        9.02995  1    90.80981  1     85.40327  1      1    2    3
+
+ @ End Zmake conversion
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     3.700000000(  9.01%)
+TOTAL SCF TIME     =    37.250000000( 90.74%)
+      TOTAL OP TIME      =    36.930000000( 89.96%)
+            TOTAL 1e TIME      =     0.100000000(  0.24%)
+            TOTAL 2e TIME      =    36.830000000( 89.72%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.310000000(  0.76%)
+            TOTAL DIAG TIME    =     0.060000000(  0.15%)
+TOTAL TIME         =    41.050000000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes 41.0 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Wed Mar 21 15:53:15 2012

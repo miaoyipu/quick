@@ -374,8 +374,8 @@ subroutine classprim(I,J,K,L,II,JJ,KK,LL,NNA,NNC,NNAB,NNCD,Ymax1,IIIxiao,JJJxiao
   Parameter(NN=13)
   double precision FM(0:13)
   double precision RA(3),RB(3),RC(3),RD(3)
-  double precision X44(1296)
-  double precision X4444(6,6)
+  double precision X44(12960)
+  double precision X4444(8,8)
 
   double precision coefangxiaoL(20),coefangxiaoR(20)
   integer angxiaoL(20),angxiaoR(20),numangularL,numangularR

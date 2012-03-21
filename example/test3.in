@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-B3LYP energy zmake NCYC=1000  BASIS=6-31gs
-=======
-HF ncyc=1000 cutoff=1.0e-9 energy zmake  BASIS=6-31g
->>>>>>> cuda_branch
+HF ncyc=1000 energy zmake  BASIS=aug-cc-pvdz denserms=1.0e-9
 
 C           4.5916       2.6127       4.3145
 H           6.8049       4.5138      -2.5775

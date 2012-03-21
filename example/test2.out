@@ -23,30 +23,10 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Wed Mar  7 00:49:45 2012
+ TASK STARTS ON: Wed Mar 21 12:16:27 2012
  INPUT FILE:     test2.in
  OUTPUT FILE:    test2.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
-
-|------------ CUDA INFORMATION ---------------
-|  CUDA version of Quick in use
-|  Implemented by
-|                      Yipu Miao (Florida)
-|  CAUTION: CUDA Quick is currently experimental
-|           and you may at risk to use it. Be sure
-|           to check result carelly. Advise or 
-|           bug report are welcome.
-|---------------------------------------------
-
-|------------ GPU INFORMATION ---------------
-| CUDA ENABLED DEVICE         :        1
-| CUDA DEVICE IN USE          :        0
-| CUDA DEVICE NAME            : GeForce GTX 580
-| CUDA DEVICE PM              :       16
-| CUDA DEVICE CORE FREQ(GHZ)  :     1.59
-| CUDA DEVICE MEMORY SIZE (MB):     1535
-| SUPPORTING CUDA VERSION     :      2.0
-|--------------------------------------------
 
  @ Read Job And Atom
 
@@ -114,7 +94,7 @@ BASIS FUNCTIONS =   15
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.17
+SCF CYCLE      =        1      TIME      =     0.16
 RMS CHANGE     = 0.118420E+00  MAX CHANGE= 0.838819E+00
 
 SCF CYCLE      =        2      TIME      =     0.17
@@ -124,7 +104,7 @@ SCF CYCLE      =        3      TIME      =   0.17
 DIIS CYCLE     =        1      MAX ERROR = 0.360626E-01
 RMS CHANGE     = 0.560015E-02  MAX CHANGE= 0.349127E-01
 
-SCF CYCLE      =        4      TIME      =   0.17
+SCF CYCLE      =        4      TIME      =   0.18
 DIIS CYCLE     =        2      MAX ERROR = 0.993170E-02
 RMS CHANGE     = 0.202861E-02  MAX CHANGE= 0.142921E-01
 
@@ -190,16 +170,16 @@ TOTAL ENERGY         =     0.000000000
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
   1    -76.180078177      ------         0.020     1        0.00      0.02      0.00    0.2587E+01  0.7749E-01  0.3795E+00
-  2    -75.681829502  -.498249E+00       0.020     2        0.00      0.02      0.00    0.2263E+00  0.3441E-01  0.2676E+00
+  2    -75.681829502  -.498249E+00       0.010     2        0.00      0.01      0.00    0.2263E+00  0.3441E-01  0.2676E+00
   3    -75.728342950  0.465134E-01       0.010     3        0.00      0.01      0.00    0.1150E+00  0.1225E-01  0.9068E-01
   4    -75.742398740  0.140558E-01       0.020     4        0.00      0.02      0.00    0.1633E-01  0.3323E-02  0.1489E-01
   5    -75.743389771  0.991031E-03       0.010     5        0.00      0.01      0.00    0.8760E-02  0.2687E-02  0.1209E-01
-  6    -75.743749283  0.359512E-03       0.020     6        0.00      0.02      0.00    0.3438E-02  0.1495E-02  0.8696E-02
+  6    -75.743749283  0.359512E-03       0.010     6        0.00      0.01      0.00    0.3438E-02  0.1495E-02  0.8696E-02
   7    -75.743819665  0.703814E-04       0.010     7        0.00      0.01      0.00    0.7766E-03  0.3551E-03  0.2599E-02
-  8    -75.743823355  0.369023E-05       0.020     8        0.00      0.02      0.00    0.1204E-03  0.7562E-04  0.3799E-03
+  8    -75.743823355  0.369023E-05       0.010     8        0.00      0.01      0.00    0.1204E-03  0.7562E-04  0.3799E-03
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER   8 CYLCES
- MAX ERROR = 0.120363E-03   RMS CHANGE = 0.756175E-04   MAX CHANGE = 0.379907E-03
+ MAX ERROR = 0.120363E-03   RMS CHANGE = 0.756174E-04   MAX CHANGE = 0.379905E-03
  -----------------------------------------------
 ELECTRONIC ENERGY    =   -85.986304808
 CORE_CORE REPULSION  =    10.242481453
@@ -227,18 +207,18 @@ TOTAL ENERGY         =   -75.743823355
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     1.380000000( 65.40%)
-TOTAL SCF TIME     =     0.130000000(  6.16%)
-      TOTAL OP TIME      =     0.130000000(  6.16%)
-            TOTAL 1e TIME      =     0.000000000(  0.00%)
-            TOTAL 2e TIME      =     0.130000000(  6.16%)
+INITIAL GUESS TIME =     1.360000000( 87.18%)
+TOTAL SCF TIME     =     0.110000000(  7.05%)
+      TOTAL OP TIME      =     0.110000000(  7.05%)
+            TOTAL 1e TIME      =     0.010000000(  0.64%)
+            TOTAL 2e TIME      =     0.100000000(  6.41%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
       TOTAL DII TIME     =     0.000000000(  0.00%)
             TOTAL DIAG TIME    =     0.000000000(  0.00%)
-TOTAL TIME         =     2.110000000
+TOTAL TIME         =     1.560000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes  2.1 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes  1.6 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Wed Mar  7 00:49:47 2012
+ Normal Terminatation. Task Finished on: Wed Mar 21 12:16:29 2012

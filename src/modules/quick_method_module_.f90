@@ -455,7 +455,8 @@ module quick_method_module
             
             self%integralCutoff=min(self%integralCutoff,self%acutoff)
             self%Primlimit=min(self%integralCutoff,self%acutoff)
-        
+            write(*,*) "intcutoff to ",self%integralCutoff
+            write(*,*) "prim cutoff to", self%primLimit 
             ! Max DIIS cycles
             if (index(keywd,'MAXDIIS=') /= 0) self%maxdiisscf=rdinml(keywd,'MAXDIIS')
             
@@ -572,8 +573,8 @@ module quick_method_module
             endif
             
             if(self%pmaxrms.lt.0.0001d0)then
-                self%integralCutoff=1.0d-7
-                self%Primlimit=1.0d-7
+                !self%integralCutoff=1.0d-7
+                !self%Primlimit=1.0d-7
             endif
             
             ! OPT not available for MP2
@@ -599,17 +600,23 @@ module quick_method_module
              if(PRMS.le.TEN_TO_MINUS5 .and. self%integralCutoff.gt.1.0d0/(10.0d0**7.5d0))then
                 self%integralCutoff=min(self%integralCutoff*100.0d0,TEN_TO_MINUS8)
                 self%primLimit=min(self%integralCutoff*100.0d0,TEN_TO_MINUS8)
+                write(*,*) "intcutoff to ",self%integralCutoff
+                write(*,*) "prim cutoff to", self%primLimit
              endif
              
             if(PRMS.le.TEN_TO_MINUS6 .and. self%integralCutoff.gt.1.0d0/(10.0d0**8.5d0))then
                 self%integralCutoff=min(self%integralCutoff*10.0d0,TEN_TO_MINUS9)
                 self%primLimit=min(self%integralCutoff*10.0d0,TEN_TO_MINUS9)
+                write(*,*) "intcutoff to ",self%integralCutoff
+                write(*,*) "prim cutoff to", self%primLimit
             endif
 
             if(PRMS.le.TEN_TO_MINUS7 .and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**9.5d0))then
             quick_method%integralCutoff=min(quick_method%integralCutoff,TEN_TO_MINUS10)
             quick_method%primLimit=min(quick_method%integralCutoff,TEN_TO_MINUS10)
-         endif
+            write(*,*) "intcutoff to ",self%integralCutoff
+                write(*,*) "prim cutoff to", self%primLimit
+            endif
          
         end subroutine adjust_Cutoff
         

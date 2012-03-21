@@ -221,10 +221,10 @@ contains
             enddo
         enddo
         
-        allocate(self%gcexpo(6,nbasis_arg))
-        allocate(self%gccoeff(6,nbasis_arg))
+        allocate(self%gcexpo(8,nbasis_arg))
+        allocate(self%gccoeff(8,nbasis_arg))
         allocate(self%cons(nbasis_arg))
-        do i = 1, 6
+        do i = 1, 8
             do j = 1, nbasis_arg
                 self%gcexpo( i, j) = 0.0
                 self%gccoeff( i, j) = 0.0

@@ -219,7 +219,7 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
  logical :: isatom
  integer, dimension(0:92)  :: kcontract,kbasis
  logical, dimension(0:92)  :: atmbs,atmbs2
- real*8 AA(6),BB(6),CC(6)
+ real*8 AA(8),BB(8),CC(8)
  integer natomstart,natomfinal,nbasisstart,nbasisfinal
  
  include 'mpif.h'
@@ -448,15 +448,15 @@ endif
 ! Allocate the arrays now that we know the sizes
 
 if(quick_method%ffunxiao)then
- allocate(Yxiao(1296,56,56))
+ allocate(Yxiao(12960,56,56))
  allocate(Yxiaotemp(56,56,0:10))
- allocate(Yxiaoprim(6,6,56,56))
- allocate(attraxiao(56,56,0:6))
+ allocate(Yxiaoprim(8,8,56,56))
+ allocate(attraxiao(56,56,0:8))
  allocate(attraxiaoopt(3,56,56,0:5))
 else
- allocate(Yxiao(1296,120,120))
+ allocate(Yxiao(12960,120,120))
  allocate(Yxiaotemp(120,120,0:14))
- allocate(Yxiaoprim(6,6,120,120))
+ allocate(Yxiaoprim(8,8,120,120))
  allocate(attraxiao(120,120,0:8))
  allocate(attraxiaoopt(3,120,120,0:7))
 endif
@@ -486,8 +486,8 @@ endif
  allocate(ksumtype(nshell+1))
  allocate(KLMN(3,nbasis))
  allocate(cons(nbasis))
- allocate(gccoeff(6,nbasis))
- allocate(gcexpo(6,nbasis))
+ allocate(gccoeff(8,nbasis))
+ allocate(gcexpo(8,nbasis))
  allocate(gcexpomin(nshell))
  allocate(aex(nprim ))
  allocate(gcs(nprim ))
