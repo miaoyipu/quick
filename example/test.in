@@ -1,4 +1,4 @@
-HF energy zmake NCYC=100 cutoff=1.0e-9 BASIS=6-311gss denserms=1.0e-6
+HF energy zmake NCYC=100 cutoff=1.0e-9 BASIS=cc-pvdz denserms=1.0e-6
 
 H           0.3032      -0.4940       0.0000
 H          -0.3032      -0.9088       0.0000

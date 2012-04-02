@@ -65,7 +65,7 @@ subroutine electdiis(jscf)
    integer :: idiis = 0           ! diis iteration
    integer :: IDIISfinal,iidiis,current_diis
    integer :: lsolerr = 0
-   
+   integer :: IDIIS_Error_Start, IDIIS_Error_End 
    double precision :: BIJ,DENSEJI,errormax,OJK,temp
    double precision :: Sum2Mat,rms
    integer :: I,J,K,L,IERROR
@@ -433,6 +433,29 @@ subroutine electdiis(jscf)
          call CopyDMat(B,BSAVE,IDIISfinal+1)
          call LSOLVE(IDIISfinal+1,quick_method%maxdiisscf+1,B,RHS,W,quick_method%DMCutoff,COEFF,LSOLERR)
 
+        IDIIS_Error_Start = 1
+        IDIIS_Error_End   = IDIISfinal
+111     IF (LSOLERR.ne.0)then
+          IDIISfinal=Idiisfinal-1
+            do I=1,IDIISfinal+1
+              do J=1,IDIISfinal+1
+                B(I,J)=BSAVE(I+IDIIS_Error_Start,J+IDIIS_Error_Start)
+              enddo
+            enddo
+           IDIIS_Error_Start = IDIIS_Error_Start + 1
+
+          do i=1,IDIISfinal
+            RHS(i)=0.0d0
+          enddo
+
+          RHS(IDIISfinal+1)=-1.0d0
+
+
+          call LSOLVE(IDIISfinal+1,quick_method%maxdiisscf+1,B,RHS,W,quick_method%DMCutoff,COEFF,LSOLERR)
+
+          goto 111
+        endif
+         
          !-----------------------------------------------
          ! 7) Form a new operator matrix based on O(new) = [Sum over i] c(i)O(i)
          ! If the solution to step eight failed, skip this step and revert
@@ -443,8 +466,8 @@ subroutine electdiis(jscf)
             do J=1,nbasis
                do K=1,nbasis
                   OJK=0.d0
-                  do I=1,IDIISfinal
-                     OJK = OJK + COEFF(I) * alloperator(I,K,J)
+                  do I=IDIIS_Error_Start, IDIIS_Error_End
+                     OJK = OJK + COEFF(I-IDIIS_Error_Start+1) * alloperator(I,K,J)
                   enddo
                   quick_qm_struct%o(J,K) = OJK
                enddo

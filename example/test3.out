@@ -23,15 +23,35 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Wed Mar 21 12:38:59 2012
+ TASK STARTS ON: Sun Apr  1 22:23:30 2012
  INPUT FILE:     test3.in
  OUTPUT FILE:    test3.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
+|------------ CUDA INFORMATION ---------------
+|  CUDA version of Quick in use
+|  Implemented by
+|                      Yipu Miao (Florida)
+|  CAUTION: CUDA Quick is currently experimental
+|           and you may at risk to use it. Be sure
+|           to check result carelly. Advise or 
+|           bug report are welcome.
+|---------------------------------------------
+
+|------------ GPU INFORMATION ---------------
+| CUDA ENABLED DEVICE         :        1
+| CUDA DEVICE IN USE          :       -1
+| CUDA DEVICE NAME            : 
+| CUDA DEVICE PM              :    32767
+| CUDA DEVICE CORE FREQ(GHZ)  :     0.01
+| CUDA DEVICE MEMORY SIZE (MB):        0
+| SUPPORTING CUDA VERSION     : ******.*
+|--------------------------------------------
+
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF NCYC=1000 ENERGY ZMAKE  BASIS=AUG-CC-PVDZ DENSERMS=1.0E-9                                                                                                                                            
+KEYWORD=HF NCYC=1000 ENERGY ZMAKE  BASIS=6-31G DENSERMS=1.0E-9                                                                                                                                                  
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
@@ -48,8 +68,8 @@ KEYWORD=HF NCYC=1000 ENERGY ZMAKE  BASIS=AUG-CC-PVDZ DENSERMS=1.0E-9
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-08
-| BASIS SET = AUG-CC-PVDZ
-| BASIS FILE = /home/miao/Workspace/new_quick/basis/AUG-CC-PVDZ
+| BASIS SET = 6-31G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
 
  @ Finish reading job
 
@@ -58,72 +78,76 @@ KEYWORD=HF NCYC=1000 ENERGY ZMAKE  BASIS=AUG-CC-PVDZ DENSERMS=1.0E-9
 
  For Atom Kind =    1
  ELEMENT = C 
-BASIS FUNCTIONS =   25
+BASIS FUNCTIONS =    9
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     1.08
-RMS CHANGE     = 0.107781E+00  MAX CHANGE= 0.918913E+00
+SCF CYCLE      =        1      TIME      =     0.06
+RMS CHANGE     = 0.149950E+00  MAX CHANGE= 0.820200E+00
 
-SCF CYCLE      =        2      TIME      =     1.09
-RMS CHANGE     = 0.773730E-01  MAX CHANGE= 0.713027E+00
+SCF CYCLE      =        2      TIME      =     0.06
+RMS CHANGE     = 0.797517E-01  MAX CHANGE= 0.320914E+00
 
-SCF CYCLE      =        3      TIME      =   1.09
-DIIS CYCLE     =        1      MAX ERROR = 0.553810E-01
-RMS CHANGE     = 0.772510E-02  MAX CHANGE= 0.844039E-01
+SCF CYCLE      =        3      TIME      =   0.06
+DIIS CYCLE     =        1      MAX ERROR = 0.394445E-01
+RMS CHANGE     = 0.137215E-01  MAX CHANGE= 0.589123E-01
 
-SCF CYCLE      =        4      TIME      =   1.10
-DIIS CYCLE     =        2      MAX ERROR = 0.136839E-01
-RMS CHANGE     = 0.143124E-02  MAX CHANGE= 0.194485E-01
+SCF CYCLE      =        4      TIME      =   0.06
+DIIS CYCLE     =        2      MAX ERROR = 0.746633E-02
+RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
 
-SCF CYCLE      =        5      TIME      =   1.09
-DIIS CYCLE     =        3      MAX ERROR = 0.651248E-02
-RMS CHANGE     = 0.115786E-02  MAX CHANGE= 0.152431E-01
+SCF CYCLE      =        5      TIME      =   0.06
+DIIS CYCLE     =        3      MAX ERROR = 0.308852E-02
+RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
 
-SCF CYCLE      =        6      TIME      =   1.10
-DIIS CYCLE     =        4      MAX ERROR = 0.174850E-02
-RMS CHANGE     = 0.343384E-03  MAX CHANGE= 0.418402E-02
-
-SCF CYCLE      =        7      TIME      =   1.09
-DIIS CYCLE     =        5      MAX ERROR = 0.882597E-04
-RMS CHANGE     = 0.273434E-04  MAX CHANGE= 0.224370E-03
-
-SCF CYCLE      =        8      TIME      =   1.10
-DIIS CYCLE     =        6      MAX ERROR = 0.633794E-05
-RMS CHANGE     = 0.268756E-05  MAX CHANGE= 0.229079E-04
-
-SCF CYCLE      =        9      TIME      =   1.09
-DIIS CYCLE     =        7      MAX ERROR = 0.107837E-05
-RMS CHANGE     = 0.312797E-06  MAX CHANGE= 0.352071E-05
+SCF CYCLE      =        6      TIME      =   0.06
+DIIS CYCLE     =        4      MAX ERROR = 0.299208E-03
+RMS CHANGE     = 0.311349E-03  MAX CHANGE= 0.215704E-02
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
 
-SCF CYCLE      =       10      TIME      =     1.08
-RMS CHANGE     = 0.301884E-07  MAX CHANGE= 0.359912E-06
+SCF CYCLE      =        7      TIME      =     0.06
+RMS CHANGE     = 0.153492E-04  MAX CHANGE= 0.106143E-03
 
-SCF CYCLE      =       11      TIME      =   1.10
-DIIS CYCLE     =        1      MAX ERROR = 0.599743E-07
-RMS CHANGE     = 0.936197E-08  MAX CHANGE= 0.982435E-07
+SCF CYCLE      =        8      TIME      =   0.05
+DIIS CYCLE     =        1      MAX ERROR = 0.789983E-05
+RMS CHANGE     = 0.460369E-05  MAX CHANGE= 0.296430E-04
+
+SCF CYCLE      =        9      TIME      =   0.06
+DIIS CYCLE     =        2      MAX ERROR = 0.309476E-05
+RMS CHANGE     = 0.280492E-05  MAX CHANGE= 0.193991E-04
+
+SCF CYCLE      =       10      TIME      =   0.06
+DIIS CYCLE     =        3      MAX ERROR = 0.113360E-05
+RMS CHANGE     = 0.145469E-05  MAX CHANGE= 0.100644E-04
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
 
-SCF CYCLE      =       12      TIME      =     1.09
-RMS CHANGE     = 0.576872E-08  MAX CHANGE= 0.720181E-07
+SCF CYCLE      =       11      TIME      =     0.06
+RMS CHANGE     = 0.122690E-06  MAX CHANGE= 0.848305E-06
 
-SCF CYCLE      =       13      TIME      =   1.09
-DIIS CYCLE     =        1      MAX ERROR = 0.171966E-07
-RMS CHANGE     = 0.204168E-08  MAX CHANGE= 0.242805E-07
+SCF CYCLE      =       12      TIME      =   0.06
+DIIS CYCLE     =        1      MAX ERROR = 0.612963E-07
+RMS CHANGE     = 0.376802E-07  MAX CHANGE= 0.236924E-06
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
 
-SCF CYCLE      =       14      TIME      =     1.09
-RMS CHANGE     = 0.128105E-08  MAX CHANGE= 0.163557E-07
+SCF CYCLE      =       13      TIME      =     0.06
+RMS CHANGE     = 0.210064E-07  MAX CHANGE= 0.145234E-06
 
-SCF CYCLE      =       15      TIME      =   1.10
-DIIS CYCLE     =        1      MAX ERROR = 0.422553E-08
-RMS CHANGE     = 0.473167E-09  MAX CHANGE= 0.595503E-08
-PREPARED FOR FINAL NO INTERPOLATION ITERATION
+SCF CYCLE      =       14      TIME      =   0.06
+DIIS CYCLE     =        1      MAX ERROR = 0.133523E-07
+RMS CHANGE     = 0.585560E-08  MAX CHANGE= 0.405626E-07
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
 
-SCF CYCLE      =       16      TIME      =     1.08
-RMS CHANGE     = 0.290942E-09  MAX CHANGE= 0.373958E-08
+SCF CYCLE      =       15      TIME      =     0.06
+RMS CHANGE     = 0.365461E-08  MAX CHANGE= 0.252691E-07
+
+SCF CYCLE      =       16      TIME      =   0.06
+DIIS CYCLE     =        1      MAX ERROR = 0.256431E-08
+RMS CHANGE     = 0.101880E-08  MAX CHANGE= 0.705744E-08
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =       17      TIME      =     0.06
+RMS CHANGE     = 0.640470E-09  MAX CHANGE= 0.442856E-08
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -133,41 +157,28 @@ TOTAL ENERGY         =     0.000000000
 
  For Atom Kind =    2
  ELEMENT = H 
-BASIS FUNCTIONS =    9
+BASIS FUNCTIONS =    2
 
  @ Begin Energy Calculation
 
 
-SCF CYCLE      =        1      TIME      =     0.01
-RMS CHANGE     = 0.555388E-01  MAX CHANGE= 0.231497E+00
+SCF CYCLE      =        1      TIME      =     0.00
+RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
 
-SCF CYCLE      =        2      TIME      =   0.00
-DIIS CYCLE     =        1      MAX ERROR = 0.694855E-01
-RMS CHANGE     = 0.157778E-01  MAX CHANGE= 0.825352E-01
+SCF CYCLE      =        2      TIME      =     0.00
+RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
 
 SCF CYCLE      =        3      TIME      =   0.00
-DIIS CYCLE     =        2      MAX ERROR = 0.267292E-01
-RMS CHANGE     = 0.101653E-01  MAX CHANGE= 0.572911E-01
+DIIS CYCLE     =        1      MAX ERROR = 0.543720E-02
+RMS CHANGE     = 0.492246E-02  MAX CHANGE= 0.776945E-02
 
-SCF CYCLE      =        4      TIME      =   0.01
-DIIS CYCLE     =        3      MAX ERROR = 0.388035E-03
-RMS CHANGE     = 0.374594E-03  MAX CHANGE= 0.205896E-02
-
-SCF CYCLE      =        5      TIME      =   0.00
-DIIS CYCLE     =        4      MAX ERROR = 0.496590E-04
-RMS CHANGE     = 0.405122E-04  MAX CHANGE= 0.178291E-03
+SCF CYCLE      =        4      TIME      =   0.00
+DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
+RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
 
-SCF CYCLE      =        6      TIME      =     0.00
-RMS CHANGE     = 0.170696E-08  MAX CHANGE= 0.105324E-07
-
-SCF CYCLE      =        7      TIME      =   0.01
-DIIS CYCLE     =        1      MAX ERROR = 0.134079E-08
-RMS CHANGE     = 0.486985E-09  MAX CHANGE= 0.302720E-08
-PREPARED FOR FINAL NO INTERPOLATION ITERATION
-
-SCF CYCLE      =        8      TIME      =     0.00
-RMS CHANGE     = 0.145131E-09  MAX CHANGE= 0.904598E-09
+SCF CYCLE      =        5      TIME      =     0.00
+RMS CHANGE     = 0.142040E-10  MAX CHANGE= 0.224882E-10
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -204,9 +215,9 @@ TOTAL ENERGY         =     0.000000000
       5     2.05992    12.78761    14.01826     1.28055     0.00000
 
 ============== BASIS INFOS ==============
-| BASIS FUNCTIONS =   61
-| NSHELL =   29 NPRIM  =   53
-| JSHELL =   29 JBASIS =   53
+| BASIS FUNCTIONS =   17
+| NSHELL =   11 NPRIM  =   26
+| JSHELL =   11 JBASIS =   26
 
 
  @ End Reading Mol Info 
@@ -218,71 +229,74 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1    -39.636863895      ------         0.340     1        0.00      0.34      0.00    0.1447E+01  0.3866E-01  0.4522E+00
-  2    -39.449579654  -.187284E+00       0.510     2        0.00      0.51      0.00    0.1019E+00  0.1093E-01  0.1490E+00
-  3    -39.488787985  0.392083E-01       0.510     3        0.00      0.51      0.00    0.4893E-01  0.4604E-02  0.5849E-01
-  4    -39.496137820  0.734983E-02       0.510     4        0.01      0.50      0.00    0.3659E-01  0.3750E-02  0.5276E-01
-  5    -39.499978407  0.384059E-02       0.510     5        0.00      0.51      0.00    0.3422E-01  0.3346E-02  0.5704E-01
-  6    -39.504915435  0.493703E-02       0.510     6        0.00      0.51      0.00    0.2018E-01  0.5387E-02  0.1206E+00
-  7    -39.509222359  0.430692E-02       0.520     7        0.01      0.51      0.00    0.1613E-01  0.6480E-02  0.1952E+00
-  8    -39.512716792  0.349443E-02       0.510     8        0.00      0.51      0.00    0.1212E-01  0.1032E-01  0.2772E+00
-  9    -39.515295326  0.257853E-02       0.510     9        0.00      0.51      0.00    0.5201E-02  0.5003E-02  0.1763E+00
- 10    -39.515618490  0.323164E-03       0.520    10        0.00      0.52      0.00    0.1786E-02  0.3167E-02  0.9271E-01
- 11    -39.515654881  0.363907E-04       0.520     1        0.01      0.51      0.00    0.5558E-03  0.2565E-02  0.9238E-01
- 12    -39.515658993  0.411217E-05       0.520     2        0.01      0.51      0.00    0.2430E-03  0.6571E-03  0.2330E-01
- 13    -39.515659551  0.558157E-06       0.510     3        0.00      0.51      0.00    0.1664E-03  0.6873E-02  0.2435E+00
- 14    -39.515655213  -.433786E-05       0.520     4        0.01      0.51      0.00    0.2573E-03  0.1104E-01  0.3798E+00
- 15    -39.515647943  -.727037E-05       0.520     5        0.01      0.51      0.01    0.9463E-04  0.1156E-01  0.3966E+00
- 16    -39.515655545  0.760190E-05       0.510     6        0.00      0.51      0.00    0.8931E-04  0.1358E-01  0.4824E+00
- 17    -39.515665652  0.101077E-04       0.510     7        0.00      0.51      0.00    0.2265E-03  0.2200E-02  0.7881E-01
- 18    -39.515663437  -.221509E-05       0.510     8        0.01      0.50      0.00    0.2650E-03  0.3593E-02  0.1280E+00
- 19    -39.515660522  -.291582E-05       0.510     9        0.01      0.50      0.00    0.8168E-04  0.4954E-02  0.1772E+00
- 20    -39.515664904  0.438215E-05       0.500    10        0.00      0.50      0.00    0.1193E-03  0.4076E-04  0.1423E-02
- 21    -39.515664862  -.420765E-07       0.510     1        0.00      0.51      0.00    0.1195E-03  0.3042E-04  0.1074E-02
- 22    -39.515664832  -.291633E-07       0.510     2        0.01      0.50      0.00    0.1195E-03  0.1117E-02  0.4008E-01
- 23    -39.515663741  -.109187E-05       0.510     3        0.01      0.50      0.00    0.1097E-03  0.2277E-02  0.8144E-01
- 24    -39.515666043  0.230264E-05       0.510     4        0.01      0.50      0.00    0.1292E-03  0.1180E-02  0.4226E-01
- 25    -39.515667346  0.130286E-05       0.500     5        0.00      0.50      0.00    0.1401E-03  0.1629E-01  0.5784E+00
- 26    -39.515654889  -.124576E-04       0.510     6        0.00      0.51      0.00    0.4768E-04  0.7052E-02  0.2433E+00
- 27    -39.515650673  -.421570E-05       0.510     7        0.01      0.50      0.00    0.5471E-04  0.1108E-01  0.3841E+00
- 28    -39.515657140  0.646700E-05       0.510     8        0.01      0.50      0.00    0.5565E-04  0.5654E-02  0.2006E+00
- 29    -39.515660987  0.384707E-05       0.510     9        0.00      0.51      0.00    0.8700E-04  0.2599E-02  0.9288E-01
- 30    -39.515663206  0.221924E-05       0.510    10        0.00      0.51      0.00    0.1058E-03  0.1312E-02  0.4696E-01
- 31    -39.515664456  0.124983E-05       0.510     1        0.01      0.50      0.00    0.1164E-03  0.1966E-02  0.7067E-01
- 32    -39.515666518  0.206194E-05       0.510     2        0.01      0.50      0.00    0.1342E-03  0.1339E-02  0.4818E-01
- 33    -39.515668058  0.154028E-05       0.510     3        0.01      0.50      0.00    0.1471E-03  0.1974E-02  0.7110E-01
- 34    -39.515670518  0.245986E-05       0.510     4        0.00      0.51      0.00    0.1680E-03  0.1196E-03  0.4309E-02
- 35    -39.515670675  0.157053E-06       0.510     5        0.00      0.51      0.00    0.1692E-03  0.5705E-02  0.2169E+00
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- 36    -39.515680787  0.101122E-04       0.510     6        0.00      0.51      0.00    0.2206E-03  0.1004E-01  0.3589E+00
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- 37    -39.515704120  0.233326E-04       0.510     7        0.01      0.50      0.00    0.4092E-03  0.4165E-01  0.1497E+01
- 38    -39.515650616  -.535037E-04       0.510     8        0.01      0.50      0.01    0.5502E-04  0.2066E-01  0.7262E+00
- 39    -39.515664451  0.138347E-04       0.510     9        0.00      0.51      0.00    0.1148E-03  0.2203E-01  0.7966E+00
- 40    -39.515702654  0.382028E-04       0.510    10        0.00      0.51      0.00    0.4055E-03  0.1456E-01  0.5276E+00
- 41    -39.515673549  -.291044E-04       0.510     1        0.00      0.51      0.00    0.1895E-03  0.1454E-01  0.5269E+00
- 42    -39.515702595  0.290456E-04       0.510     2        0.00      0.51      0.00    0.4065E-03  0.3196E-02  0.1161E+00
- 43    -39.515711174  0.857921E-05       0.510     3        0.00      0.51      0.00    0.4644E-03  0.5514E-02  0.2001E+00
- 44    -39.515727803  0.166289E-04       0.510     4        0.00      0.51      0.00    0.5705E-03  0.9783E-02  0.3554E+00
- 45    -39.515763206  0.354029E-04       0.510     5        0.00      0.51      0.00    0.7761E-03  0.1643E-01  0.5965E+00
- 46    -39.515708097  -.551091E-04       0.510     6        0.00      0.51      0.00    0.4411E-03  0.8321E-02  0.3021E+00
- 47    -39.515733382  0.252849E-04       0.510     7        0.00      0.51      0.00    0.6011E-03  0.1150E-01  0.4170E+00
- 48    -39.515777051  0.436695E-04       0.510     8        0.00      0.51      0.00    0.8537E-03  0.5821E-01  0.2104E+01
- 49    -39.515654369  -.122682E-03       0.510     9        0.01      0.50      0.00    0.4787E-04  0.1254E-01  0.4249E+00
- 50    -39.515644369  -.999925E-05       0.510    10        0.00      0.51      0.00    0.8815E-04  0.1525E-01  0.5196E+00
- 51    -39.515655844  0.114750E-04       0.510     1        0.00      0.51      0.00    0.5380E-04  0.2924E-02  0.1030E+00
- 52    -39.515657539  0.169446E-05       0.510     2        0.01      0.50      0.00    0.6199E-04  0.1690E-02  0.5984E-01
- 53    -39.515658613  0.107428E-05       0.520     3        0.01      0.51      0.01    0.6894E-04  0.1320E-02  0.4687E-01
- 54    -39.515659508  0.895183E-06       0.510     4        0.00      0.51      0.00    0.7557E-04  0.2186E-02  0.8141E-01
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- 55    -39.515661375  0.186639E-05       0.510     5        0.00      0.51      0.00    0.8375E-04  0.2908E-02  0.1008E+00
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- 56    -39.515664030  0.265537E-05       0.510     6        0.01      0.50      0.00    0.1108E-03  0.3760E-02  0.1392E+00
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- 57    -39.515668246  0.421571E-05       0.520     7        0.01      0.51      0.00    0.1347E-03  0.1491E-01  0.5374E+00
- 58    -39.515655741  -.125051E-04       0.510     8        0.00      0.51      0.00    0.5327E-04  0.1146E-03  0.4016E-02
- 59    -39.515655677  -.634291E-07       0.510     9        0.01      0.50      0.00    0.5306E-04  0.1402E-02  0.5140E-01
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- 60    -39.515656553  0.875582E-06       0.520    10        0.01      0.51      0.00    0.5366E-04  0.1647E-02  0.5567E-01
-DIIS FAILED !! PERFORM NORMAL SCF. (NOT FATAL.)
- 61    -39.515657544  0.991148E-06       0.510    
+  1    -39.639773983      ------         0.020     1        0.00      0.02      0.00    0.1489E+01  0.1037E+00  0.5681E+00
+  2    -39.322515716  -.317258E+00       0.010     2        0.00      0.01      0.00    0.1511E+00  0.4963E-01  0.4164E+00
+  3    -39.374324066  0.518083E-01       0.010     3        0.00      0.01      0.00    0.5432E-01  0.1356E-01  0.7171E-01
+  4    -39.386061315  0.117372E-01       0.020     4        0.00      0.02      0.00    0.4834E-01  0.1237E-01  0.9631E-01
+  5    -39.393513583  0.745227E-02       0.010     5        0.00      0.01      0.00    0.4662E-01  0.1158E-01  0.5585E-01
+  6    -39.405595747  0.120822E-01       0.010     6        0.00      0.01      0.00    0.4345E-01  0.1996E-01  0.9624E-01
+  7    -39.423963002  0.183673E-01       0.010     7        0.00      0.01      0.00    0.3561E-01  0.3883E-01  0.1971E+00
+  8    -39.450155063  0.261921E-01       0.020     8        0.00      0.02      0.00    0.1978E-01  0.1599E-01  0.6868E-01
+  9    -39.455564725  0.540966E-02       0.010     9        0.00      0.01      0.00    0.9023E-02  0.1461E-01  0.6061E-01
+ 10    -39.457085250  0.152052E-02       0.010    10        0.00      0.01      0.00    0.7522E-02  0.1976E-02  0.1403E-01
+ 11    -39.457198545  0.113296E-03       0.010     1        0.00      0.01      0.00    0.2898E-02  0.1491E-02  0.1069E-01
+ 12    -39.457219902  0.213567E-04       0.020     2        0.00      0.02      0.00    0.2353E-03  0.1144E-03  0.9558E-03
+ 13    -39.457220046  0.143515E-06       0.010     3        0.00      0.01      0.00    0.8297E-04  0.6475E-04  0.4841E-03
+ 14    -39.457220067  0.210056E-07       0.010     4        0.00      0.01      0.00    0.2071E-04  0.6062E-05  0.4365E-04
+ 15    -39.457220070  0.311479E-08       0.010     5        0.00      0.01      0.00    0.6077E-05  0.2510E-05  0.1588E-04
+ 16    -39.457220070  0.766001E-10       0.020     6        0.00      0.01      0.00    0.6171E-06  0.2967E-06  0.2416E-05
+ 17    -39.457220070  0.130147E-09       0.010     7        0.00      0.01      0.00    0.1198E-05  0.5115E-06  0.4941E-05
+ 18    -39.457220070  -.698108E-11       0.010     8        0.00      0.01      0.00    0.2512E-05  0.1072E-05  0.1037E-04
+ 19    -39.457220070  -.310685E-10       0.010     9        0.00      0.01      0.00    0.5270E-05  0.7257E-06  0.7020E-05
+ 20    -39.457220070  0.401563E-10       0.020    10        0.00      0.01      0.00    0.1053E-07  0.6416E-08  0.4252E-07
+ 21    -39.457220070  0.316298E-10       0.010     1        0.00      0.01      0.00    0.5515E-08  0.3607E-08  0.2352E-07
+ 22    -39.457220070  0.675016E-13       0.010     2        0.00      0.01      0.00    0.2992E-08  0.2014E-08  0.1309E-07
+ 23    -39.457220070  -.103029E-12       0.010     3        0.00      0.01      0.00    0.2389E-08  0.1174E-08  0.7287E-08
+ 24    -39.457220070  0.248690E-13       0.010     4        0.00      0.01      0.00    0.1954E-08  0.7683E-09  0.4008E-08
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER  24 CYLCES
+ MAX ERROR = 0.195354E-08   RMS CHANGE = 0.768320E-09   MAX CHANGE = 0.400785E-08
+ -----------------------------------------------
+ELECTRONIC ENERGY    =   -47.307086904
+CORE_CORE REPULSION  =     7.849866834
+TOTAL ENERGY         =   -39.457220070
+
+ @ End Energy calculation
+
+
+ @ Begin Zmake conversion
+
+  
+ Z-MATRIX:
+
+   ATOM  ELEMENTAL  BOND LENGTH    BOND ANGLE    DIHEDRAL ANGLE
+  NUMBER  SYMBOL    (ANGSTROMS)    (DEGREES)       (DEGREES)
+     I                 I-NA         I-NA-NB        I-NA-NB-NC      NA   NB   NC
+
+     1      C        0.00000  0     0.00000  0      0.00000  0      0    0    0
+     2      H        7.48415  1     0.00000  0      0.00000  0      1    0    0
+     3      H        8.30928  1    27.67689  1      0.00000  0      1    2    0
+     4      H        1.09002  1    30.23049  1    104.24927  1      1    2    3
+     5      H        1.09006  1    45.63091  1     48.50451  1      1    2    3
+
+ @ End Zmake conversion
+
+
+ @ Output Timing Infomration
+
+------------- TIMING ---------------
+INITIAL GUESS TIME =     1.330000000( 68.21%)
+TOTAL SCF TIME     =     0.300000000( 15.38%)
+      TOTAL OP TIME      =     0.280000000( 14.36%)
+            TOTAL 1e TIME      =     0.000000000(  0.00%)
+            TOTAL 2e TIME      =     0.280000000( 14.36%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.000000000(  0.00%)
+            TOTAL DIAG TIME    =     0.000000000(  0.00%)
+TOTAL TIME         =     1.950000000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes  1.9 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Sun Apr  1 22:23:33 2012
