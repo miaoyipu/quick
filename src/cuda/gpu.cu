@@ -55,43 +55,43 @@ extern "C" void gpu_init_(void)
     }
     
     if (gpu->gpu_dev_id == -1){
-	device = 0;
+        device = 0;
         // if gpu count is greater than 1(multi-gpu) select one with bigger free memory, or available. 
         if (gpuCount > 1) {
             size_t maxMem = 0;
             for (int i = gpuCount-1; i>=0; i--) {
                 /*status = cudaSetDevice(i);
-            	size_t free_mem = 0;
-                size_t tot_mem  = 0;
+                 size_t free_mem = 0;
+                 size_t tot_mem  = 0;
+                 
+                 status = cudaMemGetInfo(&free_mem, &tot_mem); // If error returns, that is to say this device is unavailable.
+                 // Else, use one with larger memory.
+                 if (free_mem >= maxMem) {
+                 maxMem = free_mem;
+                 device = i;
+                 }
+                 cudaThreadExit();*/
+                cudaGetDeviceProperties(&deviceProp, i);
                 
-                status = cudaMemGetInfo(&free_mem, &tot_mem); // If error returns, that is to say this device is unavailable.
-                // Else, use one with larger memory.
-                if (free_mem >= maxMem) {
-                	maxMem = free_mem;
-                	device = i;
-                }
-                cudaThreadExit();*/
-		cudaGetDeviceProperties(&deviceProp, i);
-
                 if (((deviceProp.major >= 2) || ((deviceProp.major == 1) && (deviceProp.minor == 3))) &&
-                     (deviceProp.totalGlobalMem >= maxMem))
+                    (deviceProp.totalGlobalMem >= maxMem))
                 {
                     maxMem                          = deviceProp.totalGlobalMem;
                     device                          = i;
                 }
-
+                
             }
     	    gpu->gpu_dev_id = device;
         }       
-
+        
     }else{
-        if ( gpu->gpu_dev_id >= gpuCount)
-	{
-		printf("GPU ID IS ILLEGAL, PLEASE SELECT FROM 0 TO %i.\n", gpuCount-1);
-		cudaThreadExit();
-		exit(-1);
-	}
-
+        if (gpu->gpu_dev_id >= gpuCount)
+        {
+            printf("GPU ID IS ILLEGAL, PLEASE SELECT FROM 0 TO %i.\n", gpuCount-1);
+            cudaThreadExit();
+            exit(-1);
+        }
+        
     	cudaGetDeviceProperties(&deviceProp, gpu->gpu_dev_id);
     	if ( (deviceProp.major >=2) || ((deviceProp.major == 1) && (deviceProp.minor == 3)))
         	device = gpu->gpu_dev_id;
@@ -398,6 +398,11 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     
     for (int q = 0; q <= 2; q++) {
         for (int p = 0; p <= 2; p++) {
+            
+            // First to order ERI type
+            // Second to order primitive Gaussian function number
+            // Third to order Schwartz cutoff upbound
+            
             int b=0;
             for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
                 for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
@@ -441,7 +446,6 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
             
             flag = true;
              
-            
             for (int i = 0; i < b - 1; i ++)
             {
                 flag = true;
@@ -475,20 +479,21 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
                 if (flag == true)
                     break;
             }
+            
             flag = true;
             
         }
     }
     
 
-    printf("a = %i, total = %i, pect= %f\n", a, gpu->gpu_basis->Qshell * (gpu->gpu_basis->Qshell+1)/2, (float)a/(gpu->gpu_basis->Qshell*(gpu->gpu_basis->Qshell)));
+    printf("a = %i, total = %i, pect= %f\n", a, gpu->gpu_basis->Qshell * (gpu->gpu_basis->Qshell+1)/2, (float) 2*a/(gpu->gpu_basis->Qshell*(gpu->gpu_basis->Qshell)));
         
     gpu->gpu_cutoff->sqrQshell  = a;
     
+    /*
     printf("SS = %i\n",a);
     for (int i = 0; i<a; i++) {
-        //for (int j=0;j<a;j++){
-		printf("%8i %4i %4i %18.13f Q=%4i %4i %4i %4i prim = %4i %4i\n", i, \
+        printf("%8i %4i %4i %18.13f Q=%4i %4i %4i %4i prim = %4i %4i\n", i, \
         gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x, \
         gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y, \
         LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], gpu->nshell, gpu->nshell),\
@@ -496,14 +501,11 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
         gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], \
         gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], \
         gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], \
-        gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x]] ,\
+        gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x]],
         gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y]]);
-		//printf("%8i %8i %28.23f\n", i, j,\
-        LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], gpu->nshell, gpu->nshell)*
-		//LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].x], gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].y], gpu->nshell, gpu->nshell));
-    //}
-		printf("\n");
-	}
+    }
+    */
+    
     gpu -> gpu_cutoff -> sorted_YCutoffIJ  -> Upload();
     gpu -> gpu_sim.sqrQshell        = gpu -> gpu_cutoff -> sqrQshell;
     gpu -> gpu_sim.YCutoff          = gpu -> gpu_cutoff -> YCutoff -> _devData;
@@ -637,14 +639,15 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
 
     gpu -> gpu_basis -> first_shell_basis_function  =   new cuda_buffer_type<int>(first_shell_basis_function, 1);//gpu->gpu_basis->nshell);
     gpu -> gpu_basis -> last_shell_basis_function   =   new cuda_buffer_type<int>(last_shell_basis_function,  1);//gpu->gpu_basis->nshell);
+ 
+    gpu -> gpu_basis -> ktype                       =   new cuda_buffer_type<int>(ktype,    gpu->gpu_basis->nshell);
+    gpu -> gpu_basis -> kshell                      =   new cuda_buffer_type<int>(kshell,   93);
 */
     gpu -> gpu_basis -> ncenter                     =   new cuda_buffer_type<int>(ncenter,  gpu->gpu_basis->nbasis);
 
     gpu -> gpu_basis -> kstart                      =   new cuda_buffer_type<int>(kstart,   gpu->gpu_basis->nshell);
     gpu -> gpu_basis -> katom                       =   new cuda_buffer_type<int>(katom,    gpu->gpu_basis->nshell);
-//    gpu -> gpu_basis -> ktype                       =   new cuda_buffer_type<int>(ktype,    gpu->gpu_basis->nshell);
     gpu -> gpu_basis -> kprim                       =   new cuda_buffer_type<int>(kprim,    gpu->gpu_basis->nshell);
-//    gpu -> gpu_basis -> kshell                      =   new cuda_buffer_type<int>(kshell,   93);
     gpu -> gpu_basis -> Ksumtype                    =   new cuda_buffer_type<int>(Ksumtype, gpu->gpu_basis->nshell+1);
 
     gpu -> gpu_basis -> Qnumber                     =   new cuda_buffer_type<int>(Qnumber,  gpu->gpu_basis->nshell);
@@ -658,11 +661,26 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     gpu -> gpu_basis -> gcexpo                      =   new cuda_buffer_type<QUICKDouble>(gcexpo, MAXPRIM, gpu->nbasis);
     gpu -> gpu_basis -> KLMN                        =   new cuda_buffer_type<int>(KLMN, 3, gpu->nbasis);
     
+    gpu -> gpu_basis -> prim_start                  =   new cuda_buffer_type<int>(gpu->gpu_basis->nshell);
+    gpu -> gpu_basis -> prim_total = 0;
+    
+    for (int i = 0 ; i < gpu->gpu_basis->nshell; i++) {
+        gpu -> gpu_basis -> prim_start -> _hostData[i] = gpu -> gpu_basis -> prim_total;
+        gpu -> gpu_basis -> prim_total += gpu -> gpu_basis -> kprim -> _hostData[i];
+    }
+    
+    for (int i = 0; i<gpu->gpu_basis->nshell; i++) {
+        printf("for %i prim= %i, start= %i\n", i, gpu -> gpu_basis -> kprim -> _hostData[i], gpu -> gpu_basis -> prim_start -> _hostData[i]);
+    }
+    printf("total=%i\n", gpu -> gpu_basis -> prim_total);
+    int prim_total = gpu -> gpu_basis -> prim_total;
+    gpu -> gpu_sim.prim_total = gpu -> gpu_basis -> prim_total;
+    
     gpu -> gpu_basis -> Xcoeff                      =   new cuda_buffer_type<QUICKDouble>(4*gpu->jbasis, 4*gpu->jbasis);
-    gpu -> gpu_basis -> expoSum                     =   new cuda_buffer_type<QUICKDouble>(MAXPRIM*gpu->jshell, MAXPRIM*gpu->jshell);
-    gpu -> gpu_basis -> weightedCenterX             =   new cuda_buffer_type<QUICKDouble>(MAXPRIM*gpu->jshell, MAXPRIM*gpu->jshell);
-    gpu -> gpu_basis -> weightedCenterY             =   new cuda_buffer_type<QUICKDouble>(MAXPRIM*gpu->jshell, MAXPRIM*gpu->jshell);
-    gpu -> gpu_basis -> weightedCenterZ             =   new cuda_buffer_type<QUICKDouble>(MAXPRIM*gpu->jshell, MAXPRIM*gpu->jshell);
+    gpu -> gpu_basis -> expoSum                     =   new cuda_buffer_type<QUICKDouble>(prim_total, prim_total);
+    gpu -> gpu_basis -> weightedCenterX             =   new cuda_buffer_type<QUICKDouble>(prim_total, prim_total);
+    gpu -> gpu_basis -> weightedCenterY             =   new cuda_buffer_type<QUICKDouble>(prim_total, prim_total);
+    gpu -> gpu_basis -> weightedCenterZ             =   new cuda_buffer_type<QUICKDouble>(prim_total, prim_total);
     
     
     /*
@@ -779,17 +797,20 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
                     QUICKDouble II = LOC2(gpu->gpu_basis->gcexpo->_hostData, ii , KsumtypeI-1, MAXPRIM, gpu->nbasis);
                     QUICKDouble JJ = LOC2(gpu->gpu_basis->gcexpo->_hostData, jj , KsumtypeJ-1, MAXPRIM, gpu->nbasis);
                     
+                    int ii_start = gpu->gpu_basis->prim_start->_hostData[i];
+                    int jj_start = gpu->gpu_basis->prim_start->_hostData[j];
+                    
                     //expoSum(i,j) = expo(i)+expo(j)
-                    LOC4(gpu->gpu_basis->expoSum->_hostData, ii, jj, i, j, MAXPRIM, MAXPRIM, gpu->jshell, gpu->jshell) = II + JJ;
+                    LOC2(gpu->gpu_basis->expoSum->_hostData, ii_start+ii, jj_start+jj, prim_total, prim_total) = II + JJ;
                     
                     
                     //        ------------->                 ->          ->
                     //        weightedCenter(i,j) = (expo(i)*i + expo(j)*j)/(expo(i)+expo(j))
-                    LOC4(gpu->gpu_basis->weightedCenterX->_hostData, ii, jj, i, j, MAXPRIM, MAXPRIM, gpu->jshell, gpu->jshell) = \
+                    LOC2(gpu->gpu_basis->weightedCenterX->_hostData, ii_start+ii, jj_start+jj, prim_total, prim_total) = \
                         (LOC2(gpu->xyz->_hostData, 0, kAtomI-1, 3, gpu->natom) * II + LOC2(gpu->xyz->_hostData, 0, kAtomJ-1, 3, gpu->natom)*JJ)/(II+JJ);
-                    LOC4(gpu->gpu_basis->weightedCenterY->_hostData, ii, jj, i, j, MAXPRIM, MAXPRIM, gpu->jshell, gpu->jshell) = \
+                    LOC2(gpu->gpu_basis->weightedCenterY->_hostData, ii_start+ii, jj_start+jj, prim_total, prim_total) = \
                         (LOC2(gpu->xyz->_hostData, 1, kAtomI-1, 3, gpu->natom) * II + LOC2(gpu->xyz->_hostData, 1, kAtomJ-1, 3, gpu->natom)*JJ)/(II+JJ);
-                    LOC4(gpu->gpu_basis->weightedCenterZ->_hostData, ii, jj, i, j, MAXPRIM, MAXPRIM, gpu->jshell, gpu->jshell) = \
+                    LOC2(gpu->gpu_basis->weightedCenterZ->_hostData, ii_start+ii, jj_start+jj, prim_total, prim_total) = \
                         (LOC2(gpu->xyz->_hostData, 2, kAtomI-1, 3, gpu->natom) * II + LOC2(gpu->xyz->_hostData, 2, kAtomJ-1, 3, gpu->natom)*JJ)/(II+JJ);
                     
                     
@@ -824,7 +845,7 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     gpu -> gpu_sim.aexp                         =   gpu -> gpu_basis -> aexp -> _devData;
     gpu -> gpu_sim.ncenter                      =   gpu -> gpu_basis -> ncenter -> _devData;
     gpu -> gpu_sim.itype                        =   gpu -> gpu_basis -> itype -> _devData;
-    
+    gpu -> gpu_sim.prim_start                   =   gpu -> gpu_basis -> prim_start -> _devData;
 /*
     gpu -> gpu_sim.first_basis_function         =   gpu -> gpu_basis -> first_basis_function -> _devData;
     gpu -> gpu_sim.last_basis_function          =   gpu -> gpu_basis -> last_basis_function -> _devData;
@@ -865,6 +886,7 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     //kprim can not be deleted since it will be used later
     //gpu -> gpu_basis -> kprim -> DeleteCPU();
     gpu -> gpu_basis -> Ksumtype -> DeleteCPU();
+    gpu -> gpu_basis -> prim_start -> DeleteCPU();
     
     gpu -> gpu_basis -> Qnumber -> DeleteCPU();
     gpu -> gpu_basis -> Qstart -> DeleteCPU();

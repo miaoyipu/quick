@@ -1,6 +1,6 @@
 #/bin/bash
 
-ver=2012-3-1-new_quick_0.09_120301_conventional_SCF_version
+ver=2012-4-5-new_quick_0.09_120405
 machine=cm
 
 cp -a ../src/ ../archieve/$ver-$machine

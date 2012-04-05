@@ -38,7 +38,7 @@ void gpu_basis_type :: upload_all()
     this->Xcoeff->Upload();
     this->gcexpo->Upload();
     this->KLMN->Upload();
-    
+    this->prim_start->Upload();
     this->Xcoeff->Upload();
     this->expoSum->Upload();
     this->weightedCenterX->Upload();
