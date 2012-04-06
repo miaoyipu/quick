@@ -676,7 +676,7 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     int prim_total = gpu -> gpu_basis -> prim_total;
     gpu -> gpu_sim.prim_total = gpu -> gpu_basis -> prim_total;
     
-    gpu -> gpu_basis -> Xcoeff                      =   new cuda_buffer_type<QUICKDouble>(4*gpu->jbasis, 4*gpu->jbasis);
+    gpu -> gpu_basis -> Xcoeff                      =   new cuda_buffer_type<QUICKDouble>(2*gpu->jbasis, 2*gpu->jbasis);
     gpu -> gpu_basis -> expoSum                     =   new cuda_buffer_type<QUICKDouble>(prim_total, prim_total);
     gpu -> gpu_basis -> weightedCenterX             =   new cuda_buffer_type<QUICKDouble>(prim_total, prim_total);
     gpu -> gpu_basis -> weightedCenterY             =   new cuda_buffer_type<QUICKDouble>(prim_total, prim_total);
@@ -816,9 +816,11 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
                     
                     // Xcoeff = exp(-II*JJ/(II+JJ) * DIJ) / (II+JJ) * coeff(i) * coeff(j) * X0
                     QUICKDouble X = exp(-II*JJ/(II+JJ)*DIJ)/(II+JJ);
+                    
                     for (int itemp = gpu->gpu_basis->Qstart->_hostData[i]; itemp <= gpu->gpu_basis->Qfinal->_hostData[i]; itemp++) {
                         for (int itemp2 = gpu->gpu_basis->Qstart->_hostData[j]; itemp2 <= gpu->gpu_basis->Qfinal->_hostData[j]; itemp2++) {
-                            LOC4(gpu->gpu_basis->Xcoeff->_hostData, kstartI+ii-1, kstartJ+jj-1, itemp, itemp2, gpu->jbasis, gpu->jbasis, 4, 4)
+                            LOC4(gpu->gpu_basis->Xcoeff->_hostData, kstartI+ii-1, kstartJ+jj-1, \
+                                 itemp-gpu->gpu_basis->Qstart->_hostData[i], itemp2-gpu->gpu_basis->Qstart->_hostData[j], gpu->jbasis, gpu->jbasis, 2, 2)
                             = X0 * X * LOC2(gpu->gpu_basis->gccoeff->_hostData, ii, KsumtypeI+itemp-1, MAXPRIM, gpu->nbasis) \
                                      * LOC2(gpu->gpu_basis->gccoeff->_hostData, jj, KsumtypeJ+itemp2-1, MAXPRIM, gpu->nbasis);
                         }
@@ -829,8 +831,7 @@ QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int
     }
     
     gpu -> gpu_basis -> upload_all();
-
-
+    
     gpu -> gpu_sim.expoSum                      =   gpu -> gpu_basis -> expoSum -> _devData;
     gpu -> gpu_sim.weightedCenterX              =   gpu -> gpu_basis -> weightedCenterX -> _devData;
     gpu -> gpu_sim.weightedCenterY              =   gpu -> gpu_basis -> weightedCenterY -> _devData;

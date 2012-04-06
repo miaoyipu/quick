@@ -1,4 +1,4 @@
-HF denserms=1.0e-8 ncyc=10 zmake BASIS=cc-pvdz ENERGY
+HF denserms=1.0e-8 ncyc=10 zmake BASIS=6-31GSS ENERGY
 
  C                 -3.57841358    1.32763054   -1.11329110
  C                 -2.18325358    1.32763054   -1.11329110

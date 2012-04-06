@@ -12,7 +12,14 @@ subroutine g2eshell
   integer ics,ips,jcs,jps,itemp,itemp2,i
   integer NA,NB
   double precision AA,BB,XYZA(3),XYZB(3),DAB
-  
+ 
+  do ics = 1, jshell
+      do ips = 1, quick_basis%kprim(ics) 
+      do itemp = quick_basis%Qstart(ics),quick_basis%Qfinal(ics)
+           write(*,*) ics, ips, itemp, quick_basis%gccoeff(ips,quick_basis%ksumtype(ics)+Itemp )
+      enddo
+      enddo
+  enddo 
   ! ics cycle
   do ics=1,jshell                       ! ics is the shell no.
      do ips=1,quick_basis%kprim(ics)                ! ips is prim no. for certain shell

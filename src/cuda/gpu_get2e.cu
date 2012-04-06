@@ -245,7 +245,7 @@ __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int
          cutoffprim is used to cut too small prim gaussian function when bring density matrix into consideration.
          */
         QUICKDouble cutoffPrim = DNMax * LOC2(devSim.cutPrim, kStartI+III, kStartJ+JJJ, devSim.jbasis, devSim.jbasis);
-        QUICKDouble X1 = LOC4(devSim.Xcoeff, kStartI+III, kStartJ+JJJ, I, J, devSim.jbasis, devSim.jbasis, 4, 4);
+        QUICKDouble X1 = LOC4(devSim.Xcoeff, kStartI+III, kStartJ+JJJ, I - devSim.Qstart[II], J - devSim.Qstart[JJ], devSim.jbasis, devSim.jbasis, 2, 2);
         
         for (int j = 0; j<kPrimK*kPrimL; j++){
             int LLL = (int)j/kPrimK;
@@ -276,7 +276,7 @@ __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int
                 /*
                  X2 is the multiplication of four indices normalized coeffecient
                  */
-                QUICKDouble X2 = sqrt(ABCD) * X1 * LOC4(devSim.Xcoeff, kStartK+KKK, kStartL+LLL, K, L, devSim.jbasis, devSim.jbasis, 4, 4);
+                QUICKDouble X2 = sqrt(ABCD) * X1 * LOC4(devSim.Xcoeff, kStartK+KKK, kStartL+LLL, K - devSim.Qstart[KK], L - devSim.Qstart[LL], devSim.jbasis, devSim.jbasis, 2, 2);
                 
                 /*
                  Q' is the weighting center of K and L
