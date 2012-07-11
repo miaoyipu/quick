@@ -530,6 +530,7 @@ void cuda_buffer_type<T> :: DeleteGPU()
     
     PRINTDEBUG(">>BEGIN TO DELETE GPU")
     
+<<<<<<< HEAD
     if (_devData != NULL) {
     	cudaFree(_devData);
     	_devData = NULL;
@@ -541,5 +542,18 @@ void cuda_buffer_type<T> :: DeleteGPU()
     
 #endif
 	}
+=======
+    if (_devData != NULL) { 
+        cudaFree(_devData);
+        _devData = NULL;
+#ifdef DEBUG
+        gpu->totalGPUMemory -= _length*_length2*sizeof(T);
+    
+        PRINTMEM("GPU--",gpu->totalGPUMemory);
+    	PRINTMEM("CPU  ",gpu->totalCPUMemory);
+    
+#endif
+    }
+>>>>>>> cuda_branch
     PRINTDEBUG("<<FINSH DELETE CPU")
 }

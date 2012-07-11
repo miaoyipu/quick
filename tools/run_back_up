@@ -1,8 +1,22 @@
 #/bin/bash
 
+<<<<<<< HEAD
 ver=2012-5-2-new_quick_0.10_120502
+=======
+num=0.09_sp
+now=$(date "+%Y-%m-%d")
+ver=$now'-new_quick_'$num
+#ver=2012-7-11-new_quick_0.09_120711
+>>>>>>> cuda_branch
 machine=cm
 
-cp -a ../src/ ../archieve/$ver-$machine
-cp -a ../src/ ~/Dropbox/Backup/quick/$ver-$machine
+mkdir ../archieve/$ver-$machine
+mkdir ~/Dropbox/Backup/quick/$ver-$machine
+
+for dir in src bin lib
+do
+   cp -a ../$dir/ ../archieve/$ver-$machine/$dir
+   cp -a ../$dir/ ~/Dropbox/Backup/quick/$ver-$machine/$dir
+done
+
 

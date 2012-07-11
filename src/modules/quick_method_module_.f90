@@ -82,9 +82,15 @@ module quick_method_module
         
         ! following are some cutoff criteria
         double precision :: integralCutoff = 1.0d-9   ! integral cutoff
+<<<<<<< HEAD
         double precision :: primLimit      = 1.0d-7   ! prime cutoff
         double precision :: gradCutoff     = 1.0d-7   ! gradient cutoff
         double precision :: DMCutoff       = 1.0d-7  ! density matrix cutoff
+=======
+        double precision :: primLimit      = 1.0d-9   ! prime cutoff
+        double precision :: gradCutoff     = 1.0d-7   ! gradient cutoff
+        double precision :: DMCutoff       = 1.0d-10   ! density matrix cutoff
+>>>>>>> cuda_branch
         !tol
         double precision :: pmaxrms        = 1.0d-7   ! density matrix convergence criteria
         double precision :: aCutoff        = 1.0d-7   ! 2e cutoff
@@ -531,7 +537,11 @@ module quick_method_module
             self%ncyc = 1000
 
             self%integralCutoff = 1.0d-9   ! integral cutoff
+<<<<<<< HEAD
             self%primLimit      = 1.0d-7   ! prime cutoff
+=======
+            self%primLimit      = 1.0d-9   ! prime cutoff
+>>>>>>> cuda_branch
             self%gradCutoff     = 1.0d-7   ! gradient cutoff
             self%DMCutoff       = 1.0d-7  ! density matrix cutoff
 
@@ -572,7 +582,11 @@ module quick_method_module
             endif
             
 if(self%pmaxrms.lt.0.0001d0)then
+<<<<<<< HEAD
 self%integralCutoff= min(self%integralCutoff, 1.0d-9)
+=======
+self%integralCutoff= min(self%integralCutoff, 1.0d-7)
+>>>>>>> cuda_branch
 self%Primlimit=self%integralCutoff
 endif
             

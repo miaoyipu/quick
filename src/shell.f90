@@ -69,11 +69,15 @@ end subroutine g2eshell
 
 ! Vertical Recursion by Xiao HE 07/07/07 version
 
+<<<<<<< HEAD
 #ifdef CUDA
 subroutine shell(II_arg,JJ_arg,KK_arg,LL_arg)
 #else
 subroutine shell
 #endif
+=======
+subroutine shell
+>>>>>>> cuda_branch
 
    use allmod
 
@@ -90,6 +94,7 @@ subroutine shell
    COMMON /VRRcom/Qtemp,WQtemp,CDtemp,ABcom,Ptemp,WPtemp,ABtemp,CDcom,ABCDtemp
    COMMON /COM1/RA,RB,RC,RD
 
+<<<<<<< HEAD
 #ifdef CUDA
    integer II_arg,JJ_arg,KK_arg,LL_arg
 
@@ -99,6 +104,8 @@ subroutine shell
    LL=LL_arg
 #endif
 
+=======
+>>>>>>> cuda_branch
    do M=1,3
       RA(M)=xyz(M,quick_basis%katom(II))
       RB(M)=xyz(M,quick_basis%katom(JJ))
@@ -399,13 +406,22 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
    KKK2=quick_basis%ksumtype(KK)+NBK2
    LLL1=quick_basis%ksumtype(LL)+NBL1
    LLL2=quick_basis%ksumtype(LL)+NBL2
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> cuda_branch
    if(II.lt.JJ.and.II.lt.KK.and.KK.lt.LL)then
       do III=III1,III2
          do JJJ=JJJ1,JJJ2
             do KKK=KKK1,KKK2
                do LLL=LLL1,LLL2
                   call hrrwhole
+<<<<<<< HEAD
                   write(*,*) Y, III,JJJ,KKK,LLL
+=======
+                  !write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL,III,JJJ,KKK,LLL
+>>>>>>> cuda_branch
                   DENSEKI=quick_qm_struct%dense(KKK,III)
                   DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
                   DENSELJ=quick_qm_struct%dense(LLL,JJJ)
@@ -435,7 +451,11 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                do LLL=max(KKK,LLL1),LLL2
                   if(III.LT.KKK)then
                      call hrrwhole
+<<<<<<< HEAD
 write(*,*) Y, III,JJJ,KKK,LLL
+=======
+                     !  write(*,*) IJKLTYPE, NABCDTYPE,Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
+>>>>>>> cuda_branch
                      if(III.lt.JJJ.and.KKK.lt.LLL)then
                         DENSEKI=quick_qm_struct%dense(KKK,III)
                         DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
@@ -506,7 +526,11 @@ write(*,*) Y, III,JJJ,KKK,LLL
                   else
                      if(JJJ.LE.LLL)then
                         call hrrwhole
+<<<<<<< HEAD
 write(*,*) Y, III,JJJ,KKK,LLL
+=======
+                        !    write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
+>>>>>>> cuda_branch
                         if(III.eq.JJJ.and.III.eq.KKK.and.III.eq.LLL)then
                            DENSEII=quick_qm_struct%dense(III,III)
 
@@ -757,12 +781,31 @@ subroutine shellmp2(nstepmp2s,nsteplength)
                      WQtemp(M)=W(M)-Q(M)
                      WPtemp(M)=W(M)-P(M)
                   enddo
+<<<<<<< HEAD
 
                   T=RPQ*ROU
+=======
+                  !                         KCD=Kpri(Nprik,Npril)
+
+                  T=RPQ*ROU
+
+                  !                         NABCD=0
+                  !                         call FmT(0,T,FM)
+                  !                         do iitemp=0,0
+                  !                           Yxiaotemp(1,1,iitemp)=FM(iitemp)/ABCDxiao
+                  !                         enddo
+>>>>>>> cuda_branch
                   call FmT(NABCD,T,FM)
                   do iitemp=0,NABCD
                      Yxiaotemp(1,1,iitemp)=FM(iitemp)/ABCDxiao
                   enddo
+<<<<<<< HEAD
+=======
+                  !                         if(II.eq.1.and.JJ.eq.4.and.KK.eq.10.and.LL.eq.16)then
+                  !                          print*,III,JJJ,KKK,LLL,T,NABCD,FM(0:NABCD)
+                  !                         endif
+                  !                         print*,III,JJJ,KKK,LLL,FM
+>>>>>>> cuda_branch
                   ITT=ITT+1
 
                   call vertical(NABCDTYPE)
@@ -772,6 +815,17 @@ subroutine shellmp2(nstepmp2s,nsteplength)
                         Yxiao(ITT,I1,I2)=Yxiaotemp(I1,I2,0)
                      enddo
                   enddo
+<<<<<<< HEAD
+=======
+                  !                           else
+                  !!                             print*,cutoffprim
+                  !                             ITT=ITT+1
+                  !                           do I2=NNC,NNCD
+                  !                             do I1=NNA,NNAB
+                  !                               Yxiao(ITT,I1,I2)=0.0d0
+                  !                             enddo
+                  !                           enddo
+>>>>>>> cuda_branch
                endif
             enddo
          enddo
@@ -1140,6 +1194,10 @@ subroutine classmp2(I,J,K,L,NNA,NNC,NNAB,NNCD,nstepmp2s,nsteplength)
          Ytemp=0.0d0
          do itemp=1,ITT
             Ytemp=Ytemp+X44(itemp)*Yxiao(itemp,MM1,MM2)
+<<<<<<< HEAD
+=======
+            !                           Ytemp=Ytemp+Yxiao(itemp,MM1,MM2)
+>>>>>>> cuda_branch
          enddo
          store(MM1,MM2)=Ytemp
       enddo
@@ -1155,12 +1213,23 @@ subroutine classmp2(I,J,K,L,NNA,NNC,NNAB,NNCD,nstepmp2s,nsteplength)
    NBL1=quick_basis%Qsbasis(LL,L)
    NBL2=quick_basis%Qfbasis(LL,L)
 
+<<<<<<< HEAD
+=======
+   !       IJKLtype=1000*I+100*J+10*K+L
+>>>>>>> cuda_branch
    IJtype=10*I+J
    KLtype=10*K+L
    IJKLtype=100*IJtype+KLtype
 
+<<<<<<< HEAD
    if((max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0)).or.(max(I,J,K,L).ge.3))IJKLtype=999
 
+=======
+   !*****       if(max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0))IJKLtype=999
+   if((max(I,J,K,L).eq.2.and.(J.ne.0.or.L.ne.0)).or.(max(I,J,K,L).ge.3))IJKLtype=999
+   !       IJKLtype=999
+   !      if(J.eq.0.and.L.eq.0)then
+>>>>>>> cuda_branch
 
    III1=quick_basis%ksumtype(II)+NBI1
    III2=quick_basis%ksumtype(II)+NBI2
@@ -1173,6 +1242,7 @@ subroutine classmp2(I,J,K,L,NNA,NNC,NNAB,NNCD,nstepmp2s,nsteplength)
 
 
    NII1=quick_basis%Qstart(II)
+<<<<<<< HEAD
 NJJ1=quick_basis%Qstart(JJ)
 NKK1=quick_basis%Qstart(KK)
 
@@ -1267,6 +1337,91 @@ GOTO 100
    enddo
 
    !endif
+=======
+   NJJ1=quick_basis%Qstart(JJ)
+
+   NBI1=quick_basis%Qsbasis(II,NII1)
+   NBJ1=quick_basis%Qsbasis(JJ,NJJ1)
+
+   II111=quick_basis%ksumtype(II)+NBI1
+   JJ111=quick_basis%ksumtype(JJ)+NBJ1
+
+   if(II.lt.JJ.and.KK.lt.LL)then
+
+      do III=III1,III2
+         do JJJ=JJJ1,JJJ2
+            do KKK=KKK1,KKK2
+               do LLL=LLL1,LLL2
+
+                  call hrrwhole
+                  if (dabs(Y).gt.quick_method%integralCutoff) then
+                     do i3mp2=1,nsteplength
+                        i3mp2new=nstepmp2s+i3mp2-1
+                        atemp=quick_qm_struct%co(KKK,i3mp2new)*Y
+                        btemp=quick_qm_struct%co(LLL,i3mp2new)*Y
+                        IIInew=III-II111+1
+                        JJJnew=JJJ-JJ111+1
+
+                        orbmp2i331(i3mp2,LLL,IIInew,JJJnew,1)= &
+                              orbmp2i331(i3mp2,LLL,IIInew,JJJnew,1)+atemp
+                        orbmp2i331(i3mp2,LLL,JJJnew,IIInew,2)= &
+                              orbmp2i331(i3mp2,LLL,JJJnew,IIInew,2)+atemp
+                        orbmp2i331(i3mp2,KKK,IIInew,JJJnew,1)= &
+                              orbmp2i331(i3mp2,KKK,IIInew,JJJnew,1)+btemp
+                        orbmp2i331(i3mp2,KKK,JJJnew,IIInew,2)= &
+                              orbmp2i331(i3mp2,KKK,JJJnew,IIInew,2)+btemp
+                     enddo
+                  endif
+               enddo
+            enddo
+         enddo
+      enddo
+
+   else
+
+      do III=III1,III2
+         if(max(III,JJJ1).le.JJJ2)then
+            do JJJ=max(III,JJJ1),JJJ2
+               do KKK=KKK1,KKK2
+                  if(max(KKK,LLL1).le.LLL2)then
+                     do LLL=max(KKK,LLL1),LLL2
+
+                        call hrrwhole
+                        if (dabs(Y).gt.quick_method%integralCutoff) then
+                           do i3mp2=1,nsteplength
+                              i3mp2new=nstepmp2s+i3mp2-1
+                              atemp=quick_qm_struct%co(KKK,i3mp2new)*Y
+                              btemp=quick_qm_struct%co(LLL,i3mp2new)*Y
+
+                              IIInew=III-II111+1
+                              JJJnew=JJJ-JJ111+1
+
+                              orbmp2i331(i3mp2,LLL,IIInew,JJJnew,1)= &
+                              orbmp2i331(i3mp2,LLL,IIInew,JJJnew,1)+atemp
+                              if(JJJ.ne.III)then
+                                 orbmp2i331(i3mp2,LLL,JJJnew,IIInew,2)= &
+                                 orbmp2i331(i3mp2,LLL,JJJnew,IIInew,2)+atemp
+                              endif
+                              if(KKK.ne.LLL)then
+                                 orbmp2i331(i3mp2,KKK,IIInew,JJJnew,1)= &
+                                 orbmp2i331(i3mp2,KKK,IIInew,JJJnew,1)+btemp
+                                 if(III.ne.JJJ)then
+                                    orbmp2i331(i3mp2,KKK,JJJnew,IIInew,2)= &
+                                    orbmp2i331(i3mp2,KKK,JJJnew,IIInew,2)+btemp
+                                 endif
+                              endif
+
+                           enddo
+                        endif
+                     enddo
+                  endif
+               enddo
+            enddo
+         endif
+      enddo
+
+   endif
+>>>>>>> cuda_branch
 
 End subroutine classmp2
 

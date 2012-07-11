@@ -81,8 +81,13 @@ extern "C" void gpu_init_(void)
                 }
                 
             }
+<<<<<<< HEAD
         }
         gpu->gpu_dev_id = device;
+=======
+    	    gpu->gpu_dev_id = device;
+        }       
+>>>>>>> cuda_branch
         
     }else{
         if (gpu->gpu_dev_id >= gpuCount)
@@ -418,6 +423,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
                         }
                     }
                 }
+<<<<<<< HEAD
             }
 
 // Yipu Miao 05/21/12 
@@ -469,6 +475,12 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
 
 // Yipu Miao : End of test
 /*  
+=======
+            }    
+
+            PRINTDEBUG("FINISH STEP 1")  
+            printf("a=%i b=%i\n", a, b); 
+>>>>>>> cuda_branch
             for (int i = 0; i < b - 1; i ++)
             {
                 flag = true;
@@ -494,7 +506,14 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
                 if (flag == true)
                     break;
             }
+<<<<<<< HEAD
             flag = true;
+=======
+            
+            PRINTDEBUG("FINISH STEP 2")
+            flag = true;
+             
+>>>>>>> cuda_branch
             for (int i = 0; i < b - 1; i ++)
             {
                 flag = true;
@@ -530,6 +549,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
             }
             
             flag = true;
+<<<<<<< HEAD
 */
         }
     }
@@ -539,6 +559,16 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
         
     gpu->gpu_cutoff->sqrQshell  = a;
     
+=======
+            PRINTDEBUG("FINISH STEP 3") 
+        }
+    }
+    
+    printf("a = %i, total = %i, pect= %f\n", a, gpu->gpu_basis->Qshell * (gpu->gpu_basis->Qshell+1)/2, (float) 2*a/(gpu->gpu_basis->Qshell*(gpu->gpu_basis->Qshell)));
+        
+    gpu->gpu_cutoff->sqrQshell  = a;
+   /* 
+>>>>>>> cuda_branch
     printf("SS = %i\n",a);
     for (int i = 0; i<a; i++) {
         printf("%8i %4i %4i %18.13f Q=%4i %4i %4i %4i prim = %4i %4i\n", i, \
@@ -593,7 +623,11 @@ extern "C" void gpu_upload_calculated_(QUICKDouble* o, QUICKDouble* co, QUICKDou
     PRINTDEBUG("BEGIN TO UPLOAD O MATRIX")
     
     gpu -> gpu_calculated -> o        =   new cuda_buffer_type<QUICKDouble>(o,      gpu->nbasis, gpu->nbasis);
+<<<<<<< HEAD
     gpu -> gpu_calculated -> o -> DeleteGPU();
+=======
+    gpu -> gpu_calculated -> o        ->  DeleteGPU();
+>>>>>>> cuda_branch
     gpu -> gpu_calculated -> dense    =   new cuda_buffer_type<QUICKDouble>(dense,  gpu->nbasis, gpu->nbasis);
     gpu -> gpu_calculated -> oULL     =   new cuda_buffer_type<QUICKULL>(gpu->nbasis, gpu->nbasis);
     
@@ -617,11 +651,19 @@ extern "C" void gpu_upload_calculated_(QUICKDouble* o, QUICKDouble* co, QUICKDou
         }
     }
     
+<<<<<<< HEAD
     // gpu -> gpu_calculated -> o        -> Upload();
     gpu -> gpu_calculated -> dense    -> Upload();
     gpu -> gpu_calculated -> oULL     -> Upload();
     
     //gpu -> gpu_sim.o                 =  gpu -> gpu_calculated -> o -> _devData;
+=======
+//    gpu -> gpu_calculated -> o        -> Upload();
+    gpu -> gpu_calculated -> dense    -> Upload();
+    gpu -> gpu_calculated -> oULL     -> Upload();
+    
+//    gpu -> gpu_sim.o                 =  gpu -> gpu_calculated -> o -> _devData;
+>>>>>>> cuda_branch
     gpu -> gpu_sim.dense             =  gpu -> gpu_calculated -> dense -> _devData;
     gpu -> gpu_sim.oULL              =  gpu -> gpu_calculated -> oULL -> _devData;
     
