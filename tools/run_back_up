@@ -1,8 +1,18 @@
 #/bin/bash
 
-ver=2012-3-1-new_quick_0.09_120301_conventional_SCF_version
+num=0.09_sp
+now=$(date "+%Y-%m-%d")
+ver=$now'-new_quick_'$num
+#ver=2012-7-11-new_quick_0.09_120711
 machine=cm
 
-cp -a ../src/ ../archieve/$ver-$machine
-cp -a ../src/ ~/Dropbox/Backup/quick/$ver-$machine
+mkdir ../archieve/$ver-$machine
+mkdir ~/Dropbox/Backup/quick/$ver-$machine
+
+for dir in src bin lib
+do
+   cp -a ../$dir/ ../archieve/$ver-$machine/$dir
+   cp -a ../$dir/ ~/Dropbox/Backup/quick/$ver-$machine/$dir
+done
+
 

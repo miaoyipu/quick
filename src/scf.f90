@@ -3,9 +3,9 @@
 ! Ed Brothers. November 27, 2001
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
 subroutine scf(failed)
-    !-------------------------------------------------------
-    ! this subroutine is to do scf job for restricted system
-    !-------------------------------------------------------
+   !-------------------------------------------------------
+   ! this subroutine is to do scf job for restricted system
+   !-------------------------------------------------------
    use allmod
    implicit double precision(a-h,o-z)
 
@@ -39,10 +39,10 @@ subroutine scf(failed)
    if (quick_method%diisscf .and. quick_method%divcon) call electdiisdc(jscf,PRMS)     ! div & con scf
 
    jscf=jscf+1
-   
+
    failed = failed.and.(jscf.gt.quick_method%iscf)
    if (quick_method%debug)  call debug_SCF(jscf)
-   
+
    return
 
 end subroutine scf
@@ -60,18 +60,18 @@ subroutine electdiis(jscf)
 
    ! variable inputed to return
    integer :: jscf                ! scf interation
-   
+
    logical :: diisdone = .false.  ! flag to indicate if diis is done
    integer :: idiis = 0           ! diis iteration
    integer :: IDIISfinal,iidiis,current_diis
    integer :: lsolerr = 0
-   
+   integer :: IDIIS_Error_Start, IDIIS_Error_End
    double precision :: BIJ,DENSEJI,errormax,OJK,temp
    double precision :: Sum2Mat,rms
    integer :: I,J,K,L,IERROR
-   
-   double precision :: oldEnergy=0.0d0,E1e ! energy for last iteriation, and 1e-energy   
-   double precision :: PRMS,PCHANGE, V2(3,nbasis)
+
+   double precision :: oldEnergy=0.0d0,E1e ! energy for last iteriation, and 1e-energy
+   double precision :: PRMS,PCHANGE, V2(3,nbasis), tmp
    double precision :: oneElecO(nbasis,nbasis)
    double precision :: B(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
    double precision :: BSAVE(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
@@ -119,7 +119,7 @@ subroutine electdiis(jscf)
    ! 7) Form a new operator matrix based on O(new) = [Sum over i] c(i)O(i)
    ! 8) Diagonalize the operator matrix to form a new density matrix.
    ! As in scf.F, each step wil be reviewed as we pass through the code.
-   !---------------------------------------------------------------------------  
+   !---------------------------------------------------------------------------
 
    if(master) then
       write(ioutfile,'(40x," SCF ENERGY")')
@@ -131,7 +131,7 @@ subroutine electdiis(jscf)
       write(ioutfile,'("NCYC",6x)',advance="no")
       if (quick_method%printEnergy) write(ioutfile,'(" ENERGY ",8x,"DELTA_E",5x)',advance="no")
       write(ioutfile,'(" SCF_TIME",2x,"DII_CYC",2x," DII_TIME ",2x,"O_TIME",2x, &
-                        "DIAG_TIME",4x,"MAX_ERR",4x,"RMS_CHG",4x,"MAX_CHG")')
+            "DIAG_TIME",4x,"MAX_ERR",4x,"RMS_CHG",4x,"MAX_CHG")')
       if (quick_method%printEnergy) then
          write(ioutfile,'(120("-"))')
       else
@@ -162,7 +162,7 @@ subroutine electdiis(jscf)
       ! Determine dii cycle and scf cycle
       idiis=idiis+1
       jscf=jscf+1
-      
+
       if(idiis.le.quick_method%maxdiisscf)then
          IDIISfinal=idiis; iidiis=idiis
       else
@@ -177,24 +177,24 @@ subroutine electdiis(jscf)
 
       ! Normal opertor selection
       if(jscf.le.(quick_method%ncyc-1))then
-         
+
          ! Hatree-Fock Operator
          if (quick_method%HF) then
-#ifdef MPI         
+#ifdef MPI
             if (bMPI) then
                call MPI_hfoperator(oneElecO) ! MPI HF
             else
                call hfoperator(oneElecO)     ! Non-MPI HF
             endif
 #else
-         call hfoperator(oneElecO)
+            call hfoperator(oneElecO)
 #endif
          endif
-         
+
          ! Density Functional Theory Operator
          if (quick_method%DFT) call dftoperator
       endif
-      
+
       ! Semi-emperical DFT Operator
       if (quick_method%SEDFT) call sedftoperator
 
@@ -207,22 +207,22 @@ subroutine electdiis(jscf)
          ! Begin Delta Densitry Matrix
          ! Xiao HE, Delta density matrix increase is implemented here. 07/07/07 version
          if(jscf.ge.quick_method%ncyc)then
-         
+
             ! save density matrix
             call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseSave,nbasis)
             call CopyDMat(quick_qm_struct%oSave,quick_qm_struct%o,nbasis)
 
             do I=1,nbasis; do J=1,nbasis
-                  quick_qm_struct%dense(J,I)=quick_qm_struct%dense(J,I)-quick_qm_struct%denseOld(J,I)
+               quick_qm_struct%dense(J,I)=quick_qm_struct%dense(J,I)-quick_qm_struct%denseOld(J,I)
             enddo; enddo
 
             call cpu_time(timer_begin%TOp)
-            
+
             if (quick_method%HF) call hfoperatordelta(oneElecO)
             if (quick_method%DFT) call dftoperatordelta
 
             call cpu_time(timer_end%TOp)
-            
+
             ! recover density
             call CopyDMat(quick_qm_struct%denseSave,quick_qm_struct%dense,nbasis)
          endif
@@ -248,32 +248,35 @@ subroutine electdiis(jscf)
          ! The first part is ODS
 #ifdef CUDA
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%dense, &
-                            nbasis, quick_qm_struct%s, nbasis, 0.0d0, quick_scratch%hold,nbasis)
-                            
+               nbasis, quick_qm_struct%s, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
-                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
+               nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
 #else
-         quick_scratch%hold = MATMUL(quick_qm_struct%dense,quick_qm_struct%s)
-         quick_scratch%hold2 = MATMUL(quick_qm_struct%o,quick_scratch%hold)
+         call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%dense, &
+               nbasis, quick_qm_struct%s, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+
+         call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
+               nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
 #endif
-        
+
          do i = 1, nbasis
             do j = 1, nbasis
-                allerror(iidiis, i, j) = quick_scratch%hold2( i, j)
+               allerror(iidiis, i, j) = quick_scratch%hold2( i, j)
             enddo
          enddo
-         
+
          ! Calculate D O. then calculate S (do) and subtract that from the allerror matrix.
          ! This means we now have the e(i) matrix.
          ! allerror=ODS-SDO
 #ifdef CUDA
 
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%dense, &
-                            nbasis, quick_qm_struct%o, nbasis, 0.0d0, quick_scratch%hold,nbasis)
-                            
+               nbasis, quick_qm_struct%o, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%s, &
-                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
-#else         
+               nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
+#else
          quick_scratch%hold=MATMUL(quick_qm_struct%dense,quick_qm_struct%o)
          quick_scratch%hold2=MATMUL(quick_qm_struct%s,quick_scratch%hold)
 #endif
@@ -292,28 +295,31 @@ subroutine electdiis(jscf)
          ! The easiest way to do this is to calculate e(i) . X , store
          ! this in HOLD, and then calculate Transpose[X] (.e(i) . X)
          !-----------------------------------------------
-         
+
          do i = 1, nbasis
             do j = 1, nbasis
-                quick_scratch%hold2( i, j) = allerror(iidiis, i, j)
+               quick_scratch%hold2( i, j) = allerror(iidiis, i, j)
             enddo
          enddo
-         
+
 #ifdef CUDA
 
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_scratch%hold2, &
-                            nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
-                            
+               nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
-                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
-#else         
-         
-         quick_scratch%hold=MATMUL(quick_scratch%hold2,quick_qm_struct%x)
-         quick_scratch%hold2=MATMUL(quick_qm_struct%x,quick_scratch%hold)
+               nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
+#else
+
+         call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_scratch%hold2, &
+               nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+
+         call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
+               nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
 #endif
          do i = 1, nbasis
             do j = 1, nbasis
-                allerror(iidiis, i, j) = quick_scratch%hold2( i, j)
+               allerror(iidiis, i, j) = quick_scratch%hold2( i, j)
             enddo
          enddo
          !-----------------------------------------------
@@ -433,6 +439,29 @@ subroutine electdiis(jscf)
          call CopyDMat(B,BSAVE,IDIISfinal+1)
          call LSOLVE(IDIISfinal+1,quick_method%maxdiisscf+1,B,RHS,W,quick_method%DMCutoff,COEFF,LSOLERR)
 
+         IDIIS_Error_Start = 1
+         IDIIS_Error_End   = IDIISfinal
+         111     IF (LSOLERR.ne.0)then
+            IDIISfinal=Idiisfinal-1
+            do I=1,IDIISfinal+1
+               do J=1,IDIISfinal+1
+                  B(I,J)=BSAVE(I+IDIIS_Error_Start,J+IDIIS_Error_Start)
+               enddo
+            enddo
+            IDIIS_Error_Start = IDIIS_Error_Start + 1
+
+            do i=1,IDIISfinal
+               RHS(i)=0.0d0
+            enddo
+
+            RHS(IDIISfinal+1)=-1.0d0
+
+
+            call LSOLVE(IDIISfinal+1,quick_method%maxdiisscf+1,B,RHS,W,quick_method%DMCutoff,COEFF,LSOLERR)
+
+            goto 111
+         endif
+
          !-----------------------------------------------
          ! 7) Form a new operator matrix based on O(new) = [Sum over i] c(i)O(i)
          ! If the solution to step eight failed, skip this step and revert
@@ -443,8 +472,8 @@ subroutine electdiis(jscf)
             do J=1,nbasis
                do K=1,nbasis
                   OJK=0.d0
-                  do I=1,IDIISfinal
-                     OJK = OJK + COEFF(I) * alloperator(I,K,J)
+                  do I=IDIIS_Error_Start, IDIIS_Error_End
+                     OJK = OJK + COEFF(I-IDIIS_Error_Start+1) * alloperator(I,K,J)
                   enddo
                   quick_qm_struct%o(J,K) = OJK
                enddo
@@ -456,17 +485,19 @@ subroutine electdiis(jscf)
          ! First you have to transpose this into an orthogonal basis, which
          ! is accomplished by calculating Transpose[X] . O . X.
          !-----------------------------------------------
-         
-#ifdef CUDA
 
+#ifdef CUDA
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
-                            nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
-                            
+               nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
-                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
-#else         
-         quick_scratch%hold=MATMUL(quick_qm_struct%o,quick_qm_struct%x)
-         quick_qm_struct%o=MATMUL(quick_qm_struct%x,quick_scratch%hold)
+               nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
+#else
+         call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
+               nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
+
+         call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
+               nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
 #endif
          ! Now diagonalize the operator matrix.
          call cpu_time(timer_begin%TDiag)
@@ -478,13 +509,14 @@ subroutine electdiis(jscf)
          ! The C' is from the above diagonalization.  Also, save the previous
          ! Density matrix to check for convergence.
          !        call DMatMul(nbasis,X,VEC,CO)    ! C=XC'
-         
+
 #ifdef CUDA
 
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
-                            nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
-#else         
-         quick_qm_struct%co=MATMUL(quick_qm_struct%x,quick_qm_struct%vec)
+               nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
+#else
+         call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
+               nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
 #endif
 
          call CopyDMat(quick_qm_struct%dense,quick_scratch%hold,nbasis) ! Save DENSE to HOLD
@@ -511,10 +543,12 @@ subroutine electdiis(jscf)
             enddo
          enddo
          PRMS = rms(quick_qm_struct%dense,quick_scratch%hold,nbasis)
-         
+
+         tmp = quick_method%integralCutoff
          call adjust_cutoff(PRMS,PCHANGE,quick_method)  !from quick_method_module
+
       endif
-      
+
       !--------------- MPI/ALL NODES -----------------------------------------
       call cpu_time(timer_end%TSCF)
       timer_cumer%TOp=timer_end%TOp-timer_begin%TOp+timer_cumer%TOp
@@ -524,10 +558,10 @@ subroutine electdiis(jscf)
       !--------------- END MPI/ALL NODES -------------------------------------
 
       if (master) then
-         
+
          current_diis=mod(idiis-1,quick_method%maxdiisscf)
          current_diis=current_diis+1
-         
+
          write (ioutfile,'(I3,1x)',advance="no") jscf
          if(quick_method%printEnergy)then
             write (ioutfile,'(F16.9,2x)',advance="no") quick_qm_struct%Eel+quick_qm_struct%Ecore
@@ -545,7 +579,6 @@ subroutine electdiis(jscf)
          write (ioutfile,'(F8.2,4x)',advance="no") timer_end%TDiag-timer_begin%TDiag
          write (ioutfile,'(E10.4,2x)',advance="no") errormax
          write (ioutfile,'(E10.4,2x,E10.4)')  PRMS,PCHANGE
-        
 
          if (lsolerr /= 0) write (ioutfile,'("DIIS FAILED !!", &
                & " PERFORM NORMAL SCF. (NOT FATAL.)")')
@@ -557,8 +590,8 @@ subroutine electdiis(jscf)
                write(ioutfile,'(90("-"))')
             endif
             write (ioutfile,'(" REACH CONVERGENCE AFTER ",i3," CYLCES")') jscf
-            write (ioutfile,'(" MAX ERROR = ",E12.6,2x," RMS CHANGE = ",E12.6,2x," MAX CHANGE = ",E12.6)') & 
-                errormax,prms,pchange
+            write (ioutfile,'(" MAX ERROR = ",E12.6,2x," RMS CHANGE = ",E12.6,2x," MAX CHANGE = ",E12.6)') &
+                  errormax,prms,pchange
             write (ioutfile,*) '-----------------------------------------------'
             if (quick_method%DFT .or. quick_method%SEDFT) then
                write (ioutfile,'("ALPHA ELECTRON DENSITY    =",F16.10)') quick_qm_struct%aelec
@@ -567,8 +600,9 @@ subroutine electdiis(jscf)
 
             if (quick_method%prtgap) write (ioutfile,'("HOMO-LUMO GAP (EV) =",11x,F12.6)') &
                   (quick_qm_struct%E((quick_molspec%nelec/2)+1) - quick_qm_struct%E(quick_molspec%nelec/2))*AU_TO_EV
-
             diisdone=.true.
+
+
          endif
          if(jscf >= quick_method%iscf-1) then
             write (ioutfile,'("RAN OUT OF CYCLES.  NO CONVERGENCE.")')
@@ -576,6 +610,11 @@ subroutine electdiis(jscf)
             diisdone=.true.
          endif
          diisdone = idiis.gt.MAX_DII_CYCLE_TIME*quick_method%maxdiisscf .or. diisdone
+
+         if((tmp .ne. quick_method%integralCutoff).and. .not.diisdone) then
+            write(ioutfile, '(4x, "--------------- 2E-INT CUTOFF CHANGE TO ", E10.4, " -------------")') quick_method%integralCutoff
+         endif
+
       endif
 #ifdef MPI
       if (bMPI) then
@@ -668,8 +707,8 @@ subroutine electdiisdc(jscf,PRMS)
    idiis=0
    jscf=0
    if (bMPI) TdcDiagMPI=0.0d0
-  
-#ifdef MPI    
+
+#ifdef MPI
    ! Setup MPI integral configuration
    if (bMPI)   call MPI_setup_hfoperator
 #endif
@@ -693,7 +732,7 @@ subroutine electdiisdc(jscf,PRMS)
             call hfoperatordc(oneElecO)
          endif
 #else
-        call hfoperatordc(oneElecO)
+         call hfoperatordc(oneElecO)
 #endif
       endif
       if (quick_method%DFT)   call dftoperator

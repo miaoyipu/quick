@@ -58,7 +58,7 @@ module quick_calculated_module
             ! beta electron orbital coeffecient, the dimension is nbasis*nbasis.
             ! when it's RHF system, this term will be vanished
             double precision,dimension(:,:), allocatable :: cob
-            
+
             ! matrix to hold eigenvectors after diagonalization, 
             ! the dimension is nbasis*nbasis.
             double precision,dimension(:,:), allocatable :: vec
@@ -91,6 +91,12 @@ module quick_calculated_module
             ! hessian matrix and CPHF matrices, the dimension is 3natom*3natom
             double precision,dimension(:,:), allocatable :: hessian,cphfa,cphfb
             
+
+
+! orbital coeffecient for occupied orbital and virtual orbitals
+double precision,dimension(:,:), allocatable :: coocc
+double precision,dimension(:,:), allocatable :: covir
+
             ! electron energy
             double precision :: EEl
             

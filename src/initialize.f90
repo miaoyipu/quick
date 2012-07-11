@@ -55,14 +55,13 @@ subroutine outputCopyright(io,ierr)
    !  Output Copyright information
 
    implicit none
-   include "./include/version.h"
 
    ! parameter list
    integer ierr    ! Error Flag
    integer io
 
    write(io,*) " **************************************************************************"
-   write(io,*) " **                      QUICK-",ver," ",date,"                             **"
+   write(io,*) " **                            QUICK                                     **"
    write(io,*) " **                                                                      **"
    write(io,*) " **                        Copyright (c) 2011                            **"
    write(io,*) " **                Regents of the University of Florida                  **"

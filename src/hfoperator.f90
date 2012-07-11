@@ -811,11 +811,7 @@ end subroutine mpi_hfoperatordc
 !------------------------------------------------
 ! get2e
 !------------------------------------------------
-#ifdef CUDA
-    subroutine get2e(II)
-#else
     subroutine get2e(II_arg)
-#endif
 
 
    !------------------------------------------------
@@ -824,16 +820,10 @@ end subroutine mpi_hfoperatordc
    use allmod
    implicit double precision(a-h,o-z)
    double precision testtmp,cutoffTest
-#ifdef CUDA
-   integer II,JJ,KK,LL
-#else   
    integer II_arg
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
-#endif
 
-#ifndef CUDA
    II = II_arg
-#endif
    do JJ = II,jshell
       do KK = II,jshell
          do LL = KK,jshell
@@ -848,11 +838,7 @@ end subroutine mpi_hfoperatordc
             ! ignore the calculation to save computation time
             if ( (Ycutoff(II,JJ)*Ycutoff(KK,LL)        .gt. quick_method%integralCutoff).and. &
                  (Ycutoff(II,JJ)*Ycutoff(KK,LL)*DNmax  .gt. quick_method%integralCutoff)) &
-#ifdef CUDA
-                 call shell(II,JJ,KK,LL)
-#else
                  call shell
-#endif
          enddo
       enddo
    enddo

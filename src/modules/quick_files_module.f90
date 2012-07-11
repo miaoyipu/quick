@@ -61,7 +61,6 @@ module quick_files_module
         
         ! Local Varibles
         integer i
-        
         ierr=1
         
         ! Read enviromental variables: QUICK_BASIS and ECPs
@@ -77,14 +76,13 @@ module quick_files_module
         ! .cphf: CPHF file
         call getarg(1,inFileName)
         i = index(inFileName,'.')
+
         if(i .eq. 0) i = index(inFileName,' ')
-      
         outFileName=inFileName(1:i-1)//'.out'
         dmxFileName=inFileName(1:i-1)//'.dmx'
         rstFileName=inFileName(1:i-1)//'.rst'
         CPHFFileName=inFileName(1:i-1)//'.cphf'
         pdbFileName=inFileName(1:i-1)//'.pdb'
-
         ierr=0
         return
         
@@ -99,20 +97,21 @@ module quick_files_module
         ! local variables
         integer i,j,k1,k2,k3,k4
         logical present
-        
-        
+
+        call getenv("QUICK_BASIS",basisdir) 
         ! read basis directory and ECP basis directory
+        i = 0
+        j = 100
         call rdword(basisdir,i,j)
         call EffChar(basisdir,i,j,k1,k2)
         
         call rdword(ecpdir,i,j) !AG 03/05/2007
         call EffChar(ecpdir,i,j,k3,k4)
-              
         ! Gaussian Style Basis. Written by Alessandro GENONI 03/07/2007
         if (index(keywd,'BASIS=') /= 0) then
             i = index(keywd,'BASIS=')
             call rdword(keywd,i,j)
-            write(basisfilename,*) "/home/miao/Workspace/new_quick/basis/",keywd(i+6:j) 
+            write(basisfilename,*) basisdir(k1+1:k2),"/",keywd(i+6:j)
         else
             basisfilename = basisdir(k1:k2) // '/STO-3G.BAS'    ! default
         endif
@@ -124,7 +123,6 @@ module quick_files_module
             basisfilename = basisdir(k1:k2) // '/' //keywd(i+4:j)
             if (keywd(i+4:j) == "CUSTOM") BasisCustName = basisdir(k1:k2)// '/CUSTOM'
         endif
-        
         ! a compatible mode for basis set file if files like STO-3G.BAS didn't exist, 
         ! the program will search STO-3G
         inquire(file=basisfilename,exist=present)
@@ -147,7 +145,6 @@ module quick_files_module
         
         ! instant variables
         integer i,j,k1,k2
-        
         call EffChar(basisfilename,1,80,k1,k2)
         do i=k1,k2
             if (basisfilename(i:i).eq.'/') j=i

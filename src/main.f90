@@ -128,17 +128,19 @@
 !       call mfcc
 !       call getmolmfcc
     endif
-    
+    call cpu_time(timer_end%TIniGuess)    
     
     !------------------------------------------------------------------
     ! 3. Read Molecule Structure
     !-----------------------------------------------------------------
     call getMol()
 #ifdef CUDA
+    call PrtAct(ioutfile,"Begin to Upload Molecular Information to GPU") 
     call gpu_setup(natom,nbasis, quick_molspec%nElec, quick_molspec%imult, &
                    quick_molspec%molchg, quick_molspec%iAtomType)
     call gpu_upload_xyz(xyz)
     call gpu_upload_atom_and_chg(quick_molspec%iattype, quick_molspec%chg)
+    call PrtAct(ioutfile,"End Uploading Molecular Information to GPU")
 #endif
 
     !------------------------------------------------------------------
@@ -162,9 +164,11 @@
 !   else
         call g2eshell   ! pre-calculate 2 indices coeffecient to save time
         call schwarzoff ! pre-calculate schwarz cutoff criteria
+        call PrtAct(ioutfile,"Complate Schwartz Cutoff Process")
     endif
 
 #ifdef CUDA    
+    call PrtAct(ioutfile,"Begin To Calculate Basis Set Information to GPU")
     call gpu_upload_basis(nshell, nprim, jshell, jbasis, maxcontract, &
     ncontract, itype, aexp, dcoeff, &
     quick_basis%first_basis_function, quick_basis%last_basis_function, & 
@@ -175,9 +179,9 @@
     quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
     
     call gpu_upload_cutoff_matrix(Ycutoff, cutPrim)
+    call PrtAct(ioutfile,"End Basis Set Uploading")
 #endif
 
-    call cpu_time(timer_end%TIniGuess)
     if (.not.quick_method%opt) then
         call getEnergy(failed)
     endif

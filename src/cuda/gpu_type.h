@@ -125,6 +125,8 @@ struct gpu_simulation_type {
     QUICKDouble*                    cons;
     QUICKDouble*                    gcexpo;
     int*                            KLMN;
+    int                             prim_total;
+    int*                            prim_start;
     
     // Some more infos about pre-calculated values
     QUICKDouble*                    o;
@@ -158,6 +160,7 @@ struct gpu_basis_type {
     int                             jbasis;
     int                             Qshell;
     int                             maxcontract;
+    int                             prim_total;
     // Gaussian Type function
 
     cuda_buffer_type<int>*          ncontract;
@@ -204,6 +207,7 @@ struct gpu_basis_type {
     cuda_buffer_type<QUICKDouble>*  PpriX;
     cuda_buffer_type<QUICKDouble>*  PpriY;
     cuda_buffer_type<QUICKDouble>*  PpriZ;
+    cuda_buffer_type<int>*          prim_start;
     
     void upload_all();
     
@@ -516,14 +520,16 @@ void cuda_buffer_type<T> :: DeleteGPU()
     
     PRINTDEBUG(">>BEGIN TO DELETE GPU")
     
-    cudaFree(_devData);
-    _devData = NULL;
+    if (_devData != NULL) { 
+        cudaFree(_devData);
+        _devData = NULL;
 #ifdef DEBUG
-    gpu->totalGPUMemory -= _length*_length2*sizeof(T);
+        gpu->totalGPUMemory -= _length*_length2*sizeof(T);
     
-    PRINTMEM("GPU--",gpu->totalGPUMemory);
-    PRINTMEM("CPU  ",gpu->totalCPUMemory);
+        PRINTMEM("GPU--",gpu->totalGPUMemory);
+    	PRINTMEM("CPU  ",gpu->totalCPUMemory);
     
 #endif
+    }
     PRINTDEBUG("<<FINSH DELETE CPU")
 }
