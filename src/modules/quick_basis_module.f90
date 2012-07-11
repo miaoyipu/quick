@@ -151,8 +151,10 @@ module quick_basis_module
    double precision, allocatable, dimension(:,:,:,:,:) :: orbmp2i331
    double precision, allocatable, dimension(:,:,:,:,:) :: orbmp2j331
    double precision, allocatable, dimension(:,:,:,:) :: orbmp2k331
-   double precision, allocatable, dimension(:,:,:) :: orbmp2k331dcsub
-   
+
+double precision, allocatable, dimension(:,:,:,:) :: AO
+double precision, allocatable, dimension(:,:,:) :: orbmp2k331dcsub
+
    ! 
    double precision, allocatable, dimension(:,:,:) :: Yxiao,Yxiaotemp,attraxiao
    

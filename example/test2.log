@@ -1,317 +1,482 @@
- Entering Gaussian System, Link 0=g09
- Input=test2.gjf
- Output=test2.log
- Initial command:
- /Users/miao/Workspace/g09/l1.exe /Users/miao/Workspace/new_quick/example/Gau-99531.inp -scrdir=/Users/miao/Workspace/new_quick/example/
- Entering Link 1 = /Users/miao/Workspace/g09/l1.exe PID=     99532.
-  
- Copyright (c) 1988,1990,1992,1993,1995,1998,2003,2009, Gaussian, Inc.
-                  All Rights Reserved.
-  
- This is part of the Gaussian(R) 09 program.  It is based on
- the Gaussian(R) 03 system (copyright 2003, Gaussian, Inc.),
- the Gaussian(R) 98 system (copyright 1998, Gaussian, Inc.),
- the Gaussian(R) 94 system (copyright 1995, Gaussian, Inc.),
- the Gaussian 92(TM) system (copyright 1992, Gaussian, Inc.),
- the Gaussian 90(TM) system (copyright 1990, Gaussian, Inc.),
- the Gaussian 88(TM) system (copyright 1988, Gaussian, Inc.),
- the Gaussian 86(TM) system (copyright 1986, Carnegie Mellon
- University), and the Gaussian 82(TM) system (copyright 1983,
- Carnegie Mellon University). Gaussian is a federally registered
- trademark of Gaussian, Inc.
-  
- This software contains proprietary and confidential information,
- including trade secrets, belonging to Gaussian, Inc.
-  
- This software is provided under written license and may be
- used, copied, transmitted, or stored only in accord with that
- written license.
-  
- The following legend is applicable only to US Government
- contracts under FAR:
-  
-                    RESTRICTED RIGHTS LEGEND
-  
- Use, reproduction and disclosure by the US Government is
- subject to restrictions as set forth in subparagraphs (a)
- and (c) of the Commercial Computer Software - Restricted
- Rights clause in FAR 52.227-19.
-  
- Gaussian, Inc.
- 340 Quinnipiac St., Bldg. 40, Wallingford CT 06492
-  
-  
- ---------------------------------------------------------------
- Warning -- This program may not be used in any manner that
- competes with the business of Gaussian, Inc. or will provide
- assistance to any competitor of Gaussian, Inc.  The licensee
- of this program is prohibited from giving any competitor of
- Gaussian, Inc. access to this program.  By using this program,
- the user acknowledges that Gaussian, Inc. is engaged in the
- business of creating and licensing software in the field of
- computational chemistry and represents and warrants to the
- licensee that it is not a competitor of Gaussian, Inc. and that
- it will not use this program in any manner prohibited above.
- ---------------------------------------------------------------
-  
-
- Cite this work as:
- Gaussian 09, Revision A.02,
- M. J. Frisch, G. W. Trucks, H. B. Schlegel, G. E. Scuseria, 
- M. A. Robb, J. R. Cheeseman, G. Scalmani, V. Barone, B. Mennucci, 
- G. A. Petersson, H. Nakatsuji, M. Caricato, X. Li, H. P. Hratchian, 
- A. F. Izmaylov, J. Bloino, G. Zheng, J. L. Sonnenberg, M. Hada, 
- M. Ehara, K. Toyota, R. Fukuda, J. Hasegawa, M. Ishida, T. Nakajima, 
- Y. Honda, O. Kitao, H. Nakai, T. Vreven, J. A. Montgomery, Jr., 
- J. E. Peralta, F. Ogliaro, M. Bearpark, J. J. Heyd, E. Brothers, 
- K. N. Kudin, V. N. Staroverov, R. Kobayashi, J. Normand, 
- K. Raghavachari, A. Rendell, J. C. Burant, S. S. Iyengar, J. Tomasi, 
- M. Cossi, N. Rega, J. M. Millam, M. Klene, J. E. Knox, J. B. Cross, 
- V. Bakken, C. Adamo, J. Jaramillo, R. Gomperts, R. E. Stratmann, 
- O. Yazyev, A. J. Austin, R. Cammi, C. Pomelli, J. W. Ochterski, 
- R. L. Martin, K. Morokuma, V. G. Zakrzewski, G. A. Voth, 
- P. Salvador, J. J. Dannenberg, S. Dapprich, A. D. Daniels, 
- O. Farkas, J. B. Foresman, J. V. Ortiz, J. Cioslowski, 
- and D. J. Fox, Gaussian, Inc., Wallingford CT, 2009.
- 
- ******************************************
- Gaussian 09:  EM64M-G09RevA.02 11-Jun-2009
-                25-Feb-2011 
- ******************************************
- ---------------------------
- #HF/sto-3g scf=direct nofmm
- ---------------------------
- 1/38=1/1;
- 2/12=2,17=6,18=5,40=1/2;
- 3/6=3,11=9,16=1,25=1,30=1,49=2048/1,2,3;
- 4//1;
- 5/5=2,38=5/2;
- 6/7=2,8=2,9=2,10=2,28=1/1;
- 99/5=1,9=1/99;
- -----
- water
- -----
- Symbolic Z-matrix:
- Charge =  0 Multiplicity = 1
- H                     0.30324  -0.49396   0. 
- H                    -0.30324  -0.90882   0. 
- O                     0.        0.17535   0. 
- H                     0.30324  -0.49396   3. 
- H                    -0.30324  -0.90882   3. 
- O                     0.        0.17535   3. 
- H                     0.30324  -0.49396   6. 
- H                    -0.30324  -0.90882   6. 
- O                     0.        0.17535   6. 
- H                     0.30324  -0.49396   9. 
- H                    -0.30324  -0.90882   9. 
- O                     0.        0.17535   9. 
- 
-                          Input orientation:                          
- ---------------------------------------------------------------------
- Center     Atomic      Atomic             Coordinates (Angstroms)
- Number     Number       Type             X           Y           Z
- ---------------------------------------------------------------------
-      1          1           0        0.303242   -0.493962    0.000000
-      2          1           0       -0.303242   -0.908821    0.000000
-      3          8           0        0.000000    0.175348    0.000000
-      4          1           0        0.303242   -0.493962    3.000000
-      5          1           0       -0.303242   -0.908821    3.000000
-      6          8           0        0.000000    0.175348    3.000000
-      7          1           0        0.303242   -0.493962    6.000000
-      8          1           0       -0.303242   -0.908821    6.000000
-      9          8           0        0.000000    0.175348    6.000000
-     10          1           0        0.303242   -0.493962    9.000000
-     11          1           0       -0.303242   -0.908821    9.000000
-     12          8           0        0.000000    0.175348    9.000000
- ---------------------------------------------------------------------
-                    Distance matrix (angstroms):
-                    1          2          3          4          5
-     1  H    0.000000
-     2  H    0.734800   0.000000
-     3  O    0.734800   1.125779   0.000000
-     4  H    3.000000   3.088678   3.088678   0.000000
-     5  H    3.088678   3.000000   3.204275   0.734800   0.000000
-     6  O    3.088678   3.204275   3.000000   0.734800   1.125779
-     7  H    6.000000   6.044827   6.044827   3.000000   3.088678
-     8  H    6.044827   6.000000   6.104701   3.088678   3.000000
-     9  O    6.044827   6.104701   6.000000   3.088678   3.204275
-    10  H    9.000000   9.029946   9.029946   6.000000   6.044827
-    11  H    9.029946   9.000000   9.070137   6.044827   6.000000
-    12  O    9.029946   9.070137   9.000000   6.044827   6.104701
-                    6          7          8          9         10
-     6  O    0.000000
-     7  H    3.088678   0.000000
-     8  H    3.204275   0.734800   0.000000
-     9  O    3.000000   0.734800   1.125779   0.000000
-    10  H    6.044827   3.000000   3.088678   3.088678   0.000000
-    11  H    6.104701   3.088678   3.000000   3.204275   0.734800
-    12  O    6.000000   3.088678   3.204275   3.000000   0.734800
-                   11         12
-    11  H    0.000000
-    12  O    1.125779   0.000000
- Stoichiometry    H8O4
- Framework group  CS[X(H8O4)]
- Deg. of freedom    15
- Full point group                 CS      NOp   2
- Largest Abelian subgroup         CS      NOp   2
- Largest concise Abelian subgroup CS      NOp   2
-                         Standard orientation:                         
- ---------------------------------------------------------------------
- Center     Atomic      Atomic             Coordinates (Angstroms)
- Number     Number       Type             X           Y           Z
- ---------------------------------------------------------------------
-      1          1           0       -0.457917    0.355340    4.500000
-      2          1           0       -0.936487   -0.202246    4.500000
-      3          8           0        0.174301   -0.019137    4.500000
-      4          1           0       -0.457917    0.355340    1.500000
-      5          1           0       -0.936487   -0.202246    1.500000
-      6          8           0        0.174301   -0.019137    1.500000
-      7          1           0       -0.457917    0.355340   -1.500000
-      8          1           0       -0.936487   -0.202246   -1.500000
-      9          8           0        0.174301   -0.019137   -1.500000
-     10          1           0       -0.457917    0.355340   -4.500000
-     11          1           0       -0.936487   -0.202246   -4.500000
-     12          8           0        0.174301   -0.019137   -4.500000
- ---------------------------------------------------------------------
- Rotational constants (GHZ):     76.6629934      0.6230271      0.6190517
- Standard basis: STO-3G (5D, 7F)
- There are    14 symmetry adapted basis functions of A'  symmetry.
- There are    14 symmetry adapted basis functions of A"  symmetry.
- Integral buffers will be    131072 words long.
- Raffenetti 1 integral format.
- Two-electron integral symmetry is turned on.
-    28 basis functions,    84 primitive gaussians,    28 cartesian basis functions
-    20 alpha electrons       20 beta electrons
-       nuclear repulsion energy       116.5083964218 Hartrees.
- One-electron integrals computed using PRISM.
- NBasis=    28 RedAO= T  NBF=    14    14
- NBsUse=    28 1.00D-06 NBFU=    14    14
- Harris functional with IExCor=  205 diagonalized for initial guess.
- ExpMin= 1.69D-01 ExpMax= 1.31D+02 ExpMxC= 1.31D+02 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
- HarFok:  IExCor=  205 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1
- ScaDFX=  1.000000  1.000000  1.000000  1.000000
- FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=         800
-         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
-         Omega=  0.000000  0.000000  1.000000  0.000000  0.000000 ICntrl=     500 IOpCl=  0
-         NMat0=    1 NMatS0=    1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
-         I1Cent=           4 NGrid=           0.
- Petite list used in FoFCou.
- Initial guess orbital symmetries:
-       Occupied  (A') (A") (A') (A") (A') (A") (A') (A") (A') (A")
-                 (A') (A") (A') (A") (A') (A") (A') (A") (A') (A")
-       Virtual   (A') (A") (A') (A") (A') (A") (A') (A")
- The electronic state of the initial guess is 1-A'.
- Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
- Requested convergence on MAX density matrix=1.00D-06.
- Requested convergence on             energy=1.00D-06.
- No special actions if energy rises.
- Keep R1 ints in memory in canonical form, NReq=903581.
- SCF Done:  E(RHF) =  -298.384780829     A.U. after   12 cycles
-             Convg  =    0.1694D-08             -V/T =  1.9914
-
- **********************************************************************
-
-            Population analysis using the SCF density.
-
- **********************************************************************
-
- Orbital symmetries:
-       Occupied  (A') (A") (A") (A') (A') (A") (A') (A") (A') (A")
-                 (A') (A") (A') (A") (A') (A") (A') (A") (A') (A")
-       Virtual   (A') (A") (A') (A") (A') (A") (A') (A")
- The electronic state is 1-A'.
- Alpha  occ. eigenvalues --  -20.25029 -20.25028 -20.24882 -20.24882  -1.39935
- Alpha  occ. eigenvalues --   -1.39816  -1.39652  -1.39505  -0.59281  -0.59251
- Alpha  occ. eigenvalues --   -0.59089  -0.58941  -0.46066  -0.45875  -0.45580
- Alpha  occ. eigenvalues --   -0.45301  -0.42112  -0.41534  -0.40712  -0.39972
- Alpha virt. eigenvalues --    0.38819   0.39561   0.40509   0.41296   1.10620
- Alpha virt. eigenvalues --    1.12093   1.13931   1.15433
-          Condensed to atoms (all electrons):
-              1          2          3          4          5          6
-     1  H    0.536193  -0.015612   0.193948  -0.000114  -0.000095   0.000083
-     2  H   -0.015612   0.815639   0.062401  -0.000094   0.000017  -0.000008
-     3  O    0.193948   0.062401   8.166934   0.000082  -0.000009  -0.000100
-     4  H   -0.000114  -0.000094   0.000082   0.539530  -0.015558   0.192467
-     5  H   -0.000095   0.000017  -0.000009  -0.015558   0.825742   0.060039
-     6  O    0.000083  -0.000008  -0.000100   0.192467   0.060039   8.161307
-     7  H    0.000000   0.000000   0.000000  -0.000114  -0.000095   0.000083
-     8  H    0.000000   0.000000   0.000000  -0.000095   0.000016  -0.000009
-     9  O    0.000000   0.000000   0.000000   0.000083  -0.000009  -0.000099
-    10  H    0.000000   0.000000   0.000000   0.000000   0.000000   0.000000
-    11  H    0.000000   0.000000   0.000000   0.000000   0.000000   0.000000
-    12  O    0.000000   0.000000   0.000000   0.000000   0.000000   0.000000
-              7          8          9         10         11         12
-     1  H    0.000000   0.000000   0.000000   0.000000   0.000000   0.000000
-     2  H    0.000000   0.000000   0.000000   0.000000   0.000000   0.000000
-     3  O    0.000000   0.000000   0.000000   0.000000   0.000000   0.000000
-     4  H   -0.000114  -0.000095   0.000083   0.000000   0.000000   0.000000
-     5  H   -0.000095   0.000016  -0.000009   0.000000   0.000000   0.000000
-     6  O    0.000083  -0.000009  -0.000099   0.000000   0.000000   0.000000
-     7  H    0.539530  -0.015558   0.192467  -0.000114  -0.000094   0.000082
-     8  H   -0.015558   0.825742   0.060039  -0.000095   0.000017  -0.000009
-     9  O    0.192467   0.060039   8.161307   0.000083  -0.000008  -0.000100
-    10  H   -0.000114  -0.000095   0.000083   0.536193  -0.015612   0.193948
-    11  H   -0.000094   0.000017  -0.000008  -0.015612   0.815639   0.062401
-    12  O    0.000082  -0.000009  -0.000100   0.193948   0.062401   8.166934
- Mulliken atomic charges:
-              1
-     1  H    0.285597
-     2  H    0.137658
-     3  O   -0.423257
-     4  H    0.283814
-     5  H    0.129951
-     6  O   -0.413763
-     7  H    0.283814
-     8  H    0.129951
-     9  O   -0.413763
-    10  H    0.285597
-    11  H    0.137658
-    12  O   -0.423257
- Sum of Mulliken atomic charges =   0.00000
- Mulliken charges with hydrogens summed into heavy atoms:
-              1
-     3  O   -0.000003
-     6  O    0.000003
-     9  O    0.000003
-    12  O   -0.000003
- Sum of Mulliken charges with hydrogens summed into heavy atoms =   0.00000
- Electronic spatial extent (au):  <R**2>=           1677.7480
- Charge=              0.0000 electrons
- Dipole moment (field-independent basis, Debye):
-    X=             -7.5010    Y=              2.4292    Z=              0.0000  Tot=              7.8846
- Quadrupole moment (field-independent basis, Debye-Ang):
-   XX=            -18.7927   YY=            -23.2093   ZZ=            -24.3682
-   XY=             -0.1822   XZ=              0.0000   YZ=              0.0000
- Traceless Quadrupole moment (field-independent basis, Debye-Ang):
-   XX=              3.3307   YY=             -1.0859   ZZ=             -2.2448
-   XY=             -0.1822   XZ=              0.0000   YZ=              0.0000
- Octapole moment (field-independent basis, Debye-Ang**2):
-  XXX=              0.0698  YYY=              0.8591  ZZZ=              0.0000  XYY=              0.4842
-  XXY=              0.6356  XXZ=              0.0000  XZZ=            -84.9502  YZZ=             27.5120
-  YYZ=              0.0000  XYZ=              0.0000
- Hexadecapole moment (field-independent basis, Debye-Ang**3):
- XXXX=            -30.2463 YYYY=            -15.6901 ZZZZ=          -1657.1169 XXXY=             -0.2974
- XXXZ=              0.0000 YYYX=             -0.5571 YYYZ=              0.0000 ZZZX=              0.0000
- ZZZY=              0.0000 XXYY=             -7.9527 XXZZ=           -218.5657 YYZZ=           -265.8084
- XXYZ=              0.0000 YYXZ=              0.0000 ZZXY=             -2.1103
- N-N= 1.165083964218D+02 E-N=-9.459000738210D+02  KE= 3.009625728856D+02
- Symmetry A'   KE= 1.503972580528D+02
- Symmetry A"   KE= 1.505653148329D+02
- 1\1\GINC-QTPCLNT135\SP\RHF\STO-3G\H8O4\MIAO\25-Feb-2011\0\\#HF/sto-3g 
- scf=direct nofmm\\water\\0,1\H,0,0.303242,-0.493962,0.\H,0,-0.303242,-
- 0.908821,0.\O,0,0.,0.175348,0.\H,0,0.303242,-0.493962,3.\H,0,-0.303242
- ,-0.908821,3.\O,0,0.,0.175348,3.\H,0,0.303242,-0.493962,6.\H,0,-0.3032
- 42,-0.908821,6.\O,0,0.,0.175348,6.\H,0,0.303242,-0.493962,9.\H,0,-0.30
- 3242,-0.908821,9.\O,0,0.,0.175348,9.\\Version=EM64M-G09RevA.02\State=1
- -A'\HF=-298.3847808\RMSD=1.694e-09\Dipole=0.6279488,-3.0378127,0.\Quad
- rupole=-0.797628,2.4665762,-1.6689482,0.2240001,0.,0.\PG=CS [X(H8O4)]\
- \@
-
-
-  ON THE CHOICE OF THE CORRECT LANGUAGE -
- I SPEAK SPANISH TO GOD, ITALIAN TO WOMEN,
- FRENCH TO MEN, AND GERMAN TO MY HORSE.
-          -- CHARLES V
- Job cpu time:  0 days  0 hours  0 minutes  1.2 seconds.
- File lengths (MBytes):  RWF=      5 Int=      0 D2E=      0 Chk=      1 Scr=      1
- Normal termination of Gaussian 09 at Fri Feb 25 16:04:23 2011.
+FILE:         gpu.cu, LINE:   27 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : BEGIN TO WARM UP. 
+FILE:         gpu.cu, LINE:   32 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : CREATE NEW GPU. 
+FILE:         gpu.cu, LINE:   42 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : BEGIN TO INIT. 
+FILE:         gpu.cu, LINE:  142 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : FINISH INIT. 
+FILE:         gpu.cu, LINE:  203 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : BEGIN TO SETUP. 
+TIME:         gpu.cu, LINE:  234 DATE: Jun  4 2012 TIME:06:15:40 TIMING:UPLOAD PARA TO CONST ======= 0.037760 ms =======.
+FILE:         gpu.cu, LINE:  239 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : FINISH SETUP. 
+FILE:         gpu.cu, LINE:  265 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : BEGIN TO UPLOAD COORDINATES. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 1800
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 1800
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 1800
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 360
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 2160
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 2160
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+TIME:         gpu.cu, LINE:  294 DATE: Jun  4 2012 TIME:06:15:40 TIMING:          UPLOAD XYZ ======= 0.923648 ms =======.
+FILE:         gpu.cu, LINE:  299 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : COMPLETE UPLOADING COORDINATES. 
+FILE:         gpu.cu, LINE:  310 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : BEGIN TO UPLOAD ATOM AND CHARGE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 60
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 2220
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 2220
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 120
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 2340
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 2340
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:         gpu.cu, LINE:  321 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : COMPLETE UPLOADING ATOM AND CHARGE. 
+FILE:         gpu.cu, LINE:  693 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : BEGIN TO UPLOAD BASIS. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 620
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 2960
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 2960
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 1860
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 4820
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 4820
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 7440
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 12260
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 12260
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 7440
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 19700
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 19700
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 620
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 20320
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 20320
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 260
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 20580
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 20580
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 260
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 20840
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 20840
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 260
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 21100
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 21100
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 264
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 21364
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 21364
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 260
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 21624
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 21624
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 260
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 21884
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 21884
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 260
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 22144
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 22144
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 1040
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 23184
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 23184
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 1040
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 24224
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 24224
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 12400
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 36624
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 36624
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 1240
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 37864
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 37864
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 12400
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 50264
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 50264
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 1860
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 52124
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 52124
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 260
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 52384
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 52384
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+for 0 prim= 3, start= 0
+for 1 prim= 1, start= 3
+for 2 prim= 1, start= 4
+for 3 prim= 1, start= 5
+for 4 prim= 3, start= 6
+for 5 prim= 1, start= 9
+for 6 prim= 1, start= 10
+for 7 prim= 1, start= 11
+for 8 prim= 6, start= 12
+for 9 prim= 3, start= 18
+for 10 prim= 1, start= 21
+for 11 prim= 1, start= 22
+for 12 prim= 1, start= 23
+for 13 prim= 3, start= 24
+for 14 prim= 1, start= 27
+for 15 prim= 1, start= 28
+for 16 prim= 1, start= 29
+for 17 prim= 3, start= 30
+for 18 prim= 1, start= 33
+for 19 prim= 1, start= 34
+for 20 prim= 1, start= 35
+for 21 prim= 6, start= 36
+for 22 prim= 3, start= 42
+for 23 prim= 1, start= 45
+for 24 prim= 1, start= 46
+for 25 prim= 1, start= 47
+for 26 prim= 3, start= 48
+for 27 prim= 1, start= 51
+for 28 prim= 1, start= 52
+for 29 prim= 1, start= 53
+for 30 prim= 3, start= 54
+for 31 prim= 1, start= 57
+for 32 prim= 1, start= 58
+for 33 prim= 1, start= 59
+for 34 prim= 6, start= 60
+for 35 prim= 3, start= 66
+for 36 prim= 1, start= 69
+for 37 prim= 1, start= 70
+for 38 prim= 1, start= 71
+for 39 prim= 3, start= 72
+for 40 prim= 1, start= 75
+for 41 prim= 1, start= 76
+for 42 prim= 1, start= 77
+for 43 prim= 3, start= 78
+for 44 prim= 1, start= 81
+for 45 prim= 1, start= 82
+for 46 prim= 1, start= 83
+for 47 prim= 6, start= 84
+for 48 prim= 3, start= 90
+for 49 prim= 1, start= 93
+for 50 prim= 1, start= 94
+for 51 prim= 1, start= 95
+for 52 prim= 3, start= 96
+for 53 prim= 1, start= 99
+for 54 prim= 1, start= 100
+for 55 prim= 1, start= 101
+for 56 prim= 3, start= 102
+for 57 prim= 1, start= 105
+for 58 prim= 1, start= 106
+for 59 prim= 1, start= 107
+for 60 prim= 6, start= 108
+for 61 prim= 3, start= 114
+for 62 prim= 1, start= 117
+for 63 prim= 1, start= 118
+for 64 prim= 1, start= 119
+total=120
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 460800
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 513184
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 513184
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 115200
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 628384
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 628384
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 115200
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 743584
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 743584
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 115200
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 858784
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 858784
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 115200
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 973984
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 973984
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 320
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 974304
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 974304
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 320
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 974624
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 974624
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+Pre-Sorted orbitals:
+Qshell = 80
+i= 0, Q=0, Qnumber= 0, nprim = 3 
+i= 1, Q=1, Qnumber= 0, nprim = 1 
+i= 2, Q=2, Qnumber= 0, nprim = 1 
+i= 3, Q=4, Qnumber= 0, nprim = 3 
+i= 4, Q=5, Qnumber= 0, nprim = 1 
+i= 5, Q=6, Qnumber= 0, nprim = 1 
+i= 6, Q=8, Qnumber= 0, nprim = 6 
+i= 7, Q=9, Qnumber= 0, nprim = 3 
+i= 8, Q=10, Qnumber= 0, nprim = 1 
+i= 9, Q=11, Qnumber= 0, nprim = 1 
+i= 10, Q=13, Qnumber= 0, nprim = 3 
+i= 11, Q=14, Qnumber= 0, nprim = 1 
+i= 12, Q=15, Qnumber= 0, nprim = 1 
+i= 13, Q=17, Qnumber= 0, nprim = 3 
+i= 14, Q=18, Qnumber= 0, nprim = 1 
+i= 15, Q=19, Qnumber= 0, nprim = 1 
+i= 16, Q=21, Qnumber= 0, nprim = 6 
+i= 17, Q=22, Qnumber= 0, nprim = 3 
+i= 18, Q=23, Qnumber= 0, nprim = 1 
+i= 19, Q=24, Qnumber= 0, nprim = 1 
+i= 20, Q=26, Qnumber= 0, nprim = 3 
+i= 21, Q=27, Qnumber= 0, nprim = 1 
+i= 22, Q=28, Qnumber= 0, nprim = 1 
+i= 23, Q=30, Qnumber= 0, nprim = 3 
+i= 24, Q=31, Qnumber= 0, nprim = 1 
+i= 25, Q=32, Qnumber= 0, nprim = 1 
+i= 26, Q=34, Qnumber= 0, nprim = 6 
+i= 27, Q=35, Qnumber= 0, nprim = 3 
+i= 28, Q=36, Qnumber= 0, nprim = 1 
+i= 29, Q=37, Qnumber= 0, nprim = 1 
+i= 30, Q=39, Qnumber= 0, nprim = 3 
+i= 31, Q=40, Qnumber= 0, nprim = 1 
+i= 32, Q=41, Qnumber= 0, nprim = 1 
+i= 33, Q=43, Qnumber= 0, nprim = 3 
+i= 34, Q=44, Qnumber= 0, nprim = 1 
+i= 35, Q=45, Qnumber= 0, nprim = 1 
+i= 36, Q=47, Qnumber= 0, nprim = 6 
+i= 37, Q=48, Qnumber= 0, nprim = 3 
+i= 38, Q=49, Qnumber= 0, nprim = 1 
+i= 39, Q=50, Qnumber= 0, nprim = 1 
+i= 40, Q=52, Qnumber= 0, nprim = 3 
+i= 41, Q=53, Qnumber= 0, nprim = 1 
+i= 42, Q=54, Qnumber= 0, nprim = 1 
+i= 43, Q=56, Qnumber= 0, nprim = 3 
+i= 44, Q=57, Qnumber= 0, nprim = 1 
+i= 45, Q=58, Qnumber= 0, nprim = 1 
+i= 46, Q=60, Qnumber= 0, nprim = 6 
+i= 47, Q=61, Qnumber= 0, nprim = 3 
+i= 48, Q=62, Qnumber= 0, nprim = 1 
+i= 49, Q=63, Qnumber= 0, nprim = 1 
+i= 50, Q=3, Qnumber= 1, nprim = 1 
+i= 51, Q=7, Qnumber= 1, nprim = 1 
+i= 52, Q=9, Qnumber= 1, nprim = 3 
+i= 53, Q=10, Qnumber= 1, nprim = 1 
+i= 54, Q=11, Qnumber= 1, nprim = 1 
+i= 55, Q=16, Qnumber= 1, nprim = 1 
+i= 56, Q=20, Qnumber= 1, nprim = 1 
+i= 57, Q=22, Qnumber= 1, nprim = 3 
+i= 58, Q=23, Qnumber= 1, nprim = 1 
+i= 59, Q=24, Qnumber= 1, nprim = 1 
+i= 60, Q=29, Qnumber= 1, nprim = 1 
+i= 61, Q=33, Qnumber= 1, nprim = 1 
+i= 62, Q=35, Qnumber= 1, nprim = 3 
+i= 63, Q=36, Qnumber= 1, nprim = 1 
+i= 64, Q=37, Qnumber= 1, nprim = 1 
+i= 65, Q=42, Qnumber= 1, nprim = 1 
+i= 66, Q=46, Qnumber= 1, nprim = 1 
+i= 67, Q=48, Qnumber= 1, nprim = 3 
+i= 68, Q=49, Qnumber= 1, nprim = 1 
+i= 69, Q=50, Qnumber= 1, nprim = 1 
+i= 70, Q=55, Qnumber= 1, nprim = 1 
+i= 71, Q=59, Qnumber= 1, nprim = 1 
+i= 72, Q=61, Qnumber= 1, nprim = 3 
+i= 73, Q=62, Qnumber= 1, nprim = 1 
+i= 74, Q=63, Qnumber= 1, nprim = 1 
+i= 75, Q=12, Qnumber= 2, nprim = 1 
+i= 76, Q=25, Qnumber= 2, nprim = 1 
+i= 77, Q=38, Qnumber= 2, nprim = 1 
+i= 78, Q=51, Qnumber= 2, nprim = 1 
+i= 79, Q=64, Qnumber= 2, nprim = 1 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:42 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 859424
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 744224
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 629024
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 513824
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 53024
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 52404
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 44964
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 37524
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 36904
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 35044
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 34784
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 34524
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 34260
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 34000
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 33740
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 33480
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 33220
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 32180
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 31140
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 18740
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 17500
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 5100
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+FILE:     gpu_type.h, LINE:  511 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO DELETE CPU. 
+MEM :     gpu_type.h, LINE:  519 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU   974624
+MEM :     gpu_type.h, LINE:  520 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU-- 3240
+FILE:     gpu_type.h, LINE:  524 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINSH DELETE CPU. 
+TIME:         gpu.cu, LINE:  990 DATE: Jun  4 2012 TIME:06:15:40 TIMING:        UPLOAD BASIS ======= 4.882592 ms =======.
+FILE:         gpu.cu, LINE:  995 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : COMPLETE UPLOADING BASIS. 
+FILE:         gpu.cu, LINE:  384 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : BEGIN TO UPLOAD CUTOFF. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 33800
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 1008424
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 37040
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  380 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO ALLOCATE TEMPLATE. 
+MEM :     gpu_type.h, LINE:  430 DATE: Jun  4 2012 TIME:06:15:40 MEM   : ALLOCATE GPU MEMORY 115200
+MEM :     gpu_type.h, LINE:  431 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      GPU++ 1123624
+MEM :     gpu_type.h, LINE:  432 DATE: Jun  4 2012 TIME:06:15:40 MEM   :      CPU++ 152240
+FILE:     gpu_type.h, LINE:  433 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH ALLOCATION TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : <<FINISH UPLOADING TEMPLATE. 
+FILE:     gpu_type.h, LINE:  472 DATE: Jun  4 2012 TIME:06:15:40 DEBUG : >>BEGIN TO UPLOAD TEMPLATE. 
+FILE:     gpu_type.h, LINE:  477 DATE: Jun  4 2012 TIME:06

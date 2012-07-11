@@ -30,6 +30,9 @@ module quick_timer_module
         double precision:: TE=0.0d0
         double precision:: TEx=0.0d0
         double precision:: TGrad=0.0d0
+
+        double precision:: TGPUPC=0.0d0 ! GPU Pre-Calculating
+
     end type quick_timer
     
     type quick_timer_cumer
@@ -76,6 +79,9 @@ module quick_timer_module
             ! Initial Guess Timing
             write (io,'("INITIAL GUESS TIME =",F16.9,"( ",F5.2,"%)")') timer_end%TIniGuess-timer_begin%TIniGuess, &
                 (timer_end%TIniGuess-timer_begin%TIniGuess)/(timer_end%TTotal-timer_begin%TTotal)*100
+            !  Pre-Calculating and Sorting Timing
+            write (io,'("GPU Pre-Cal TIME   =",F16.9,"( ",F5.2,"%)")') timer_end%TGPUPC-timer_begin%TGPUPC, &
+                (timer_end%TGPUPC-timer_begin%TGPUPC)/(timer_end%TTotal-timer_begin%TTotal)*100
             ! SCF Timing
             write (io,'("TOTAL SCF TIME     =",F16.9,"( ",F5.2,"%)")') timer_cumer%TSCF, &
                 timer_cumer%TSCF/(timer_end%TTotal-timer_begin%TTotal)*100

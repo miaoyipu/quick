@@ -1,6 +1,8 @@
 #!/bin/sh
 
 #include "config.h"
+MAKEIN = ./make.in
+include $(MAKEIN)
 
 # --- Makefile for Quick Program ---
 #				- v 2.00 2010/10/25 Yipu Miao
@@ -24,51 +26,7 @@
 #
 #************************************************************************
 
-# Tested on LINUX machines and Mac machines
-#
-#---------------------
-# a. MPI Version
-#---------------------
-#FC = mpif90
-#FC = /usr/local/bin/mpif90
-#MPI_INCLUDES = /usr/local/include
-#MPI_LIBS = /usr/local/lib
-
-#---------------------
-# b. Single CPU Version
-#---------------------
-FC=gfortran
-#FC=ifort
-
-#---------------------
-# other compiler options
-#---------------------
-#FFLAGS = -g -O3 -xW -pg -traceback
-#FFLAGS = -O3 -xW -ipo
-#FFLAGS = -O3
-#FFLAGS = -i4 -O3 -auto -assume byterecl -w95 -cm 
-#FFLAGS = -g -O3 -traceback
-FFLAGS = 
-LD = $(FC)
-LDFLAGS = $(FFLAGS)
-#LDFLAGS = $(FFLAGS)
-#LDFLAGS = $(FFLAGS) -static -L/opt/intel/ict/2.0/cmkl/8.0.1/lib/32
-TMPFILES = *.mod *.stb
-
-# CPP Compiler
-FPP = cpp -traditional -P  -DBINTRAJ 
-CPP = gcc -DCUBLAS_USE_THUNKING
-CPP_FLAG = -I/usr/local/cuda/include  -O3
-
-# CUDA Compiler
-CUDAC = nvcc
-CUDA_LIBPATH = -L/usr/local/gfortran/lib 
-#CUDA_FLAGS= -Xptxas=-v -m64 -g -G -use_fast_math -maxrregcount=63 -gencode arch=compute_20,code=sm_20
-CUDA_FLAGS= -Xptxas=-v -m64 -O65534 -use_fast_math -gencode arch=compute_20,code=sm_20
-
-# G++ Compiler
-CXX = g++
-CFLAGS = -lgfortran -lgfortranbegin -g -L/usr/local/cuda/lib64 -lcuda -lm $(CUDA_LIBPATH) -lcudart -lcublas 
+# See compiler information and flag in make.in
 
 #----------------------
 # exe file location
@@ -89,8 +47,12 @@ configfolder = ./config
 # cuda files
 #----------------------
 cudafolder = ./cuda
-cudaobj = gpu_write_info.o gpu.o gpu_type.o gpu_get2e.o gpu_getxc.o
+cudaobj = gpu_write_info.o gpu_MP2.o gpu.o gpu_type.o gpu_get2e.o gpu_getxc.o
 
+#----------------------
+# blas lib
+#----------------------
+blasfolder = ./BLAS
 #----------------------
 # quick modules and object files
 #----------------------
@@ -128,10 +90,10 @@ all: quick quick.cuda
 
 #================= common subroutine library ============================
 quick_subs:
-#	cp *.mod ./subs
+	cp *.mod ./subs
 #	cd ./subs && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
-#	ar -r $(libfolder)/quicklib.a ./subs/*.o
-#	rm ./subs/*.mod
+	ar -r $(libfolder)/quicklib.a ./subs/*.o
+	rm ./subs/*.mod
 
 #================= quick module library =================================
 quick_modules:
@@ -139,16 +101,27 @@ quick_modules:
 	mv ${modfolder}/*.mod ${modfolder}/*.o ./
 #=========== targets for cuda =========================================
 quick_cuda:
-#	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_type.cu
-	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c *.cu
+	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_type.cu
+#	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_type.cu gpu_get2e.cu gpu_getxc.cu gpu_MP2.cu
+#	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_type.cu gpu_MP2.cu
 	cd $(cudafolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
 	cp $(cudafolder)/*.o ./
-	
+
+#=========== BLAS =====================================================
+blas:
+	cd $(blasfolder) && make
+	cp $(blasfolder)/*.a $(libfolder)
+
 #================= quick core subroutines ===============================
 main.o: main.f90 quick_modules
 	$(FPP) main.f90 > _main.f90
 	$(FC) -o main.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _main.f90
-
+calMP2.o: calMP2.f90 quick_modules
+	$(FPP) calMP2.f90 > _calMP2.f90
+	$(FC) -o calMP2.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _calMP2.f90
+shell.o: shell.f90 quick_modules
+	$(FPP) shell.f90 > _shell.f90
+	$(FC) -o shell.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _shell.f90
 
 #=========== targets for CUDBLAS =====================================
 fortran_thunking.o:
@@ -186,10 +159,10 @@ cpconfig.cuda.SP:
 #************************************************************************
 
 quick: cpconfig quick_modules quick_subs $(OBJ) fake_amber_interface.o
-	$(FC) -o ${exefile} $(OBJ) $(libfolder)/quicklib.a fake_amber_interface.o $(LDFLAGS)
+	$(FC) -o ${exefile} $(OBJ) $(libfolder)/quicklib.a $(libfolder)/blas.a fake_amber_interface.o $(LDFLAGS)
 
 quick.cuda: cpconfig.cuda quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o fortran_thunking.o
-	$(CXX) -o ${exefile}.cuda $(OBJ) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o fortran_thunking.o $(CFLAGS) 
+	$(CXX) -o ${exefile}.cuda $(OBJ) $(cudaobj) $(libfolder)/quicklib.a $(libfolder)/blas.a fake_amber_interface.o fortran_thunking.o $(CFLAGS) 
 
 quick.cuda.SP: cpconfig.cuda.SP quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o fortran_thunking.o
 	$(CXX) -o ${exefile}.cuda.SP $(OBJ) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o fortran_thunking.o $(CFLAGS) 
@@ -224,4 +197,4 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
-include depend
+#include depend

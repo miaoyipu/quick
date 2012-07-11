@@ -1,6 +1,8 @@
 #!/bin/sh
 
 #include "../config.h"
+MAKEIN = ../make.in
+include $(MAKEIN)
 
 # --- Makefile for Quick Program ---
 #				- v 2.00 2010/10/25 Yipu Miao
@@ -24,65 +26,6 @@
 #
 #************************************************************************
 
-# Tested on LINUX machines and Mac machines
-#
-#---------------------
-# a. MPI Version
-#---------------------
-#FC = mpif90
-#FC = /usr/local/bin/mpif90
-#MPI_INCLUDES = /usr/local/include
-#MPI_LIBS = /usr/local/lib
-
-#---------------------
-# b. Single CPU Version
-#---------------------
-FC=gfortran
-#FC=ifort
-
-#---------------------
-# other compiler options
-#---------------------
-#FFLAGS = -g -O3 -xW -pg -traceback
-#FFLAGS = -O3 -xW -ipo
-#FFLAGS = -O3
-#FFLAGS = -i4 -O3 -auto -assume byterecl -w95 -cm 
-#FFLAGS = -g -O3 -traceback
-FFLAGS = -std=gnu -W
-LD = $(FC)
-LDFLAGS = $(FFLAGS)
-#LDFLAGS = $(FFLAGS)
-#LDFLAGS = $(FFLAGS) -static -L/opt/intel/ict/2.0/cmkl/8.0.1/lib/32
-TMPFILES = *.mod *.stb
-
-# CPP Compiler
-FPP = cpp -traditional -P  -DBINTRAJ 
-CPP = gcc -O3 -DCUBLAS_USE_THUNKING
-
-# CUDA Compiler
-CUDAC = /usr/local/cuda/bin/nvcc
-CUDA_LIBPATH = -L/usr/local/gfortran/lib 
-CUDA_FLAGS= -m64 -O3
-
-# G++ Compiler
-CXX = g++
-CFLAGS = -L/usr/local/cuda/lib -lcuda -lcudart -lm -lgfortran $(CUDA_LIBPATH)    
-
-#----------------------
-# exe file location
-#----------------------
-exefile = ../bin/quick
-
-#----------------------
-# library file location
-#----------------------
-libfolder = ../lib
-
-#----------------------
-# cuda files
-#----------------------
-cudafolder = ./cuda
-cudaobj = gpu_info.o gpu_write_info.o gpu_startup.o
 
 #----------------------
 # quick modules and object files

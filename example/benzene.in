@@ -1,4 +1,4 @@
-cutoff=1.0e-9 HF ncyc=1000 zmake BASIS=cc-pvdz ENERGY
+denserms=1.0e-8 cutoff=1.0e-9 HF ncyc=3 zmake BASIS=cc-pvdz ENERGY
 
 C          -0.4241       1.5178       0.0000
 H          -0.9738       0.5655       0.0005

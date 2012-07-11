@@ -40,7 +40,7 @@ fflush(stdout);\
 #define LOC3(A,i1,i2,i3,d1,d2,d3) A[i3+((i2)+(i1)*(d2))*(d3)]
 #define LOC4(A,i1,i2,i3,i4,d1,d2,d3,d4) A[i4+(i3+((i2)+(i1)*(d2))*(d3))*(d4)]
 
-#define MAX(A,B)    (A>B?A:B)
+#define MAX(A,B)    (A>=B?A:B)
 #define MIN(A,B)    (A<B?A:B)
 
 #define VY(a,b,c) LOC3(YVerticalTemp, a, b, c, VDIM1, VDIM2, VDIM3)

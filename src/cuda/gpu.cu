@@ -81,8 +81,8 @@ extern "C" void gpu_init_(void)
                 }
                 
             }
-    	    gpu->gpu_dev_id = device;
-        }       
+        }
+        gpu->gpu_dev_id = device;
         
     }else{
         if (gpu->gpu_dev_id >= gpuCount)
@@ -109,10 +109,11 @@ extern "C" void gpu_init_(void)
         exit(-1);
     }
    
+    
     status = cudaSetDevice(device);
     PRINTERROR(status, "cudaSetDevice gpu_init failed!");
     cudaThreadSynchronize();
-    
+    cudaGetDeviceProperties(&deviceProp, gpu->gpu_dev_id);    
     gpu->blocks = deviceProp.multiProcessorCount;
     if (deviceProp.major ==1) {
         switch (deviceProp.minor) {
@@ -223,6 +224,7 @@ extern "C" void gpu_setup_(int* natom, int* nbasis, int* nElec, int* imult, int*
     gpu -> gpu_sim.iAtomType        =   *iAtomType;
 
 	upload_para_to_const();
+	upload_para_to_const_MP2();
 
 #ifdef DEBUG
     cudaEventRecord(end, 0);
@@ -416,8 +418,57 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
                         }
                     }
                 }
-            }    
+            }
+
+// Yipu Miao 05/21/12 
+/*            int primType = 1;
+            int2 primIJ[49];
+            primIJ[0].x = gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].x]];
+            primIJ[0].y = gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].y]];
+            for (int i = 1; i< b ; i++)
+			{
+			   int x = gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i+a-b].x]];	
+			   int y = gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i+a-b].y]];
+               for (int j = 0; j < primType; j++)
+				{
+					if (primIJ[j].x != x || primIJ[j].y != y){
+						primType ++;
+                        primIJ[primType - 1].x = x;
+                        primIJ[primType - 1].y = y;
+					}
+				}
+			}
+
+            for (int i = 0; i< primType -1 ; i++)
+            {
+                flag = true;
+				for (int j = 0; j< primType -i -1 ; j++)
+                {
+                   	if (primIJ[j].x * primIJ[j].y < primIJ[j+1].x * primIJ[j+1].y){
+				   			temp = primIJ[j];
+                            primIJ[j] = primIJ[j+1];
+                            primIJ[j+1] = temp;
+                            flag = false;
+					}else if (primIJ[j].x * primIJ[j].y == primIJ[j+1].x * primIJ[j+1].y){
+                    	if (primIJ[j].x < primIJ[j+1].x){
+							 temp = primIJ[j];
+                            primIJ[j] = primIJ[j+1];
+                            primIJ[j+1] = temp;
+                            flag = false;
+ 						}
+					}
+				}
+                if (flag == true) break;
+            }
             
+            for (int i = 0; i< primType -1 ; i++)
+            {
+				
+            }
+*/
+
+// Yipu Miao : End of test
+/*  
             for (int i = 0; i < b - 1; i ++)
             {
                 flag = true;
@@ -433,9 +484,9 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
                              //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].x] == q && \
                              //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].y] == p )
                     {
-                        temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
-                        gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
-                        gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b] = temp;
+                        temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a- b];
+                        gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b];
+                        gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b] = temp;
                         flag = false;
                     }
                 } 
@@ -443,9 +494,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
                 if (flag == true)
                     break;
             }
-            
             flag = true;
-             
             for (int i = 0; i < b - 1; i ++)
             {
                 flag = true;
@@ -481,7 +530,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
             }
             
             flag = true;
-            
+*/
         }
     }
     
@@ -490,7 +539,6 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
         
     gpu->gpu_cutoff->sqrQshell  = a;
     
-    /*
     printf("SS = %i\n",a);
     for (int i = 0; i<a; i++) {
         printf("%8i %4i %4i %18.13f Q=%4i %4i %4i %4i prim = %4i %4i\n", i, \
@@ -504,7 +552,6 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
         gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x]],
         gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y]]);
     }
-    */
     
     gpu -> gpu_cutoff -> sorted_YCutoffIJ  -> Upload();
     gpu -> gpu_sim.sqrQshell        = gpu -> gpu_cutoff -> sqrQshell;
@@ -546,6 +593,7 @@ extern "C" void gpu_upload_calculated_(QUICKDouble* o, QUICKDouble* co, QUICKDou
     PRINTDEBUG("BEGIN TO UPLOAD O MATRIX")
     
     gpu -> gpu_calculated -> o        =   new cuda_buffer_type<QUICKDouble>(o,      gpu->nbasis, gpu->nbasis);
+    gpu -> gpu_calculated -> o -> DeleteGPU();
     gpu -> gpu_calculated -> dense    =   new cuda_buffer_type<QUICKDouble>(dense,  gpu->nbasis, gpu->nbasis);
     gpu -> gpu_calculated -> oULL     =   new cuda_buffer_type<QUICKULL>(gpu->nbasis, gpu->nbasis);
     
@@ -569,11 +617,11 @@ extern "C" void gpu_upload_calculated_(QUICKDouble* o, QUICKDouble* co, QUICKDou
         }
     }
     
-    gpu -> gpu_calculated -> o        -> Upload();
+    // gpu -> gpu_calculated -> o        -> Upload();
     gpu -> gpu_calculated -> dense    -> Upload();
     gpu -> gpu_calculated -> oULL     -> Upload();
     
-    gpu -> gpu_sim.o                 =  gpu -> gpu_calculated -> o -> _devData;
+    //gpu -> gpu_sim.o                 =  gpu -> gpu_calculated -> o -> _devData;
     gpu -> gpu_sim.dense             =  gpu -> gpu_calculated -> dense -> _devData;
     gpu -> gpu_sim.oULL              =  gpu -> gpu_calculated -> oULL -> _devData;
     
@@ -588,6 +636,41 @@ extern "C" void gpu_upload_calculated_(QUICKDouble* o, QUICKDouble* co, QUICKDou
     cudaEventDestroy(end);
 #endif
 
+    PRINTDEBUG("COMPLETE UPLOADING O MATRIX")
+}
+
+
+//-----------------------------------------------
+//  upload calculated information
+//-----------------------------------------------
+extern "C" void gpu_upload_energy_(QUICKDouble* E)
+{
+    
+#ifdef DEBUG
+    cudaEvent_t start,end;
+    cudaEventCreate(&start);
+    cudaEventCreate(&end);
+    cudaEventRecord(start, 0);
+#endif
+    
+    PRINTDEBUG("BEGIN TO UPLOAD O MATRIX")
+    
+    gpu -> gpu_calculated -> EOrb        =   new cuda_buffer_type<QUICKDouble>(E,      gpu->nbasis);
+    
+    gpu -> gpu_calculated -> EOrb        -> Upload();
+    
+    gpu -> gpu_sim.EOrb                  =  gpu -> gpu_calculated -> EOrb -> _devData;
+    
+#ifdef DEBUG
+    cudaEventRecord(end, 0);
+    cudaEventSynchronize(end);
+    float time;
+    cudaEventElapsedTime(&time, start, end);
+    PRINTUSINGTIME("UPLOAD CALCULATE",time);
+    cudaEventDestroy(start);
+    cudaEventDestroy(end);
+#endif
+    
     PRINTDEBUG("COMPLETE UPLOADING O MATRIX")
 }
 
@@ -977,6 +1060,46 @@ extern "C" void gpu_get2e_(QUICKDouble* o)
 
     PRINTDEBUG("COMPLETE RUNNING GET2E")
 }
+
+
+
+//-----------------------------------------------
+//  core part, compute 2-e integrals
+//-----------------------------------------------
+extern "C" void gpu_mp2_(QUICKDouble* emp2)
+{
+    PRINTDEBUG("BEGIN TO RUN GPU-MP2")
+    
+    gpu -> MP2_calculated           = new cuda_buffer_type<MP2_calculated_type>(1,1);
+    gpu -> gpu_sim.MP2_calculated   = gpu -> MP2_calculated -> _devData;
+    upload_sim_to_constant_MP2(gpu);
+    
+    
+    PRINTDEBUG("BEGIN TO RUN KERNEL") 
+    
+    //get2e_MP2(gpu);
+    
+    
+    for (int i = 0; i<gpu->nbasis; i++) {
+        printf("ORBITAL ENERGY %i = %f16.10\n", i, gpu -> gpu_calculated -> EOrb -> _hostData[i]);
+    }
+    gpu -> MP2_calculated -> Download();
+    *emp2 = gpu -> MP2_calculated -> _hostData[0].EMP2;
+    printf("EMP2=%f16.10\n", *emp2);
+    
+    PRINTDEBUG("COMPLETE KERNEL")
+    
+    PRINTDEBUG("DELETE TEMP VARIABLES")
+    
+    delete gpu->gpu_calculated->o;
+    delete gpu->gpu_calculated->dense;
+    delete gpu->gpu_calculated->oULL;
+    
+    delete gpu->gpu_cutoff->cutMatrix;
+    
+    PRINTDEBUG("COMPLETE RUNNING GPU-MP2")
+}
+
 
 extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, QUICKDouble* aelec, QUICKDouble* belec, QUICKDouble *o)
 {

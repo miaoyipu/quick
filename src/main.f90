@@ -164,7 +164,9 @@
         call schwarzoff ! pre-calculate schwarz cutoff criteria
     endif
 
-#ifdef CUDA    
+#ifdef CUDA  
+    call PrtAct(ioutfile,"Begin GPU Pre-Calculation") 
+    call cpu_time(timer_begin%TGPUPC) 
     call gpu_upload_basis(nshell, nprim, jshell, jbasis, maxcontract, &
     ncontract, itype, aexp, dcoeff, &
     quick_basis%first_basis_function, quick_basis%last_basis_function, & 
@@ -175,6 +177,8 @@
     quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
     
     call gpu_upload_cutoff_matrix(Ycutoff, cutPrim)
+    call cpu_time(timer_end%TGPUPC)
+    call PrtAct(ioutfile,"END GPU Pre-Calculation")
 #endif
 
     call cpu_time(timer_end%TIniGuess)
