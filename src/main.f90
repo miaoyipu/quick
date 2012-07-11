@@ -167,14 +167,8 @@
         call PrtAct(ioutfile,"Complate Schwartz Cutoff Process")
     endif
 
-<<<<<<< HEAD
-#ifdef CUDA  
-    call PrtAct(ioutfile,"Begin GPU Pre-Calculation") 
-    call cpu_time(timer_begin%TGPUPC) 
-=======
 #ifdef CUDA    
     call PrtAct(ioutfile,"Begin To Calculate Basis Set Information to GPU")
->>>>>>> cuda_branch
     call gpu_upload_basis(nshell, nprim, jshell, jbasis, maxcontract, &
     ncontract, itype, aexp, dcoeff, &
     quick_basis%first_basis_function, quick_basis%last_basis_function, & 
@@ -185,12 +179,7 @@
     quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
     
     call gpu_upload_cutoff_matrix(Ycutoff, cutPrim)
-<<<<<<< HEAD
-    call cpu_time(timer_end%TGPUPC)
-    call PrtAct(ioutfile,"END GPU Pre-Calculation")
-=======
     call PrtAct(ioutfile,"End Basis Set Uploading")
->>>>>>> cuda_branch
 #endif
 
     if (.not.quick_method%opt) then

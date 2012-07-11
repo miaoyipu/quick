@@ -34,7 +34,6 @@ struct gpu_calculated_type {
     cuda_buffer_type<QUICKDouble>*  dense;  // Density Matrix
     cuda_buffer_type<QUICKULL>*     oULL;   // Unsigned long long int type O matrix
     cuda_buffer_type<QUICKDouble>*  distance; // distance matrix
-    cuda_buffer_type<QUICKDouble>*  EOrb;
 };
 
 struct gpu_cutoff_type {
@@ -64,17 +63,11 @@ struct DFT_calculated_type {
     QUICKULL                     belec;      // beta electron
 };
 
-struct MP2_calculated_type {
-    QUICKULL                     EMP2ULL;
-    QUICKDouble                  EMP2;
-};
-
 struct gpu_simulation_type {
     
     // basic molecule information and method information
     QUICK_METHOD                    method;
     DFT_calculated_type*            DFT_calculated;
-    MP2_calculated_type*            MP2_calculated;
     
     // used for DFT
     int                             isg;        // isg algrothm
@@ -139,7 +132,7 @@ struct gpu_simulation_type {
     QUICKDouble*                    o;
     QUICKULL*                       oULL;
     QUICKDouble*                    dense;
-    QUICKDouble*                    EOrb;
+    
     QUICKDouble*                    distance;
     QUICKDouble*                    Xcoeff;
     QUICKDouble*                    expoSum;
@@ -255,8 +248,6 @@ struct gpu_type {
     cuda_buffer_type<QUICKDouble>*  chg;
     cuda_buffer_type<DFT_calculated_type>*
                                     DFT_calculated;
-    cuda_buffer_type<MP2_calculated_type>*
-                                    MP2_calculated;
 
     gpu_calculated_type*            gpu_calculated;
     gpu_basis_type*                 gpu_basis;
@@ -406,7 +397,7 @@ void cuda_buffer_type<T> :: Allocate()
         status = cudaMalloc((void**)&_devData,_length*_length2*sizeof(T));
         PRINTERROR(status, "cudaMalloc cuda_buffertype :: Allocate failed!");
         //Allocate CPU emembory
-//     _hostData = (T*) malloc(_length*_length2*sizeof(T));
+//        _hostData = (T*) malloc(_length*_length2*sizeof(T));
         _hostData = new T[_length*_length2];
         gpu->totalGPUMemory   += _length*_length2*sizeof(T);
         gpu->totalCPUMemory   += _length*_length2*sizeof(T);        
@@ -454,7 +445,6 @@ void cuda_buffer_type<T> :: Deallocate()
     _hostData = NULL;
     _devData = NULL;
     _f90Data = NULL;
-    
 #ifdef DEBUG
     
     PRINTMEM("GPU--",gpu->totalGPUMemory);
@@ -530,19 +520,6 @@ void cuda_buffer_type<T> :: DeleteGPU()
     
     PRINTDEBUG(">>BEGIN TO DELETE GPU")
     
-<<<<<<< HEAD
-    if (_devData != NULL) {
-    	cudaFree(_devData);
-    	_devData = NULL;
-#ifdef DEBUG
-    	gpu->totalGPUMemory -= _length*_length2*sizeof(T);
-    
-    	PRINTMEM("GPU--",gpu->totalGPUMemory);
-    	PRINTMEM("CPU  ",gpu->totalCPUMemory);
-    
-#endif
-	}
-=======
     if (_devData != NULL) { 
         cudaFree(_devData);
         _devData = NULL;
@@ -554,6 +531,5 @@ void cuda_buffer_type<T> :: DeleteGPU()
     
 #endif
     }
->>>>>>> cuda_branch
     PRINTDEBUG("<<FINSH DELETE CPU")
 }

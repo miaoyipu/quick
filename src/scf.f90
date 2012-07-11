@@ -65,21 +65,12 @@ subroutine electdiis(jscf)
    integer :: idiis = 0           ! diis iteration
    integer :: IDIISfinal,iidiis,current_diis
    integer :: lsolerr = 0
-<<<<<<< HEAD
-   integer :: IDIIS_Error_Start, IDIIS_Error_End 
-   double precision :: BIJ,DENSEJI,errormax,OJK,temp
-   double precision :: Sum2Mat,rms
-   integer :: I,J,K,L,IERROR
-   
-   double precision :: oldEnergy=0.0d0,E1e ! energy for last iteriation, and 1e-energy   
-=======
    integer :: IDIIS_Error_Start, IDIIS_Error_End
    double precision :: BIJ,DENSEJI,errormax,OJK,temp
    double precision :: Sum2Mat,rms
    integer :: I,J,K,L,IERROR
 
    double precision :: oldEnergy=0.0d0,E1e ! energy for last iteriation, and 1e-energy
->>>>>>> cuda_branch
    double precision :: PRMS,PCHANGE, V2(3,nbasis), tmp
    double precision :: oneElecO(nbasis,nbasis)
    double precision :: B(quick_method%maxdiisscf+1,quick_method%maxdiisscf+1)
@@ -262,19 +253,11 @@ subroutine electdiis(jscf)
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
                nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
 #else
-<<<<<<< HEAD
-call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%dense, &
-nbasis, quick_qm_struct%s, nbasis, 0.0d0, quick_scratch%hold,nbasis)
-
-call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
-nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
-=======
          call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%dense, &
                nbasis, quick_qm_struct%s, nbasis, 0.0d0, quick_scratch%hold,nbasis)
 
          call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
                nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
->>>>>>> cuda_branch
 #endif
 
          do i = 1, nbasis
@@ -325,16 +308,6 @@ nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
                nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
 
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
-<<<<<<< HEAD
-                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
-#else         
-
-call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_scratch%hold2, &
-nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
-
-call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
-nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
-=======
                nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
 #else
 
@@ -343,7 +316,6 @@ nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
 
          call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
                nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
->>>>>>> cuda_branch
 #endif
          do i = 1, nbasis
             do j = 1, nbasis
@@ -467,31 +439,6 @@ nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
          call CopyDMat(B,BSAVE,IDIISfinal+1)
          call LSOLVE(IDIISfinal+1,quick_method%maxdiisscf+1,B,RHS,W,quick_method%DMCutoff,COEFF,LSOLERR)
 
-<<<<<<< HEAD
-        IDIIS_Error_Start = 1
-        IDIIS_Error_End   = IDIISfinal
-111     IF (LSOLERR.ne.0)then
-          IDIISfinal=Idiisfinal-1
-            do I=1,IDIISfinal+1
-              do J=1,IDIISfinal+1
-                B(I,J)=BSAVE(I+IDIIS_Error_Start,J+IDIIS_Error_Start)
-              enddo
-            enddo
-           IDIIS_Error_Start = IDIIS_Error_Start + 1
-
-          do i=1,IDIISfinal
-            RHS(i)=0.0d0
-          enddo
-
-          RHS(IDIISfinal+1)=-1.0d0
-
-
-          call LSOLVE(IDIISfinal+1,quick_method%maxdiisscf+1,B,RHS,W,quick_method%DMCutoff,COEFF,LSOLERR)
-
-          goto 111
-        endif
-         
-=======
          IDIIS_Error_Start = 1
          IDIIS_Error_End   = IDIISfinal
          111     IF (LSOLERR.ne.0)then
@@ -515,7 +462,6 @@ nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
             goto 111
          endif
 
->>>>>>> cuda_branch
          !-----------------------------------------------
          ! 7) Form a new operator matrix based on O(new) = [Sum over i] c(i)O(i)
          ! If the solution to step eight failed, skip this step and revert
@@ -539,25 +485,12 @@ nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_scratch%hold2,nbasis)
          ! First you have to transpose this into an orthogonal basis, which
          ! is accomplished by calculating Transpose[X] . O . X.
          !-----------------------------------------------
-<<<<<<< HEAD
-         
-=======
 
->>>>>>> cuda_branch
 #ifdef CUDA
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
                nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
 
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
-<<<<<<< HEAD
-                            nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
-#else         
-call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
-nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
-
-call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
-nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
-=======
                nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
 #else
          call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
@@ -565,7 +498,6 @@ nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
 
          call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
                nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
->>>>>>> cuda_branch
 #endif
          ! Now diagonalize the operator matrix.
          call cpu_time(timer_begin%TDiag)
@@ -581,17 +513,10 @@ nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
 #ifdef CUDA
 
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
-<<<<<<< HEAD
-                            nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
-#else         
-call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
-nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
-=======
                nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
 #else
          call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
                nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
->>>>>>> cuda_branch
 #endif
 
          call CopyDMat(quick_qm_struct%dense,quick_scratch%hold,nbasis) ! Save DENSE to HOLD
@@ -618,17 +543,10 @@ nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
             enddo
          enddo
          PRMS = rms(quick_qm_struct%dense,quick_scratch%hold,nbasis)
-<<<<<<< HEAD
-         
-         tmp = quick_method%integralCutoff
-         call adjust_cutoff(PRMS,PCHANGE,quick_method)  !from quick_method_module
-         
-=======
 
          tmp = quick_method%integralCutoff
          call adjust_cutoff(PRMS,PCHANGE,quick_method)  !from quick_method_module
 
->>>>>>> cuda_branch
       endif
 
       !--------------- MPI/ALL NODES -----------------------------------------
@@ -661,13 +579,6 @@ nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
          write (ioutfile,'(F8.2,4x)',advance="no") timer_end%TDiag-timer_begin%TDiag
          write (ioutfile,'(E10.4,2x)',advance="no") errormax
          write (ioutfile,'(E10.4,2x,E10.4)')  PRMS,PCHANGE
-<<<<<<< HEAD
-        
-if(tmp .ne. quick_method%integralCutoff) then
-write(ioutfile, '(4x, "--------------- INT CUTOFF CHANGE TO ", E10.4, " -------------")') quick_method%integralCutoff 
-endif
-=======
->>>>>>> cuda_branch
 
          if (lsolerr /= 0) write (ioutfile,'("DIIS FAILED !!", &
                & " PERFORM NORMAL SCF. (NOT FATAL.)")')
@@ -689,16 +600,6 @@ endif
 
             if (quick_method%prtgap) write (ioutfile,'("HOMO-LUMO GAP (EV) =",11x,F12.6)') &
                   (quick_qm_struct%E((quick_molspec%nelec/2)+1) - quick_qm_struct%E(quick_molspec%nelec/2))*AU_TO_EV
-<<<<<<< HEAD
-
-            write (ioutfile,*) '-----------------------------------------------'
-            write (ioutfile,*) '            ORBITAL ENERGY'
-            do i = 1, nbasis
-                write(ioutfile,'(i5,5x,f12.6)') i, quick_qm_struct%E(i)
-            enddo
-            write (ioutfile,*) '-----------------------------------------------'
-=======
->>>>>>> cuda_branch
             diisdone=.true.
 
 

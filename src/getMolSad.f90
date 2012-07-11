@@ -109,12 +109,8 @@ subroutine getmolsad()
             call getenergy(failed)
             do i=1,nbasis
                do j=1,nbasis
-<<<<<<< HEAD
-                  atomdens(iitemp,i,j)= quick_qm_struct%dense(i,j)+quick_qm_struct%denseb(i,j)
-=======
                   !atomdens(iitemp,i,j)=0.0 
 		  atomdens(iitemp,i,j)=quick_qm_struct%dense(i,j)+quick_qm_struct%denseb(i,j)
->>>>>>> cuda_branch
                enddo
 		  !atomdens(iitemp,i,i)=1.0
             enddo
