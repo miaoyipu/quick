@@ -559,6 +559,12 @@ subroutine electdiis(jscf)
 
       if (master) then
 
+         ! open data file
+         call quick_open(iDataFile, dataFileName, 'R', 'U', 'R',.true.)
+         rewind(iDataFile)
+         call dat(quick_qm_struct, iDataFile)
+         close(iDataFile)
+
          current_diis=mod(idiis-1,quick_method%maxdiisscf)
          current_diis=current_diis+1
 

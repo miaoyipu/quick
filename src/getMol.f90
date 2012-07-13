@@ -8,8 +8,8 @@
 !
 
 subroutine getMol()
-! This subroutine is to get molecule information
-! and assign basis function.
+   ! This subroutine is to get molecule information
+   ! and assign basis function.
    use allmod
    implicit none
 
@@ -22,7 +22,7 @@ subroutine getMol()
 
    !-----------MPI/MASTER------------------------
    if (master) then
-   
+
       ! Read info from AMBER
       if (amber_interface_logic) then
          call read_AMBER_crd
@@ -50,7 +50,7 @@ subroutine getMol()
       call check_quick_method_and_molspec(iOutFile,quick_molspec,quick_method)
    endif
    !-----------END MPI/MASTER-----------------------
-   
+
 
 #ifdef MPI
    !-----------MPI/ALL NODES------------------------
@@ -58,9 +58,9 @@ subroutine getMol()
    !-----------END MPI/ALL NODES--------------------
 #endif
 #ifdef CUDA
-    quick_method%bCUDA = .true.
+   quick_method%bCUDA = .true.
 #endif
-   
+
    ! At this point we have the positions and identities of the atoms. We also
    ! have the number of electrons. Now we must assign basis functions. This
    ! is done in a subroutine.
@@ -68,7 +68,7 @@ subroutine getMol()
    call allocate_basis(quick_method)
    call alloc(quick_qm_struct)
    call init(quick_qm_struct)
-   
+
 
 
 
@@ -144,7 +144,7 @@ subroutine check_quick_method_and_molspec(io,quick_molspec_arg,quick_method_arg)
             quick_molspec_arg%nelec=quick_molspec_arg%nelec-8
          endif
          if (quick_molspec_arg%iattype(i) >= 18) &
-            call PrtWrn(io,"ATOM OUT OF RANGE FOR CORE")
+               call PrtWrn(io,"ATOM OUT OF RANGE FOR CORE")
       enddo
    endif
 
@@ -205,6 +205,7 @@ subroutine initialGuess
    use allmod
    implicit none
    logical :: present
+   integer :: failed
    character(len=80) :: keyWD
    integer n,sadAtom
    integer Iatm,i,j
@@ -217,38 +218,29 @@ subroutine initialGuess
    present = .false.
 
    ! if read matrix is requested, begin to read dmx file
-   if (quick_method%readdmx) inquire (file=dmxfilename,exist=present)
+   if (quick_method%readdmx) inquire (file=dataFileName,exist=present)
    if (present) then
-      open(idmxfile,file=dmxfilename,status='old')
+      call quick_open(iDataFile, dataFileName, 'O', 'U', 'W',.true.)
 
       ! read first part, which is restricted or alpha density matrix
-      read (idmxfile,'(A80)') keywd
-      do WHILE (index(keywd,'END').eq.0.and.index(keywd,'BETA').eq.0.)
-         read (keywd,'(I4,I4,3x,E15.8)') i,j,temp
-         quick_qm_struct%dense(i,j)=temp; quick_qm_struct%dense(j,i)=temp
-         read (idmxfile,'(A80)') keywd
-      enddo
+      call rchk_darray(iDataFile, "dense", nbasis, nbasis, 1, quick_qm_struct%dense, failed)
 
-      ! read second part, beta matrix
-      if (quick_method%unrst) then
-         if (index(keywd,'BETA') /= 0) read (idmxfile,'(A80)') keywd
-         do WHILE (index(keywd,'END').eq.0)
-            read (keywd,'(I4,I4,3x,E15.8)') i,j,temp
-            quick_qm_struct%denseb(i,j)=temp; quick_qm_struct%denseb(j,i)=temp
-            read (idmxfile,'(A80)') keywd
-         enddo
-      endif
-      close(idmxfile)
-
-      if (quick_qm_struct%denseb(1,1) == 0.d0 .and. quick_method%unrst) then
-         call PrtWrn(iOutFile,"CONVERTING RESTRICTED DENSITY TO UNRESTRICTED")
-         do I=1,nbasis
-            do J =1,nbasis
-               quick_qm_struct%dense(J,I) = quick_qm_struct%dense(J,I)/2.d0
-               quick_qm_struct%denseb(J,I) = quick_qm_struct%dense(J,I)
+      if(quick_method%unrst) then
+         failed = 0
+         ! read second part, which is beta density matrix
+         call rchk_darray(iDataFile, "denseb", nbasis, nbasis, 1, quick_qm_struct%dense, failed)
+         if (failed .eq. 0) then
+            call PrtWrn(iOutFile,"CONVERTING RESTRICTED DENSITY TO UNRESTRICTED")
+            do I=1,nbasis
+               do J =1,nbasis
+                  quick_qm_struct%dense(J,I) = quick_qm_struct%dense(J,I)/2.d0
+                  quick_qm_struct%denseb(J,I) = quick_qm_struct%dense(J,I)
+               enddo
             enddo
-         enddo
+         endif
       endif
+      close(iDataFile)
+
    else
       ! MFCC Initial Guess
       if(quick_method%MFCC)then
@@ -261,7 +253,7 @@ subroutine initialGuess
          do Iatm=1,natom
             do sadAtom=1,10
                if(symbol(quick_molspec%iattype(Iatm)).eq. &
-                  quick_molspec%atom_type_sym(sadAtom))then
+                     quick_molspec%atom_type_sym(sadAtom))then
                   do i=1,atombasis(sadAtom)
                      do j=1,atombasis(sadAtom)
                         quick_qm_struct%dense(i+n,j+n)=atomdens(sadAtom,i,j)
@@ -273,7 +265,7 @@ subroutine initialGuess
          enddo
       endif
    endif
-   
+
    call deallocate_mol_sad
 
    ! debug initial guess

@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Wed Mar 21 15:51:44 2012
+ TASK STARTS ON: Wed Mar 21 15:52:34 2012
  INPUT FILE:     test.in
  OUTPUT FILE:    test.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -31,7 +31,7 @@
  @ Read Job And Atom
 
   -------------------------------------
-KEYWORD=HF ENERGY ZMAKE NCYC=100 CUTOFF=1.0E-5 BASIS=6-311GSS DENSERMS=1.0E-6                                                                                                                                   
+KEYWORD=HF ENERGY ZMAKE NCYC=100 CUTOFF=1.0E-9 BASIS=6-311GSS DENSERMS=1.0E-6                                                                                                                                   
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
@@ -43,8 +43,8 @@ KEYWORD=HF ENERGY ZMAKE NCYC=100 CUTOFF=1.0E-5 BASIS=6-311GSS DENSERMS=1.0E-6
 | MAX DIIS CYCLES =   10
 | DELTA DENSITY START CYCLE =  100
 | COMPUATIONAL CUTOFF: 
-|      TWO-e INTEGRAL   =  0.100E-04
-|      BASIS SET PRIME  =  0.100E-05
+|      TWO-e INTEGRAL   =  0.100E-08
+|      BASIS SET PRIME  =  0.100E-08
 |      MATRIX ELEMENTS  =  0.100E-09
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-05
@@ -114,11 +114,11 @@ SCF CYCLE      =        4      TIME      =   0.28
 DIIS CYCLE     =        3      MAX ERROR = 0.326784E-01
 RMS CHANGE     = 0.358951E-02  MAX CHANGE= 0.330721E-01
 
-SCF CYCLE      =        5      TIME      =   0.28
+SCF CYCLE      =        5      TIME      =   0.29
 DIIS CYCLE     =        4      MAX ERROR = 0.106153E-01
 RMS CHANGE     = 0.246707E-02  MAX CHANGE= 0.218182E-01
 
-SCF CYCLE      =        6      TIME      =   0.27
+SCF CYCLE      =        6      TIME      =   0.28
 DIIS CYCLE     =        5      MAX ERROR = 0.239526E-02
 RMS CHANGE     = 0.806494E-03  MAX CHANGE= 0.613326E-02
 
@@ -220,25 +220,24 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1   -305.054040256      ------         1.580     1        0.03      1.55      0.01    0.2579E+01  0.1860E-01  0.2304E+00
-  2   -302.900831303  -.215321E+01       2.320     2        0.02      2.30      0.00    0.2212E+00  0.1159E-01  0.3251E+00
-  3   -303.072798856  0.171968E+00       2.380     3        0.02      2.36      0.01    0.1642E+00  0.3365E-02  0.9870E-01
-  4   -303.143609769  0.708109E-01       2.360     4        0.02      2.34      0.01    0.1622E-01  0.5944E-03  0.1111E-01
-  5   -303.144827285  0.121752E-02       2.360     5        0.02      2.34      0.00    0.7043E-02  0.2841E-03  0.5305E-02
-  6   -303.144992402  0.165117E-03       2.370     6        0.03      2.34      0.00    0.1481E-02  0.7434E-04  0.1112E-02
-  7   -303.145003985  0.115824E-04       2.370     7        0.03      2.34      0.00    0.5777E-03  0.1891E-04  0.2688E-03
-  8   -303.145005688  0.170287E-05       2.370     8        0.03      2.34      0.00    0.1981E-03  0.1440E-04  0.1998E-03
-  9   -303.145006411  0.723377E-06       2.370     9        0.03      2.34      0.00    0.8117E-04  0.7931E-05  0.1290E-03
- 10   -303.145010851  0.443953E-05       3.160    10        0.03      3.13      0.01    0.1413E-04  0.1540E-05  0.1816E-04
- 11   -303.145010856  0.535496E-08       3.170     1        0.04      3.13      0.00    0.7402E-05  0.1371E-05  0.1873E-04
- 12   -303.145010858  0.164673E-08       3.170     2        0.04      3.13      0.00    0.1179E-05  0.1754E-06  0.2521E-05
+  1   -305.054044794      ------         2.130     1        0.02      2.11      0.01    0.2579E+01  0.1860E-01  0.2304E+00
+  2   -302.900837431  -.215321E+01       3.470     2        0.03      3.44      0.00    0.2212E+00  0.1159E-01  0.3252E+00
+  3   -303.072802537  0.171965E+00       3.520     3        0.03      3.49      0.00    0.1642E+00  0.3365E-02  0.9871E-01
+  4   -303.143614059  0.708115E-01       3.510     4        0.03      3.48      0.00    0.1622E-01  0.5942E-03  0.1110E-01
+  5   -303.144831478  0.121742E-02       3.510     5        0.03      3.48      0.00    0.7042E-02  0.2840E-03  0.5304E-02
+  6   -303.144996623  0.165145E-03       3.510     6        0.02      3.48      0.00    0.1481E-02  0.7435E-04  0.1113E-02
+  7   -303.145008314  0.116906E-04       3.500     7        0.02      3.48      0.01    0.5777E-03  0.1892E-04  0.2686E-03
+  8   -303.145010015  0.170153E-05       3.500     8        0.03      3.47      0.01    0.1981E-03  0.1441E-04  0.1998E-03
+  9   -303.145010739  0.723857E-06       3.500     9        0.03      3.47      0.01    0.8116E-04  0.7931E-05  0.1290E-03
+ 10   -303.145010886  0.147008E-06       3.500    10        0.03      3.47      0.01    0.1411E-04  0.1648E-05  0.3103E-04
+ 11   -303.145010891  0.498514E-08       3.500     1        0.04      3.46      0.01    0.2739E-05  0.3331E-06  0.5672E-05
 ------------------------------------------------------------------------------------------------------------------------
- REACH CONVERGENCE AFTER  12 CYLCES
- MAX ERROR = 0.117903E-05   RMS CHANGE = 0.175396E-06   MAX CHANGE = 0.252095E-05
+ REACH CONVERGENCE AFTER  11 CYLCES
+ MAX ERROR = 0.273914E-05   RMS CHANGE = 0.333136E-06   MAX CHANGE = 0.567158E-05
  -----------------------------------------------
-ELECTRONIC ENERGY    =  -419.655752945
+ELECTRONIC ENERGY    =  -419.655752978
 CORE_CORE REPULSION  =   116.510742087
-TOTAL ENERGY         =  -303.145010858
+TOTAL ENERGY         =  -303.145010891
 
  @ End Energy calculation
 
@@ -271,18 +270,18 @@ TOTAL ENERGY         =  -303.145010858
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     3.680000000( 10.88%)
-TOTAL SCF TIME     =    30.070000000( 88.89%)
-      TOTAL OP TIME      =    29.730000000( 87.88%)
-            TOTAL 1e TIME      =     0.090000000(  0.27%)
-            TOTAL 2e TIME      =    29.640000000( 87.61%)
+INITIAL GUESS TIME =     3.700000000(  9.01%)
+TOTAL SCF TIME     =    37.250000000( 90.74%)
+      TOTAL OP TIME      =    36.930000000( 89.96%)
+            TOTAL 1e TIME      =     0.100000000(  0.24%)
+            TOTAL 2e TIME      =    36.830000000( 89.72%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     0.340000000(  1.01%)
-            TOTAL DIAG TIME    =     0.040000000(  0.12%)
-TOTAL TIME         =    33.830000000
+      TOTAL DII TIME     =     0.310000000(  0.76%)
+            TOTAL DIAG TIME    =     0.060000000(  0.15%)
+TOTAL TIME         =    41.050000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes 33.8 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes 41.0 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Wed Mar 21 15:52:18 2012
+ Normal Terminatation. Task Finished on: Wed Mar 21 15:53:15 2012
