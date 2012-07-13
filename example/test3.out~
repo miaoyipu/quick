@@ -1,5 +1,5 @@
   **************************************************************************
-  **                      QUICK-0.06 June 12                              **
+  **                            QUICK                                     **
   **                                                                      **
   **                        Copyright (c) 2011                            **
   **                Regents of the University of Florida                  **
@@ -23,9 +23,15 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
+<<<<<<< HEAD
  TASK STARTS ON: Thu Apr 26 15:41:29 2012
  INPUT FILE:     test3.in
+=======
+ TASK STARTS ON: Fri Jul 13 00:51:40 2012
+ INPUT FILE :    test3.in
+>>>>>>> cuda_branch
  OUTPUT FILE:    test3.out
+ DATE FILE  :    test3.dat
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
 
 |------------ CUDA INFORMATION ---------------
@@ -51,16 +57,22 @@
  @ Read Job And Atom
 
   -------------------------------------
+<<<<<<< HEAD
 KEYWORD=HF NCYC=4 ENERGY ZMAKE  BASIS=CC-PVDZ DENSERMS=1.0E-8 CUTOFF=1.0E-9                                                                                                                                     
+=======
+KEYWORD=READ HF NCYC=1000 ENERGY ZMAKE  BASIS=6-31G DENSERMS=1.0E-9                                                                                                                                             
+>>>>>>> cuda_branch
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
 | SAD INITAL GUESS 
 | USE DIIS SCF
 | PRINT ENERGY EVERY CYCLE
+| READ DENSITY MATRIX FROM FILE
 | Z-MATRIX CONSTRUCTION
 | MAX SCF CYCLES =    200
 | MAX DIIS CYCLES =   10
+<<<<<<< HEAD
 | DELTA DENSITY START CYCLE =    4
 | COMPUATIONAL CUTOFF: 
 |      TWO-e INTEGRAL   =  0.100E-08
@@ -70,6 +82,17 @@ KEYWORD=HF NCYC=4 ENERGY ZMAKE  BASIS=CC-PVDZ DENSERMS=1.0E-8 CUTOFF=1.0E-9
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-07
 | BASIS SET = CC-PVDZ
 | BASIS FILE = /home/miao/Workspace/new_quick/basis/CC-PVDZ
+=======
+| DELTA DENSITY START CYCLE = 1000
+| COMPUATIONAL CUTOFF: 
+|      TWO-e INTEGRAL   =  0.100E-06
+|      BASIS SET PRIME  =  0.100E-08
+|      MATRIX ELEMENTS  =  0.100E-09
+|      BASIS FUNCTION   =  0.100E-09
+| DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-08
+| BASIS SET = 6-31G
+| BASIS FILE = /home/miao/Workspace/new_quick/basis/6-31G
+>>>>>>> cuda_branch
 
  @ Finish reading job
 
@@ -78,11 +101,16 @@ KEYWORD=HF NCYC=4 ENERGY ZMAKE  BASIS=CC-PVDZ DENSERMS=1.0E-8 CUTOFF=1.0E-9
 
  For Atom Kind =    1
  ELEMENT = C 
+<<<<<<< HEAD
 BASIS FUNCTIONS =   15
+=======
+BASIS FUNCTIONS =    9
+>>>>>>> cuda_branch
 
  @ Begin Energy Calculation
 
 
+<<<<<<< HEAD
 SCF CYCLE      =        1      TIME      =     0.24
 RMS CHANGE     = 0.159487E+00  MAX CHANGE= 0.854343E+00
 
@@ -886,6 +914,74 @@ PERFORM FINAL NO INTERPOLATION ITERATION
 SCF CYCLE      =      201      TIME      =     0.24
 RMS CHANGE     = 0.292331E-02  MAX CHANGE= 0.173899E-01
 RAN OUT OF CYCLES.  NO CONVERGENCE.
+=======
+SCF CYCLE      =        1      TIME      =     0.04
+RMS CHANGE     = 0.149950E+00  MAX CHANGE= 0.820200E+00
+
+SCF CYCLE      =        2      TIME      =     0.05
+RMS CHANGE     = 0.797517E-01  MAX CHANGE= 0.320914E+00
+
+SCF CYCLE      =        3      TIME      =   0.05
+DIIS CYCLE     =        1      MAX ERROR = 0.394445E-01
+RMS CHANGE     = 0.137215E-01  MAX CHANGE= 0.589123E-01
+
+SCF CYCLE      =        4      TIME      =   0.05
+DIIS CYCLE     =        2      MAX ERROR = 0.746633E-02
+RMS CHANGE     = 0.375529E-02  MAX CHANGE= 0.263871E-01
+
+SCF CYCLE      =        5      TIME      =   0.05
+DIIS CYCLE     =        3      MAX ERROR = 0.308852E-02
+RMS CHANGE     = 0.262949E-02  MAX CHANGE= 0.183148E-01
+
+SCF CYCLE      =        6      TIME      =   0.05
+DIIS CYCLE     =        4      MAX ERROR = 0.299208E-03
+RMS CHANGE     = 0.311349E-03  MAX CHANGE= 0.215704E-02
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        7      TIME      =     0.05
+RMS CHANGE     = 0.153492E-04  MAX CHANGE= 0.106143E-03
+
+SCF CYCLE      =        8      TIME      =   0.05
+DIIS CYCLE     =        1      MAX ERROR = 0.789983E-05
+RMS CHANGE     = 0.460369E-05  MAX CHANGE= 0.296430E-04
+
+SCF CYCLE      =        9      TIME      =   0.05
+DIIS CYCLE     =        2      MAX ERROR = 0.309476E-05
+RMS CHANGE     = 0.280492E-05  MAX CHANGE= 0.193991E-04
+
+SCF CYCLE      =       10      TIME      =   0.05
+DIIS CYCLE     =        3      MAX ERROR = 0.113360E-05
+RMS CHANGE     = 0.145469E-05  MAX CHANGE= 0.100644E-04
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =       11      TIME      =     0.05
+RMS CHANGE     = 0.122690E-06  MAX CHANGE= 0.848305E-06
+
+SCF CYCLE      =       12      TIME      =   0.05
+DIIS CYCLE     =        1      MAX ERROR = 0.612963E-07
+RMS CHANGE     = 0.376802E-07  MAX CHANGE= 0.236924E-06
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =       13      TIME      =     0.04
+RMS CHANGE     = 0.210064E-07  MAX CHANGE= 0.145234E-06
+
+SCF CYCLE      =       14      TIME      =   0.05
+DIIS CYCLE     =        1      MAX ERROR = 0.133523E-07
+RMS CHANGE     = 0.585560E-08  MAX CHANGE= 0.405626E-07
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =       15      TIME      =     0.05
+RMS CHANGE     = 0.365461E-08  MAX CHANGE= 0.252691E-07
+
+SCF CYCLE      =       16      TIME      =   0.05
+DIIS CYCLE     =        1      MAX ERROR = 0.256431E-08
+RMS CHANGE     = 0.101880E-08  MAX CHANGE= 0.705744E-08
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =       17      TIME      =     0.05
+RMS CHANGE     = 0.640470E-09  MAX CHANGE= 0.442856E-08
+CONVERGED!!!!!
+>>>>>>> cuda_branch
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
 TOTAL ENERGY         =     0.000000000
@@ -894,12 +990,17 @@ TOTAL ENERGY         =     0.000000000
 
  For Atom Kind =    2
  ELEMENT = H 
+<<<<<<< HEAD
 BASIS FUNCTIONS =    5
+=======
+BASIS FUNCTIONS =    2
+>>>>>>> cuda_branch
 
  @ Begin Energy Calculation
 
 
 SCF CYCLE      =        1      TIME      =     0.00
+<<<<<<< HEAD
 RMS CHANGE     = 0.114405E+00  MAX CHANGE= 0.285522E+00
 
 SCF CYCLE      =        2      TIME      =     0.00
@@ -920,6 +1021,24 @@ PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
 SCF CYCLE      =        6      TIME      =     0.00
 RMS CHANGE     = 0.926273E-16  MAX CHANGE= 0.333067E-15
+=======
+RMS CHANGE     = 0.256654E+00  MAX CHANGE= 0.291569E+00
+
+SCF CYCLE      =        2      TIME      =     0.00
+RMS CHANGE     = 0.152139E-01  MAX CHANGE= 0.238378E-01
+
+SCF CYCLE      =        3      TIME      =   0.00
+DIIS CYCLE     =        1      MAX ERROR = 0.543720E-02
+RMS CHANGE     = 0.492246E-02  MAX CHANGE= 0.776945E-02
+
+SCF CYCLE      =        4      TIME      =   0.00
+DIIS CYCLE     =        2      MAX ERROR = 0.175010E-02
+RMS CHANGE     = 0.234112E-02  MAX CHANGE= 0.370386E-02
+DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
+
+SCF CYCLE      =        5      TIME      =     0.00
+RMS CHANGE     = 0.142040E-10  MAX CHANGE= 0.224882E-10
+>>>>>>> cuda_branch
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
 CORE_CORE REPULSION  =     0.000000000
@@ -954,6 +1073,7 @@ TOTAL ENERGY         =     0.000000000
       3    15.70226     7.29732     0.00000
       4     2.05984    12.40671    14.31892     0.00000
       5     2.05992    12.78761    14.01826     1.28055     0.00000
+<<<<<<< HEAD
 
 ============== BASIS INFOS ==============
 | BASIS FUNCTIONS =   35
@@ -1080,3 +1200,5 @@ TOTAL TIME         =    50.180000000
  @ Finish Output Timing Infomration
 
  Normal Terminatation. Task Finished on: Thu Apr 26 15:42:19 2012
+=======
+>>>>>>> cuda_branch

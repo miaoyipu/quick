@@ -29,6 +29,7 @@
     use divPB_Private, only: initialize_DivPBVars
 
     implicit none
+
 #ifdef MPI
     include 'mpif.h'
 #endif
@@ -36,18 +37,13 @@
     logical :: failed = .false.         ! flag to indicates SCF fail or OPT fail 
     integer :: ierr                     ! return error info
     integer :: i,j,k
-    integer*4 :: iarg
-    character(80) :: arg
-#ifdef CUDA
-    integer :: gpu_device_id = -1
-#endif
-
     double precision t1_t, t2_t
     common /timer/ t1_t, t2_t
     !------------------------------------------------------------------
     ! 1. The first thing that must be done is to initialize and prepare files
     !------------------------------------------------------------------
- ! Initial neccessary variables
+
+    ! Initial neccessary variables
     call initialize1(ierr)    
     !-------------------MPI/MASTER---------------------------------------
     masterwork_readInput: if (master) then
@@ -55,9 +51,10 @@
       ! read input argument
       call set_quick_files(ierr)    ! from quick_file_module
 
+
       ! open output file
       call quick_open(iOutFile,outFileName,'U','F','R',.false.)
-      
+
       ! At the beginning of output file, copyright information will be output first 
       call outputCopyright(iOutFile,ierr)
       
@@ -79,24 +76,7 @@
     !------------------- CUDA -------------------------------------------
     ! startup cuda device
     call gpu_startup()
-
-    iarg = iargc()
-    call gpu_set_device(-1)
-    if (iarg == 0) then
-        gpu_device_id = -1
-    else
-        do i = 1, iarg
-            call getarg(int(i,4), arg)
-            if (arg.eq."-gpu") then
-                call getarg (int(i+1,4), arg)
-                read(arg, '(I2)') gpu_device_id
-                call gpu_set_device(gpu_device_id)
-                write(*,*) "read -gpu from argument=",gpu_device_id
-                exit 
-            endif
-        enddo
-    endif
-    write(*,*) "gpu_device_id=",gpu_device_id
+    call gpu_set_device(0)
     call gpu_init()
     
     ! write cuda information
@@ -128,19 +108,18 @@
 !       call mfcc
 !       call getmolmfcc
     endif
-    call cpu_time(timer_end%TIniGuess)    
+    
     
     !------------------------------------------------------------------
     ! 3. Read Molecule Structure
     !-----------------------------------------------------------------
     call getMol()
+
 #ifdef CUDA
-    call PrtAct(ioutfile,"Begin to Upload Molecular Information to GPU") 
     call gpu_setup(natom,nbasis, quick_molspec%nElec, quick_molspec%imult, &
                    quick_molspec%molchg, quick_molspec%iAtomType)
     call gpu_upload_xyz(xyz)
     call gpu_upload_atom_and_chg(quick_molspec%iattype, quick_molspec%chg)
-    call PrtAct(ioutfile,"End Uploading Molecular Information to GPU")
 #endif
 
     !------------------------------------------------------------------
@@ -164,11 +143,9 @@
 !   else
         call g2eshell   ! pre-calculate 2 indices coeffecient to save time
         call schwarzoff ! pre-calculate schwarz cutoff criteria
-        call PrtAct(ioutfile,"Complate Schwartz Cutoff Process")
     endif
 
 #ifdef CUDA    
-    call PrtAct(ioutfile,"Begin To Calculate Basis Set Information to GPU")
     call gpu_upload_basis(nshell, nprim, jshell, jbasis, maxcontract, &
     ncontract, itype, aexp, dcoeff, &
     quick_basis%first_basis_function, quick_basis%last_basis_function, & 
@@ -179,9 +156,9 @@
     quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
     
     call gpu_upload_cutoff_matrix(Ycutoff, cutPrim)
-    call PrtAct(ioutfile,"End Basis Set Uploading")
 #endif
 
+    call cpu_time(timer_end%TIniGuess)
     if (.not.quick_method%opt) then
         call getEnergy(failed)
     endif

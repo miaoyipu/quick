@@ -23,7 +23,11 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
+<<<<<<< HEAD
  TASK STARTS ON: Fri May 25 14:06:37 2012
+=======
+ TASK STARTS ON: Wed Mar 21 15:52:34 2012
+>>>>>>> cuda_branch
  INPUT FILE:     test.in
  OUTPUT FILE:    test.out
  BASIS SET PATH: /home/miao/Workspace/new_quick/basis
@@ -51,7 +55,11 @@
  @ Read Job And Atom
 
   -------------------------------------
+<<<<<<< HEAD
 KEYWORD=HF SCF=20 ENERGY ZMAKE NCYC=2 CUTOFF=1.0E-9 BASIS=6-31GS DENSERMS=1.0E-8                                                                                                                                
+=======
+KEYWORD=HF ENERGY ZMAKE NCYC=100 CUTOFF=1.0E-9 BASIS=6-311GSS DENSERMS=1.0E-6                                                                                                                                   
+>>>>>>> cuda_branch
   -------------------------------------
  ============== JOB CARD =============
 | METHOD = HATREE FOCK
@@ -65,7 +73,11 @@ KEYWORD=HF SCF=20 ENERGY ZMAKE NCYC=2 CUTOFF=1.0E-9 BASIS=6-31GS DENSERMS=1.0E-8
 | COMPUATIONAL CUTOFF: 
 |      TWO-e INTEGRAL   =  0.100E-08
 |      BASIS SET PRIME  =  0.100E-08
+<<<<<<< HEAD
 |      MATRIX ELEMENTS  =  0.100E-06
+=======
+|      MATRIX ELEMENTS  =  0.100E-09
+>>>>>>> cuda_branch
 |      BASIS FUNCTION   =  0.100E-09
 | DENSITY MATRIX MAXIMUM RMS FOR CONVERGENCE  =  0.100E-07
 | BASIS SET = 6-31GS
@@ -136,6 +148,7 @@ SCF CYCLE      =        4      TIME      =   0.12
 DIIS CYCLE     =        2      MAX ERROR = 0.101965E-01
 RMS CHANGE     = 0.202864E-02  MAX CHANGE= 0.142921E-01
 
+<<<<<<< HEAD
 SCF CYCLE      =        5      TIME      =   0.13
 DIIS CYCLE     =        3      MAX ERROR = 0.438124E-02
 RMS CHANGE     = 0.128177E-02  MAX CHANGE= 0.854475E-02
@@ -143,6 +156,15 @@ RMS CHANGE     = 0.128177E-02  MAX CHANGE= 0.854475E-02
 SCF CYCLE      =        6      TIME      =   0.13
 DIIS CYCLE     =        4      MAX ERROR = 0.153635E-02
 RMS CHANGE     = 0.829534E-03  MAX CHANGE= 0.525123E-02
+=======
+SCF CYCLE      =        5      TIME      =   0.29
+DIIS CYCLE     =        4      MAX ERROR = 0.106153E-01
+RMS CHANGE     = 0.246707E-02  MAX CHANGE= 0.218182E-01
+
+SCF CYCLE      =        6      TIME      =   0.28
+DIIS CYCLE     =        5      MAX ERROR = 0.239526E-02
+RMS CHANGE     = 0.806494E-03  MAX CHANGE= 0.613326E-02
+>>>>>>> cuda_branch
 
 SCF CYCLE      =        7      TIME      =   0.13
 DIIS CYCLE     =        5      MAX ERROR = 0.801345E-04
@@ -237,6 +259,7 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
+<<<<<<< HEAD
   1    -76.254095914      ------         0.020     1        0.00      0.02      0.00    0.2590E+01  0.7976E-01  0.3894E+00
   2    -75.675631215  -.578465E+00       0.010     2        0.00      0.01      0.00    0.2435E+00  0.3701E-01  0.2948E+00
   3    -75.727499577  0.518684E-01       0.010     3        0.00      0.01      0.00    0.1273E+00  0.1249E-01  0.8689E-01
@@ -287,6 +310,26 @@ NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DI
 ELECTRONIC ENERGY    =   -85.986304954
 CORE_CORE REPULSION  =    10.242481453
 TOTAL ENERGY         =   -75.743823501
+=======
+  1   -305.054044794      ------         2.130     1        0.02      2.11      0.01    0.2579E+01  0.1860E-01  0.2304E+00
+  2   -302.900837431  -.215321E+01       3.470     2        0.03      3.44      0.00    0.2212E+00  0.1159E-01  0.3252E+00
+  3   -303.072802537  0.171965E+00       3.520     3        0.03      3.49      0.00    0.1642E+00  0.3365E-02  0.9871E-01
+  4   -303.143614059  0.708115E-01       3.510     4        0.03      3.48      0.00    0.1622E-01  0.5942E-03  0.1110E-01
+  5   -303.144831478  0.121742E-02       3.510     5        0.03      3.48      0.00    0.7042E-02  0.2840E-03  0.5304E-02
+  6   -303.144996623  0.165145E-03       3.510     6        0.02      3.48      0.00    0.1481E-02  0.7435E-04  0.1113E-02
+  7   -303.145008314  0.116906E-04       3.500     7        0.02      3.48      0.01    0.5777E-03  0.1892E-04  0.2686E-03
+  8   -303.145010015  0.170153E-05       3.500     8        0.03      3.47      0.01    0.1981E-03  0.1441E-04  0.1998E-03
+  9   -303.145010739  0.723857E-06       3.500     9        0.03      3.47      0.01    0.8116E-04  0.7931E-05  0.1290E-03
+ 10   -303.145010886  0.147008E-06       3.500    10        0.03      3.47      0.01    0.1411E-04  0.1648E-05  0.3103E-04
+ 11   -303.145010891  0.498514E-08       3.500     1        0.04      3.46      0.01    0.2739E-05  0.3331E-06  0.5672E-05
+------------------------------------------------------------------------------------------------------------------------
+ REACH CONVERGENCE AFTER  11 CYLCES
+ MAX ERROR = 0.273914E-05   RMS CHANGE = 0.333136E-06   MAX CHANGE = 0.567158E-05
+ -----------------------------------------------
+ELECTRONIC ENERGY    =  -419.655752978
+CORE_CORE REPULSION  =   116.510742087
+TOTAL ENERGY         =  -303.145010891
+>>>>>>> cuda_branch
 
  @ End Energy calculation
 
@@ -310,6 +353,7 @@ TOTAL ENERGY         =   -75.743823501
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
+<<<<<<< HEAD
 INITIAL GUESS TIME =     3.130000000( 84.59%)
 TOTAL SCF TIME     =     0.220000000(  5.95%)
       TOTAL OP TIME      =     0.220000000(  5.95%)
@@ -325,3 +369,20 @@ TOTAL TIME         =     3.700000000
  @ Finish Output Timing Infomration
 
  Normal Terminatation. Task Finished on: Fri May 25 14:06:41 2012
+=======
+INITIAL GUESS TIME =     3.700000000(  9.01%)
+TOTAL SCF TIME     =    37.250000000( 90.74%)
+      TOTAL OP TIME      =    36.930000000( 89.96%)
+            TOTAL 1e TIME      =     0.100000000(  0.24%)
+            TOTAL 2e TIME      =    36.830000000( 89.72%)
+            TOTAL ENERGY TIME  =     0.000000000(  0.00%)
+      TOTAL DII TIME     =     0.310000000(  0.76%)
+            TOTAL DIAG TIME    =     0.060000000(  0.15%)
+TOTAL TIME         =    41.050000000
+------------------------------------
+ Job cpu time:  0 days  0 hours  0 minutes 41.0 seconds.
+
+ @ Finish Output Timing Infomration
+
+ Normal Terminatation. Task Finished on: Wed Mar 21 15:53:15 2012
+>>>>>>> cuda_branch
