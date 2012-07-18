@@ -8,3 +8,4 @@ src/Makefile
 example/
 src/cuda/
 src/subs/*.o
+lib/*.a

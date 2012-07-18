@@ -1,7 +1,11 @@
 #!/bin/sh
 
 #include "../config.h"
+<<<<<<< HEAD
+MAKEIN = ../make.in
+=======
 MAKEIN = ../../make.in
+>>>>>>> cuda_branch
 include $(MAKEIN)
 
 # --- Makefile for Quick Program ---

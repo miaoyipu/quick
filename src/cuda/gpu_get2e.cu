@@ -163,7 +163,7 @@ __device__ __forceinline__ QUICKDouble quick_dsqr(QUICKDouble a)
     iclass subroutine is to generate 2-electron intergral using HRR and VRR method, which is the most
     performance algrithem for electron intergral evaluation. See description below for details
  */
-__device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax)
+__device__ __forceinline__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax)
 {
     
     /* 
@@ -5397,7 +5397,7 @@ __device__ void vertical(int I, int J, int K, int L, QUICKDouble* YVerticalTemp,
     }  
 }
 
-__device__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerticalTemp)
+__device__ __forceinline__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerticalTemp)
 {
     
     const QUICKDouble PIE4 = (QUICKDouble) PI/4.0 ;
@@ -5469,7 +5469,7 @@ __device__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerticalTemp)
 }
 
 
-__device__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
+__device__ __forceinline__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
                      int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
                      QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
                      QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
@@ -5752,7 +5752,7 @@ __device__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
 
 
 #ifndef CUDA_SP
-__device__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz, 
+__device__ __forceinline__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz, 
             QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
             int KLMNAx, int KLMNAy, int KLMNAz,
             int KLMNBx, int KLMNBy, int KLMNBz,
