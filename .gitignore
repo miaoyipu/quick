@@ -5,6 +5,6 @@ src/*.mod
 src/_*
 src/*.bak
 src/Makefile
-./example/*
-src/cuda/*.o
+example/
+src/cuda/
 src/subs/*.o
