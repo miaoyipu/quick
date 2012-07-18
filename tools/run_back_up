@@ -1,6 +1,6 @@
 #/bin/bash
 
-num=0.09_sp
+num=0.09_sp2
 now=$(date "+%Y-%m-%d")
 ver=$now'-new_quick_'$num
 #ver=2012-7-11-new_quick_0.09_120711

@@ -31,7 +31,6 @@ module quick_basis_module
    !------------------------------------------------------------------------
 
    use quick_gaussian_class_module
-   use quick_size_module
    implicit none
 
    type quick_basis_type
@@ -125,7 +124,7 @@ module quick_basis_module
    integer :: maxcontract   
    
    ! used for 2e integral indices
-   integer :: IJKLtype,III,JJJ,KKK,LLL,IJtype,KLtype
+   integer :: IJKLtype,III,JJJ,KKK,LLL,IJtype,KLtype, intIndex
 
    ! used for hrr and vrr
    double precision :: Y,dnmax
@@ -151,10 +150,8 @@ module quick_basis_module
    double precision, allocatable, dimension(:,:,:,:,:) :: orbmp2i331
    double precision, allocatable, dimension(:,:,:,:,:) :: orbmp2j331
    double precision, allocatable, dimension(:,:,:,:) :: orbmp2k331
-
-double precision, allocatable, dimension(:,:,:,:) :: AO
-double precision, allocatable, dimension(:,:,:) :: orbmp2k331dcsub
-
+   double precision, allocatable, dimension(:,:,:) :: orbmp2k331dcsub
+   
    ! 
    double precision, allocatable, dimension(:,:,:) :: Yxiao,Yxiaotemp,attraxiao
    
@@ -224,10 +221,10 @@ contains
             enddo
         enddo
         
-        allocate(self%gcexpo(MAXPRIM,nbasis_arg))
-        allocate(self%gccoeff(MAXPRIM,nbasis_arg))
+        allocate(self%gcexpo(6,nbasis_arg))
+        allocate(self%gccoeff(6,nbasis_arg))
         allocate(self%cons(nbasis_arg))
-        do i = 1, MAXPRIM
+        do i = 1, 6
             do j = 1, nbasis_arg
                 self%gcexpo( i, j) = 0.0
                 self%gccoeff( i, j) = 0.0

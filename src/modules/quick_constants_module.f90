@@ -31,6 +31,7 @@ module quick_constants_module
     double precision,parameter :: TEN_TO_MINUS16= 1.0d-16
     double precision,parameter :: TEN_TO_MINUS17= 1.0d-17
     
+    double precision,parameter :: LEASTCUTOFF   = TEN_TO_MINUS9
     
     double precision,parameter :: ZERO      =0.0d0
     double precision,parameter :: ONE       =1.0d0
@@ -49,9 +50,9 @@ module quick_constants_module
     
     ! some mathmatical constants
     double precision, parameter :: PI = 3.1415926535897932384626433832795d0
-    double precision, parameter :: PITO3HALF = sqrt(PI**3)
+    double precision, parameter :: PITO3HALF = PI**1.5
     double precision, parameter :: PITO2 = PI*PI
-    double precision, parameter :: X0 = 2.0d0*sqrt((PI)**5)
+    double precision, parameter :: X0 = 2.0d0*(PI)**(2.5d0)
 !    double precision, parameter :: X00 = 1.0d0
 
     ! some physical constants

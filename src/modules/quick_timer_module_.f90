@@ -26,6 +26,7 @@ module quick_timer_module
         double precision:: TOp=0.0d0
         double precision:: T1e=0.0d0
         double precision:: T2e=0.0d0
+        double precision:: T2eAll=0.0d0
         double precision:: TDip=0.0d0
         double precision:: TE=0.0d0
         double precision:: TEx=0.0d0
@@ -41,6 +42,7 @@ module quick_timer_module
         double precision:: TOp=0.0d0
         double precision:: T1e=0.0d0
         double precision:: T2e=0.0d0
+        double precision:: T2eAll=0.0d0
         double precision:: TE=0.0d0
         double precision:: TEx=0.0d0
         double precision:: TGrad=0.0d0
@@ -76,6 +78,10 @@ module quick_timer_module
             ! Initial Guess Timing
             write (io,'("INITIAL GUESS TIME =",F16.9,"( ",F5.2,"%)")') timer_end%TIniGuess-timer_begin%TIniGuess, &
                 (timer_end%TIniGuess-timer_begin%TIniGuess)/(timer_end%TTotal-timer_begin%TTotal)*100
+            if (quick_method%nodirect) &
+            write (io,'("2E EVALUATION TIME =",F16.9,"( ",F5.2,"%)")') timer_end%T2eAll-timer_begin%T2eAll, &
+                (timer_end%T2eAll-timer_begin%T2eAll)/(timer_end%TTotal-timer_begin%TTotal)*100
+
             ! SCF Timing
             write (io,'("TOTAL SCF TIME     =",F16.9,"( ",F5.2,"%)")') timer_cumer%TSCF, &
                 timer_cumer%TSCF/(timer_end%TTotal-timer_begin%TTotal)*100

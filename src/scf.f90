@@ -35,6 +35,9 @@ subroutine scf(failed)
    !       to the lower triangular matrix of the ECP integrals
    if (quick_method%ecp) call ecpint
 
+   ! if not direct SCF, generate 2e int file
+   if (quick_method%nodirect) call aoint
+
    if (quick_method%diisscf .and. .not. quick_method%divcon) call electdiis(jscf)       ! normal scf
    if (quick_method%diisscf .and. quick_method%divcon) call electdiisdc(jscf,PRMS)     ! div & con scf
 
@@ -62,6 +65,7 @@ subroutine electdiis(jscf)
    integer :: jscf                ! scf interation
 
    logical :: diisdone = .false.  ! flag to indicate if diis is done
+   logical :: deltaO   = .false.  ! delta Operator
    integer :: idiis = 0           ! diis iteration
    integer :: IDIISfinal,iidiis,current_diis
    integer :: lsolerr = 0
@@ -175,28 +179,25 @@ subroutine electdiis(jscf)
       ! Triger Operator timer
       call cpu_time(timer_begin%TOp)
 
-      ! Normal opertor selection
-      if(jscf.le.(quick_method%ncyc-1))then
+      ! if want to calculate operator difference?
+      if(jscf.ge.quick_method%ncyc) deltaO = .true.
 
-         ! Hatree-Fock Operator
-         if (quick_method%HF) then
+      ! Hatree-Fock Operator
+      if (quick_method%HF) then
 #ifdef MPI
-            if (bMPI) then
-               call MPI_hfoperator(oneElecO) ! MPI HF
-            else
-               call hfoperator(oneElecO)     ! Non-MPI HF
-            endif
-#else
-            call hfoperator(oneElecO)
-#endif
+         if (bMPI) then
+            call MPI_hfoperator(oneElecO) ! MPI HF
+         else
+            call hfoperator(oneElecO)     ! Non-MPI HF
          endif
-
-         ! Density Functional Theory Operator
-         if (quick_method%DFT) call dftoperator
+#else
+         call hfoperator(oneElecO, deltaO)
+#endif
+      else if (quick_method%DFT) then
+           call dftoperator(deltaO) ! Density Functional Theory Operator
+      else if (quick_method%SEDFT) then
+           call sedftoperator ! Semi-emperical DFT Operator
       endif
-
-      ! Semi-emperical DFT Operator
-      if (quick_method%SEDFT) call sedftoperator
 
       ! Terminate Operator timer
       call cpu_time(timer_end%TOp)
@@ -204,28 +205,6 @@ subroutine electdiis(jscf)
       !------------- MASTER NODE -------------------------------
       if (master) then
 
-         ! Begin Delta Densitry Matrix
-         ! Xiao HE, Delta density matrix increase is implemented here. 07/07/07 version
-         if(jscf.ge.quick_method%ncyc)then
-
-            ! save density matrix
-            call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseSave,nbasis)
-            call CopyDMat(quick_qm_struct%oSave,quick_qm_struct%o,nbasis)
-
-            do I=1,nbasis; do J=1,nbasis
-               quick_qm_struct%dense(J,I)=quick_qm_struct%dense(J,I)-quick_qm_struct%denseOld(J,I)
-            enddo; enddo
-
-            call cpu_time(timer_begin%TOp)
-
-            if (quick_method%HF) call hfoperatordelta(oneElecO)
-            if (quick_method%DFT) call dftoperatordelta
-
-            call cpu_time(timer_end%TOp)
-
-            ! recover density
-            call CopyDMat(quick_qm_struct%denseSave,quick_qm_struct%dense,nbasis)
-         endif
          !-----------------------------------------------
          ! End of Delta Matrix
          !-----------------------------------------------
@@ -559,7 +538,7 @@ subroutine electdiis(jscf)
 
       if (master) then
 
-         ! open data file
+         ! open data file then write calculated info to dat file
          call quick_open(iDataFile, dataFileName, 'R', 'U', 'R',.true.)
          rewind(iDataFile)
          call dat(quick_qm_struct, iDataFile)
@@ -779,7 +758,7 @@ subroutine electdiisdc(jscf,PRMS)
             ! obtain opertor now
             !--------------------------------------------
             if (quick_method%HF) call hfoperatordeltadc
-            if (quick_method%DFT) call dftoperatordelta
+            if (quick_method%DFT) call dftoperator(.true.)
 
 
             !--------------------------------------------

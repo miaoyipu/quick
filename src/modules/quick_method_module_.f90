@@ -8,6 +8,7 @@
 !
 
 module quick_method_module
+    use quick_constants_module
     implicit none
     
     type quick_method_type
@@ -27,6 +28,7 @@ module quick_method_module
 
         ! the second section includes some advanced option
         logical :: debug =  .false.    ! debug mode
+        logical :: nodirect = .false.  ! conventional scf
         logical :: readDMX =  .false.  ! flag to read density matrix
         logical :: writePMat = .false. ! flag to write density matrix
         logical :: diisSCF =  .false.  ! DIIS SCF
@@ -81,12 +83,13 @@ module quick_method_module
         integer :: ncyc =1000
         
         ! following are some cutoff criteria
-        double precision :: integralCutoff = 1.0d-9   ! integral cutoff
-        double precision :: primLimit      = 1.0d-9   ! prime cutoff
+        double precision :: integralCutoff = 1.0d-6   ! integral cutoff
+        double precision :: leastIntegralCutoff = LEASTCUTOFF  ! the smallest cutoff
+        double precision :: primLimit      = 1.0d-6   ! prime cutoff
         double precision :: gradCutoff     = 1.0d-7   ! gradient cutoff
-        double precision :: DMCutoff       = 1.0d-10   ! density matrix cutoff
+        double precision :: DMCutoff       = 1.0d-10  ! density matrix cutoff
         !tol
-        double precision :: pmaxrms        = 1.0d-7   ! density matrix convergence criteria
+        double precision :: pmaxrms        = 1.0d-4   ! density matrix convergence criteria
         double precision :: aCutoff        = 1.0d-7   ! 2e cutoff
         double precision :: basisCufoff    = 1.0d-10  ! basis set cutoff
         !signif
@@ -154,6 +157,7 @@ module quick_method_module
             call MPI_BCAST(self%PBSOL,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%UNRST,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%debug,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
+            call MPI_BCAST(self%nodirect,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%readDMX,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%diisSCF,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%prtGap,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
@@ -190,6 +194,7 @@ module quick_method_module
             call MPI_BCAST(self%maxdiisscf,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%ncyc,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%integralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+            call MPI_BCAST(self%leastIntegralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%primLimit,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%gradCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%DMCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
@@ -237,6 +242,11 @@ module quick_method_module
                 write(io,'("| METHOD = SEMI-EMPIRICAL DENSTITY FUNCTIONAL THEORY")')
             endif
         
+if (self%nodirect) then
+write(io,'("| SAVE 2E INT TO DISK ")')
+else
+write(io,'("| DIRECT SCF ")')
+endif
 
             if (self%PDB) write(io,'("| PDB INPUT ")')
             if (self%MFCC) write(io,'("| MFCC INITIAL GUESS ")')
@@ -381,6 +391,8 @@ module quick_method_module
             if (index(keyWD,'EXTCHARGES').ne.0) self%EXTCHARGES=.true.
             if (index(keyWD,'FORCE').ne.0)      self%grad=.true.
         
+            if (index(keyWD,'NODIRECT').ne.0)      self%NODIRECT=.true.
+
             if (index(keywd,'DIVCON') .ne. 0) then
                 self%divcon = .true.
                 if (index(keywd,'ATOMBASIS') /= 0) then
@@ -494,6 +506,7 @@ module quick_method_module
             self%UNRST =  .false.    ! Unrestricted
 
             self%debug =  .false.    ! debug mode
+            self%nodirect = .false.  ! conventional SCF
             self%readDMX =  .false.  ! flag to read density matrix
             self%diisSCF =  .false.  ! DIIS SCF
             self%prtGap =  .false.   ! flag to print HOMO-LUMO gap
@@ -530,12 +543,14 @@ module quick_method_module
             self%iopt = 0
             self%ncyc = 1000
 
-            self%integralCutoff = 1.0d-9   ! integral cutoff
-            self%primLimit      = 1.0d-9   ! prime cutoff
+            self%integralCutoff = 1.0d-6   ! integral cutoff
+            self%leastIntegralCutoff = LEASTCUTOFF 
+                                           ! smallest integral cutoff, used in conventional SCF
+            self%primLimit      = 1.0d-6   ! prime cutoff
             self%gradCutoff     = 1.0d-7   ! gradient cutoff
             self%DMCutoff       = 1.0d-10  ! density matrix cutoff
 
-            self%pmaxrms        = 1.0d-6   ! density matrix convergence criteria
+            self%pmaxrms        = 1.0d-4   ! density matrix convergence criteria
             self%aCutoff        = 1.0d-7   ! 2e cutoff
             self%basisCufoff    = 1.0d-10  ! basis set cutoff
         
@@ -571,10 +586,10 @@ module quick_method_module
                 self%grad = .true.
             endif
             
-if(self%pmaxrms.lt.0.0001d0)then
-self%integralCutoff= min(self%integralCutoff, 1.0d-7)
-self%Primlimit=self%integralCutoff
-endif
+            if(self%pmaxrms.lt.0.0001d0)then
+                self%integralCutoff=1.0d-7
+                self%Primlimit=1.0d-7
+            endif
             
             ! OPT not available for MP2
             if (self%MP2 .and. self%OPT) then
@@ -593,43 +608,23 @@ endif
         subroutine adjust_Cutoff(PRMS,PCHANGE,self)
             use quick_constants_module
             implicit none
-            double precision prms,pchange, cutold
+            double precision prms,pchange
             type(quick_method_type) self
+            
+             if(PRMS.le.TEN_TO_MINUS5 .and. self%integralCutoff.gt.1.0d0/(10.0d0**7.5d0))then
+                self%integralCutoff=min(self%integralCutoff*100.0d0,TEN_TO_MINUS8)
+                self%primLimit=min(self%integralCutoff*100.0d0,TEN_TO_MINUS8)
+             endif
+             
+            if(PRMS.le.TEN_TO_MINUS6 .and. self%integralCutoff.gt.1.0d0/(10.0d0**8.5d0))then
+                self%integralCutoff=min(self%integralCutoff*10.0d0,TEN_TO_MINUS9)
+                self%primLimit=min(self%integralCutoff*10.0d0,TEN_TO_MINUS9)
+            endif
 
-
-
-!if(PRMS.le.TEN_TO_MINUS4 .and. self%integralCutoff.gt.1.0d0/(10.0d0**7.5d0))then
-!self%integralCutoff=min(self%integralCutoff,TEN_TO_MINUS8)
-!self%primLimit=min(self%integralCutoff*100.0d0,TEN_TO_MINUS9)
-!self%primLimit = self%integralCutoff !* TEN_TO_MINUS1
-!endif
-
-if(PRMS.le.TEN_TO_MINUS5 .and. self%integralCutoff.gt.1.0d0/(10.0d0**8.5d0))then
-self%integralCutoff=min(self%integralCutoff,TEN_TO_MINUS9)
-!self%primLimit=min(self%integralCutoff*100.0d0,TEN_TO_MINUS9)
-self%primLimit = self%integralCutoff !* TEN_TO_MINUS1
-endif
-
-if(PRMS.le.TEN_TO_MINUS6 .and. self%integralCutoff.gt.1.0d0/(10.0d0**9.5d0))then
-self%integralCutoff=min(self%integralCutoff,TEN_TO_MINUS10)
-!self%primLimit=min(self%integralCutoff*10.0d0,TEN_TO_MINUS11)
-self%primLimit = self%integralCutoff !* TEN_TO_MINUS1
-endif
-
-if(PRMS.le.TEN_TO_MINUS7 .and.self%integralCutoff.gt.1.0d0/(10.0d0**11.5d0))then
-self%integralCutoff=min(self%integralCutoff,TEN_TO_MINUS12)
-!quick_method%primLimit=min(quick_method%integralCutoff,TEN_TO_MINUS13)
-self%primLimit = self%integralCutoff !* TEN_TO_MINUS1
-endif
-
-
-if(PRMS.le.TEN_TO_MINUS8 .and.self%integralCutoff.gt.1.0d0/(10.0d0**13.5d0))then
-self%integralCutoff=min(self%integralCutoff,TEN_TO_MINUS15)
-!quick_method%primLimit=min(quick_method%integralCutoff,TEN_TO_MINUS13)
-self%primLimit = self%integralCutoff !* TEN_TO_MINUS1
-endif
-
-
+            if(PRMS.le.TEN_TO_MINUS7 .and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**9.5d0))then
+            quick_method%integralCutoff=min(quick_method%integralCutoff,TEN_TO_MINUS10)
+            quick_method%primLimit=min(quick_method%integralCutoff,TEN_TO_MINUS10)
+         endif
          
         end subroutine adjust_Cutoff
         

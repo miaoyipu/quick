@@ -33,6 +33,7 @@ subroutine getmolsad()
    quick_method%UNRST=.true.
    quick_method%ZMAT=.false.
    quick_method%divcon=.false.
+   quick_method%nodirect=.false.
    call allocate_mol_sad(quick_molspec%iatomtype)
 
 
@@ -41,10 +42,12 @@ subroutine getmolsad()
       !-------------------------------------------
       ! First, find atom type and initialize
       !-------------------------------------------
+
       natom=1
       do I=1,3
          xyz(I,1) = 0.0d0
       enddo
+
       do iitemp=1,quick_molspec%iatomtype
          write(ioutfile,'(" For Atom Kind = ",i4)') iitemp
          do i=1,90
@@ -109,10 +112,8 @@ subroutine getmolsad()
             call getenergy(failed)
             do i=1,nbasis
                do j=1,nbasis
-                  !atomdens(iitemp,i,j)=0.0 
-		  atomdens(iitemp,i,j)=quick_qm_struct%dense(i,j)+quick_qm_struct%denseb(i,j)
+                  atomdens(iitemp,i,j)=quick_qm_struct%dense(i,j)+quick_qm_struct%denseb(i,j)
                enddo
-		  !atomdens(iitemp,i,i)=1.0
             enddo
          else
             ! treat Zinc specially
