@@ -1,4 +1,4 @@
-nodirect HF scf=100 ncyc=1000 BASIS=6-31gss cutoff=1.0e-9 DENSERMS=1.0e-8 Energy
+nodirect HF scf=100 ncyc=3 BASIS=6-31gss cutoff=1.0e-7 DENSERMS=1.0e-8 Energy
 
 N -3.14167405 -0.23652638 -0.12842352
 H -2.34496727 -0.46921232 0.42934065
