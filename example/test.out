@@ -23,7 +23,7 @@
   If you have any comment or queries, please send email for technic support:
   quick@qtp.ufl.edu
 
- TASK STARTS ON: Thu Jul 19 00:54:33 2012
+ TASK STARTS ON: Wed Jul 25 00:31:02 2012
  INPUT FILE :    test.in
  OUTPUT FILE:    test.out
  DATE FILE  :    test.dat
@@ -108,7 +108,7 @@ SCF CYCLE      =        2      TIME      =   0.21
 DIIS CYCLE     =        1      MAX ERROR = 0.539605E+00
 RMS CHANGE     = 0.272098E-01  MAX CHANGE= 0.307729E+00
 
-SCF CYCLE      =        3      TIME      =   0.21
+SCF CYCLE      =        3      TIME      =   0.22
 DIIS CYCLE     =        2      MAX ERROR = 0.117276E+00
 RMS CHANGE     = 0.103718E-01  MAX CHANGE= 0.104053E+00
 
@@ -116,11 +116,11 @@ SCF CYCLE      =        4      TIME      =   0.21
 DIIS CYCLE     =        3      MAX ERROR = 0.326784E-01
 RMS CHANGE     = 0.358951E-02  MAX CHANGE= 0.330721E-01
 
-SCF CYCLE      =        5      TIME      =   0.22
+SCF CYCLE      =        5      TIME      =   0.21
 DIIS CYCLE     =        4      MAX ERROR = 0.106153E-01
 RMS CHANGE     = 0.246707E-02  MAX CHANGE= 0.218182E-01
 
-SCF CYCLE      =        6      TIME      =   0.21
+SCF CYCLE      =        6      TIME      =   0.22
 DIIS CYCLE     =        5      MAX ERROR = 0.239526E-02
 RMS CHANGE     = 0.806494E-03  MAX CHANGE= 0.613326E-02
 
@@ -140,11 +140,11 @@ DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
 SCF CYCLE      =       10      TIME      =     0.21
 RMS CHANGE     = 0.138505E-05  MAX CHANGE= 0.103490E-04
 
-SCF CYCLE      =       11      TIME      =   0.22
+SCF CYCLE      =       11      TIME      =   0.21
 DIIS CYCLE     =        1      MAX ERROR = 0.380604E-05
 RMS CHANGE     = 0.607600E-06  MAX CHANGE= 0.453097E-05
 
-SCF CYCLE      =       12      TIME      =   0.21
+SCF CYCLE      =       12      TIME      =   0.22
 DIIS CYCLE     =        2      MAX ERROR = 0.903466E-06
 RMS CHANGE     = 0.239516E-06  MAX CHANGE= 0.188219E-05
 DIIS FAILED !! RETURN TO NORMAL SCF. (NOT FATAL.)
@@ -157,7 +157,7 @@ DIIS CYCLE     =        1      MAX ERROR = 0.596788E-06
 RMS CHANGE     = 0.958871E-07  MAX CHANGE= 0.746860E-06
 PREPARED FOR FINAL NO INTERPOLATION ITERATION
 
-SCF CYCLE      =       15      TIME      =     0.21
+SCF CYCLE      =       15      TIME      =     0.22
 RMS CHANGE     = 0.611336E-07  MAX CHANGE= 0.528350E-06
 CONVERGED!!!!!
 ELECTRONIC ENERGY    =     0.000000000
@@ -236,61 +236,61 @@ TOTAL ENERGY         =     0.000000000
   2-ELECTRON INTEGRAL
 -----------------------------
   II =    1 INTEGRAL=    8165  BEGIN=              0
-  II =    2 INTEGRAL=    8381  BEGIN=          96277
-  II =    3 INTEGRAL=   10734  BEGIN=         198629
-  II =    4 INTEGRAL=    6193  BEGIN=         341108
-  II =    5 INTEGRAL=    4797  BEGIN=         595319
-  II =    6 INTEGRAL=    5329  BEGIN=         661617
-  II =    7 INTEGRAL=    7542  BEGIN=         738528
-  II =    8 INTEGRAL=    3626  BEGIN=         853034
-  II =    9 INTEGRAL=    2643  BEGIN=        1039295
-  II =   10 INTEGRAL=    2364  BEGIN=        1088346
-  II =   11 INTEGRAL=    2216  BEGIN=        1271011
-  II =   12 INTEGRAL=    3830  BEGIN=        1430536
-  II =   13 INTEGRAL=    1279  BEGIN=        1675673
-  II =   14 INTEGRAL=    5909  BEGIN=        1776290
-  II =   15 INTEGRAL=    6010  BEGIN=        1846043
-  II =   16 INTEGRAL=    7638  BEGIN=        1920022
-  II =   17 INTEGRAL=    4299  BEGIN=        2023028
-  II =   18 INTEGRAL=    3301  BEGIN=        2203271
-  II =   19 INTEGRAL=    3633  BEGIN=        2249915
-  II =   20 INTEGRAL=    5106  BEGIN=        2303855
-  II =   21 INTEGRAL=    2393  BEGIN=        2384102
-  II =   22 INTEGRAL=    1710  BEGIN=        2512094
-  II =   23 INTEGRAL=    1528  BEGIN=        2545279
-  II =   24 INTEGRAL=    1425  BEGIN=        2668092
-  II =   25 INTEGRAL=    2484  BEGIN=        2773445
-  II =   26 INTEGRAL=     820  BEGIN=        2934918
-  II =   27 INTEGRAL=    3653  BEGIN=        2999649
-  II =   28 INTEGRAL=    3639  BEGIN=        3042878
-  II =   29 INTEGRAL=    4530  BEGIN=        3088484
-  II =   30 INTEGRAL=    2405  BEGIN=        3151957
-  II =   31 INTEGRAL=    1805  BEGIN=        3258232
-  II =   32 INTEGRAL=    1937  BEGIN=        3285222
-  II =   33 INTEGRAL=    2658  BEGIN=        3316191
-  II =   34 INTEGRAL=    1160  BEGIN=        3362119
-  II =   35 INTEGRAL=     785  BEGIN=        3431842
-  II =   36 INTEGRAL=     696  BEGIN=        3449181
-  II =   37 INTEGRAL=     634  BEGIN=        3512182
-  II =   38 INTEGRAL=    1138  BEGIN=        3563363
-  II =   39 INTEGRAL=     361  BEGIN=        3641172
-  II =   40 INTEGRAL=    1182  BEGIN=        3670017
-  II =   41 INTEGRAL=     935  BEGIN=        3684927
-  II =   42 INTEGRAL=     724  BEGIN=        3698441
-  II =   43 INTEGRAL=     550  BEGIN=        3710645
-  II =   44 INTEGRAL=     396  BEGIN=        3740291
-  II =   45 INTEGRAL=     288  BEGIN=        3748092
-  II =   46 INTEGRAL=     196  BEGIN=        3755016
-  II =   47 INTEGRAL=     126  BEGIN=        3761111
-  II =   48 INTEGRAL=      75  BEGIN=        3775097
-  II =   49 INTEGRAL=      40  BEGIN=        3778536
-  II =   50 INTEGRAL=      18  BEGIN=        3787677
-  II =   51 INTEGRAL=       6  BEGIN=        3791702
-  II =   52 INTEGRAL=       1  BEGIN=        3793011
+  II =    2 INTEGRAL=    8381  BEGIN=          87096
+  II =    3 INTEGRAL=   10734  BEGIN=         180057
+  II =    4 INTEGRAL=    6193  BEGIN=         311552
+  II =    5 INTEGRAL=    4797  BEGIN=         540446
+  II =    6 INTEGRAL=    5329  BEGIN=         601001
+  II =    7 INTEGRAL=    7542  BEGIN=         671934
+  II =    8 INTEGRAL=    3626  BEGIN=         779043
+  II =    9 INTEGRAL=    2643  BEGIN=         949395
+  II =   10 INTEGRAL=    2364  BEGIN=         980923
+  II =   11 INTEGRAL=    2216  BEGIN=        1091479
+  II =   12 INTEGRAL=    3830  BEGIN=        1196601
+  II =   13 INTEGRAL=    1279  BEGIN=        1372944
+  II =   14 INTEGRAL=    5909  BEGIN=        1440208
+  II =   15 INTEGRAL=    6010  BEGIN=        1502593
+  II =   16 INTEGRAL=    7638  BEGIN=        1569227
+  II =   17 INTEGRAL=    4299  BEGIN=        1664321
+  II =   18 INTEGRAL=    3301  BEGIN=        1825835
+  II =   19 INTEGRAL=    3633  BEGIN=        1868193
+  II =   20 INTEGRAL=    5106  BEGIN=        1917871
+  II =   21 INTEGRAL=    2393  BEGIN=        1993317
+  II =   22 INTEGRAL=    1710  BEGIN=        2111156
+  II =   23 INTEGRAL=    1528  BEGIN=        2132543
+  II =   24 INTEGRAL=    1425  BEGIN=        2208424
+  II =   25 INTEGRAL=    2484  BEGIN=        2279119
+  II =   26 INTEGRAL=     820  BEGIN=        2399539
+  II =   27 INTEGRAL=    3653  BEGIN=        2445281
+  II =   28 INTEGRAL=    3639  BEGIN=        2482091
+  II =   29 INTEGRAL=    4530  BEGIN=        2521467
+  II =   30 INTEGRAL=    2405  BEGIN=        2578744
+  II =   31 INTEGRAL=    1805  BEGIN=        2669767
+  II =   32 INTEGRAL=    1937  BEGIN=        2693202
+  II =   33 INTEGRAL=    2658  BEGIN=        2720771
+  II =   34 INTEGRAL=    1160  BEGIN=        2763282
+  II =   35 INTEGRAL=     785  BEGIN=        2825811
+  II =   36 INTEGRAL=     696  BEGIN=        2836205
+  II =   37 INTEGRAL=     634  BEGIN=        2873400
+  II =   38 INTEGRAL=    1138  BEGIN=        2906787
+  II =   39 INTEGRAL=     361  BEGIN=        2965407
+  II =   40 INTEGRAL=    1182  BEGIN=        2986926
+  II =   41 INTEGRAL=     935  BEGIN=        2995634
+  II =   42 INTEGRAL=     724  BEGIN=        3003409
+  II =   43 INTEGRAL=     550  BEGIN=        3010355
+  II =   44 INTEGRAL=     396  BEGIN=        3025794
+  II =   45 INTEGRAL=     288  BEGIN=        3030241
+  II =   46 INTEGRAL=     196  BEGIN=        3034152
+  II =   47 INTEGRAL=     126  BEGIN=        3037557
+  II =   48 INTEGRAL=      75  BEGIN=        3044867
+  II =   49 INTEGRAL=      40  BEGIN=        3045474
+  II =   50 INTEGRAL=      18  BEGIN=        3046851
+  II =   51 INTEGRAL=       6  BEGIN=        3047462
+  II =   52 INTEGRAL=       1  BEGIN=        3047655
 -----------------------------
-      TOTAL INTEGRAL     =      3793242
-      INTEGRAL FILE SIZE =        28.94 MB
-      USAGE TIME         =         1.70 s
+      TOTAL INTEGRAL     =      3047730
+      INTEGRAL FILE SIZE =        46.50 MB
+      USAGE TIME         =         1.80 s
 
  @ FINISH 2E Calculation
 
@@ -298,27 +298,27 @@ TOTAL ENERGY         =     0.000000000
 ------------------------------------------------------------------------------------------------------------------------
 NCYC       ENERGY         DELTA_E      SCF_TIME  DII_CYC   DII_TIME   O_TIME  DIAG_TIME    MAX_ERR    RMS_CHG    MAX_CHG
 ------------------------------------------------------------------------------------------------------------------------
-  1   -305.054047959      ------         0.900     1        0.03      0.87      0.00    0.2579E+01  0.1860E-01  0.2304E+00
-  2   -302.900836183  -.215321E+01       1.460     2        0.02      1.44      0.00    0.2212E+00  0.1159E-01  0.3252E+00
-  3   -303.072801542  0.171965E+00       1.390     3        0.03      1.36      0.00    0.1642E+00  0.3365E-02  0.9871E-01
-  4   -303.143613484  0.708119E-01       1.260     4        0.02      1.24      0.00    0.1622E-01  0.5942E-03  0.1110E-01
-  5   -303.144831320  0.121784E-02       1.090     5        0.02      1.07      0.01    0.7043E-02  0.2840E-03  0.5304E-02
-  6   -303.144996882  0.165561E-03       1.020     6        0.02      1.00      0.01    0.1481E-02  0.7435E-04  0.1112E-02
-  7   -303.145009192  0.123105E-04       0.920     7        0.02      0.90      0.01    0.5776E-03  0.1893E-04  0.2694E-03
-  8   -303.145011648  0.245602E-05       0.800     8        0.02      0.78      0.00    0.1982E-03  0.1447E-04  0.2023E-03
-  9   -303.145012469  0.820318E-06       0.790     9        0.02      0.77      0.01    0.8129E-04  0.8002E-05  0.1281E-03
+  1   -305.054047960      ------         1.150     1        0.02      1.13      0.00    0.2579E+01  0.1860E-01  0.2304E+00
+  2   -302.900836184  -.215321E+01       1.460     2        0.03      1.43      0.01    0.2212E+00  0.1159E-01  0.3252E+00
+  3   -303.072801545  0.171965E+00       1.370     3        0.03      1.34      0.00    0.1642E+00  0.3365E-02  0.9871E-01
+  4   -303.143613486  0.708119E-01       1.250     4        0.02      1.23      0.01    0.1622E-01  0.5942E-03  0.1110E-01
+  5   -303.144831322  0.121784E-02       1.090     5        0.03      1.06      0.00    0.7043E-02  0.2840E-03  0.5304E-02
+  6   -303.144996884  0.165562E-03       1.020     6        0.03      0.99      0.00    0.1481E-02  0.7435E-04  0.1112E-02
+  7   -303.145009175  0.122915E-04       0.920     7        0.02      0.90      0.01    0.5776E-03  0.1893E-04  0.2693E-03
+  8   -303.145011417  0.224146E-05       0.830     8        0.02      0.81      0.00    0.1982E-03  0.1447E-04  0.2023E-03
+  9   -303.145012222  0.804751E-06       0.840     9        0.02      0.82      0.01    0.8130E-04  0.8012E-05  0.1291E-03
     --------------- 2E-INT CUTOFF CHANGE TO 0.1000E-07 -------------
- 10   -303.145012613  0.144938E-06       0.920    10        0.02      0.90      0.00    0.1418E-04  0.1641E-05  0.3099E-04
- 11   -303.145012571  -.429337E-07       0.790     1        0.03      0.76      0.00    0.2751E-05  0.3384E-06  0.5690E-05
+ 10   -303.145012366  0.144050E-06       0.920    10        0.02      0.89      0.00    0.1417E-04  0.1639E-05  0.3085E-04
+ 11   -303.145012348  -.181479E-07       0.850     1        0.03      0.82      0.01    0.2746E-05  0.3341E-06  0.5595E-05
     --------------- 2E-INT CUTOFF CHANGE TO 0.1000E-08 -------------
- 12   -303.145012571  0.910347E-10       0.830     2        0.03      0.80      0.01    0.7823E-06  0.9242E-07  0.1621E-05
+ 12   -303.145012348  0.788617E-09       0.870     2        0.03      0.84      0.00    0.8022E-06  0.8891E-07  0.1648E-05
 ------------------------------------------------------------------------------------------------------------------------
  REACH CONVERGENCE AFTER  12 CYLCES
- MAX ERROR = 0.782309E-06   RMS CHANGE = 0.924161E-07   MAX CHANGE = 0.162058E-05
+ MAX ERROR = 0.802238E-06   RMS CHANGE = 0.889117E-07   MAX CHANGE = 0.164802E-05
  -----------------------------------------------
-ELECTRONIC ENERGY    =  -419.655754658
+ELECTRONIC ENERGY    =  -419.655754436
 CORE_CORE REPULSION  =   116.510742087
-TOTAL ENERGY         =  -303.145012571
+TOTAL ENERGY         =  -303.145012348
 
  @ End Energy calculation
 
@@ -351,19 +351,19 @@ TOTAL ENERGY         =  -303.145012571
  @ Output Timing Infomration
 
 ------------- TIMING ---------------
-INITIAL GUESS TIME =     3.630000000( 20.46%)
-2E EVALUATION TIME =     1.700000000(  9.58%)
-TOTAL SCF TIME     =    12.260000000( 69.11%)
-      TOTAL OP TIME      =    11.980000000( 67.53%)
-            TOTAL 1e TIME      =     0.090000000(  0.51%)
-            TOTAL 2e TIME      =    11.890000000( 67.02%)
+INITIAL GUESS TIME =     3.650000000( 20.03%)
+2E EVALUATION TIME =     1.800000000(  9.88%)
+TOTAL SCF TIME     =    12.650000000( 69.43%)
+      TOTAL OP TIME      =    12.340000000( 67.73%)
+            TOTAL 1e TIME      =     0.080000000(  0.44%)
+            TOTAL 2e TIME      =    12.250000000( 67.23%)
             TOTAL ENERGY TIME  =     0.000000000(  0.00%)
-      TOTAL DII TIME     =     0.280000000(  1.58%)
-            TOTAL DIAG TIME    =     0.050000000(  0.28%)
-TOTAL TIME         =    17.740000000
+      TOTAL DII TIME     =     0.300000000(  1.65%)
+            TOTAL DIAG TIME    =     0.050000000(  0.27%)
+TOTAL TIME         =    18.220000000
 ------------------------------------
- Job cpu time:  0 days  0 hours  0 minutes 17.7 seconds.
+ Job cpu time:  0 days  0 hours  0 minutes 18.2 seconds.
 
  @ Finish Output Timing Infomration
 
- Normal Terminatation. Task Finished on: Thu Jul 19 00:54:51 2012
+ Normal Terminatation. Task Finished on: Wed Jul 25 00:31:20 2012

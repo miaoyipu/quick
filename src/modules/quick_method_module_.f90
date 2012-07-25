@@ -86,6 +86,7 @@ module quick_method_module
         ! following are some cutoff criteria
         double precision :: integralCutoff = 1.0d-6   ! integral cutoff
         double precision :: leastIntegralCutoff = LEASTCUTOFF  ! the smallest cutoff
+        double precision :: maxIntegralCutoff = 1.0d-12
         double precision :: primLimit      = 1.0d-6   ! prime cutoff
         double precision :: gradCutoff     = 1.0d-7   ! gradient cutoff
         double precision :: DMCutoff       = 1.0d-10  ! density matrix cutoff
@@ -196,6 +197,7 @@ module quick_method_module
             call MPI_BCAST(self%ncyc,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%integralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%leastIntegralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+            call MPI_BCAST(self%maxIntegralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%primLimit,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%gradCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
             call MPI_BCAST(self%DMCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
@@ -547,6 +549,8 @@ endif
             self%integralCutoff = 1.0d-6   ! integral cutoff
             self%leastIntegralCutoff = LEASTCUTOFF 
                                            ! smallest integral cutoff, used in conventional SCF
+            self%maxIntegralCutoff = 1.0d-12
+                                           ! smallest integral cutoff, used in conventional SCF
             self%primLimit      = 1.0d-6   ! prime cutoff
             self%gradCutoff     = 1.0d-7   ! gradient cutoff
             self%DMCutoff       = 1.0d-10  ! density matrix cutoff
@@ -614,11 +618,17 @@ endif
 
             self%leastIntegralCutoff = LEASTCUTOFF
 
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**9.5) self%leastIntegralCutoff = TEN_TO_MINUS5
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**8.5) self%leastIntegralCutoff = TEN_TO_MINUS4
             if (self%pmaxrms .gt. 1.0d0/10.0d0**7.5) self%leastIntegralCutoff = TEN_TO_MINUS3
-            if (self%pmaxrms .gt. 1.0d0/10.0d0**8.5) self%leastIntegralCutoff = TEN_TO_MINUS3
-            if (self%pmaxrms .gt. 1.0d0/10.0d0**9.5) self%leastIntegralCutoff = TEN_TO_MINUS3
 
-            !if (self%integralCutoff .le. self%leastIntegralCutoff) self%leastIntegralCutoff=self%integralCutoff
+            self%maxIntegralCutoff  = 1.0d-12
+
+
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**9.5) self%maxIntegralCutoff = TEN_TO_MINUS10
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**8.5) self%maxIntegralCutoff = TEN_TO_MINUS9
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**7.5) self%maxIntegralCutoff = TEN_TO_MINUS8
+            if (self%integralCutoff .le. self%maxIntegralCutoff) self%maxIntegralCutoff=self%integralCutoff
 
         end subroutine obtain_leastIntCutoff
 

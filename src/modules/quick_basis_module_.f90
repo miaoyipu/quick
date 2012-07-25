@@ -124,7 +124,8 @@ module quick_basis_module
    integer :: maxcontract   
    
    ! used for 2e integral indices
-   integer :: IJKLtype,III,JJJ,KKK,LLL,IJtype,KLtype, intIndex
+   integer :: IJKLtype,III,JJJ,KKK,LLL,IJtype,KLtype, intIndex, buffIndex
+    double precision :: buff(1000000)
 
    ! used for hrr and vrr
    double precision :: Y,dnmax
