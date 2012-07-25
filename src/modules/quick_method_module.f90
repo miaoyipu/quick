@@ -56,6 +56,7 @@ module quick_method_module
         logical :: PDB = .false.       ! PDB input
         logical :: extCharges = .false.! external charge
         
+
         ! those methods are mostly for research use
         logical :: FMM = .false.       ! Fast Multipole
         logical :: DIVCON = .false.    ! Div&Con
@@ -85,6 +86,7 @@ module quick_method_module
         ! following are some cutoff criteria
         double precision :: integralCutoff = 1.0d-6   ! integral cutoff
         double precision :: leastIntegralCutoff = LEASTCUTOFF  ! the smallest cutoff
+        double precision :: maxIntegralCutoff = 1.0d-12
         double precision :: primLimit      = 1.0d-6   ! prime cutoff
         double precision :: gradCutoff     = 1.0d-7   ! gradient cutoff
         double precision :: DMCutoff       = 1.0d-10  ! density matrix cutoff
@@ -468,6 +470,8 @@ endif
             self%integralCutoff = 1.0d-6   ! integral cutoff
             self%leastIntegralCutoff = LEASTCUTOFF 
                                            ! smallest integral cutoff, used in conventional SCF
+            self%maxIntegralCutoff = 1.0d-12
+                                           ! smallest integral cutoff, used in conventional SCF
             self%primLimit      = 1.0d-6   ! prime cutoff
             self%gradCutoff     = 1.0d-7   ! gradient cutoff
             self%DMCutoff       = 1.0d-10  ! density matrix cutoff
@@ -524,6 +528,29 @@ endif
 
         end subroutine check_quick_method
         
+        subroutine obtain_leastIntCutoff(self)
+            use quick_constants_module
+            implicit none
+            type(quick_method_type) self
+
+
+            self%leastIntegralCutoff = LEASTCUTOFF
+
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**9.5) self%leastIntegralCutoff = TEN_TO_MINUS5
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**8.5) self%leastIntegralCutoff = TEN_TO_MINUS4
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**7.5) self%leastIntegralCutoff = TEN_TO_MINUS3
+
+            self%maxIntegralCutoff  = 1.0d-12
+
+
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**9.5) self%maxIntegralCutoff = TEN_TO_MINUS10
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**8.5) self%maxIntegralCutoff = TEN_TO_MINUS9
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**7.5) self%maxIntegralCutoff = TEN_TO_MINUS8
+            if (self%integralCutoff .le. self%maxIntegralCutoff) self%maxIntegralCutoff=self%integralCutoff
+
+        end subroutine obtain_leastIntCutoff
+
+
         subroutine adjust_Cutoff(PRMS,PCHANGE,self)
             use quick_constants_module
             implicit none
