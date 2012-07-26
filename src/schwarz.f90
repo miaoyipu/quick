@@ -374,7 +374,7 @@ subroutine classprim(I,J,K,L,II,JJ,KK,LL,NNA,NNC,NNAB,NNCD,Ymax1,IIIxiao,JJJxiao
   Parameter(NN=13)
   double precision FM(0:13)
   double precision RA(3),RB(3),RC(3),RD(3)
-  double precision X44(129600)
+  double precision X44(12960)
   double precision X4444(MAXPRIM,MAXPRIM)
 
   double precision coefangxiaoL(20),coefangxiaoR(20)
@@ -552,7 +552,7 @@ subroutine DNscreen(II,JJ,DNmax1)
   do III=II111,II112
      do JJJ=JJ111,JJ112
         DENSEJI=dabs(quick_qm_struct%dense(JJJ,III))
-        if(DENSEJI.gt.DNmax1)DNmax1=dabs(DENSEJI)
+        if(DENSEJI.gt.DNmax1)DNmax1=DENSEJI
      enddo
   enddo
 

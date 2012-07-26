@@ -1,9 +1,0 @@
-nodirect HF scf=30 energy zmake NCYC=3 BASIS=6-311gss denserms=1.0e-7
-
-H           0.3032      -0.4940       0.0000
-H          -0.3032      -0.9088       0.0000
-O           0.0000       0.1753       0.0000
-
-
-
-
