@@ -125,7 +125,6 @@ module quick_basis_module
    
    ! used for 2e integral indices
    integer :: IJKLtype,III,JJJ,KKK,LLL,IJtype,KLtype, intIndex, buffIndex
-    double precision :: buff(1000000)
 
    ! used for hrr and vrr
    double precision :: Y,dnmax
@@ -182,6 +181,7 @@ contains
    !----------------
    subroutine allocate_quick_basis(self,natom_arg,nshell_arg,nbasis_arg)
         use quick_gaussian_class_module
+        use quick_size_module
         implicit none
         integer natom_arg,nshell_arg,nbasis_arg,i,j
         type(quick_basis_type) self
@@ -214,10 +214,10 @@ contains
             enddo
         enddo
         
-        allocate(self%gcexpo(6,nbasis_arg))
-        allocate(self%gccoeff(6,nbasis_arg))
+        allocate(self%gcexpo(MAXPRIM,nbasis_arg))
+        allocate(self%gccoeff(MAXPRIM,nbasis_arg))
         allocate(self%cons(nbasis_arg))
-        do i = 1, 6
+        do i = 1, MAXPRIM
             do j = 1, nbasis_arg
                 self%gcexpo( i, j) = 0.0
                 self%gccoeff( i, j) = 0.0
