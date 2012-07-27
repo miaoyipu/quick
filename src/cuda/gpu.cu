@@ -1088,3 +1088,29 @@ extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, Q
 	delete gpu->gpu_calculated->dense;
 	delete gpu->gpu_calculated->oULL;
 }
+
+extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxIntegralCutoff, int* intNum, char* intFileName)
+{
+    PRINTDEBUG("BEGIN TO RUN AOINT")
+    upload_sim_to_constant(gpu);
+    ERI_entry a;
+    FILE *intFile;
+    intFile = fopen(intFileName, "wb");
+    if (! intFile) {
+        printf("UNABLE TO OPEN INT FILE\n");
+    }
+    
+    
+    
+    a.IJ = 1;
+    a.KL = 1;
+    a.value = 10.0;
+    for (int i = 0; i<10; i++) {
+        fwrite(&a, sizeof(ERI_entry), 1, intFile);
+    }
+    fclose(intFile);
+    *intNum = 10;
+    PRINTDEBUG("BEGIN TO RUN AOINT KERNEL")
+    
+
+}
