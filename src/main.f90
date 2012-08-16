@@ -37,8 +37,7 @@
     logical :: failed = .false.         ! flag to indicates SCF fail or OPT fail 
     integer :: ierr                     ! return error info
     integer :: i,j,k
-    double precision t1_t, t2_t
-    common /timer/ t1_t, t2_t
+
     !------------------------------------------------------------------
     ! 1. The first thing that must be done is to initialize and prepare files
     !------------------------------------------------------------------

@@ -157,4 +157,9 @@ enum QUICK_METHOD
     DFT   = 2
 };
 
+struct ERI_entry{
+    int IJ;
+    int KL;
+    QUICKDouble value;
+};
 #endif

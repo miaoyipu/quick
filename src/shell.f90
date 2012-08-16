@@ -84,10 +84,6 @@ subroutine aoint
 
    call PrtAct(ioutfile,"Begin Calculation 2E TO DISK")
 
-   if (quick_method%nodirect) then
-      !call quick_open(iIntFile, intFileName, 'R', 'U', 'R',.true.)
-      open(unit=iIntFile, file=intFileName, form="unformatted", access="direct", recl=kind(1.0d0)+2*kind(1), status="replace")
-   endif
 
 
    write(ioutfile, '("  2-ELECTRON INTEGRAL")')
@@ -95,10 +91,25 @@ subroutine aoint
 
    call cpu_time(timer_begin%T2eAll)  ! Terminate the timer for 2e-integrals
 
-   INTBEG = 0
-   intindex = 0
-
    call obtain_leastIntCutoff(quick_method)
+
+#ifdef CUDA
+   write(ioutfile, '("  GPU-BASED 2-ELECTRON INTEGRAL GENERATOR")')
+   write(ioutfile, '("  WRITTEN BY YIPU MIAO(FLORIDA)")')
+   write(ioutfile, '("  THIS PROGRAM IS UNDER TEST PHASE")')
+   write(ioutfile, '("  CONTACT THE AUTHOR FOR SUPPORT")')
+
+   call gpu_aoint(quick_method%leastIntegralCutoff, quick_method%maxIntegralCutoff, intindex, intFileName)
+   inttot = intindex
+#else
+   if (quick_method%nodirect) then
+      !call quick_open(iIntFile, intFileName, 'R', 'U', 'R',.true.)
+      open(unit=iIntFile, file=intFileName, form="unformatted", access="direct", recl=kind(1.0d0)+2*kind(1), status="replace")
+   endif
+
+
+   intbeg = 0
+   intindex = 0
 
    do II = 1,jshell
       INTNUM = 0
@@ -108,32 +119,29 @@ subroutine aoint
             if ( Ycutoff(II,JJ)*Ycutoff(KK,LL).gt. quick_method%leastIntegralCutoff) then
                dnmax = 1.0
                call shell
-               INTNUM = INTNUM+1
+               intnum = intnum+1
             endif
          enddo; enddo;
-         !do kk = 1, buffIndex
-         !write(iIntFile, rec=kk+intindex) buff(kk)
-         !enddo
-         !intindex=intindex+buffIndex
       enddo
 
-
-      write(ioutfile, '("  II = ",i4," INTEGRAL=",i8, "  BEGIN=", i15)') II, INTNUM, INTBEG
-      INTBEG = intindex
+      write(ioutfile, '("  II = ",i4," INTEGRAL=",i8, "  BEGIN=", i15)') II, intnum, intbeg
+      intbeg = intindex
    enddo
 
-   INTTOT = INTBEG
+   inttot = intbeg
 
    if (quick_method%nodirect) then
       close(iIntFile)
    endif
+#endif
+
 
    call cpu_time(timer_end%T2eAll)  ! Terminate the timer for 2e-integrals
    timer_cumer%T2eAll=timer_cumer%T2eAll+timer_end%T2eAll-timer_begin%T2eAll ! add the time to cumer
 
 
    write(ioutfile, '("-----------------------------")')
-   write(ioutfile, '("      TOTAL INTEGRAL     = ", i12)') INTTOT
+   write(ioutfile, '("      TOTAL INTEGRAL     = ", i12)') inttot
    write(ioutfile, '("      INTEGRAL FILE SIZE = ", f12.2, " MB")')  &
          dble(dble(intindex) * (kind(0.0d0) + 2 * kind(I))/1024/1024)
    write(ioutfile, '("      USAGE TIME         = ", f12.2, " s")')  timer_cumer%T2eAll
@@ -321,32 +329,32 @@ subroutine addInt
    if (quick_method%nodirect) then
       close(iIntFile)
    endif
-quick_method%nodirect = .false.
+   quick_method%nodirect = .false.
 
-do II = 1,jshell
-do JJ = II,jshell
-do KK = II,jshell
-do LL = KK,jshell
-DNmax =  max(4.0d0*cutmatrix(II,JJ), &
-4.0d0*cutmatrix(KK,LL), &
-cutmatrix(II,LL), &
-cutmatrix(II,KK), &
-cutmatrix(JJ,KK), &
-cutmatrix(JJ,LL))
-! (IJ|KL)^2<=(II|JJ)*(KK|LL) if smaller than cutoff criteria, then
-! ignore the calculation to save computation time
-if ( (Ycutoff(II,JJ)*Ycutoff(KK,LL)        .gt. quick_method%integralCutoff).and. &
-(Ycutoff(II,JJ)*Ycutoff(KK,LL)*DNmax  .gt. quick_method%integralCutoff) .and. &
-(Ycutoff(II,JJ)*Ycutoff(KK,LL)  .lt. quick_method%leastIntegralCutoff))  &
-call shell
+   do II = 1,jshell
+      do JJ = II,jshell
+         do KK = II,jshell
+            do LL = KK,jshell
+               DNmax =  max(4.0d0*cutmatrix(II,JJ), &
+                     4.0d0*cutmatrix(KK,LL), &
+                     cutmatrix(II,LL), &
+                     cutmatrix(II,KK), &
+                     cutmatrix(JJ,KK), &
+                     cutmatrix(JJ,LL))
+               ! (IJ|KL)^2<=(II|JJ)*(KK|LL) if smaller than cutoff criteria, then
+               ! ignore the calculation to save computation time
+               if ( (Ycutoff(II,JJ)*Ycutoff(KK,LL)        .gt. quick_method%integralCutoff).and. &
+                     (Ycutoff(II,JJ)*Ycutoff(KK,LL)*DNmax  .gt. quick_method%integralCutoff) .and. &
+                     (Ycutoff(II,JJ)*Ycutoff(KK,LL)  .lt. quick_method%leastIntegralCutoff))  &
+                     call shell
 
-enddo
-enddo
+            enddo
+         enddo
 
-enddo
-enddo
-quick_method%nodirect = .true.
-   
+      enddo
+   enddo
+   quick_method%nodirect = .true.
+
 end subroutine addInt
 
 
@@ -682,18 +690,18 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                   if (III.lt.JJJ .and. III.lt. KKK .and. KKK.lt. LLL) then
                      call hrrwhole
                      if (abs(Y).gt.quick_method%maxIntegralCutoff) then
-A = (III-1)*nbasis+JJJ-1
-B = (KKK-1)*nbasis+LLL-1
+                        A = (III-1)*nbasis+JJJ-1
+                        B = (KKK-1)*nbasis+LLL-1
                         INTNUM=INTNUM+1
                         write(iIntFile, rec=INTNUM+intindex) A, B, Y
                      endif
                   else if((III.LT.KKK).OR.(JJJ.LE.LLL))then
                      call hrrwhole
                      if (abs(Y).gt.quick_method%maxintegralCutoff) then
-A = (III-1)*nbasis+JJJ-1
-B = (KKK-1)*nbasis+LLL-1
-INTNUM=INTNUM+1
-write(iIntFile, rec=INTNUM+intindex) A, B, Y
+                        A = (III-1)*nbasis+JJJ-1
+                        B = (KKK-1)*nbasis+LLL-1
+                        INTNUM=INTNUM+1
+                        write(iIntFile, rec=INTNUM+intindex) A, B, Y
                      endif
                   endif
                enddo

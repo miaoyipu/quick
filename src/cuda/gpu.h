@@ -45,7 +45,7 @@ void get2e_MP2(_gpu_type gpu);
 
 extern "C" void gpu_get2e_(QUICKDouble* o);
 extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, QUICKDouble* aelec, QUICKDouble* belec, QUICKDouble *o);
-extern "C" void gpu_mp2_(QUICKDouble* EMP2);
+extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxIntegralCutoff, int* intNum, char* intFileName);
 
 __global__ void get2e_kernel();
 __global__ void getxc_kernel();
