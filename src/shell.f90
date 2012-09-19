@@ -681,7 +681,6 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
 
 
    if (quick_method%nodirect) then
-
       INTNUM = 0
       do III=III1,III2
          do JJJ=max(III,JJJ1),JJJ2

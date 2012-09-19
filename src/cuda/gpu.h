@@ -37,9 +37,11 @@ extern "C" void gpu_upload_basis_(int* nshell, int* nprim, int* jshell, int* jba
                                   int* Qnumber,   int* Qstart,    int* Qfinal,    int* Qsbasis,   int* Qfbasis,\
                                   QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int* KLMN);
 
-
-
+// call subroutine
+// Fortran subroutine   --->  c interface    ->   kernel interface   ->    global       ->    kernel
+//                            [gpu_get2e]    ->      [get2e]         -> [get2e_kernel]  ->   [iclass]
 void get2e(_gpu_type gpu);
+void getAOInt(_gpu_type gpu, int iBatchStart, int iBatchEnd);
 void getxc(_gpu_type gpu);
 void get2e_MP2(_gpu_type gpu);
 
@@ -48,11 +50,13 @@ extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, Q
 extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxIntegralCutoff, int* intNum, char* intFileName);
 
 __global__ void get2e_kernel();
+__global__ void getAOInt_kernel(int iBatchStart, int iBatchEnd);
 __global__ void getxc_kernel();
 __global__ void get2e_MP2_kernel();
 
 
 __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
+__device__ void iclass_AOInt(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, int iBatchStart, int iBatchEnd);
 __device__ void iclass_MP2(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 
 void upload_sim_to_constant(_gpu_type gpu);

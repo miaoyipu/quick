@@ -8,7 +8,7 @@
  */
 
 #include <stdio.h>
-
+#include <string>
 #include "gpu.h"
 
 //-----------------------------------------------
@@ -1089,28 +1089,218 @@ extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, Q
 	delete gpu->gpu_calculated->oULL;
 }
 
+
+
+char *trim(char *s) {
+    char *ptr;
+    if (!s)
+        return NULL;   // handle NULL string
+    if (!*s)
+        return s;      // handle empty string
+    for (ptr = s + strlen(s) - 1; (ptr >= s) && isspace(*ptr); --ptr);
+    ptr[1] = '\0';
+    return s;
+}
+
+
 extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxIntegralCutoff, int* intNum, char* intFileName)
 {
     PRINTDEBUG("BEGIN TO RUN AOINT")
-    upload_sim_to_constant(gpu);
+    
     ERI_entry a;
     FILE *intFile;
-    intFile = fopen(intFileName, "wb");
+    intFile = fopen(trim(intFileName), "wb");
     if (! intFile) {
         printf("UNABLE TO OPEN INT FILE\n");
     }
     
+    int iBatchCount = 0;
+    
+    int const availableMem = 400000000;
+    int const availableERI = availableMem/sizeof(ERI_entry);
+    int nBatchStart[1000], nBatchEnd[1000], nBatchSize[1000];
+    int maxIntCount = 0;
+    int currentCount = 0;
     
     
-    a.IJ = 1;
-    a.KL = 1;
-    a.value = 10.0;
-    for (int i = 0; i<10; i++) {
-        fwrite(&a, sizeof(ERI_entry), 1, intFile);
+    /* 
+        fill up the GPU memory and if it is full, run another batch
+     */
+    for (int i = 0; i < gpu->nshell; i++) {
+        int intCount = 0;
+        for (int j = i; j < gpu->nshell; j++) {
+            for (int k = i; k < gpu->nshell; k++) {
+                for (int l = k; l < gpu->nshell; l++) {
+                    intCount ++;
+                }
+            }
+        }
+        
+        
+        intCount = intCount * 0.1;
+        
+        printf(" %i int count = %i current count = %i\n", i, intCount, currentCount);
+        
+        if (currentCount + intCount < availableERI) {
+            currentCount = currentCount + intCount;
+        }else{
+            nBatchStart[iBatchCount + 1] = i + 1;
+            nBatchEnd  [iBatchCount]     = i ;
+            nBatchSize [iBatchCount]     = currentCount;
+            iBatchCount++;
+            currentCount = intCount;
+        }
+        
     }
-    fclose(intFile);
-    *intNum = 10;
-    PRINTDEBUG("BEGIN TO RUN AOINT KERNEL")
     
+    nBatchEnd[iBatchCount] = gpu->nshell - 1;
+    nBatchSize[iBatchCount]= currentCount;
+    iBatchCount++;
+    
+    for (int i = 0; i < iBatchCount; i++) {
+        if (maxIntCount < nBatchSize[i]) {
+            maxIntCount = nBatchSize[i];
+        }
+    }
+    
+    printf("batch count = %i\n", iBatchCount);
+    printf("max int count = %i\n", maxIntCount * sizeof(ERI_entry));
+    for (int i = 0; i<iBatchCount; i++) {
+        printf(" %i from %i to %i %i\n", i, nBatchStart[i], nBatchEnd[i], nBatchSize[i] * sizeof(ERI_entry));
+    }
+    
+    int nBatchERICount = maxIntCount*1.1;   // allocate little more space
+    
+    gpu -> aoint_buffer                 = new cuda_buffer_type<ERI_entry>( nBatchERICount );
+    gpu -> gpu_sim.aoint_buffer         = gpu -> aoint_buffer -> _devData;
+    gpu -> gpu_sim.leastIntegralCutoff  = *leastIntegralCutoff;
+    gpu -> gpu_sim.maxIntegralCutoff    = *maxIntegralCutoff;
+    gpu -> gpu_sim.iBatchSize           = nBatchERICount;
+    gpu -> intCount                     = new cuda_buffer_type<QUICKULL>(1);
+    gpu -> intCount -> _hostData[0]     = 0;
+    gpu -> intCount -> Upload();
+    gpu -> gpu_sim.intCount = gpu->intCount->_devData;
+    
+    upload_sim_to_constant(gpu);
+    
+#ifdef DEBUG
+    float time_downloadERI, time_kernel, time_io;
+    time_downloadERI = 0;
+    time_io = 0;
+    time_kernel = 0;
+    cudaEvent_t start_tot,end_tot;
+    cudaEventCreate(&start_tot);
+    cudaEventCreate(&end_tot);
+    cudaEventRecord(start_tot, 0);
+#endif
+
+    
+    for (int iBatch = 0; iBatch < iBatchCount; iBatch++) {
+        
+        printf("batch %i start %i end %i\n", iBatch, nBatchStart[iBatch], nBatchEnd[iBatch]);
+
+        // zero all ERI entries
+        cudaMemset( gpu->aoint_buffer->_devData, 0, sizeof(ERI_entry) * nBatchERICount );
+        gpu -> intCount -> _hostData[0] = 0;
+        gpu -> intCount -> Upload();
+        
+#ifdef DEBUG
+        cudaEvent_t start,end;
+        cudaEventCreate(&start);
+        cudaEventCreate(&end);
+        cudaEventRecord(start, 0);
+#endif
+
+        // calculate ERI, kernel part
+        getAOInt(gpu, nBatchStart[iBatch], nBatchEnd[iBatch]);
+
+#ifdef DEBUG
+        cudaEventRecord(end, 0);
+        cudaEventSynchronize(end);
+        float time;
+        cudaEventElapsedTime(&time, start, end);
+        PRINTUSINGTIME("KERNEL",time);
+        time_kernel += time;
+        cudaEventDestroy(start);
+        cudaEventDestroy(end);
+#endif
+
+        
+#ifdef DEBUG
+        cudaEventCreate(&start);
+        cudaEventCreate(&end);
+        cudaEventRecord(start, 0);
+#endif
+        
+        gpu -> intCount -> Download();
+        // download ERI from GPU, this is time-consuming part, that need to be reduced
+        //gpu -> aoint_buffer -> Download();
+        cudaMemcpy(gpu->aoint_buffer->_hostData, gpu->aoint_buffer->_devData, gpu->intCount->_hostData[0]*sizeof(ERI_entry), cudaMemcpyDeviceToHost);
+        
+#ifdef DEBUG
+        cudaEventRecord(end, 0);
+        cudaEventSynchronize(end);
+        cudaEventElapsedTime(&time, start, end);
+        PRINTUSINGTIME("DOWNLOAD ERI",time);
+        time_downloadERI += time;
+        cudaEventDestroy(start);
+        cudaEventDestroy(end);
+#endif
+        
+        
+#ifdef DEBUG
+        cudaEventCreate(&start);
+        cudaEventCreate(&end);
+        cudaEventRecord(start, 0);
+#endif
+        
+        
+        printf("intCount = %i\n", gpu->intCount->_hostData[0]);
+        // write to disk. there is no way to avoid this part currently.
+        for (int i = 0; i < gpu->intCount->_hostData[0]  ; i++) {
+            
+            a = gpu -> aoint_buffer -> _hostData[i];
+            
+            if (abs(a.value) > *maxIntegralCutoff) {
+                fwrite(&a, sizeof(ERI_entry), 1, intFile);
+                *intNum = *intNum + 1;
+            }
+            
+        }
+        
+        
+#ifdef DEBUG
+        cudaEventRecord(end, 0);
+        cudaEventSynchronize(end);
+        cudaEventElapsedTime(&time, start, end);
+        PRINTUSINGTIME("IO",time);
+        time_io += time;
+        cudaEventDestroy(start);
+        cudaEventDestroy(end);
+#endif
+        
+        
+    }
+    
+    
+    delete gpu->aoint_buffer;
+    
+    fclose(intFile);
+    
+    printf(" TOTAL INT = %i \n", *intNum);
+    PRINTDEBUG("END TO RUN AOINT KERNEL")
+    
+#ifdef DEBUG
+    cudaEventRecord(end_tot, 0);
+    cudaEventSynchronize(end_tot);
+    float time_tot;
+    cudaEventElapsedTime(&time_tot, start_tot, end_tot);
+    PRINTUSINGTIME("KERNEL",time_kernel);
+    PRINTUSINGTIME("DOWNLOAD ERI", time_downloadERI);
+    PRINTUSINGTIME("IO", time_io);
+    PRINTUSINGTIME("TOTAL",time_tot);
+    cudaEventDestroy(start_tot);
+    cudaEventDestroy(end_tot);
+#endif
 
 }

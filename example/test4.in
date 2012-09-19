@@ -1,4 +1,4 @@
-HF cutoff=1.0e-9 denserms=1.0e-8 energy zmake NCYC=4  BASIS=cc-pvdz
+nodirect HF cutoff=1.0e-9 denserms=1.0e-8 energy zmake NCYC=4  BASIS=6-31gs
 
 C           4.5916       2.6127       4.3145
 H           6.8049       4.5138      -2.5775
