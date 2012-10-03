@@ -11,6 +11,7 @@
 #include <string>
 #include "gpu.h"
 
+
 //-----------------------------------------------
 // Set up specified device and be ready to ignite
 //-----------------------------------------------
@@ -1113,33 +1114,27 @@ extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxInt
     if (! intFile) {
         printf("UNABLE TO OPEN INT FILE\n");
     }
-    
+ 	
     int iBatchCount = 0;
-    
     int const availableMem = 400000000;
     int const availableERI = availableMem/sizeof(ERI_entry);
     int nBatchStart[1000], nBatchEnd[1000], nBatchSize[1000];
     int maxIntCount = 0;
     int currentCount = 0;
+
     
+    nBatchStart[0] = 0;
     
     /* 
         fill up the GPU memory and if it is full, run another batch
      */
-    for (int i = 0; i < gpu->nshell; i++) {
+    
+    
+    for (int i = 0; i < gpu -> gpu_cutoff -> sqrQshell; i++) {
+       
         int intCount = 0;
-        for (int j = i; j < gpu->nshell; j++) {
-            for (int k = i; k < gpu->nshell; k++) {
-                for (int l = k; l < gpu->nshell; l++) {
-                    intCount ++;
-                }
-            }
-        }
         
-        
-        intCount = intCount * 0.1;
-        
-        printf(" %i int count = %i current count = %i\n", i, intCount, currentCount);
+        intCount = (gpu -> gpu_cutoff -> sqrQshell ) * 5;
         
         if (currentCount + intCount < availableERI) {
             currentCount = currentCount + intCount;
@@ -1153,7 +1148,8 @@ extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxInt
         
     }
     
-    nBatchEnd[iBatchCount] = gpu->nshell - 1;
+    
+    nBatchEnd[iBatchCount] = gpu -> gpu_cutoff -> sqrQshell - 1  ;
     nBatchSize[iBatchCount]= currentCount;
     iBatchCount++;
     
@@ -1163,15 +1159,16 @@ extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxInt
         }
     }
     
+    
     printf("batch count = %i\n", iBatchCount);
     printf("max int count = %i\n", maxIntCount * sizeof(ERI_entry));
     for (int i = 0; i<iBatchCount; i++) {
         printf(" %i from %i to %i %i\n", i, nBatchStart[i], nBatchEnd[i], nBatchSize[i] * sizeof(ERI_entry));
     }
     
-    int nBatchERICount = maxIntCount*1.1;   // allocate little more space
+    int nBatchERICount = maxIntCount; 
     
-    gpu -> aoint_buffer                 = new cuda_buffer_type<ERI_entry>( nBatchERICount );
+    gpu -> aoint_buffer                 = new cuda_buffer_type<ERI_entry>( nBatchERICount, true );
     gpu -> gpu_sim.aoint_buffer         = gpu -> aoint_buffer -> _devData;
     gpu -> gpu_sim.leastIntegralCutoff  = *leastIntegralCutoff;
     gpu -> gpu_sim.maxIntegralCutoff    = *maxIntegralCutoff;
@@ -1199,17 +1196,15 @@ extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxInt
         
         printf("batch %i start %i end %i\n", iBatch, nBatchStart[iBatch], nBatchEnd[iBatch]);
 
-        // zero all ERI entries
-        cudaMemset( gpu->aoint_buffer->_devData, 0, sizeof(ERI_entry) * nBatchERICount );
-        gpu -> intCount -> _hostData[0] = 0;
-        gpu -> intCount -> Upload();
-        
 #ifdef DEBUG
         cudaEvent_t start,end;
         cudaEventCreate(&start);
         cudaEventCreate(&end);
         cudaEventRecord(start, 0);
 #endif
+        
+        gpu -> intCount -> _hostData[0] = 0;
+        gpu -> intCount -> Upload();
 
         // calculate ERI, kernel part
         getAOInt(gpu, nBatchStart[iBatch], nBatchEnd[iBatch]);
@@ -1234,7 +1229,6 @@ extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxInt
         
         gpu -> intCount -> Download();
         // download ERI from GPU, this is time-consuming part, that need to be reduced
-        //gpu -> aoint_buffer -> Download();
         cudaMemcpy(gpu->aoint_buffer->_hostData, gpu->aoint_buffer->_devData, gpu->intCount->_hostData[0]*sizeof(ERI_entry), cudaMemcpyDeviceToHost);
         
 #ifdef DEBUG
@@ -1284,8 +1278,28 @@ extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxInt
     
     
     delete gpu->aoint_buffer;
+
+#ifdef DEBUG
+    
+    cudaEvent_t start,end;
+    cudaEventCreate(&start);
+    cudaEventCreate(&end);
+    cudaEventRecord(start, 0);
+#endif
     
     fclose(intFile);
+
+#ifdef DEBUG
+    float time;
+    cudaEventRecord(end, 0);
+    cudaEventSynchronize(end);
+    cudaEventElapsedTime(&time, start, end);
+    PRINTUSINGTIME("IO FLUSHING",time);
+    time_io += time;
+    cudaEventDestroy(start);
+    cudaEventDestroy(end);
+#endif
+
     
     printf(" TOTAL INT = %i \n", *intNum);
     PRINTDEBUG("END TO RUN AOINT KERNEL")
@@ -1293,7 +1307,7 @@ extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxInt
 #ifdef DEBUG
     cudaEventRecord(end_tot, 0);
     cudaEventSynchronize(end_tot);
-    float time_tot;
+    float time_tot = 0;
     cudaEventElapsedTime(&time_tot, start_tot, end_tot);
     PRINTUSINGTIME("KERNEL",time_kernel);
     PRINTUSINGTIME("DOWNLOAD ERI", time_downloadERI);
