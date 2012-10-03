@@ -56,7 +56,7 @@ __global__ void get2e_MP2_kernel();
 
 
 __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
-__device__ void iclass_AOInt(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, int iBatchStart, int iBatchEnd);
+__device__ void iclass_AOInt(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 __device__ void iclass_MP2(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 
 void upload_sim_to_constant(_gpu_type gpu);

@@ -280,6 +280,7 @@ static _gpu_type gpu = NULL;
 // template to pack buffered data for GPU-CPU communication
 template <typename T>
 struct cuda_buffer_type {
+    bool            _bPinned;    // if pinned mem
     unsigned int    _length;     // length of the data
     unsigned int    _length2;    // length 2 is the row, and if it's not equals to 0, the data is a matrix
     T*              _hostData;   // data on host (CPU)
@@ -287,7 +288,8 @@ struct cuda_buffer_type {
     T*              _f90Data;    // if constructed from f90 array, it is the pointer
     
     // constructor
-    cuda_buffer_type(int length);   
+    cuda_buffer_type(int length);
+    cuda_buffer_type(int length, bool bPinned);
     cuda_buffer_type(unsigned int length);
     cuda_buffer_type(int length, int length2);
     cuda_buffer_type(unsigned int length, unsigned int length2);
@@ -315,56 +317,63 @@ struct cuda_buffer_type {
 
 template <typename T>
 cuda_buffer_type<T> :: cuda_buffer_type(int length) :
-_length(length), _length2(1), _hostData(NULL), _devData(NULL), _f90Data(NULL)
+_length(length), _length2(1), _hostData(NULL), _devData(NULL), _f90Data(NULL), _bPinned(false)
+{
+    Allocate();
+}
+
+template <typename T>
+cuda_buffer_type<T> :: cuda_buffer_type(int length, bool bPinned) :
+_length(length), _length2(1), _hostData(NULL), _devData(NULL), _f90Data(NULL), _bPinned(bPinned)
 {
     Allocate();
 }
 
 template <typename T>
 cuda_buffer_type<T> :: cuda_buffer_type(unsigned int length) :
-_length(length), _length2(1), _hostData(NULL), _devData(NULL), _f90Data(NULL)
+_length(length), _length2(1), _hostData(NULL), _devData(NULL), _f90Data(NULL), _bPinned(false)
 {
     Allocate();
 }
 
 template <typename T>
 cuda_buffer_type<T> :: cuda_buffer_type(int length, int length2) :
-_length(length), _length2(length2), _hostData(NULL), _devData(NULL), _f90Data(NULL)
+_length(length), _length2(length2), _hostData(NULL), _devData(NULL), _f90Data(NULL), _bPinned(false)
 {
     Allocate();
 }
 
 template <typename T>
 cuda_buffer_type<T> :: cuda_buffer_type(unsigned int length, unsigned int length2) :
-_length(length), _length2(length2), _hostData(NULL), _devData(NULL), _f90Data(NULL)
+_length(length), _length2(length2), _hostData(NULL), _devData(NULL), _f90Data(NULL), _bPinned(false)
 {
     Allocate();
 }
 
 template <typename T>
 cuda_buffer_type<T> :: cuda_buffer_type(T* f90data, unsigned int length, unsigned int length2) :
-_length(length), _length2(length2), _hostData(NULL), _devData(NULL), _f90Data(f90data)
+_length(length), _length2(length2), _hostData(NULL), _devData(NULL), _f90Data(f90data), _bPinned(false)
 {
     Allocate();
 }
 
 template <typename T>
 cuda_buffer_type<T> :: cuda_buffer_type(T* f90data, int length, int length2) :
-_length(length), _length2(length2), _hostData(NULL), _devData(NULL), _f90Data(f90data)
+_length(length), _length2(length2), _hostData(NULL), _devData(NULL), _f90Data(f90data), _bPinned(false)
 {
     Allocate();
 }
 
 template <typename T>
 cuda_buffer_type<T> :: cuda_buffer_type(T* f90data, unsigned int length) :
-_length(length), _length2(1), _hostData(NULL), _devData(NULL), _f90Data(f90data)
+_length(length), _length2(1), _hostData(NULL), _devData(NULL), _f90Data(f90data), _bPinned(false)
 {
     Allocate();
 }
 
 template <typename T>
 cuda_buffer_type<T> :: cuda_buffer_type(T* f90data, int length) :
-_length(length), _length2(1), _hostData(NULL), _devData(NULL), _f90Data(f90data)
+_length(length), _length2(1), _hostData(NULL), _devData(NULL), _f90Data(f90data), _bPinned(false)
 {
     Allocate();
 }
@@ -385,40 +394,53 @@ void cuda_buffer_type<T> :: Allocate()
     if (! _f90Data) // if not constructed from f90 array
     {
         cudaError_t status;
-        
-        //Allocate GPU memeory
-        status = cudaMalloc((void**)&_devData,_length*_length2*sizeof(T));
-//		status = cudaHostAlloc((void**)&_hostData, _length*_length2*sizeof(T),cudaHostAllocMapped);
-        PRINTERROR(status, " cudaMalloc cuda_buffer_type :: Allocate failed!");
-        gpu->totalGPUMemory   += _length*_length2*sizeof(T);
-        gpu->totalCPUMemory   += _length*_length2*sizeof(T);        
-        
-//		status = cudaHostGetDevicePointer((void **)&_devData, (void *)_hostData, 0);
-//		PRINTERROR(status, " cudaGetDevicePointer cuda_buffer_type :: Allocate failed!");
-//		memset(_hostData, 0, _length*_length2*sizeof(T));
-        
-        //Allocate CPU emembory
-  		_hostData = new T[_length*_length2];      
-		memset(_hostData, 0, _length*_length2*sizeof(T));
+        if (!_bPinned) {
+            //Allocate GPU memeory
+            status = cudaMalloc((void**)&_devData,_length*_length2*sizeof(T));
+            PRINTERROR(status, " cudaMalloc cuda_buffer_type :: Allocate failed!");
+            gpu->totalGPUMemory   += _length*_length2*sizeof(T);
+            gpu->totalCPUMemory   += _length*_length2*sizeof(T);
+            
+            //Allocate CPU emembory
+            _hostData = new T[_length*_length2];
+            memset(_hostData, 0, _length*_length2*sizeof(T));
+        }else{
+            //Allocate GPU memeory
+            status = cudaHostAlloc((void**)&_hostData, _length*_length2*sizeof(T),cudaHostAllocMapped);
+            PRINTERROR(status, " cudaMalloc cuda_buffer_type :: Allocate failed!");
+            gpu->totalGPUMemory   += _length*_length2*sizeof(T);
+            gpu->totalCPUMemory   += _length*_length2*sizeof(T);
+            
+            //Allocate CPU emembory
+            status = cudaHostGetDevicePointer((void **)&_devData, (void *)_hostData, 0);
+            PRINTERROR(status, " cudaGetDevicePointer cuda_buffer_type :: Allocate failed!");
+            memset(_hostData, 0, _length*_length2*sizeof(T));
+        }
     }else {
-        
-        // if constructed from f90 array
         cudaError_t status;
-
-        //Allocate GPU memeory
-        status = cudaMalloc((void**)&_devData,_length*_length2*sizeof(T));
-        PRINTERROR(status, "cudaMalloc cuda_buffertype :: Allocate failed!");
-        //Allocate CPU emembory
-//        _hostData = (T*) malloc(_length*_length2*sizeof(T));
-        _hostData = new T[_length*_length2];
-        gpu->totalGPUMemory   += _length*_length2*sizeof(T);
-        gpu->totalCPUMemory   += _length*_length2*sizeof(T);        
-//     status = cudaHostAlloc((void**)&_hostData, _length*_length2*sizeof(T),cudaHostAllocMapped);
-//	   PRINTERROR(status, " cudaMalloc cuda_buffer_type :: Allocate failed!");
-
-//	   status = cudaHostGetDevicePointer((void **)&_devData, (void *)_hostData, 0);
-//     PRINTERROR(status, " cudaGetDevicePointer cuda_buffer_type :: Allocate failed!");
-
+        if (!_bPinned) {
+            //Allocate GPU memeory
+            status = cudaMalloc((void**)&_devData,_length*_length2*sizeof(T));
+            PRINTERROR(status, " cudaMalloc cuda_buffer_type :: Allocate failed!");
+            gpu->totalGPUMemory   += _length*_length2*sizeof(T);
+            gpu->totalCPUMemory   += _length*_length2*sizeof(T);
+            
+            //Allocate CPU emembory
+            _hostData = new T[_length*_length2];
+            memset(_hostData, 0, _length*_length2*sizeof(T));
+        }else{
+            //Allocate GPU memeory
+            status = cudaHostAlloc((void**)&_hostData, _length*_length2*sizeof(T),cudaHostAllocMapped);
+            PRINTERROR(status, " cudaMalloc cuda_buffer_type :: Allocate failed!");
+            gpu->totalGPUMemory   += _length*_length2*sizeof(T);
+            gpu->totalCPUMemory   += _length*_length2*sizeof(T);
+            
+            //Allocate CPU emembory
+            status = cudaHostGetDevicePointer((void **)&_devData, (void *)_hostData, 0);
+            PRINTERROR(status, " cudaGetDevicePointer cuda_buffer_type :: Allocate failed!");
+            memset(_hostData, 0, _length*_length2*sizeof(T));
+        }
+        
         // copy f90 data to _hostData
         size_t index_c = 0;
         size_t index_f = 0;
@@ -441,17 +463,25 @@ void cuda_buffer_type<T> :: Deallocate()
 {
 
     PRINTDEBUG(">>BEGIN TO DEALLOCATE TEMPLATE")
-
-    if (_devData != NULL) {
+    if (!_bPinned) {
+        
+        if (_devData != NULL) {
+            cudaError_t status;
+            status = cudaFree(_devData);
+            //	status = cudaFreeHost(_hostData);
+            PRINTERROR(status, " cudaFree cuda_buffer_type :: Deallocate failed!");
+            gpu->totalGPUMemory -= _length*_length2*sizeof(T);
+        }
+        
+        if (_hostData != NULL) {
+            free(_hostData);
+            gpu->totalCPUMemory -= _length*_length2*sizeof(T);
+        }
+    }else{
         cudaError_t status;
-        status = cudaFree(_devData);
-        //	status = cudaFreeHost(_hostData);
+        status = cudaFreeHost(_hostData);
         PRINTERROR(status, " cudaFree cuda_buffer_type :: Deallocate failed!");
         gpu->totalGPUMemory -= _length*_length2*sizeof(T);
-    }
-    
-    if (_hostData != NULL) {
-        free(_hostData);
         gpu->totalCPUMemory -= _length*_length2*sizeof(T);
     }
     _hostData = NULL;

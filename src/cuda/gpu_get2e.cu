@@ -96,16 +96,72 @@ void get2e(_gpu_type gpu)
 
 __global__ void getAOInt_kernel(int iBatchStart, int iBatchEnd)
 {
+ /*
+    unsigned int blockID    = blockIdx.x;
+    unsigned int gridSize   = gridDim.x;
+    unsigned int blockSize  = blockDim.x;
+    unsigned int threadID   = threadIdx.x;
+    
+    unsigned int jshell     = devSim.sqrQshell;
+    int myShell             = blockID;
+    int currentShell        = -1;
+    
+    for (int i = 0; i < jshell; i++) {
+        int II = devSim.sorted_YCutoffIJ[i].x;
+        int ii = devSim.sorted_Q[II];
+        if ( ii <= iBatchEnd && ii>=iBatchStart) {
+            currentShell ++;
+            if (currentShell == myShell) {
+                myShell = myShell + gridSize;
+                int JJ = devSim.sorted_YCutoffIJ[i].y;
+                int jj = devSim.sorted_Q[JJ];
+                
+                int myShellJ = threadID;
+                for (int j = 0; j < jshell; j++) {
+                    if (j == myShellJ) {
+                        myShellJ = myShellJ + blockSize;
+                        int KK = devSim.sorted_YCutoffIJ[j].x;
+                        int LL = devSim.sorted_YCutoffIJ[j].y;
+                        
+                        int kk = devSim.sorted_Q[KK];
+                        int ll = devSim.sorted_Q[LL];
+                        
+                        
+                        if (ii<=kk) {
+                            int nshell = devSim.nshell;
+                            
+                            if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.leastIntegralCutoff) {
+                                
+                                int iii = devSim.sorted_Qnumber[II];
+                                int jjj = devSim.sorted_Qnumber[JJ];
+                                int kkk = devSim.sorted_Qnumber[KK];
+                                int lll = devSim.sorted_Qnumber[LL];
+                                
+                                iclass_AOInt(iii, jjj, kkk, lll, ii, jj, kk, ll, 1000.0);
+                                
+                            }
+                        }
+                        
+                    }
+                }
+                
+            }
+        }
+    }
+    */
+     
     unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
     int totalThreads = blockDim.x*gridDim.x;
     
-    QUICKULL jshell   = (QUICKULL) devSim.sqrQshell;
-    QUICKULL myInt    = (QUICKULL) jshell*jshell / totalThreads;
+    QUICKULL jshell         = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshellBatch    = (QUICKULL) iBatchEnd - iBatchStart + 1;
+    QUICKULL myInt          = (QUICKULL) jshell * jshellBatch / totalThreads;
+    QUICKULL intOffset      = (QUICKULL) jshell * iBatchStart;
     
-    if ((jshell*jshell - myInt*totalThreads)> offside) myInt++;
+    if ((jshell*jshellBatch - myInt*totalThreads)> offside) myInt++;
     
     for (QUICKULL i = 1; i<=myInt; i++) {
-        QUICKULL currentInt = totalThreads * (i-1)+offside;
+        QUICKULL currentInt = totalThreads * (i-1) + offside + intOffset;
         QUICKULL a = (QUICKULL) currentInt/jshell;
         QUICKULL b = (QUICKULL) (currentInt - a*jshell);
         
@@ -119,7 +175,7 @@ __global__ void getAOInt_kernel(int iBatchStart, int iBatchEnd)
         int kk = devSim.sorted_Q[KK];
         int ll = devSim.sorted_Q[LL];
         
-        if (ii<=kk && ( ii <= iBatchEnd  && ii >=iBatchStart )) {
+        if (ii<=kk) {
             int nshell = devSim.nshell;
             
             if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.leastIntegralCutoff) {
@@ -133,7 +189,7 @@ __global__ void getAOInt_kernel(int iBatchStart, int iBatchEnd)
                 int III1 = LOC2(devSim.Qsbasis, ii, iii, devSim.nshell, 4);
                 int III2 = LOC2(devSim.Qfbasis, ii, iii, devSim.nshell, 4);
                 
-                    iclass_AOInt(iii, jjj, kkk, lll, ii, jj, kk, ll, 1000.0, 0, devSim.nshell);
+                    iclass_AOInt(iii, jjj, kkk, lll, ii, jj, kk, ll, 1000.0);
                 
             }
         }
@@ -247,7 +303,7 @@ __device__ QUICKULL total(int a, int n)
  iclass subroutine is to generate 2-electron intergral using HRR and VRR method, which is the most
  performance algrithem for electron intergral evaluation. See description below for details
  */
-__device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, int iBatchStart , int iBatchEnd)
+__device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax)
 {
     
     /*
@@ -437,41 +493,33 @@ __device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigne
     
     
     for (int III = III1; III <= III2; III++) {
+        //QUICKULL intOffset1 = total(III - 1, devSim.nbasis) - total(iBatchStart, devSim.nbasis);
         
-//        if ( (III <= iBatchEnd + 1) && (III >= iBatchStart + 1)) {
-            
-            QUICKULL intOffset1 = total(III - 1, devSim.nbasis) - total(iBatchStart, devSim.nbasis);
-            
-            for (int JJJ = MAX(III,JJJ1); JJJ <= JJJ2; JJJ++) {
-                for (int KKK = MAX(III,KKK1); KKK <= KKK2; KKK++) {
-                    for (int LLL = MAX(KKK,LLL1); LLL <= LLL2; LLL++) {
-                        if( (III < JJJ && III < KKK && KKK < LLL) ||
-                            (III < KKK || JJJ <= LLL)){
-                            QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L,\
-                                                                   III, JJJ, KKK, LLL, IJKLTYPE, store, \
-                                                                   RAx, RAy, RAz, RBx, RBy, RBz, \
-                                                                   RCx, RCy, RCz, RDx, RDy, RDz);
+        for (int JJJ = MAX(III,JJJ1); JJJ <= JJJ2; JJJ++) {
+            for (int KKK = MAX(III,KKK1); KKK <= KKK2; KKK++) {
+                for (int LLL = MAX(KKK,LLL1); LLL <= LLL2; LLL++) {
+                    if( (III < JJJ && III < KKK && KKK < LLL) ||
+                       (III < KKK || JJJ <= LLL)){
+                        QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L,\
+                                                               III, JJJ, KKK, LLL, IJKLTYPE, store, \
+                                                               RAx, RAy, RAz, RBx, RBy, RBz, \
+                                                               RCx, RCy, RCz, RDx, RDy, RDz);
+                        
+                        if (abs(Y) > devSim.maxIntegralCutoff){
+                            ERI_entry a;
+                            a.value = Y;
+                            a.IJ = (III - 1) * devSim.nbasis + JJJ - 1;
+                            a.KL = (KKK - 1) * devSim.nbasis + LLL - 1;
                             
-                            if (abs(Y) > devSim.maxIntegralCutoff){
-                                ERI_entry a;
-                                a.value = Y;
-                                a.IJ = (III - 1) * devSim.nbasis + JJJ - 1;
-                                a.KL = (KKK - 1) * devSim.nbasis + LLL - 1;
-                                
-                                //QUICKULL intCount = intOffset1 + (JJJ - III) * (devSim.nbasis - III + 1) * (devSim.nbasis - III + 2) /2  \
-                                                          + (LLL - III) * (LLL - III + 1) / 2  + (KKK-III);
-                                //if (intCount < devSim.iBatchSize && intCount >= 0) {
-                                
-                                    devSim.aoint_buffer[QUICKADD(devSim.intCount[0], 1)] = a;
-                                
-                                //}
-                                
-                            }
+                            //QUICKULL intCount = intOffset1 + (JJJ - III) * (devSim.nbasis - III + 1) * (devSim.nbasis - III + 2) /2  \
+                            + (LLL - III) * (LLL - III + 1) / 2  + (KKK-III);
+                            devSim.aoint_buffer[QUICKADD(devSim.intCount[0], 1)] = a;
+                            
                         }
                     }
                 }
             }
-//        }
+        }
     }
 }
 
