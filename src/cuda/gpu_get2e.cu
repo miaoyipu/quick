@@ -31,7 +31,7 @@ static __constant__ int Sumindex[10]={0,0,1,4,10,20,35,56,84,120};
  */
 void upload_sim_to_constant(_gpu_type gpu){
     cudaError_t status;
-    status = cudaMemcpyToSymbol("devSim", &gpu->gpu_sim, sizeof(gpu_simulation_type), 0, cudaMemcpyHostToDevice);
+    status = cudaMemcpyToSymbol(devSim, &gpu->gpu_sim, sizeof(gpu_simulation_type));
     PRINTERROR(status, " cudaMemcpyToSymbol, sim copy to constants failed")
 }
 
@@ -42,7 +42,7 @@ static float totTime;
 
 
 // interface to call Kernel subroutine
-void getAOInt(_gpu_type gpu, int iBatchStart, int iBatchEnd)
+void getAOInt(_gpu_type gpu, QUICKULL intStart, QUICKULL intEnd, cudaStream_t streamI, int streamID,  ERI_entry* aoint_buffer)
 {
 #ifdef DEBUG
     cudaEvent_t start,end;
@@ -51,8 +51,12 @@ void getAOInt(_gpu_type gpu, int iBatchStart, int iBatchEnd)
     cudaEventRecord(start, 0);
 #endif
     
+    //QUICKULL intStart, intEnd;
+    //intStart = gpu -> gpu_cutoff -> sqrQshell * iBatchStart;
+    //intEnd   = gpu -> gpu_cutoff -> sqrQshell * (iBatchEnd + 1) - 1;
+    
     printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    getAOInt_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>( iBatchStart, iBatchEnd);
+    getAOInt_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID);
     
 #ifdef DEBUG
     cudaEventRecord(end, 0);
@@ -93,75 +97,92 @@ void get2e(_gpu_type gpu)
 }
 
 
-
-__global__ void getAOInt_kernel(int iBatchStart, int iBatchEnd)
+// interface to call Kernel subroutine
+void getAddInt(_gpu_type gpu, int bufferSize, ERI_entry* aoint_buffer)
 {
- /*
-    unsigned int blockID    = blockIdx.x;
-    unsigned int gridSize   = gridDim.x;
-    unsigned int blockSize  = blockDim.x;
-    unsigned int threadID   = threadIdx.x;
+#ifdef DEBUG
+    cudaEvent_t start,end;
+    cudaEventCreate(&start);
+    cudaEventCreate(&end);
+    cudaEventRecord(start, 0);
+#endif
     
-    unsigned int jshell     = devSim.sqrQshell;
-    int myShell             = blockID;
-    int currentShell        = -1;
+    printf("METHOD = %i\n", gpu->gpu_sim.method);
+    getAddInt_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>(bufferSize, aoint_buffer);
     
-    for (int i = 0; i < jshell; i++) {
-        int II = devSim.sorted_YCutoffIJ[i].x;
-        int ii = devSim.sorted_Q[II];
-        if ( ii <= iBatchEnd && ii>=iBatchStart) {
-            currentShell ++;
-            if (currentShell == myShell) {
-                myShell = myShell + gridSize;
-                int JJ = devSim.sorted_YCutoffIJ[i].y;
-                int jj = devSim.sorted_Q[JJ];
+    
+#ifdef DEBUG
+    cudaEventRecord(end, 0);
+    cudaEventSynchronize(end);
+    float time;
+    cudaEventElapsedTime(&time, start, end);
+    totTime+=time;
+    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
+    cudaEventDestroy(start);
+    cudaEventDestroy(end);
+#endif
+}
+
+
+__global__ void getAddInt_kernel(int bufferSize, ERI_entry* aoint_buffer){
+    unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
+    int totalThreads = blockDim.x*gridDim.x;
+    int const batchSize = 20;
+    ERI_entry a[batchSize];
+    int j = 0;
+    
+    QUICKULL myInt = (QUICKULL) (bufferSize) / totalThreads;
+    if ((bufferSize - myInt*totalThreads)> offside) myInt++;
+    
+    for (QUICKULL i = 1; i<=myInt; i++) {
+        
+        QUICKULL currentInt = totalThreads * (i-1) + offside;
+        a[j] = aoint_buffer[currentInt];
+        j++;
+        if (j == batchSize || i == myInt) {
+            
+            for (int k = 0; k<j; k++) {
+                int III = a[k].IJ / devSim.nbasis + 1;
+                int JJJ = a[k].IJ % devSim.nbasis + 1;
+                int KKK = a[k].KL / devSim.nbasis + 1;
+                int LLL = a[k].KL % devSim.nbasis + 1;
                 
-                int myShellJ = threadID;
-                for (int j = 0; j < jshell; j++) {
-                    if (j == myShellJ) {
-                        myShellJ = myShellJ + blockSize;
-                        int KK = devSim.sorted_YCutoffIJ[j].x;
-                        int LL = devSim.sorted_YCutoffIJ[j].y;
-                        
-                        int kk = devSim.sorted_Q[KK];
-                        int ll = devSim.sorted_Q[LL];
-                        
-                        
-                        if (ii<=kk) {
-                            int nshell = devSim.nshell;
-                            
-                            if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.leastIntegralCutoff) {
-                                
-                                int iii = devSim.sorted_Qnumber[II];
-                                int jjj = devSim.sorted_Qnumber[JJ];
-                                int kkk = devSim.sorted_Qnumber[KK];
-                                int lll = devSim.sorted_Qnumber[LL];
-                                
-                                iclass_AOInt(iii, jjj, kkk, lll, ii, jj, kk, ll, 1000.0);
-                                
-                            }
-                        }
-                        
+                if (III <= devSim.nbasis && III >= 1 && JJJ <= devSim.nbasis && JJJ >= 1 && KKK <= devSim.nbasis && KKK >= 1 && LLL <= devSim.nbasis && LLL >= 1){
+                    QUICKDouble hybrid_coeff = 0.0;
+                    if (devSim.method == HF){
+                        hybrid_coeff = 1.0;
+                    }else if (devSim.method == B3LYP){
+                        hybrid_coeff = 0.2;
+                    }else if (devSim.method == DFT){
+                        hybrid_coeff = 0.0;
                     }
+                    
+                    addint(devSim.oULL, a[k].value, III, JJJ, KKK, LLL, hybrid_coeff, devSim.dense, devSim.nbasis);
                 }
-                
             }
+            j = 0;
         }
+        
     }
-    */
+    
+}
+
+
+
+__global__ void getAOInt_kernel(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
+{
      
     unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
     int totalThreads = blockDim.x*gridDim.x;
     
     QUICKULL jshell         = (QUICKULL) devSim.sqrQshell;
-    QUICKULL jshellBatch    = (QUICKULL) iBatchEnd - iBatchStart + 1;
-    QUICKULL myInt          = (QUICKULL) jshell * jshellBatch / totalThreads;
-    QUICKULL intOffset      = (QUICKULL) jshell * iBatchStart;
+    QUICKULL myInt          = (QUICKULL) (intEnd - intStart + 1) / totalThreads;
     
-    if ((jshell*jshellBatch - myInt*totalThreads)> offside) myInt++;
+    
+    if ((intEnd - intStart + 1 - myInt*totalThreads)> offside) myInt++;
     
     for (QUICKULL i = 1; i<=myInt; i++) {
-        QUICKULL currentInt = totalThreads * (i-1) + offside + intOffset;
+        QUICKULL currentInt = totalThreads * (i-1) + offside + intStart;
         QUICKULL a = (QUICKULL) currentInt/jshell;
         QUICKULL b = (QUICKULL) (currentInt - a*jshell);
         
@@ -186,10 +207,7 @@ __global__ void getAOInt_kernel(int iBatchStart, int iBatchEnd)
                 int lll = devSim.sorted_Qnumber[LL];
                 
                 
-                int III1 = LOC2(devSim.Qsbasis, ii, iii, devSim.nshell, 4);
-                int III2 = LOC2(devSim.Qfbasis, ii, iii, devSim.nshell, 4);
-                
-                    iclass_AOInt(iii, jjj, kkk, lll, ii, jj, kk, ll, 1000.0);
+                iclass_AOInt(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
                 
             }
         }
@@ -197,72 +215,44 @@ __global__ void getAOInt_kernel(int iBatchStart, int iBatchEnd)
 }
 
 
-
+__shared__ static int s_sorted_Q[2000];
+__shared__ static int s_sorted_Qnumber[2000];
 
 __global__ void get2e_kernel()
 {
     unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
     int totalThreads = blockDim.x*gridDim.x;
     
+    
     QUICKULL jshell   = (QUICKULL) devSim.sqrQshell;
-    QUICKULL myInt    = (QUICKULL) jshell*jshell / totalThreads;
     
-    if ((jshell*jshell - myInt*totalThreads)> offside) myInt++;
+    for ( int i = threadIdx.x; i< devSim.Qshell; i+= blockDim.x) {
+        s_sorted_Q[i] = devSim.sorted_Q[i];
+        s_sorted_Qnumber[i] = devSim.sorted_Qnumber[i];
+    }
     
-    for (QUICKULL i = 1; i<=myInt; i++) {
-        
-        QUICKULL currentInt = totalThreads * (i-1)+offside;        
-        QUICKULL a = (QUICKULL) currentInt/jshell;
-        QUICKULL b = (QUICKULL) (currentInt - a*jshell);
-        
-        /* 
-         the following code is to implement a better index mode.
-         The original one can be see as:
-         Large....Small
-         Large ->->->
-         ...   ->->->
-         Small ->->->
-         
-         now it changed to 
-         Large....Small
-         Large ->->|  -> ->
-         ...   <-<-|  |  |
-         Small <-<-<-<-  |
-         <-<-<-<-<-
-         Theortically, it can avoid divergence but after test, we
-         find it has limited effect and something it will slows down
-         because of the extra FP calculation required.
-         */
-        /*    
-         QUICKULL a, b;
-         double aa = (double)((currentInt+1)*1E-4);
-         QUICKULL t = (QUICKULL)(sqrt(aa)*1E2);
-         if ((currentInt+1)==t*t) {
-         t--;
-         }
-         
-         QUICKULL k = currentInt-t*t;
-         if (k<=t) {
-         a = k;
-         b = t;
-         }else {
-         a = t;
-         b = 2*t-k;
-         }*/
-        
-        
+    __syncthreads();
+    
+    
+    for (QUICKULL i = offside; i<jshell*jshell; i+= totalThreads) {
+           
+        QUICKULL a = (QUICKULL) i/jshell;
+        QUICKULL b = (QUICKULL) (i - a*jshell);
         
         int II = devSim.sorted_YCutoffIJ[a].x;
-        int JJ = devSim.sorted_YCutoffIJ[a].y;
         int KK = devSim.sorted_YCutoffIJ[b].x;
-        int LL = devSim.sorted_YCutoffIJ[b].y;        
         
-        int ii = devSim.sorted_Q[II];
-        int jj = devSim.sorted_Q[JJ];
-        int kk = devSim.sorted_Q[KK];
-        int ll = devSim.sorted_Q[LL];
+        int ii = s_sorted_Q[II];
+        int kk = s_sorted_Q[KK];
         
         if (ii<=kk){
+            
+            int JJ = devSim.sorted_YCutoffIJ[a].y;
+            int LL = devSim.sorted_YCutoffIJ[b].y;
+            
+            int jj = s_sorted_Q[JJ];
+            int ll = s_sorted_Q[LL];
+            
             int nshell = devSim.nshell;
             QUICKDouble DNMax = MAX(MAX(4.0*LOC2(devSim.cutMatrix, ii, jj, nshell, nshell), 4.0*LOC2(devSim.cutMatrix, kk, ll, nshell, nshell)),
                                     MAX(MAX(LOC2(devSim.cutMatrix, ii, ll, nshell, nshell),     LOC2(devSim.cutMatrix, ii, kk, nshell, nshell)),
@@ -291,11 +281,94 @@ __device__ __forceinline__ QUICKDouble quick_dsqr(QUICKDouble a)
     return a*a;
 }
 
-__device__ QUICKULL total(int a, int n)
-{
-    QUICKULL e =  ((QUICKULL)a * ((QUICKULL)2 * a * a * (5 + 6 * n) - (QUICKULL)3 * a * (3 + 10 * n + 6 * n * n) - (QUICKULL)3 * a * a * a + (QUICKULL)2 * (1 + 9 * n + 15 * n * n + 6 * n * n * n)))/24;
 
-    return e;
+__device__ __forceinline__ void addint(QUICKULL* oULL, QUICKDouble Y, int III, int JJJ, int KKK, int LLL,QUICKDouble hybrid_coeff,  QUICKDouble* dense, int nbasis){
+    
+    QUICKDouble DENSEKI = (QUICKDouble) LOC2(dense, KKK-1, III-1, nbasis, nbasis);
+    QUICKDouble DENSEKJ = (QUICKDouble) LOC2(dense, KKK-1, JJJ-1, nbasis, nbasis);
+    QUICKDouble DENSELJ = (QUICKDouble) LOC2(dense, LLL-1, JJJ-1, nbasis, nbasis);
+    QUICKDouble DENSELI = (QUICKDouble) LOC2(dense, LLL-1, III-1, nbasis, nbasis);
+    QUICKDouble DENSELK = (QUICKDouble) LOC2(dense, LLL-1, KKK-1, nbasis, nbasis);
+    QUICKDouble DENSEJI = (QUICKDouble) LOC2(dense, JJJ-1, III-1, nbasis, nbasis);
+    
+    
+    // ATOMIC ADD VALUE 1
+    QUICKDouble _tmp = 2.0;
+    if (KKK==LLL) {
+        _tmp = 1.0;
+    }
+    
+    QUICKDouble val1d = _tmp*DENSELK*Y;
+    QUICKULL val1 = (QUICKULL) (fabs(val1d*OSCALE) + (QUICKDouble)0.5);
+    if ( val1d < (QUICKDouble)0.0) val1 = 0ull - val1;
+    QUICKADD(LOC2(oULL, JJJ-1, III-1, nbasis, nbasis), val1);
+    
+    
+    // ATOMIC ADD VALUE 2
+    if ((LLL != JJJ) || (III!=KKK)) {
+        _tmp = 2.0;
+        if (III==JJJ) {
+            _tmp = 1.0;
+        }
+        
+        QUICKDouble val2d = _tmp*DENSEJI*Y;
+        QUICKULL val2 = (QUICKULL) (fabs(val2d*OSCALE) + (QUICKDouble)0.5);
+        if ( val2d < (QUICKDouble)0.0) val2 = 0ull - val2;
+        QUICKADD(LOC2(oULL, LLL-1, KKK-1, nbasis, nbasis), val2);
+    }
+    
+    
+    // ATOMIC ADD VALUE 3
+    QUICKDouble val3d = hybrid_coeff*0.5*DENSELJ*Y;
+    
+    QUICKULL val3 = (QUICKULL) (fabs(val3d*OSCALE) + (QUICKDouble)0.5);
+    if (((III == KKK) && (III <  JJJ) && (JJJ < LLL))) {
+        val3 = (QUICKULL) (fabs(2*val3d*OSCALE) + (QUICKDouble)0.5);
+    }
+    if ( DENSELJ*Y < (QUICKDouble)0.0) val3 = 0ull - val3;
+    QUICKADD(LOC2(oULL, KKK-1, III-1, nbasis, nbasis), 0ull-val3);
+    
+    // ATOMIC ADD VALUE 4
+    if (KKK != LLL) {
+        QUICKDouble val4d = hybrid_coeff*0.5*DENSEKJ*Y;
+        
+        QUICKULL val4 = (QUICKULL) (fabs(val4d*OSCALE) + (QUICKDouble)0.5);
+        if ( val4d < (QUICKDouble)0.0) val4 = 0ull - val4;
+        QUICKADD(LOC2(oULL, LLL-1, III-1, nbasis, nbasis), 0ull-val4);
+    }
+    
+    
+    
+    // ATOMIC ADD VALUE 5
+    QUICKDouble val5d = hybrid_coeff*0.5*DENSELI*Y;
+    
+    QUICKULL val5 = (QUICKULL) (fabs(val5d*OSCALE) + (QUICKDouble)0.5);
+    if ( val5d < (QUICKDouble)0.0) val5 = 0ull - val5;
+    if ((III != JJJ && III<KKK) || ((III == JJJ) && (III == KKK) && (III < LLL)) || ((III == KKK) && (III <  JJJ) && (JJJ < LLL))) {
+        QUICKADD(LOC2(oULL, MAX(JJJ,KKK)-1, MIN(JJJ,KKK)-1, nbasis, nbasis), 0ull-val5);
+    }
+    
+    
+    // ATOMIC ADD VALUE 5 - 2
+    if ( III != JJJ && JJJ == KKK) {
+        QUICKADD(LOC2(oULL, JJJ-1, KKK-1, nbasis, nbasis), 0ull-val5);
+    }
+    
+    // ATOMIC ADD VALUE 6
+    if (III != JJJ) {
+        if (KKK != LLL) {
+            QUICKDouble val6d = hybrid_coeff*0.5*DENSEKI*Y;
+            QUICKULL val6 = (QUICKULL) (fabs(val6d*OSCALE) + (QUICKDouble)0.5);
+            if ( val6d < (QUICKDouble)0.0) val6 = 0ull - val6;
+            
+            QUICKADD(LOC2(oULL, MAX(JJJ,LLL)-1, MIN(JJJ,LLL)-1, devSim.nbasis, devSim.nbasis), 0ull-val6);
+            
+            // ATOMIC ADD VALUE 6 - 2
+            if (JJJ == LLL && III!= KKK) {
+                QUICKADD(LOC2(oULL, LLL-1, JJJ-1, nbasis, nbasis), 0ull-val6);
+            }
+        }
+    }
 }
 
 
@@ -303,7 +376,7 @@ __device__ QUICKULL total(int a, int n)
  iclass subroutine is to generate 2-electron intergral using HRR and VRR method, which is the most
  performance algrithem for electron intergral evaluation. See description below for details
  */
-__device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax)
+__device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID)
 {
     
     /*
@@ -395,13 +468,14 @@ __device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigne
                 /*
                  CD = expo(L)+expo(K)
                  ABCD = 1/ (AB + CD) = 1 / (expo(I)+expo(J)+expo(K)+expo(L))
-                 AB * CD      (expo(I)+expo(J))*(expo(K)+expo(L))
-                 Rou(Greek Letter) =   ----------- = ------------------------------------
-                 AB + CD         expo(I)+expo(J)+expo(K)+expo(L)
                  
-                 expo(I)+expo(J)                        expo(K)+expo(L)
+                 `````````````````````````AB * CD      (expo(I)+expo(J))*(expo(K)+expo(L))
+                 Rou(Greek Letter) =   ----------- = ------------------------------------
+                 `````````````````````````AB + CD         expo(I)+expo(J)+expo(K)+expo(L)
+                 
+                 ```````````````````expo(I)+expo(J)                        expo(K)+expo(L)
                  ABcom = --------------------------------  CDcom = --------------------------------
-                 expo(I)+expo(J)+expo(K)+expo(L)           expo(I)+expo(J)+expo(K)+expo(L)
+                 `````````expo(I)+expo(J)+expo(K)+expo(L)           expo(I)+expo(J)+expo(K)+expo(L)
                  
                  ABCDtemp = 1/2(expo(I)+expo(J)+expo(K)+expo(L))
                  */
@@ -420,21 +494,21 @@ __device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigne
                 
                 /*
                  Q' is the weighting center of K and L
-                 --->           --->
+                 ```````````````````````````--->           --->
                  ->  ------>       expo(K)*xyz(K)+expo(L)*xyz(L)
                  Q = P'(K,L)  = ------------------------------
-                 expo(K) + expo(L)
+                 `````````````````````````expo(K) + expo(L)
                  
                  W' is the weight center for I, J, K, L
                  
-                 --->             --->             --->            --->
+                 ```````````````--->             --->             --->            --->
                  ->     expo(I)*xyz(I) + expo(J)*xyz(J) + expo(K)*xyz(K) +expo(L)*xyz(L)
                  W = -------------------------------------------------------------------
-                 expo(I) + expo(J) + expo(K) + expo(L)
-                 ->  ->  2
+                 `````````````````````````expo(I) + expo(J) + expo(K) + expo(L)
+                 ``````->  ->  2
                  RPQ =| P - Q |
                  
-                 ->  -> 2
+                 ```````````->  -> 2
                  T = ROU * | P - Q|
                  */
                 
@@ -492,9 +566,8 @@ __device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigne
     }
     
     
+    // Store generated ERI to buffer
     for (int III = III1; III <= III2; III++) {
-        //QUICKULL intOffset1 = total(III - 1, devSim.nbasis) - total(iBatchStart, devSim.nbasis);
-        
         for (int JJJ = MAX(III,JJJ1); JJJ <= JJJ2; JJJ++) {
             for (int KKK = MAX(III,KKK1); KKK <= KKK2; KKK++) {
                 for (int LLL = MAX(KKK,LLL1); LLL <= LLL2; LLL++) {
@@ -511,10 +584,7 @@ __device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigne
                             a.IJ = (III - 1) * devSim.nbasis + JJJ - 1;
                             a.KL = (KKK - 1) * devSim.nbasis + LLL - 1;
                             
-                            //QUICKULL intCount = intOffset1 + (JJJ - III) * (devSim.nbasis - III + 1) * (devSim.nbasis - III + 2) /2  \
-                            + (LLL - III) * (LLL - III + 1) / 2  + (KKK-III);
-                            devSim.aoint_buffer[QUICKADD(devSim.intCount[0], 1)] = a;
-                            
+                            aoint_buffer[QUICKADD(devSim.intCount[streamID], 1)] = a;
                         }
                     }
                 }
@@ -522,8 +592,6 @@ __device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigne
         }
     }
 }
-
-
 
 
 /*
@@ -669,10 +737,10 @@ __device__ __forceinline__ void iclass(int I, int J, int K, int L, unsigned int 
                 QUICKDouble Qy = LOC2(devSim.weightedCenterY, kk_start+KKK, ll_start+LLL, devSim.prim_total, devSim.prim_total);
                 QUICKDouble Qz = LOC2(devSim.weightedCenterZ, kk_start+KKK, ll_start+LLL, devSim.prim_total, devSim.prim_total);
                 
-                QUICKDouble T = AB * CD * ABCD * ( quick_dsqr(Px-Qx) + quick_dsqr(Py-Qy) + quick_dsqr(Pz-Qz));
+                //QUICKDouble T = AB * CD * ABCD * ( quick_dsqr(Px-Qx) + quick_dsqr(Py-Qy) + quick_dsqr(Pz-Qz));
                 
                 QUICKDouble YVerticalTemp[VDIM1*VDIM2*VDIM3];
-                FmT(I+J+K+L, T, YVerticalTemp);
+                FmT(I+J+K+L, AB * CD * ABCD * ( quick_dsqr(Px-Qx) + quick_dsqr(Py-Qy) + quick_dsqr(Pz-Qz)), YVerticalTemp);
                 for (int i = 0; i<=I+J+K+L; i++) {
                     VY(0, 0, i) = VY(0, 0, i) * X2;
                 }
@@ -743,107 +811,11 @@ __device__ __forceinline__ void iclass(int I, int J, int K, int L, unsigned int 
                                                                III, JJJ, KKK, LLL, IJKLTYPE, store, \
                                                                RAx, RAy, RAz, RBx, RBy, RBz, \
                                                                RCx, RCy, RCz, RDx, RDy, RDz);
-                        
-                     //   if(abs(Y)*1e-2>devSim.integralCutoff){
-                            QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSELJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSELI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSELK = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis);
-                            QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, devSim.nbasis, devSim.nbasis);
-                            
-                            
-                            // ATOMIC ADD VALUE 1
-                            QUICKDouble _tmp = 2.0;
-                            if (KKK==LLL) {
-                                _tmp = 1.0;
-                            }
-                            
-                            QUICKDouble val1d = _tmp*DENSELK*Y;
-                            //if (abs(val1d) > devSim.integralCutoff ) {
-                                QUICKULL val1 = (QUICKULL) (fabs(val1d*OSCALE) + (QUICKDouble)0.5);
-                                if ( val1d < (QUICKDouble)0.0) val1 = 0ull - val1;
-                                QUICKADD(LOC2(devSim.oULL, JJJ-1, III-1, devSim.nbasis, devSim.nbasis), val1);
-                           // }
-                            
-                            // ATOMIC ADD VALUE 2
-                            if ((LLL != JJJ) || (III!=KKK)) {
-                                _tmp = 2.0;
-                                if (III==JJJ) {
-                                    _tmp = 1.0;
-                                }
-                                
-                                QUICKDouble val2d = _tmp*DENSEJI*Y;
-                             //   if (abs(val2d) > devSim.integralCutoff ) {
-                                    QUICKULL val2 = (QUICKULL) (fabs(val2d*OSCALE) + (QUICKDouble)0.5);
-                                    if ( val2d < (QUICKDouble)0.0) val2 = 0ull - val2;
-                                    QUICKADD(LOC2(devSim.oULL, LLL-1, KKK-1, devSim.nbasis, devSim.nbasis), val2);    
-                              //  }
-                            }
-                            
-                            
-                            // ATOMIC ADD VALUE 3
-                            
-                            QUICKDouble val3d = hybrid_coeff*0.5*DENSELJ*Y;
-                            //if (abs(2*val3d) > devSim.integralCutoff ) {
-                                QUICKULL val3 = (QUICKULL) (fabs(val3d*OSCALE) + (QUICKDouble)0.5);
-                                if (((III == KKK) && (III <  JJJ) && (JJJ < LLL))) {
-                                    val3 = (QUICKULL) (fabs(2*val3d*OSCALE) + (QUICKDouble)0.5);
-                                }
-                                if ( DENSELJ*Y < (QUICKDouble)0.0) val3 = 0ull - val3;
-                                QUICKADD(LOC2(devSim.oULL, KKK-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val3);
-                            //}
-                            
-                            // ATOMIC ADD VALUE 4
-                            if (KKK != LLL) {
-                                QUICKDouble val4d = hybrid_coeff*0.5*DENSEKJ*Y;
-                               // if (abs(val4d) > devSim.integralCutoff ) {
-                                    QUICKULL val4 = (QUICKULL) (fabs(val4d*OSCALE) + (QUICKDouble)0.5);
-                                    if ( val4d < (QUICKDouble)0.0) val4 = 0ull - val4;
-                                    QUICKADD(LOC2(devSim.oULL, LLL-1, III-1, devSim.nbasis, devSim.nbasis), 0ull-val4);
-                                //}
-                            }
-                            
-                            
-                            
-                            // ATOMIC ADD VALUE 5
-                        QUICKDouble val5d = hybrid_coeff*0.5*DENSELI*Y;
-                            //if (abs(val5d) > devSim.integralCutoff ) {
-                                QUICKULL val5 = (QUICKULL) (fabs(val5d*OSCALE) + (QUICKDouble)0.5);
-                                if ( val5d < (QUICKDouble)0.0) val5 = 0ull - val5;
-                                
-                                if ((III != JJJ && III<KKK) || ((III == JJJ) && (III == KKK) && (III < LLL)) || ((III == KKK) && (III <  JJJ) && (JJJ < LLL))) {
-                                    QUICKADD(LOC2(devSim.oULL, MAX(JJJ,KKK)-1, MIN(JJJ,KKK)-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
-                                }
-                                
-                                
-                                // ATOMIC ADD VALUE 5 - 2
-                                if ( III != JJJ && JJJ == KKK) {
-                                    QUICKADD(LOC2(devSim.oULL, JJJ-1, KKK-1, devSim.nbasis, devSim.nbasis), 0ull-val5);
-                                }
-                            //}
-                            
-                            // ATOMIC ADD VALUE 6
-                            if (III != JJJ) {
-                                if (KKK != LLL) {
-                                    QUICKDouble val6d = hybrid_coeff*0.5*DENSEKI*Y;
-                              //      if (abs(val6d) > devSim.integralCutoff ) {
-                                        
-                                        QUICKULL val6 = (QUICKULL) (fabs(val6d*OSCALE) + (QUICKDouble)0.5);
-                                        if ( val6d < (QUICKDouble)0.0) val6 = 0ull - val6;
-                                        
-                                        QUICKADD(LOC2(devSim.oULL, MAX(JJJ,LLL)-1, MIN(JJJ,LLL)-1, devSim.nbasis, devSim.nbasis), 0ull-val6);
-                                        
-                                        // ATOMIC ADD VALUE 6 - 2
-                                        if (JJJ == LLL && III!= KKK) {
-                                            QUICKADD(LOC2(devSim.oULL, LLL-1, JJJ-1, devSim.nbasis, devSim.nbasis), 0ull-val6);                    
-                                        }
-                                    }
-                                //}
-                            }
+                        if (abs(Y) > devSim.integralCutoff) {
+                            addint(devSim.oULL, Y, III, JJJ, KKK, LLL, hybrid_coeff, devSim.dense, devSim.nbasis);
                         }
-                //} 
-                    
+                        
+                    }
                 }
             }
         }

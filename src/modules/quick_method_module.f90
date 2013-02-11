@@ -105,7 +105,7 @@ module quick_method_module
         double precision :: gNormCrt      = .00030d0 ! gradient normalization
         
 
-        logical :: bCUDA                ! if  is used here
+
 
         
     end type quick_method_type
@@ -488,7 +488,6 @@ endif
             self%gNormCrt       = .00030d0 ! gradient normalization
             self%gridSpacing    = 0.1
             self%lapgridspacing = 0.1
-            self%bCUDA  = .false.
             
         end subroutine init_quick_method
         
@@ -511,8 +510,8 @@ endif
             endif
             
             if(self%pmaxrms.lt.0.0001d0)then
-                self%integralCutoff=1.0d-7
-                self%Primlimit=1.0d-7
+                self%integralCutoff=min(1.0d-7, self%integralCutoff)
+                self%Primlimit=min(1.0d-7,self%primLimit)
             endif
             
             ! OPT not available for MP2
@@ -537,18 +536,17 @@ endif
 
             self%leastIntegralCutoff = LEASTCUTOFF
 
-            if (self%pmaxrms .gt. 1.0d0/10.0d0**9.5) self%leastIntegralCutoff = TEN_TO_MINUS5
-            if (self%pmaxrms .gt. 1.0d0/10.0d0**8.5) self%leastIntegralCutoff = TEN_TO_MINUS4
-            if (self%pmaxrms .gt. 1.0d0/10.0d0**7.5) self%leastIntegralCutoff = TEN_TO_MINUS3
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**9.5) self%leastIntegralCutoff = TEN_TO_MINUS10
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**8.5) self%leastIntegralCutoff = TEN_TO_MINUS9
+            if (self%pmaxrms .gt. 1.0d0/10.0d0**7.5) self%leastIntegralCutoff = TEN_TO_MINUS8
 
             self%maxIntegralCutoff  = 1.0d-12
-
-
             if (self%pmaxrms .gt. 1.0d0/10.0d0**9.5) self%maxIntegralCutoff = TEN_TO_MINUS10
             if (self%pmaxrms .gt. 1.0d0/10.0d0**8.5) self%maxIntegralCutoff = TEN_TO_MINUS9
             if (self%pmaxrms .gt. 1.0d0/10.0d0**7.5) self%maxIntegralCutoff = TEN_TO_MINUS8
             if (self%integralCutoff .le. self%maxIntegralCutoff) self%maxIntegralCutoff=self%integralCutoff
 
+!			self%maxIntegralCutoff = 1.0d-99
         end subroutine obtain_leastIntCutoff
 
 

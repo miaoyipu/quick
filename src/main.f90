@@ -34,6 +34,12 @@
     include 'mpif.h'
 #endif
 
+#ifdef CUDA
+    integer :: gpu_device_id = -1
+#endif
+
+    integer*4 :: iarg
+    character(80) :: arg
     logical :: failed = .false.         ! flag to indicates SCF fail or OPT fail 
     integer :: ierr                     ! return error info
     integer :: i,j,k
@@ -76,9 +82,25 @@
     !------------------- CUDA -------------------------------------------
     ! startup cuda device
     call gpu_startup()
-    call gpu_set_device(0)
+    iarg = iargc()
+    call gpu_set_device(-1)
+    if (iarg == 0) then
+        gpu_device_id = -1
+    else
+        do i = 1, iarg
+            call getarg(int(i,4), arg)
+            if (arg.eq."-gpu") then
+                call getarg (int(i+1,4), arg)
+                read(arg, '(I2)') gpu_device_id
+                call gpu_set_device(gpu_device_id)
+                write(*,*) "read -gpu from argument=",gpu_device_id
+                exit
+            endif
+        enddo
+    endif
+    write(*,*) "gpu_device_id=",gpu_device_id
     call gpu_init()
-    
+ 
     ! write cuda information
     if(master) call gpu_write_info(iOutFile)
     !------------------- END CUDA ---------------------------------------
