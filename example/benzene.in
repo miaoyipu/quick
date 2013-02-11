@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 denserms=1.0e-8 cutoff=1.0e-9 HF ncyc=3 zmake BASIS=cc-pvdz ENERGY
+=======
+cutoff=1.0e-9 HF ncyc=1000 zmake denserms=1.0e-7 BASIS=6-311GSS ENERGY
+>>>>>>> cuda_branch
 
 C          -0.4241       1.5178       0.0000
 H          -0.9738       0.5655       0.0005

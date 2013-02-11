@@ -152,11 +152,12 @@ struct gpu_simulation_type {
     
     
     // for ERI generator
-    ERI_entry*                      aoint_buffer;
+    ERI_entry**                     aoint_buffer;
+    
     QUICKDouble                     maxIntegralCutoff;
     QUICKDouble                     leastIntegralCutoff;
     int                             iBatchSize;
-    QUICKULL*                            intCount;
+    QUICKULL*                       intCount;
 };
 
 struct gpu_basis_type {
@@ -263,7 +264,8 @@ struct gpu_type {
     gpu_cutoff_type*                gpu_cutoff;
     gpu_simulation_type             gpu_sim;
     
-    cuda_buffer_type<ERI_entry>*    aoint_buffer;
+    cuda_buffer_type<ERI_entry>**   aoint_buffer;
+    
     cuda_buffer_type<QUICKULL>*     intCount;
 
     
