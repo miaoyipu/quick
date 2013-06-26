@@ -23,14 +23,17 @@ fflush(stdout);\
 // Define TEST for the CPU host test, and undef it when you need to run it on device
 //#define TEST
 
-//#define VDIM1 56
-//#define VDIM2 56
-//#define VDIM3 10
-//#define STOREDIM 120
 #define VDIM1 1
 #define VDIM2 1
-#define VDIM3 10
+//#define VDIM3 10
+#define VDIM3 16
+#ifdef CUDA_SPDF
+#define STOREDIM 84
+//#define STOREDIM 35
+#else
 #define STOREDIM 35
+#endif
+//#define STOREDIM 120
 #define TRANSDIM 8
 #define MCALDIM 120
 

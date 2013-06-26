@@ -1,5 +1,0 @@
-HF opt zmake  BASIS=sto-3g ENERGY
-
-H 0.0 0.0 0.0
-H 0.7 0.0 0.0
-

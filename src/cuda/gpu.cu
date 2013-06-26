@@ -114,7 +114,25 @@ extern "C" void gpu_init_(void)
     PRINTERROR(status, "cudaSetDevice gpu_init failed!");
     cudaThreadSynchronize();
     
-    gpu->blocks = deviceProp.multiProcessorCount;
+cudaDeviceSetCacheConfig(cudaFuncCachePreferL1);
+
+    size_t val;
+    
+    cudaDeviceGetLimit(&val, cudaLimitStackSize);
+    printf("Stack size limit:    %zu\n", val);
+    
+    cudaDeviceGetLimit(&val, cudaLimitPrintfFifoSize);
+    printf("Printf fifo limit:   %zu\n", val);
+    
+    cudaDeviceGetLimit(&val, cudaLimitMallocHeapSize);
+    printf("Heap size limit:     %zu\n", val);
+
+    cudaDeviceSetLimit(cudaLimitStackSize, 8192);
+
+    cudaDeviceGetLimit(&val, cudaLimitStackSize);
+    printf("New Stack size limit:    %zu\n", val);
+    
+	gpu->blocks = deviceProp.multiProcessorCount;
     if (deviceProp.major ==1) {
         switch (deviceProp.minor) {
             case 0:
@@ -339,7 +357,7 @@ extern "C" void gpu_upload_cutoff_(QUICKDouble* cutMatrix, QUICKDouble* integral
     
     gpu -> gpu_cutoff -> integralCutoff = *integralCutoff;
     gpu -> gpu_cutoff -> primLimit      = *primLimit;
-    gpu -> gpu_cutoff -> DMCutoff       = *DMCutoff;
+    gpu -> gpu_cutoff -> DMCutoff       = 1E-9; //*DMCutoff;
     
     gpu -> gpu_cutoff -> cutMatrix  = new cuda_buffer_type<QUICKDouble>(cutMatrix, gpu->nshell, gpu->nshell);
     
@@ -397,8 +415,8 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     bool flag = true;
     int2 temp;
     
-    for (int q = 0; q <= 2; q++) {
-        for (int p = 0; p <= 2; p++) {
+    for (int q = 0; q <= 3; q++) {
+        for (int p = 0; p <= 3; p++) {
             
             // First to order ERI type
             // Second to order primitive Gaussian function number
@@ -492,7 +510,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     printf("a = %i, total = %i, pect= %f\n", a, gpu->gpu_basis->Qshell * (gpu->gpu_basis->Qshell+1)/2, (float) 2*a/(gpu->gpu_basis->Qshell*(gpu->gpu_basis->Qshell)));
     
     gpu->gpu_cutoff->sqrQshell  = a;
-    /*
+    
      printf("SS = %i\n",a);
      for (int i = 0; i<a; i++) {
      printf("%8i %4i %4i %18.13f Q=%4i %4i %4i %4i prim = %4i %4i\n", i, \
@@ -506,7 +524,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
      gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x]],
      gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y]]);
      }
-     */
+     
     gpu -> gpu_cutoff -> sorted_YCutoffIJ  -> Upload();
     gpu -> gpu_sim.sqrQshell        = gpu -> gpu_cutoff -> sqrQshell;
     gpu -> gpu_sim.YCutoff          = gpu -> gpu_cutoff -> YCutoff -> _devData;
@@ -1005,6 +1023,12 @@ extern "C" void gpu_addint_(QUICKDouble* o, int* intindex, char* intFileName){
                 intERIEntry_tmp[bufferIndex].IJ = aBuffer[j];
                 intERIEntry_tmp[bufferIndex].KL = bBuffer[j];
                 intERIEntry_tmp[bufferIndex].value = intBuffer[j];
+
+                int III2 = aBuffer[j] / gpu->nbasis + 1;
+                int JJJ = aBuffer[j] % gpu->nbasis + 1;
+                int KKK = bBuffer[j] / gpu->nbasis + 1;
+                int LLL = bBuffer[j] % gpu->nbasis + 1;
+printf("%i %i %i %i %f\n", III2,JJJ,KKK,LLL, intBuffer[j]);
                 bufferIndex ++;
                 int III = aBuffer[j] / gpu->nbasis;
                 ERIEntryByBasis[III] ++;
@@ -1507,8 +1531,8 @@ extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxInt
                     aBuffer[bufferInt] = a.IJ;
                     bBuffer[bufferInt] = a.KL;
                     intBuffer[bufferInt] = a.value;
+//printf("%i %i %i %18.10f\n",bufferInt, aBuffer[bufferInt], bBuffer[bufferInt], intBuffer[bufferInt]);
                     bufferInt ++;
-                    
                     if (bufferInt == BUFFERSIZE) {
                         fwrite(&aBuffer, sizeof(int), BUFFERSIZE, intFile);
                         fwrite(&bBuffer, sizeof(int), BUFFERSIZE, intFile);

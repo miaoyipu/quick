@@ -245,13 +245,12 @@ subroutine addInt
             B = bBuffer(i)
             Y = intBuffer(i)
          endif
-
          III = int(A/nbasis) + 1
          JJJ = mod(A, nbasis) + 1
          KKK = int(B/nbasis) + 1
          LLL = mod(B, nbasis) + 1
 
-
+write(*,*) III,JJJ,KKK,LLL, Y
          if(III.lt.JJJ.and.III.lt.KKK.and.KKK.lt.LLL)then
 
             !write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL,III,JJJ,KKK,LLL
@@ -784,7 +783,6 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                            bBuffer(bufferInt) = B
                            intBuffer(bufferInt) = Y
                         endif
-
                         if (bufferInt .eq. bufferSize) then
                            if (incoreInt) then
                            else
