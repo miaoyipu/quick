@@ -137,13 +137,13 @@ logical, parameter ::  incoreInt =.false.! .true. !.false.
 integer, parameter :: incoreSize = 100000000
 integer incoreIndex
 
+double precision, dimension(1) :: intIncore
+integer, dimension(1) :: aIncore
+integer, dimension(1) :: bIncore
 
 
 
 
-double precision, dimension(incoreSize) :: intIncore
-integer, dimension(incoreSize) :: aIncore
-integer, dimension(incoreSize) :: bIncore
 
 
    ! used for hrr and vrr

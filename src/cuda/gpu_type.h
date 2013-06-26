@@ -157,7 +157,7 @@ struct gpu_simulation_type {
     QUICKDouble                     maxIntegralCutoff;
     QUICKDouble                     leastIntegralCutoff;
     int                             iBatchSize;
-    QUICKULL*                       intCount;
+    QUICKULL*                            intCount;
 };
 
 struct gpu_basis_type {

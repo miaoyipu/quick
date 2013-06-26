@@ -23,7 +23,7 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
    
    double precision AA(MAXPRIM),BB(MAXPRIM),CC(MAXPRIM)
    integer natomstart,natomfinal,nbasisstart,nbasisfinal
-   double precision, allocatable, dimension(:) :: aex,gcs,gcp,gcd,gcf,gcg
+   double precision, allocatable,save, dimension(:) :: aex,gcs,gcp,gcd,gcf,gcg
 #ifdef MPI
    include 'mpif.h'
 #endif

@@ -52,7 +52,7 @@ static __constant__ QUICKDouble npartpara[4] = {0.1000e0,0.4000e0,0.8000e0,2.500
 void upload_sim_to_constant_dft(_gpu_type gpu){
     cudaError_t status;
     PRINTDEBUG("UPLOAD CONSTANT DFT");
-    status = cudaMemcpyToSymbol(devSim_dft, &gpu->gpu_sim, sizeof(gpu_simulation_type));
+    status = cudaMemcpyToSymbol("devSim_dft", &gpu->gpu_sim, sizeof(gpu_simulation_type), 0, cudaMemcpyHostToDevice);
     PRINTERROR(status, " cudaMemcpyToSymbol, dft sim copy to constants failed")
     PRINTDEBUG("FINISH UPLOAD CONSTANT DFT");
 }
