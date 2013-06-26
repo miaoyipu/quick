@@ -29,7 +29,7 @@ subroutine quick_open(funit,filename,filestat,fileform,fileacc,log_ow)
     logical log_exist
     logical log_ow              ! if overwrite ?
     
-!    integer,external :: system
+    integer,external :: system
 
     ch='~'
     i=0

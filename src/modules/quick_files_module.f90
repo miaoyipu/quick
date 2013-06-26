@@ -106,7 +106,8 @@ module quick_files_module
         integer i,j,k1,k2,k3,k4
         logical present
         
-        
+        i = 0
+        j = 100 
         ! read basis directory and ECP basis directory
         call rdword(basisdir,i,j)
         call EffChar(basisdir,i,j,k1,k2)
@@ -118,7 +119,7 @@ module quick_files_module
         if (index(keywd,'BASIS=') /= 0) then
             i = index(keywd,'BASIS=')
             call rdword(keywd,i,j)
-            write(basisfilename,*) "/home/miao/Workspace/new_quick/basis/",keywd(i+6:j) 
+            write(basisfilename,*) basisdir(k1+1:k2),"/",keywd(i+6:j) 
         else
             basisfilename = basisdir(k1:k2) // '/STO-3G.BAS'    ! default
         endif

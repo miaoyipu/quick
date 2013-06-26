@@ -124,7 +124,27 @@ module quick_basis_module
    integer :: maxcontract   
    
    ! used for 2e integral indices
-   integer :: IJKLtype,III,JJJ,KKK,LLL,IJtype,KLtype, intIndex, buffIndex
+   integer :: IJKLtype,III,JJJ,KKK,LLL,IJtype,KLtype
+   integer, parameter :: longLongInt = selected_int_kind (16)
+   integer(kind=longLongInt) :: intIndex
+   integer, parameter :: bufferSize = 150000
+   integer:: bufferInt
+   double precision, dimension(bufferSize) :: intBuffer
+   integer, dimension(bufferSize) :: aBuffer
+   integer, dimension(bufferSize) :: bBuffer
+
+logical, parameter ::  incoreInt =.false.! .true. !.false.
+integer, parameter :: incoreSize = 100000000
+integer incoreIndex
+
+
+
+
+
+double precision, dimension(incoreSize) :: intIncore
+integer, dimension(incoreSize) :: aIncore
+integer, dimension(incoreSize) :: bIncore
+
 
    ! used for hrr and vrr
    double precision :: Y,dnmax

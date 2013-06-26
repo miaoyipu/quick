@@ -71,10 +71,24 @@ subroutine hfoperator(oneElecO, deltaO)
    ! Delta density matrix cutoff
    call densityCutoff()
 
-call cpu_time(timer_begin%T2e)  ! Terminate the timer for 2e-integrals
+   call cpu_time(timer_begin%T2e)  ! Terminate the timer for 2e-integrals
+
+#ifdef CUDA
+   if (quick_method%bCUDA) then
+      call gpu_upload_method(0)
+      call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
+            quick_qm_struct%vec,quick_qm_struct%dense)
+      call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
+   endif
+
+#endif
 
    if (quick_method%nodirect) then
+#ifdef CUDA
+      call gpu_addint(quick_qm_struct%o, intindex, intFileName)
+#else
       call addInt
+#endif
    else
       !-----------------------------------------------------------------
       ! Step 2. evaluate 2e integrals
@@ -86,11 +100,7 @@ call cpu_time(timer_begin%T2e)  ! Terminate the timer for 2e-integrals
 
 #ifdef CUDA
       if (quick_method%bCUDA) then
-         call gpu_upload_method(0)
-         call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
-               quick_qm_struct%vec,quick_qm_struct%dense)
-         call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
-         call gpu_get2e(quick_qm_struct%o);
+         call gpu_get2e(quick_qm_struct%o)
       else
 #endif
 

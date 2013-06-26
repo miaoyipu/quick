@@ -102,6 +102,7 @@ quick_modules:
 #=========== targets for cuda =========================================
 quick_cuda:
 	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_type.cu
+	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu_get2e.cu
 #	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_type.cu gpu_get2e.cu gpu_getxc.cu gpu_MP2.cu
 #	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu gpu_type.cu gpu_MP2.cu
 	cd $(cudafolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
@@ -116,12 +117,12 @@ blas:
 main.o: main.f90 quick_modules
 	$(FPP) main.f90 > _main.f90
 	$(FC) -o main.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _main.f90
-calMP2.o: calMP2.f90 quick_modules
-	$(FPP) calMP2.f90 > _calMP2.f90
-	$(FC) -o calMP2.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _calMP2.f90
-shell.o: shell.f90 quick_modules
-	$(FPP) shell.f90 > _shell.f90
-	$(FC) -o shell.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _shell.f90
+#calMP2.o: calMP2.f90 quick_modules
+#	$(FPP) calMP2.f90 > _calMP2.f90
+#	$(FC) -o calMP2.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _calMP2.f90
+#shell.o: shell.f90 quick_modules
+#	$(FPP) shell.f90 > _shell.f90
+#	$(FC) -o shell.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       _shell.f90
 
 #=========== targets for CUDBLAS =====================================
 fortran_thunking.o:

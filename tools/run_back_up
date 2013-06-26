@@ -1,18 +1,16 @@
 #/bin/bash
 
-num=0.09_sp3_cudabad
+num=0.09_f_grad_bad
 now=$(date "+%Y-%m-%d")
 ver=$now'-new_quick_'$num
 #ver=2012-7-11-new_quick_0.09_120711
 machine=cm
 
 mkdir ../archieve/$ver-$machine
-mkdir ~/Dropbox/Backup/quick/$ver-$machine
 
 for dir in src bin lib
 do
    cp -a ../$dir/ ../archieve/$ver-$machine/$dir
-   cp -a ../$dir/ ~/Dropbox/Backup/quick/$ver-$machine/$dir
 done
 
 

@@ -37,66 +37,56 @@ extern "C" void gpu_upload_basis_(int* nshell, int* nprim, int* jshell, int* jba
                                   int* Qnumber,   int* Qstart,    int* Qfinal,    int* Qsbasis,   int* Qfbasis,\
                                   QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int* KLMN);
 
-
-
+// call subroutine
+// Fortran subroutine   --->  c interface    ->   kernel interface   ->    global       ->    kernel
+//                            [gpu_get2e]    ->      [get2e]         -> [get2e_kernel]  ->   [iclass]
 void get2e(_gpu_type gpu);
+void getAOInt(_gpu_type gpu, QUICKULL intStart, QUICKULL intEnd, cudaStream_t streamI, int streamID,  ERI_entry* aoint_buffer);
 void getxc(_gpu_type gpu);
 void get2e_MP2(_gpu_type gpu);
+void getAddInt(_gpu_type gpu, int bufferSize, ERI_entry* aoint_buffer);
 
 extern "C" void gpu_get2e_(QUICKDouble* o);
 extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, QUICKDouble* aelec, QUICKDouble* belec, QUICKDouble *o);
 extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxIntegralCutoff, int* intNum, char* intFileName);
 
 __global__ void get2e_kernel();
+__global__ void get2e_kernel_spdf();
+__global__ void get2e_kernel_spdf2();
+__global__ void get2e_kernel_spdf3();
+__global__ void get2e_kernel_spdf4();
+__global__ void getAOInt_kernel(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
+__global__ void getAOInt_kernel_spdf(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
+__global__ void getAOInt_kernel_spdf2(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
+__global__ void getAOInt_kernel_spdf3(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
+__global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
 __global__ void getxc_kernel();
-__global__ void get2e_MP2_kernel();
+__global__ void getAddInt_kernel(int bufferSize, ERI_entry* aoint_buffer);
+
 
 
 __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
-__device__ void iclass_MP2(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
+__device__ void iclass_spdf(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
+__device__ void iclass_spdf2(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
+__device__ void iclass_spdf3(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
+__device__ void iclass_spdf4(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
+__device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
+__device__ __forceinline__ void iclass_AOInt_spdf(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
+__device__ __forceinline__ void iclass_AOInt_spdf2(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
+__device__ __forceinline__ void iclass_AOInt_spdf3(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
+__device__ __forceinline__ void iclass_AOInt_spdf4(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
+
 
 void upload_sim_to_constant(_gpu_type gpu);
 void upload_sim_to_constant_dft(_gpu_type gpu);
-void upload_sim_to_constant_MP2(_gpu_type gpu);
 
 void upload_para_to_const();
-void upload_para_to_const_MP2();
+char *trim(char *s);
 
 
 //__device__ void gpu_shell(unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL);
-
+__device__ void addint(QUICKULL* oULL, QUICKDouble Y, int III, int JJJ, int KKK, int LLL,QUICKDouble hybrid_coeff,  QUICKDouble* dense, int nbasis);
 __device__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* vals);
-__device__ void vertical(int NABCDTYPE, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,\
-              QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz,\
-              QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,\
-              QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-              QUICKDouble ABCDtemp,QUICKDouble ABtemp,QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-__device__ void FmT_MP2(int MaxM, QUICKDouble X, QUICKDouble* vals);
-__device__ void vertical_MP2(int NABCDTYPE, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,\
-                         QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz,\
-                         QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,\
-                         QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                         QUICKDouble ABCDtemp,QUICKDouble ABtemp,QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-
-
-__device__ void PSSS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy,QUICKDouble Ptempz, \
-           QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz);
-__device__ void SSPS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Qtempx, QUICKDouble Qtempy,QUICKDouble Qtempz, \
-           QUICKDouble WQtempx, QUICKDouble WQtempy, QUICKDouble WQtempz);
-__device__ void PSPS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy,QUICKDouble Ptempz, \
-           QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz, QUICKDouble ABCDtemp);
-__device__ void DSSS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy,QUICKDouble Ptempz, \
-           QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz, QUICKDouble ABtemp, QUICKDouble CDcom);
-__device__ void SSDS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Qtempx, QUICKDouble Qtempy,QUICKDouble Qtempz, \
-           QUICKDouble WQtempx, QUICKDouble WQtempy, QUICKDouble WQtempz, QUICKDouble CDtemp, QUICKDouble ABcom);
-__device__ void DSPS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Qtempx, QUICKDouble Qtempy,QUICKDouble Qtempz, \
-           QUICKDouble WQtempx, QUICKDouble WQtempy, QUICKDouble WQtempz, QUICKDouble ABCDtemp);
-__device__ void PSDS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy,QUICKDouble Ptempz, \
-           QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz, QUICKDouble ABCDtemp);
-__device__ void DSDS(int mtemp, QUICKDouble* YVerticalTemp, QUICKDouble Ptempx, QUICKDouble Ptempy,QUICKDouble Ptempz, \
-           QUICKDouble WPtempx, QUICKDouble WPtempy, QUICKDouble WPtempz, QUICKDouble ABCDtemp, QUICKDouble ABtemp, QUICKDouble CDcom);
 
 __device__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
                                 int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
@@ -104,6 +94,7 @@ __device__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
                                 QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
                                 QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
                                 QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);                                                         
+__device__ __forceinline__ QUICKDouble quick_dsqr(QUICKDouble a);
 
 __device__ void vertical(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
               QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
@@ -113,189 +104,41 @@ __device__ void vertical(int I, int J, int K, int L, QUICKDouble* YVerticalTemp,
               QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
               QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 
+__device__ void vertical_spdf(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
+                         QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                         QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                         QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                         QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                         QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                              QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
+__device__ void vertical_spdf2(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
+                              QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                              QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                              QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                              QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                              QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                              QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
+__device__ void vertical_spdf3(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
+                              QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                              QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                              QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                              QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                              QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                               QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
+__device__ void vertical_spdf4(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
+                               QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                               QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                               QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                               QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                               QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                               QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
+
 __device__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz, 
                        QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
                        int KLMNAx, int KLMNAy, int KLMNAz,
                        int KLMNBx, int KLMNBy, int KLMNBz,
                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
 
-__device__ QUICKDouble hrrwhole_MP2(int I, int J, int K, int L, \
-                                int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
-                                QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
-                                QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
-                                QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
-                                QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);                                                         
-
-__device__ void vertical_MP2(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
-                         QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                         QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                         QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                         QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                         QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                         QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-__device__ int lefthrr_MP2(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz, 
-                       QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
-                       int KLMNAx, int KLMNAy, int KLMNAz,
-                       int KLMNBx, int KLMNBy, int KLMNBz,
-                       int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
-/*
-
-__device__ void vertical_case_12(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz, \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz, \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-__device__ void vertical_case_21(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-
-__device__ void vertical_case_22(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-__device__ void vertical_case_30(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-__device__ void vertical_case_3(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-__device__ void vertical_case_40(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-__device__ void vertical_case_4(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_31(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_13(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                        
-
-
-__device__ void vertical_case_41(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-
-__device__ void vertical_case_14(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_32(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_23(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_42(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_24(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_33(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_43(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_34(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store,
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz, \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz, \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);                                                         
-
-__device__ void vertical_case_44(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, 
-                                 QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz, \
-                                 QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                                 QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz, \
-                                 QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                                 QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                                 QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-*/
 
 //__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm);
 __device__ void gpu_grid_xc(int irad, int iradtemp, int iatm, QUICKDouble XAng, QUICKDouble YAng, QUICKDouble ZAng, QUICKDouble WAng);

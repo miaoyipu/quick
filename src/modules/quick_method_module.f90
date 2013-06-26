@@ -105,7 +105,7 @@ module quick_method_module
         double precision :: gNormCrt      = .00030d0 ! gradient normalization
         
 
-        logical :: bCUDA                ! if  is used here
+
 
         
     end type quick_method_type
@@ -488,7 +488,6 @@ endif
             self%gNormCrt       = .00030d0 ! gradient normalization
             self%gridSpacing    = 0.1
             self%lapgridspacing = 0.1
-            self%bCUDA  = .false.
             
         end subroutine init_quick_method
         

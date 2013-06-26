@@ -23,18 +23,24 @@ fflush(stdout);\
 // Define TEST for the CPU host test, and undef it when you need to run it on device
 //#define TEST
 
-//#define VDIM1 56
-//#define VDIM2 56
-//#define VDIM3 10
-//#define STOREDIM 120
 #define VDIM1 1
 #define VDIM2 1
-#define VDIM3 10
+//#define VDIM3 10
+#define VDIM3 16
+#ifdef CUDA_SPDF
+#define STOREDIM 84
+//#define STOREDIM 35
+#else
 #define STOREDIM 35
+#endif
+//#define STOREDIM 120
 #define TRANSDIM 8
 #define MCALDIM 120
 
 #define MAXPRIM 10
+
+#define BUFFERSIZE 150000
+
 // Macro for two- and three- dimension array, d1,d2 and d3 are the dimension and i1,i2 and i3 are the indices
 #define LOC2(A,i1,i2,d1,d2)  A[i1+(i2)*(d1)]
 #define LOC3(A,i1,i2,i3,d1,d2,d3) A[i3+((i2)+(i1)*(d2))*(d3)]
