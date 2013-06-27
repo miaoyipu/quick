@@ -70,7 +70,7 @@ blasfolder = ./src/BLAS
 
 
 cudafolder = ./src/cuda
-cudaobj    = gpu_write_info.o gpu.o gpu_type.o gpu_getxc.o gpu_get2e.o vertical.o #$(CUDA_INT_OBJ)
+cudaobj    = gpu_write_info.o gpu.o gpu_type.o gpu_getxc.o gpu_get2e.o #vertical.o #$(CUDA_INT_OBJ)
 #cudafile   = gpu.cu gpu_type.cu gpu_get2e.cu gpu_getxc.cu
 
 #----------------------
