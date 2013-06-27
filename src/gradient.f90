@@ -8,7 +8,7 @@ subroutine hfgrad
 
   integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
   common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
-  double precision t1, t2,t3,t4,t5,t6,t7,t8,t9,t10
+
   ! The purpose of this subroutine is to calculate the gradient of
   ! the total energy with respect to nuclear displacement.  The results
   ! of this are stored in Gradient, which is organized by atom and then
@@ -45,7 +45,7 @@ subroutine hfgrad
   ! that that atom A can never equal atom B, and A-B part of the derivative
   ! for A is the negative of the BA derivative for atom B.
 
-call cpu_time(t1)
+
   do Iatm = 1,natom*3
      do Jatm = Iatm+1,natom
         RIJ  = (xyz(1,Iatm)-xyz(1,Jatm))*(xyz(1,Iatm)-xyz(1,Jatm)) &
@@ -65,8 +65,7 @@ call cpu_time(t1)
         quick_qm_struct%gradient(JSTART+3) = quick_qm_struct%gradient(JSTART+3)-ZBminZA*ZAZBdivRIJ3
      enddo
   enddo
-call cpu_time(t2)
-write(*,*) "T1=",t2-t1
+
   ! 2)  The negative of the energy weighted density matrix element i j
   ! with the derivative of the ij overlap.
 
@@ -92,8 +91,7 @@ write(*,*) "T1=",t2-t1
         quick_scratch%hold(J,I) = 2.d0*HOLDJI
      enddo
   enddo
-call cpu_time(t3)
-write(*,*) "T2=",t3-t2
+
   if (quick_method%debug) then
      write(ioutfile,'(/"THE ENERGY WEIGHTED DENSITY MATRIX")')
      do I=1,nbasis
@@ -237,8 +235,8 @@ write(*,*) "T2=",t3-t2
         enddo
      enddo
   enddo
-call cpu_time(t4)
-write(*,*) "T4=",t4-t3
+
+
   ! 4)  The derivative of the 1 electron nuclear attraction term ij times
   ! the density matrix element ij.
 
@@ -249,8 +247,7 @@ write(*,*) "T4=",t4-t3
         call attrashellopt(IIsh,JJsh)
      enddo
   enddo
-call cpu_time(t5)
-write(*,*) "T5=", t5-t4
+
   !        write (ioutfile,'(/," ANALYTICAL GRADIENT first: ")')
   !        do Iatm=1,natom
   !            do Imomentum=1,3
@@ -310,8 +307,7 @@ write(*,*) "T5=", t5-t4
         enddo
      enddo
   enddo
-call cpu_time(t6)
-write(*,*) "T6=",t6-t5
+
   ! stop
 
   call cpu_time(timer_end%TGrad)
