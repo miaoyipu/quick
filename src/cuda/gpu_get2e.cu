@@ -49,6 +49,7 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf4
 #include "gpu_get2e_subs.h"
 
+#ifdef CUDA_SPDF
 #undef int_spd
 #define int_spdf
 #undef int_spdf2
@@ -78,7 +79,7 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf3
 #define int_spdf4
 #include "gpu_get2e_subs.h"
-
+#endif
 
 #undef int_spd
 #undef int_spdf
@@ -124,7 +125,10 @@ void getAOInt(_gpu_type gpu, QUICKULL intStart, QUICKULL intEnd, cudaStream_t st
     cudaEventDestroy(start);
     cudaEventDestroy(end);
 #endif
-    
+   
+
+#ifdef CUDA_SPDF
+ 
 #ifdef DEBUG
     cudaEventCreate(&start);
     cudaEventCreate(&end);
@@ -226,7 +230,8 @@ void getAOInt(_gpu_type gpu, QUICKULL intStart, QUICKULL intEnd, cudaStream_t st
     cudaEventDestroy(start);
     cudaEventDestroy(end);
 #endif
-    
+
+#endif 
 }
 
 // interface to call Kernel subroutine
@@ -249,6 +254,8 @@ void get2e(_gpu_type gpu)
     cudaError_t status;
     status = cudaGetLastError();
     PRINTERROR(status, "cuda Kernel failed")
+
+#ifdef CUDA_SPDF
     
 #ifdef DEBUG
     cudaEventRecord(end, 0);
@@ -363,7 +370,8 @@ void get2e(_gpu_type gpu)
     cudaEventDestroy(start);
     cudaEventDestroy(end);
 #endif
-    
+   
+#endif 
 }
 
 
