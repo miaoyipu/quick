@@ -894,6 +894,7 @@ __device__ __forceinline__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
             Y += coefAngularL[i] * coefAngularR[j] * LOC2(store, angularL[i]-1, angularR[j]-1 , STOREDIM, STOREDIM);
         }
     }
+    //if (K == 2 && L == 3) Y = coefAngularL[0] * coefAngularR[2] * LOC2(store, angularL[0]-1, angularR[2]-1 , STOREDIM, STOREDIM);
     
     Y = Y * devSim.cons[III-1] * devSim.cons[JJJ-1] * devSim.cons[KKK-1] * devSim.cons[LLL-1];
 #endif
@@ -1024,7 +1025,7 @@ __device__ __forceinline__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDo
                 angularL[1] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz+2, TRANSDIM, TRANSDIM, TRANSDIM);
                 angularL[2] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz+1, TRANSDIM, TRANSDIM, TRANSDIM);
                 angularL[3] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
-            }else if (KLMNBx == 1 && KLMNBy ==2) {
+            }else if (KLMNBx == 1 && KLMNBy ==2) { // case 120
                 numAngularL = 6;
                 QUICKDouble tmp = RAx - RBx;
                 QUICKDouble tmp2 = RAy - RBy;
@@ -1040,7 +1041,7 @@ __device__ __forceinline__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDo
                 angularL[3] = (int) LOC3(devTrans, KLMNAx, KLMNAy+1, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
                 angularL[4] = (int) LOC3(devTrans, KLMNAx+1, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);   
                 angularL[5] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
-            }else if (KLMNBx == 1 && KLMNBz ==2) {
+            }else if (KLMNBx == 1 && KLMNBz ==2) { // case 102
                 numAngularL = 6;
                 QUICKDouble tmp = RAx - RBx;
                 QUICKDouble tmp2 = RAz - RBz;
@@ -1055,7 +1056,7 @@ __device__ __forceinline__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDo
                 angularL[3] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz+1, TRANSDIM, TRANSDIM, TRANSDIM);
                 angularL[4] = (int) LOC3(devTrans, KLMNAx+1, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);   
                 angularL[5] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
-            }else if (KLMNBy == 1 && KLMNBz ==2) {
+            }else if (KLMNBy == 1 && KLMNBz ==2) { // case 012
                 numAngularL = 6;
                 QUICKDouble tmp = RAy - RBy;
                 QUICKDouble tmp2 = RAz - RBz;
@@ -1069,6 +1070,51 @@ __device__ __forceinline__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDo
                 angularL[2] = (int) LOC3(devTrans, KLMNAx, KLMNAy+1, KLMNAz+1, TRANSDIM, TRANSDIM, TRANSDIM);
                 angularL[3] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz+1, TRANSDIM, TRANSDIM, TRANSDIM);
                 angularL[4] = (int) LOC3(devTrans, KLMNAx, KLMNAy+1, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);   
+                angularL[5] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+            }else if (KLMNBy== 2 && KLMNBz == 1) { // case 021
+                numAngularL = 6;
+                QUICKDouble tmp = RAz - RBz;
+                QUICKDouble tmp2 = RAy - RBy;
+                coefAngularL[1] = tmp;
+                coefAngularL[2] = 2 * tmp2;
+                coefAngularL[3] = 2 * tmp * tmp2;
+                coefAngularL[4] = tmp2 * tmp2;
+                coefAngularL[5] = tmp * tmp2 * tmp2;
+                
+                angularL[1] = (int) LOC3(devTrans, KLMNAx, KLMNAy+2, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[2] = (int) LOC3(devTrans, KLMNAx, KLMNAy+1, KLMNAz+1, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[3] = (int) LOC3(devTrans, KLMNAx, KLMNAy+1, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[4] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz+1, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[5] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+            }else if (KLMNBx == 2 && KLMNBy == 1) { // case 210
+                numAngularL = 6;
+                QUICKDouble tmp = RAy - RBy;
+                QUICKDouble tmp2 = RAx - RBx;
+                coefAngularL[1] = tmp;
+                coefAngularL[2] = 2 * tmp2;
+                coefAngularL[3] = 2 * tmp * tmp2;
+                coefAngularL[4] = tmp2 * tmp2;
+                coefAngularL[5] = tmp * tmp2 * tmp2;
+                
+                angularL[1] = (int) LOC3(devTrans, KLMNAx+2, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[2] = (int) LOC3(devTrans, KLMNAx+1, KLMNAy+1, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[3] = (int) LOC3(devTrans, KLMNAx+1, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[4] = (int) LOC3(devTrans, KLMNAx, KLMNAy+1, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[5] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+            }else if (KLMNBx == 2 && KLMNBz ==1) { // case 201
+                numAngularL = 6;
+                QUICKDouble tmp = RAz - RBz;
+                QUICKDouble tmp2 = RAx - RBx;
+                coefAngularL[1] = tmp;
+                coefAngularL[2] = 2 * tmp2;
+                coefAngularL[3] = 2 * tmp * tmp2;
+                coefAngularL[4] = tmp2 * tmp2;
+                coefAngularL[5] = tmp * tmp2 * tmp2;
+                
+                angularL[1] = (int) LOC3(devTrans, KLMNAx+2, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[2] = (int) LOC3(devTrans, KLMNAx+1, KLMNAy, KLMNAz+1, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[3] = (int) LOC3(devTrans, KLMNAx+1, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
+                angularL[4] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz+1, TRANSDIM, TRANSDIM, TRANSDIM);
                 angularL[5] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
             }else if (KLMNBx == 1 && KLMNBy == 1) {
                 numAngularL = 8;

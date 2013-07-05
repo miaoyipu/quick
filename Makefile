@@ -231,4 +231,4 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
-include $(srcfolder)/depend 
+include $(srcfolder)/depend2 
