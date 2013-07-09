@@ -14,9 +14,9 @@
 
 #ifdef CUDA_SPDF
 #include "int.h"
-#else
-#include "int2.h"
 #endif
+
+#include "int2.h"
 
 /*
  Constant Memory in GPU is fast but quite limited and hard to operate, usually not allocatable and 
@@ -97,280 +97,33 @@ static float totTime;
 // interface to call Kernel subroutine
 void getAOInt(_gpu_type gpu, QUICKULL intStart, QUICKULL intEnd, cudaStream_t streamI, int streamID,  ERI_entry* aoint_buffer)
 {
-#ifdef DEBUG
-    cudaEvent_t start,end;
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    //QUICKULL intStart, intEnd;
-    //intStart = gpu -> gpu_cutoff -> sqrQshell * iBatchStart;
-    //intEnd   = gpu -> gpu_cutoff -> sqrQshell * (iBatchEnd + 1) - 1;
-    
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    getAOInt_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID);
-    
-    cudaError_t status;
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    float time;
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-   
-
+    QUICK_SAFE_CALL((getAOInt_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>(intStart, intEnd, aoint_buffer, streamID)));
 #ifdef CUDA_SPDF
- 
-#ifdef DEBUG
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    
-    getAOInt_kernel_spdf<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID);
-    
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("KERNEL 2\n");
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-    
-    
-#ifdef DEBUG
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    
-    getAOInt_kernel_spdf2<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID);
-    
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("KERNEL 3\n");
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-    
-#ifdef DEBUG
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    
-    getAOInt_kernel_spdf3<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID);
-    
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("KERNEL 4\n");
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-    
-    
-#ifdef DEBUG
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    
-    getAOInt_kernel_spdf4<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID);
-    
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("KERNEL 5\n");
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-
+    // Part f-1
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
+    // Part f-2
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf2<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
+    // Part f-3
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf3<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
+    // Part f-4
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf4<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
 #endif 
 }
 
 // interface to call Kernel subroutine
 void get2e(_gpu_type gpu)
 {
-#ifdef DEBUG
-    cudaEvent_t start,end;
-    float time;
-    
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    
-    get2e_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>();
-    
-    cudaError_t status;
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-
+    // Part spd
+    QUICK_SAFE_CALL((get2e_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
 #ifdef CUDA_SPDF
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("KERNEL 1\n");
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-    
-    
-#ifdef DEBUG
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    
-    get2e_kernel_spdf<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>();
-    
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;    
-    printf("KERNEL 2\n");
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-    
-    
-#ifdef DEBUG
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    
-    get2e_kernel_spdf2<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>();
-    
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("KERNEL 3\n");
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-    
-#ifdef DEBUG
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    
-    get2e_kernel_spdf3<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>();
-    
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("KERNEL 4\n");
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-    
-    
-#ifdef DEBUG
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    
-    get2e_kernel_spdf4<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>();
-    
-    status = cudaGetLastError();
-    PRINTERROR(status, "cuda Kernel failed")
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("KERNEL 5\n");
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-   
+    // Part f-1
+    QUICK_SAFE_CALL((get2e_kernel_spdf<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    // Part f-2
+    QUICK_SAFE_CALL((get2e_kernel_spdf2<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    // Part f-3
+    QUICK_SAFE_CALL((get2e_kernel_spdf3<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    // Part f-4
+    QUICK_SAFE_CALL((get2e_kernel_spdf4<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
 #endif 
 }
 
@@ -378,28 +131,7 @@ void get2e(_gpu_type gpu)
 // interface to call Kernel subroutine
 void getAddInt(_gpu_type gpu, int bufferSize, ERI_entry* aoint_buffer)
 {
-#ifdef DEBUG
-    cudaEvent_t start,end;
-    cudaEventCreate(&start);
-    cudaEventCreate(&end);
-    cudaEventRecord(start, 0);
-#endif
-    
-    printf("METHOD = %i\n", gpu->gpu_sim.method);
-    getAddInt_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>(bufferSize, aoint_buffer);
-    
-    
-#ifdef DEBUG
-    cudaEventRecord(end, 0);
-    cudaEventSynchronize(end);
-    float time;
-    cudaEventElapsedTime(&time, start, end);
-    totTime+=time;
-    printf("this cycle:%f ms total time:%f ms\n", time, totTime);
-    cudaEventDestroy(start);
-    cudaEventDestroy(end);
-#endif
-    
+    QUICK_SAFE_CALL((getAddInt_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>(bufferSize, aoint_buffer)));
 }
 
 

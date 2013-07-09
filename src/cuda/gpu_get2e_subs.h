@@ -22,12 +22,55 @@ __global__ void get2e_kernel_spdf4()
     int totalThreads = blockDim.x*gridDim.x;
     
     
-    QUICKULL jshell   = (QUICKULL) devSim.sqrQshell;
     
-    for (QUICKULL i = offside; i<jshell*jshell; i+= totalThreads) {
+#ifdef int_spd
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+#elif defined int_spdf
+    
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+    
+#elif defined int_spdf2
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+#elif defined int_spdf3
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+#elif defined int_spdf4
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+#endif
+    
+    for (QUICKULL i = offside; i<jshell2*jshell; i+= totalThreads) {
+        
+#ifdef int_spd
+        
         
         QUICKULL a = (QUICKULL) i/jshell;
         QUICKULL b = (QUICKULL) (i - a*jshell);
+        
+#elif defined int_spdf
+        
+        QUICKULL a = (QUICKULL) i/jshell;
+        QUICKULL b = (QUICKULL) (i - a*jshell);
+        
+#elif defined int_spdf2
+        
+        QUICKULL a = (QUICKULL) i/jshell;
+        QUICKULL b = (QUICKULL) (i - a*jshell);
+        
+#elif defined int_spdf3
+        
+        QUICKULL a = (QUICKULL) i/jshell;
+        QUICKULL b = (QUICKULL) (i - a*jshell);
+        
+#elif defined int_spdf4
+        
+        QUICKULL a = (QUICKULL) i/jshell;
+        QUICKULL b = (QUICKULL) (i - a*jshell);
+        
+#endif
         
         int II = devSim.sorted_YCutoffIJ[a].x;
         int KK = devSim.sorted_YCutoffIJ[b].x;
@@ -395,7 +438,7 @@ __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_en
                 int jjj = devSim.sorted_Qnumber[JJ];
                 int kkk = devSim.sorted_Qnumber[KK];
                 int lll = devSim.sorted_Qnumber[LL];
-                
+                /*
 #ifdef int_spd
         //        if (!((iii + jjj) > 4 || (kkk + lll) > 4)) {
                     iclass_AOInt(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
@@ -417,7 +460,7 @@ __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_en
                     iclass_AOInt_spdf4(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
                 }
 #endif
-                
+                */
             }
         }
     }

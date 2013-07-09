@@ -85,6 +85,8 @@ struct gpu_simulation_type {
     int                             iAtomType;
     int                             maxcontract;
     int                             Qshell;
+    int                             fStart;
+    int                             ffStart;
     
     // Gaussian Type function
     
@@ -157,7 +159,7 @@ struct gpu_simulation_type {
     QUICKDouble                     maxIntegralCutoff;
     QUICKDouble                     leastIntegralCutoff;
     int                             iBatchSize;
-    QUICKULL*                            intCount;
+    QUICKULL*                       intCount;
 };
 
 struct gpu_basis_type {
@@ -170,6 +172,10 @@ struct gpu_basis_type {
     int                             Qshell;
     int                             maxcontract;
     int                             prim_total;
+    
+    int                             fStart;
+    int                             ffStart;
+    
     // Gaussian Type function
 
     cuda_buffer_type<int>*          ncontract;

@@ -84,8 +84,28 @@ static FILE *debugFile;
 #endif
 
 
+// Timer for debug
+#ifdef DEBUG
+#define TIMERSTART() \
+cudaEvent_t start,end;\
+float time;\
+cudaEventCreate(&start); \
+cudaEventCreate(&end);\
+cudaEventRecord(start, 0);
+
+#define TIMERSTOP() \
+cudaEventRecord(end, 0); \
+cudaEventSynchronize(end); \
+cudaEventElapsedTime(&time, start, end); \
+totTime+=time; \
+printf("this cycle:%f ms total time:%f ms\n", time, totTime); \
+cudaEventDestroy(start); \
+cudaEventDestroy(end); 
+
+#endif
 
 
+// Atomic add macro
 #ifdef TEST
 #define QUICKADD(address, val) address += (val)
 #define QUICKSUB(address, val) address -= (val)
@@ -96,6 +116,21 @@ static FILE *debugFile;
 
 #define TEXDENSE(a,b) fetch_texture_double(textureDense, (a-1)*devSim.nbasis+(b-1))
 
+// CUDA safe call
+#define QUICK_SAFE_CALL(x)\
+{\
+TIMERSTART()\
+printf("%s.%s.%d: %s\n", __FILE__, __FUNCTION__, __LINE__, #x); fflush(stdout);\
+printf("LAUCHBOUND = %i %i\n", gpu->blocks, gpu->twoEThreadsPerBlock);\
+printf("METHOD = %i\n", gpu->gpu_sim.method);\
+x;\
+TIMERSTOP()\
+cudaError_t error = cudaGetLastError();\
+if (error != cudaSuccess && error != cudaErrorNotReady)\
+{ printf("%s.%s.%d: 0x%x (%s)\n", __FILE__, __FUNCTION__, __LINE__, error, cudaGetErrorString(error));  \
+  exit(1);                                                                                              \
+}\
+}
 
 /*
  ****************************************************************
