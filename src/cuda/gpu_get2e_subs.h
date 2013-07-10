@@ -6,6 +6,62 @@
 //
 //
 
+
+/*
+ In the following kernel, we treat f orbital into 5 parts.
+ 
+ type:   ss sp ps sd ds pp dd sf pf | df ff |
+ ss                                 |       |
+ sp                                 |       |
+ ps                                 | zone  |
+ sd                                 |  2    |
+ ds         zone 0                  |       |
+ pp                                 |       |
+ dd                                 |       |
+ sf                                 |       |
+ pf                                 |       |
+ -------------------------------------------
+ df         zone 1                  | zone  |
+ ff                                 |   3   |
+ -------------------------------------------
+ 
+ 
+ because the single f orbital kernel is impossible to compile completely, we treat VRR as:
+ 
+ 
+ I+J  0 1 2 3 4 | 5 | 6 |
+ 0 ----------------------
+ 1|             |       |
+ 2|   Kernel    |  K2   |
+ 3|     0       |       |
+ 4|             |       |
+ -----------------------|
+ 5|   Kernel    | K | K |
+ 6|     1       | 3 | 4 |
+ ------------------------
+ 
+ Their responses for
+              I+J          K+L
+ Kernel 0:   0-4           0-4
+ Kernel 1:   0-4           5,6
+ Kernel 2:   5,6           0-4
+ Kernel 3:   5             5,6
+ Kernel 4:   6             5,6
+ 
+ Integrals in zone need kernel:
+ zone 0: kernel 0
+ zone 1: kernel 0, 1
+ zone 2: kernel 0, 2
+ zone 3: kernel 0, 1,2,3,4
+ 
+ so first, kernel 0: zone 0,1,2,3 (get2e_kernel()), if no f, then that's it.
+ second,   kernel 1: zone 1,3(get2e_kernel_spdf())
+ then,     kernel 2: zone 2,3(get2e_kernel_spdf2())
+ then,     kernel 3: zone 3(get2e_kernel_spdf3())
+ finally,  kernel 4: zone 3(get2e_kernel_spdf4())
+ 
+ we can split zone 3 into 2 area, but only bring 1%-2% improve.
+ */
 #ifdef int_spd
 __global__ void get2e_kernel()
 #elif defined int_spdf
@@ -26,50 +82,80 @@ __global__ void get2e_kernel_spdf4()
 #ifdef int_spd
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
     QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+    
 #elif defined int_spdf
     
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
-    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - devSim.fStart;
     
 #elif defined int_spdf2
+    
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
-    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - devSim.fStart;
+    
 #elif defined int_spdf3
-    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
-    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+    
+    QUICKULL jshell0 = (QUICKULL) devSim.fStart;
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell0;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
+    
 #elif defined int_spdf4
-    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
-    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+    
+    QUICKULL jshell0 = (QUICKULL) devSim.fStart;
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell0;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
+    
 #endif
     
     for (QUICKULL i = offside; i<jshell2*jshell; i+= totalThreads) {
         
 #ifdef int_spd
         
-        
+        // Zone 0
         QUICKULL a = (QUICKULL) i/jshell;
         QUICKULL b = (QUICKULL) (i - a*jshell);
         
 #elif defined int_spdf
         
-        QUICKULL a = (QUICKULL) i/jshell;
-        QUICKULL b = (QUICKULL) (i - a*jshell);
+        
+        // Zone 1
+        QUICKULL b = (QUICKULL) i/jshell;
+        QUICKULL a = (QUICKULL) (i - b*jshell);
+        b = b + devSim.fStart;
         
 #elif defined int_spdf2
         
+        // Zone 2
         QUICKULL a = (QUICKULL) i/jshell;
         QUICKULL b = (QUICKULL) (i - a*jshell);
+        a = a + devSim.fStart;
         
 #elif defined int_spdf3
         
-        QUICKULL a = (QUICKULL) i/jshell;
-        QUICKULL b = (QUICKULL) (i - a*jshell);
-        
+        // Zone 3
+        QUICKULL a, b;
+        if (jshell != 0 ) {
+            a = (QUICKULL) i/jshell;
+            b = (QUICKULL) (i - a*jshell);
+            a = a + jshell0;
+            b = b + jshell0;
+        }else{
+            a = 0;
+            b = 0;
+        }
 #elif defined int_spdf4
         
-        QUICKULL a = (QUICKULL) i/jshell;
-        QUICKULL b = (QUICKULL) (i - a*jshell);
-        
+        // Zone 4
+        QUICKULL a, b;
+        if (jshell != 0 ) {
+            a = (QUICKULL) i/jshell;
+            b = (QUICKULL) (i - a*jshell);
+            a = a + jshell0;
+            b = b + jshell0;
+        }else{
+            a = 0;
+            b = 0;
+        }
 #endif
         
         int II = devSim.sorted_YCutoffIJ[a].x;
@@ -99,25 +185,23 @@ __global__ void get2e_kernel_spdf4()
                 int kkk = devSim.sorted_Qnumber[KK];
                 int lll = devSim.sorted_Qnumber[LL];
 #ifdef int_spd
-//                if (!((iii + jjj) > 4 || (kkk + lll) > 4)) {
-                    iclass(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
-//                }
+                
+                iclass(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                
 #elif defined int_spdf
-                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
-                    iclass_spdf(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
-                }
+                iclass_spdf(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                
 #elif defined int_spdf2
-                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
-                    iclass_spdf2(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
-                }
+                
+                iclass_spdf2(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                
 #elif defined int_spdf3
-                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
-                    iclass_spdf3(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
-                }
+                
+                iclass_spdf3(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                
 #elif defined int_spdf4
-                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
-                    iclass_spdf3(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
-                }
+                
+                iclass_spdf3(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
 #endif
                 
             }
@@ -413,7 +497,9 @@ __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_en
     QUICKULL myInt          = (QUICKULL) (intEnd - intStart + 1) / totalThreads;
     
     
+    
     if ((intEnd - intStart + 1 - myInt*totalThreads)> offside) myInt++;
+    
     for (QUICKULL i = 1; i<=myInt; i++) {
         QUICKULL currentInt = totalThreads * (i-1) + offside + intStart;
         QUICKULL a = (QUICKULL) currentInt/jshell;
@@ -438,7 +524,7 @@ __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_en
                 int jjj = devSim.sorted_Qnumber[JJ];
                 int kkk = devSim.sorted_Qnumber[KK];
                 int lll = devSim.sorted_Qnumber[LL];
-                /*
+                
 #ifdef int_spd
         //        if (!((iii + jjj) > 4 || (kkk + lll) > 4)) {
                     iclass_AOInt(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
@@ -460,7 +546,7 @@ __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_en
                     iclass_AOInt_spdf4(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
                 }
 #endif
-                */
+                
             }
         }
     }
