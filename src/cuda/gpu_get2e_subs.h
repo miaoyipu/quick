@@ -21,8 +21,8 @@
  sf                                 |       |
  pf                                 |       |
  -------------------------------------------
- df         zone 1                  | zone  |
- ff                                 |   3   |
+ df         zone 1                  | z | z |
+ ff                                 | 3 | 4 |
  -------------------------------------------
  
  
@@ -50,17 +50,17 @@
  
  Integrals in zone need kernel:
  zone 0: kernel 0
- zone 1: kernel 0, 1
- zone 2: kernel 0, 2
- zone 3: kernel 0, 1,2,3,4
+ zone 1: kernel 0,1
+ zone 2: kernel 0,2
+ zone 3: kernel 0,1,2,3
+ zone 4: kernel 0,1,2,3,4
  
- so first, kernel 0: zone 0,1,2,3 (get2e_kernel()), if no f, then that's it.
- second,   kernel 1: zone 1,3(get2e_kernel_spdf())
- then,     kernel 2: zone 2,3(get2e_kernel_spdf2())
- then,     kernel 3: zone 3(get2e_kernel_spdf3())
- finally,  kernel 4: zone 3(get2e_kernel_spdf4())
+ so first, kernel 0: zone 0,1,2,3,4 (get2e_kernel()), if no f, then that's it.
+ second,   kernel 1: zone 1,3,4(get2e_kernel_spdf())
+ then,     kernel 2: zone 2,3,4(get2e_kernel_spdf2())
+ then,     kernel 3: zone 3,4(get2e_kernel_spdf3())
+ finally,  kernel 4: zone 4(get2e_kernel_spdf4())
  
- we can split zone 3 into 2 area, but only bring 1%-2% improve.
  */
 #ifdef int_spd
 __global__ void get2e_kernel()
@@ -102,7 +102,8 @@ __global__ void get2e_kernel_spdf4()
 #elif defined int_spdf4
     
     QUICKULL jshell0 = (QUICKULL) devSim.fStart;
-    QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell0;
+    QUICKULL jshell00 = (QUICKULL) devSim.ffStart;
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell00;
     QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
     
 #endif
@@ -147,10 +148,10 @@ __global__ void get2e_kernel_spdf4()
         
         // Zone 4
         QUICKULL a, b;
-        if (jshell != 0 ) {
-            a = (QUICKULL) i/jshell;
-            b = (QUICKULL) (i - a*jshell);
-            a = a + jshell0;
+        if (jshell2 != 0 ) {
+            a = (QUICKULL) i/jshell2;
+            b = (QUICKULL) (i - a*jshell2);
+            a = a + jshell00;
             b = b + jshell0;
         }else{
             a = 0;
@@ -201,7 +202,7 @@ __global__ void get2e_kernel_spdf4()
                 
 #elif defined int_spdf4
                 
-                iclass_spdf3(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                iclass_spdf4(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
 #endif
                 
             }
