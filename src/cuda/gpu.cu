@@ -1143,7 +1143,7 @@ extern "C" void gpu_addint_(QUICKDouble* o, int* intindex, char* intFileName){
                 int JJJ = aBuffer[j] % gpu->nbasis + 1;
                 int KKK = bBuffer[j] / gpu->nbasis + 1;
                 int LLL = bBuffer[j] % gpu->nbasis + 1;
-                printf("%i %i %i %i %f\n", III2,JJJ,KKK,LLL, intBuffer[j]);
+       //         printf("%i %i %i %i %f\n", III2,JJJ,KKK,LLL, intBuffer[j]);
                 bufferIndex ++;
                 int III = aBuffer[j] / gpu->nbasis;
                 ERIEntryByBasis[III] ++;

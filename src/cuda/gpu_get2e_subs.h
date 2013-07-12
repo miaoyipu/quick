@@ -525,7 +525,6 @@ __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_en
                 int jjj = devSim.sorted_Qnumber[JJ];
                 int kkk = devSim.sorted_Qnumber[KK];
                 int lll = devSim.sorted_Qnumber[LL];
-                
 #ifdef int_spd
         //        if (!((iii + jjj) > 4 || (kkk + lll) > 4)) {
                     iclass_AOInt(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
@@ -547,7 +546,6 @@ __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_en
                     iclass_AOInt_spdf4(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
                 }
 #endif
-                
             }
         }
     }
