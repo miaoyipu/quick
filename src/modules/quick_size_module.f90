@@ -21,7 +21,7 @@ module quick_size_module
     ! integer, parameter :: MAXCONTRACT = 3
 
     ! Maximum number of angular and radial grid points for quadrature:
-    integer, parameter :: MAXANGGRID = 1400
+    integer, parameter :: MAXANGGRID = 6000
     integer, parameter :: MAXRADGRID = 400
 
     ! M value of the lbfgs optimizer.

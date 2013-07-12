@@ -83,7 +83,9 @@ end subroutine writeInt
 
 subroutine readInt(iIntFile, intDim, a, b, int)
    Implicit none
-   integer intDim, iIntFile, i
+   integer, parameter :: llInt = selected_int_kind (16)
+   integer iIntFile, i
+   integer(kind=llInt) intDim
    integer a(intDim), b(intDim)
    double precision int(intDim)
    read(iIntFile) a, b, int
@@ -250,7 +252,7 @@ subroutine addInt
          KKK = int(B/nbasis) + 1
          LLL = mod(B, nbasis) + 1
 
-write(*,*) III,JJJ,KKK,LLL, Y
+!write(*,*) III,JJJ,KKK,LLL, Y
          if(III.lt.JJJ.and.III.lt.KKK.and.KKK.lt.LLL)then
 
             !write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL,III,JJJ,KKK,LLL

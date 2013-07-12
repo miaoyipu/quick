@@ -140,18 +140,18 @@ subroutine b3lypf (rhoa1,sigmaaa1, vrhoa,vsigmaaa)
    implicit double precision (a-h,o-z)
    integer,parameter::npt=1
    integer ideriv
-   double precision rhoa1(npt)
-   double precision sigmaaa1(npt)
-   double precision zk(npt),vrhoa(npt),vsigmaaa(npt)
+   double precision rhoa1
+   double precision sigmaaa1
+   double precision zk,vrhoa,vsigmaaa
    double precision v2rhoa2(npt),v2rhoasigmaaa(npt),v2sigmaaa2(npt)
    parameter(tol=1.0d-20)
 
 
    !      do i=1,npt
    i=1
-   rho = dmax1(0.D0,rhoa1(i))
+   rho = dmax1(0.D0,rhoa1)
    !      if(rho.gt.tol) then
-   sigma = dmax1(0.D0,sigmaaa1(i))
+   sigma = dmax1(0.D0,sigmaaa1)
    t2 = rho**(1.D0/3.D0)
    t3 = t2*rho
    t5 = 1/t3
@@ -237,15 +237,15 @@ subroutine b3lypf (rhoa1,sigmaaa1, vrhoa,vsigmaaa)
          -0.2777777777777778D-1*(-0.8443333333333333D-1*t5 &
          -0.1163333333333333D0*t144+0.4060033333333333D-1*t147)*sigma &
          +0.2777777777777778D-1*t112)-0.6666666666666667D0*t117)
-   vrhoa(i) = s2+0.5907233D-2*t65+0.3899174858189126D1*t71
-   vrhoa(i) = vrhoa(i) &
+   vrhoa = s2+0.5907233D-2*t65+0.3899174858189126D1*t71
+   vrhoa = vrhoa &
          +0.8419610158724123D-3*t77
-   vrhoa(i) = vrhoa(i) +0.19D0*rho*(0.5011795824473985D-1*( &
+   vrhoa = vrhoa +0.19D0*rho*(0.5011795824473985D-1*( &
          -0.2067834969664667D0*t176*t62*t178-0.6203504908994D0*t57*t182 &
          *t192)/t57*t61+0.2419143800947354D0*t201*t189*t178/(1.D0 &
          +0.2016D-2*t201)+0.4431373767749538D-2*(-0.2625411059665811D0 &
          *t74*t62*t190-1.D0*t75*t182*t192)/t75*t61)
-   vsigmaaa(i) = -0.1524000501952839D-1*t5*t14 &
+   vsigmaaa = -0.1524000501952839D-1*t5*t14 &
          +0.3810001254882096D-2*t6*t89*(0.6350002091470161D-1/t7*t5*t10 &
          +0.8000501301919725D-1*t94*t99)+0.5842584D-3*t25*t146 &
          -0.210333024D-1*t25*t30*(0.25D0*t26*t36-0.6666666666666667D0*t26)
@@ -265,15 +265,15 @@ subroutine b3lyp_e(rhoa1,sigmaaa1,zk)
    implicit double precision (a-h,o-z)
    integer,parameter::npt=1
    integer ideriv
-   double precision rhoa1(npt)
-   double precision sigmaaa1(npt)
-   double precision zk(npt),vrhoa(npt),vsigmaaa(npt)
+   double precision rhoa1
+   double precision sigmaaa1
+   double precision zk,vrhoa(npt),vsigmaaa(npt)
    double precision v2rhoa2(npt),v2rhoasigmaaa(npt),v2sigmaaa2(npt)
    parameter(tol=1.0d-20)
 
    i=1
-   rho = dmax1(0.D0,rhoa1(i))
-   sigma = dmax1(0.D0,sigmaaa1(i))
+   rho = dmax1(0.D0,rhoa1)
+   sigma = dmax1(0.D0,sigmaaa1)
    t2 = rho**(1.D0/3.D0)
    t3 = t2*rho
    t5 = 1/t3
@@ -298,7 +298,7 @@ subroutine b3lyp_e(rhoa1,sigmaaa1,zk)
          +0.13072D2))
    t75 = (0.7876233178997433D0*t59+0.409286D0)**2
    t77 = dlog(t75*t62)
-   zk(i) = -0.5908470131056179D0*t3-0.3810001254882096D-2*t5*sigma/ &
+   zk = -0.5908470131056179D0*t3-0.3810001254882096D-2*t5*sigma/ &
          (1.D0+0.317500104573508D-1*t8*t10)-0.398358D-1*t20*rho &
          -0.52583256D-2*t24*t20/t28/t26/rho*(0.25D0*t26* &
          (0.1148493600075277D2*t28*t26+(0.2611111111111111D1 &

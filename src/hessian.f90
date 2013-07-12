@@ -4495,7 +4495,7 @@ end subroutine graddmx2elec
 subroutine dmxderiv(IDX,BU)
   use allmod
   implicit double precision(a-h,o-z)
-
+  double precision BU(*)
 
   ! The purpose of the subroutine is to calculate the first derivative of
   ! the alpha and beta density matrices given the u(ai) found in the
