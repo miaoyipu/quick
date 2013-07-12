@@ -28,8 +28,10 @@ subroutine quick_open(funit,filename,filestat,fileform,fileacc,log_ow)
     character(len=100) run
     logical log_exist
     logical log_ow              ! if overwrite ?
-    
+
+#ifndef GNU 
     integer,external :: system
+#endif
 
     ch='~'
     i=0
