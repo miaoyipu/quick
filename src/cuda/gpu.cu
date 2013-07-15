@@ -18,6 +18,9 @@
 extern "C" void gpu_set_device_(int* gpu_dev_id)
 {
     gpu->gpu_dev_id = *gpu_dev_id;
+#ifdef DEBUG
+    printf("using gpu: %i\n", *gpu_dev_id);
+#endif
 }
 
 //-----------------------------------------------
@@ -82,8 +85,8 @@ extern "C" void gpu_init_(void)
                 }
                 
             }
-    	    gpu->gpu_dev_id = device;
         }
+        gpu->gpu_dev_id = device;
         
     }else{
         if (gpu->gpu_dev_id >= gpuCount)
@@ -103,6 +106,10 @@ extern "C" void gpu_init_(void)
     	}
         device = gpu->gpu_dev_id;
     }
+
+#ifdef DEBUG
+    printf("using gpu: %i\n", device);
+#endif
     
     if (device == -1) {
         printf("NO CUDA 1.3 (OR ABOVE) SUPPORTED GPU IS FOUND\n");
@@ -111,10 +118,11 @@ extern "C" void gpu_init_(void)
     }
     
     status = cudaSetDevice(device);
+    cudaGetDeviceProperties(&deviceProp, device);
     PRINTERROR(status, "cudaSetDevice gpu_init failed!");
     cudaThreadSynchronize();
     
-cudaDeviceSetCacheConfig(cudaFuncCachePreferL1);
+    cudaDeviceSetCacheConfig(cudaFuncCachePreferL1);
 
     size_t val;
     

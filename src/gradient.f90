@@ -599,7 +599,8 @@ subroutine mpi_hfgrad
         Testtmp=Ycutoff(II,JJ)
         do KK=II,jshell
            do LL=KK,jshell
-              if(quick_basis%katom(II).eq.quick_basis%katom(JJ).and.quick_basis%katom(II).eq.quick_basis%katom(KK).and.quick_basis%katom(II).eq.quick_basis%katom(LL))then
+              if(quick_basis%katom(II).eq.quick_basis%katom(JJ).and.quick_basis%katom(II).eq.quick_basis%katom(KK) &
+                 .and.quick_basis%katom(II).eq.quick_basis%katom(LL))then
                  continue
               else
                  testCutoff = TESTtmp*Ycutoff(KK,LL)

@@ -154,7 +154,7 @@
     
     
     
-    call MPI_BCAST(aex,nprim,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(aexp,nprim,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 !    call MPI_BCAST(gcs,nprim,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 !    call MPI_BCAST(quick_basis%gccoeff,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 !    call MPI_BCAST(gcexpo,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)

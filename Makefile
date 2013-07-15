@@ -176,6 +176,9 @@ cpconfig.cuda:
 	cp $(configfolder)/config.cuda.h $(srcfolder)/config.h
 cpconfig.cuda.SP:
 	cp $(configfolder)/config.cuda.SP.h $(srcfolder)/config.h
+cpconfig.MPI:
+	cp $(configfolder)/config.MPI.h $(srcfolder)/config.h
+
 #************************************************************************
 # 
 #                 C. Make Executed Files
@@ -200,6 +203,14 @@ quick.cuda.SP: cpconfig.cuda.SP quick_cuda quick_modules quick_subs $(OBJ) fake_
 	cd $(objfolder) && $(FC) -o quick.cuda.SP $(OBJ) $(modobjall) $(cudaobj) $(libfolder)/quicklib.a fake_amber_interface.o fortran_thunking.o $(CFLAGS) 
 	mv $(objfolder)/quick.cuda.SP $(exefile).cuda.SP
 	rm -f $(srcfolder)/*.mod $(srcfolder)/*.o
+
+quick.MPI: cpconfig.MPI quick_modules quick_subs $(OBJ) blas fake_amber_interface.o
+	cp $(libfolder)/quicklib.a $(objfolder)
+	cp $(libfolder)/blas.a $(objfolder)
+	cd $(objfolder) && $(FC) -o quick.MPI  $(OBJ) $(modobjall) quicklib.a blas.a fake_amber_interface.o $(LDFLAGS)
+	mv $(objfolder)/quick.MPI $(exefile).MPI    
+	rm -f $(srcfolder)/*.mod $(srcfolder)/*.o
+
 
 quick_lib:$(OBJ) ambermod amber_interface.o
 

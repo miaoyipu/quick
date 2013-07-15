@@ -84,9 +84,8 @@
     call gpu_startup()
     iarg = iargc()
     call gpu_set_device(-1)
-    if (iarg == 0) then
-        gpu_device_id = -1
-    else
+
+    if (iarg .ne. 0) then
         do i = 1, iarg
             call getarg(int(i,4), arg)
             if (arg.eq."-gpu") then
@@ -97,8 +96,9 @@
                 exit
             endif
         enddo
+        write(*,*) "gpu_device_id=",gpu_device_id
     endif
-    write(*,*) "gpu_device_id=",gpu_device_id
+
     call gpu_init()
  
     ! write cuda information
