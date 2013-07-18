@@ -118,7 +118,6 @@ subroutine hfoperator(oneElecO, deltaO)
    ! Remember the operator is symmetry
    call copySym(quick_qm_struct%o,nbasis)
 
-
    ! Operator matrix
    !   write(ioutfile,'("OPERATOR MATRIX FOR CYCLE")')
    !   call PriSym(iOutFile,nbasis,quick_qm_struct%o,'f14.8')
@@ -697,7 +696,6 @@ subroutine get2e(II_arg)
    double precision testtmp,cutoffTest
    integer II_arg
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
-
    II = II_arg
    do JJ = II,jshell
       do KK = II,jshell
@@ -708,7 +706,6 @@ subroutine get2e(II_arg)
                   cutmatrix(II,KK), &
                   cutmatrix(JJ,KK), &
                   cutmatrix(JJ,LL))
-
             ! (IJ|KL)^2<=(II|JJ)*(KK|LL) if smaller than cutoff criteria, then
             ! ignore the calculation to save computation time
             if ( (Ycutoff(II,JJ)*Ycutoff(KK,LL)        .gt. quick_method%integralCutoff).and. &

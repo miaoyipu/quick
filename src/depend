@@ -18,7 +18,8 @@ getMol.o: $(srcfolder)/getMol.f90 quick_modules
 	$(FC) -o $(objfolder)/getMol.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       $(objfolder)/_getMol.f90
 
 schwarz.o: $(srcfolder)/schwarz.f90 quick_modules
-	$(FC) -o $(objfolder)/schwarz.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       $(srcfolder)/schwarz.f90
+	$(FPP) $(srcfolder)/schwarz.f90 > $(objfolder)/_schwarz.f90
+	$(FC) -o $(objfolder)/schwarz.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c       $(objfolder)/_schwarz.f90
 
 quick_one_electron_integral.o: $(srcfolder)/quick_one_electron_integral.f90 quick_modules
 	$(FPP) $(srcfolder)/quick_one_electron_integral.f90 > $(objfolder)/_quick_one_electron_integral.f90

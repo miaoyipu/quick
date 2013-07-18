@@ -38,7 +38,6 @@ subroutine getMol()
 
          ! quick forward coordinates stored in namelist to instant variables
          xyz(1:3,1:natom)=quick_molspec%xyz(1:3,1:natom)
-
          close(inFile)
       end if   !amber_interface_logic
 
@@ -50,13 +49,12 @@ subroutine getMol()
       call check_quick_method_and_molspec(iOutFile,quick_molspec,quick_method)
    endif
    !-----------END MPI/MASTER-----------------------
-
-
 #ifdef MPI
    !-----------MPI/ALL NODES------------------------
    if (bMPI)  call mpi_setup_mol1()
    !-----------END MPI/ALL NODES--------------------
 #endif
+
 #ifdef CUDA
    quick_method%bCUDA = .true.
 #endif
@@ -65,10 +63,13 @@ subroutine getMol()
    ! have the number of electrons. Now we must assign basis functions. This
    ! is done in a subroutine.
    call readbasis(natom,0,0,0,0)
+
+   quick_molspec%nbasis   => nbasis
+   quick_qm_struct%nbasis => nbasis
+
    call allocate_basis(quick_method)
    call alloc(quick_qm_struct)
    call init(quick_qm_struct)
-
 
 
 

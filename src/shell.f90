@@ -9,10 +9,15 @@ subroutine g2eshell
 
    use allmod
    implicit none
+
+#ifdef MPI
+   include 'mpif.h'
+#endif
+
    integer ics,ips,jcs,jps,itemp,itemp2,i
    integer NA,NB
    double precision AA,BB,XYZA(3),XYZB(3),DAB
-
+   if (master) then
    ! ics cycle
    do ics=1,jshell                       ! ics is the shell no.
       do ips=1,quick_basis%kprim(ics)                ! ips is prim no. for certain shell
@@ -28,7 +33,6 @@ subroutine g2eshell
 
                AA=quick_basis%gcexpo(ips,quick_basis%ksumtype(ics))    ! so we have the exponent part for ics shell ips prim
                BB=quick_basis%gcexpo(jps,quick_basis%ksumtype(jcs))    ! and jcs shell jps prim
-
                Apri(NA,NB)=AA+BB                     ! A'=expo(A)+expo(B)
                do i=1,3
                   XYZA(i)=xyz(i,quick_basis%katom(ics))     ! xyz(A)
@@ -65,6 +69,19 @@ subroutine g2eshell
          enddo
       enddo
    enddo
+   endif
+
+
+#ifdef MPI
+      if (bMPI) then
+         call MPI_BCAST(Ppri,3*jbasis*jbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(Kpri,jbasis*jbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(Apri,jbasis*jbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(quick_basis%Xcoeff,jbasis*jbasis*4*4,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
+      endif
+#endif
+
 end subroutine g2eshell
 
 subroutine writeInt(iIntFile, intDim, a, b, int)
@@ -535,7 +552,6 @@ subroutine shell
 
                ! prim cutoff: cutoffprim(I,J,K,L) = dnmax * cutprim(I,J) * cutprim(K,L)
                cutoffprim=cutoffprim1*cutprim(Nprik,Npril)
-
                if(cutoffprim.gt.quick_method%primLimit)then
 
                   CD=Apri(Nprik,Npril)  ! CD = Apri = expo(NpriK) + expo(NpriL)
@@ -578,7 +594,6 @@ subroutine shell
                      ! W = -------------------------------------------------------------------
                      !                    expo(I) + expo(J) + expo(K) + expo(L)
                      W(M)=(AAtemp(M)+Q(M)*CD)/ABCD
-
                      !        ->  ->  2
                      ! RPQ =| P - Q |
                      XXXtemp=P(M)-Q(M)
@@ -599,7 +614,6 @@ subroutine shell
                   !             ->  -> 2
                   ! T = ROU * | P - Q|
                   T=RPQ*ROU
-
                   !                         2m        2
                   ! Fm(T) = integral(1,0) {t   exp(-Tt )dt}
                   ! NABCD is the m value, and FM returns the FmT value
@@ -731,6 +745,7 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
             Ytemp=Ytemp+X44(itemp)*Yxiao(itemp,MM1,MM2)
          enddo
          store(MM1,MM2)=Ytemp
+!write(*,*) mpirank, Ytemp
       enddo
    enddo
 

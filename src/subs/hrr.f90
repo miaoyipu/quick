@@ -272,11 +272,9 @@ subroutine hrrwhole
          enddo
       enddo
       Y=Y*quick_basis%cons(III)*quick_basis%cons(JJJ)*quick_basis%cons(KKK)*quick_basis%cons(LLL)
-
    end select
-
    111 continue
-
+!  write(*,*) IJKLtype,mpirank, iii,jjj,kkk,lll,Y
 end subroutine hrrwhole
 
 

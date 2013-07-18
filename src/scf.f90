@@ -124,7 +124,6 @@ subroutine electdiis(jscf)
    ! 8) Diagonalize the operator matrix to form a new density matrix.
    ! As in scf.F, each step wil be reviewed as we pass through the code.
    !---------------------------------------------------------------------------
-
    if(master) then
       write(ioutfile,'(40x," SCF ENERGY")')
       if (quick_method%printEnergy) then
@@ -149,13 +148,26 @@ subroutine electdiis(jscf)
    if (bMPI)   call MPI_setup_hfoperator
    !-------------- END MPI / ALL NODE -----------
 #endif
-
    ! First, let's get 1e opertor which only need 1-time calculation
    ! and store them in oneElecO and fetch it every scf time.
    call get1e(oneElecO)
 
+
+#ifdef MPI
+      if (bMPI) then
+         call MPI_BCAST(quick_qm_struct%o,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(quick_qm_struct%dense,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(quick_qm_struct%co,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(quick_qm_struct%E,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(quick_method%integralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(quick_method%primLimit,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
+      endif
+#endif
+
    ! Now Begin DIIS
    do while (.not.diisdone)
+
 
       call cpu_time(timer_begin%TSCF)
       !--------------------------------------------
@@ -182,13 +194,16 @@ subroutine electdiis(jscf)
       ! if want to calculate operator difference?
       if(jscf.ge.quick_method%ncyc) deltaO = .true.
 
+      if (quick_method%debug)  write(ioutfile,*) "before hf"
+      if (quick_method%debug)  call debug_SCF(jscf)
+
       ! Hatree-Fock Operator
       if (quick_method%HF) then
 #ifdef MPI
          if (bMPI) then
             call MPI_hfoperator(oneElecO) ! MPI HF
          else
-            call hfoperator(oneElecO)     ! Non-MPI HF
+            call hfoperator(oneElecO, deltaO)     ! Non-MPI HF
          endif
 #else
          call hfoperator(oneElecO, deltaO)
@@ -198,12 +213,14 @@ subroutine electdiis(jscf)
       else if (quick_method%SEDFT) then
            call sedftoperator ! Semi-emperical DFT Operator
       endif
-
+      if (quick_method%debug)  write(ioutfile,*) "after hf"
+      if (quick_method%debug)  call debug_SCF(jscf)
       ! Terminate Operator timer
       call cpu_time(timer_end%TOp)
 
       !------------- MASTER NODE -------------------------------
       if (master) then
+
 
          !-----------------------------------------------
          ! End of Delta Matrix
@@ -212,6 +229,8 @@ subroutine electdiis(jscf)
          call cpu_time(timer_begin%TDII)
          call CopyDMat(quick_qm_struct%o,quick_qm_struct%oSave,nbasis)
          call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseOld,nbasis)
+
+
 
          !-----------------------------------------------
          ! 2)  Form error matrix for step i.
@@ -374,6 +393,7 @@ subroutine electdiis(jscf)
             endif
          enddo
 
+
          if(idiis.gt.quick_method%maxdiisscf)then
             call CopyDMat(allerror(1,1:nbasis,1:nbasis),quick_scratch%hold,nbasis)
             do J=1,quick_method%maxdiisscf-1
@@ -498,6 +518,7 @@ subroutine electdiis(jscf)
                nbasis, quick_qm_struct%vec, nbasis, 0.0d0, quick_qm_struct%co,nbasis)
 #endif
 
+
          call CopyDMat(quick_qm_struct%dense,quick_scratch%hold,nbasis) ! Save DENSE to HOLD
 
          ! PIJ=SIGMA[i=1,nelec/2]2CJK*CIK
@@ -525,7 +546,6 @@ subroutine electdiis(jscf)
 
          tmp = quick_method%integralCutoff
          call adjust_cutoff(PRMS,PCHANGE,quick_method)  !from quick_method_module
-
       endif
 
       !--------------- MPI/ALL NODES -----------------------------------------
@@ -601,6 +621,7 @@ subroutine electdiis(jscf)
          endif
 
       endif
+
 #ifdef MPI
       if (bMPI) then
          call MPI_BCAST(diisdone,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)

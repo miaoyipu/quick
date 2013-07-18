@@ -1,3 +1,5 @@
+#include "config.h"
+
 ! change call g2eshell in hfgrad.f? Answer:NO
 ! change shreshold!!!!!!!
 !!!!! change hfoperatordelta.f hfenergy2eshell.f hfenergyshell.f
@@ -11,8 +13,15 @@ subroutine schwarzoff
   use allmod
 
   Implicit none
+
+#ifdef MPI
+   include 'mpif.h'
+#endif
+
   integer ii,jj
   double precision Ymaxtemp
+
+  if (master) then
   do II=1,nshell
      do JJ=II,nshell
         call shellcutoff(II,JJ,Ymaxtemp)
@@ -20,6 +29,15 @@ subroutine schwarzoff
         Ycutoff(JJ,II)=dsqrt(Ymaxtemp)
      enddo
   enddo
+  endif
+
+#ifdef MPI
+      if (bMPI) then
+         call MPI_BCAST(YCutoff,nshell*nshell,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(cutprim,jbasis*jbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
+      endif
+#endif
 
 end subroutine schwarzoff
 
@@ -568,7 +586,6 @@ subroutine densityCutoff
    !------------------------------------------------
    use allmod
    implicit double precision(a-h,o-z)
-
    ! Cutmatrix(II,JJ) indicated for ii shell and jj shell, the max dense
    do II=1,jshell
       do JJ=II,jshell

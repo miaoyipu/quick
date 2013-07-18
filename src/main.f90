@@ -114,7 +114,6 @@
 
     !read job spec and mol spec
     call read_Job_and_Atom()
-
     !allocate essential variables
     call alloc(quick_molspec)
     if (quick_method%MFCC) call allocate_MFCC()
@@ -130,7 +129,6 @@
 !       call mfcc
 !       call getmolmfcc
     endif
-    
     
     !------------------------------------------------------------------
     ! 3. Read Molecule Structure
@@ -152,7 +150,6 @@
     ! if it is div&con method, begin fragmetation step, initial and setup
     ! div&con varibles
     if (quick_method%DIVCON) call inidivcon(quick_molspec%natom)
-
     ! if it is not opt job, begin single point calculation
     if(.not.quick_method%opt)then
 !      if(.NOT.PBSOL)then

@@ -114,22 +114,20 @@ contains
       integer i,j
 
       type (quick_molspec_type) self
-      
       allocate(xyz(3,natom))
 !      allocate(self%xyz(3,natom))
-      allocate(self%distnbor(self%natom))
-      allocate(self%iattype(self%natom))
-      allocate(self%chg(self%natom))
-      allocate(self%AtomDistance(self%natom,self%natom))
-
-      do i=1,self%natom
+      allocate(self%distnbor(natom))
+      allocate(self%iattype(natom))
+      allocate(self%chg(natom))
+      allocate(self%AtomDistance(natom,natom))
+      do i=1,natom
          self%distnbor(i)=0
          self%iattype(i)=0
          self%chg(i)=0d0
          do j=1,3
             xyz(j,i)=0d0
          enddo
-         do j=1,self%natom
+         do j=1,natom
             self%AtomDistance(i,j)=0d0
          enddo
       enddo
@@ -144,7 +142,6 @@ contains
             self%extchg(i)=0d0
          enddo
       endif
-
    end subroutine allocate_quick_molspec
 
    !-------------------
@@ -205,7 +202,6 @@ contains
       call MPI_BCAST(self%natom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
 
       natom2=natom**2
-
       call MPI_BCAST(self%nElec,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(self%nElecb,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(self%nextatom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
@@ -216,10 +212,10 @@ contains
       call MPI_BCAST(self%iAtomType,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(self%atom_type_sym,20,mpi_character,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(self%distnbor,natom,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-      call MPI_BCAST(self%AtomDistance,natom2,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-      call MPI_BCAST(self%xyz,natom*3,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-      call MPI_BCAST(self%nbasis,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
-      
+      call MPI_BCAST(self%AtomDistance,natom*natom,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+      !call MPI_BCAST(self%xyz,natom*3,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+      !call MPI_BCAST(self%nbasis,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+
       if (self%nextatom.gt.0) then
          call MPI_BCAST(self%extxyz,self%nextatom*3,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
          call MPI_BCAST(self%extchg,self%nextatom,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)

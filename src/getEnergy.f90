@@ -73,7 +73,6 @@ subroutine getEnergy(failed)
    endif
    !-------------- END MPI / ALL NODES ------------------------------
 #endif
-
    ! scf process to obtain converged density matrix and coeffecient so that we can
    ! process to next step, the energy compuation. the restrited system will call scf and
    ! unrestred system will call uscf. the logical variable failed indicated failed convergence.

@@ -182,12 +182,10 @@ contains
       integer nelecb
 
       type (quick_qm_struct_type) self
-
       nbasis=self%nbasis
       natom=quick_molspec%natom
       nelec=quick_molspec%nelec
       nelecb=quick_molspec%nelecb
-
 
       ! those matrices is necessary for all calculation or the basic of other calculation
       allocate(self%s(nbasis,nbasis))

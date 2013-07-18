@@ -241,6 +241,7 @@ subroutine readbasis(natomxiao,natomstart,natomfinal,nbasisstart,nbasisfinal)
    ! =============END MPI/ALL NODES=====================
    if (bMPI) then
       call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
+      call MPI_BCAST(natom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(nshell,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(nbasis,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(nprim,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)

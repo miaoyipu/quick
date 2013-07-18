@@ -42,8 +42,8 @@ subroutine debug_SCF(jscf)
 
 
    ! Densitry matrix at end of this cycle
-   write(ioutfile,'("DENSITY MATRIX AT END OF CYCLE",I4)') jscf
-   call PriSym(iOutFile,nbasis,quick_qm_struct%dense,'f14.8')
+   !write(ioutfile,'("DENSITY MATRIX AT END OF CYCLE",I4)') jscf
+   !call PriSym(iOutFile,nbasis,quick_qm_struct%dense,'f14.8')
 
 
    ! n=sigma(PS)

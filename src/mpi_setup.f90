@@ -47,6 +47,8 @@
     include "mpif.h"
     
     call Broadcast(quick_method)
+    call MPI_BCAST(natom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(nbasis,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     if (quick_method%ecp) then
         call MPI_BCAST(tolecp,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
         call MPI_BCAST(thrshecp,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
@@ -70,7 +72,6 @@
     call Broadcast(quick_molspec)
     call MPI_BCAST(natom,1,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(xyz,natom*3,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-
 ! DFT and SEDFT specs
     call MPI_BCAST(RGRID,MAXRADGRID,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(RWT,MAXRADGRID,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
@@ -154,13 +155,13 @@
     
     
     
-    call MPI_BCAST(aexp,nprim,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+!    call MPI_BCAST(aexp,nprim,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 !    call MPI_BCAST(gcs,nprim,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-!    call MPI_BCAST(quick_basis%gccoeff,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-!    call MPI_BCAST(gcexpo,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%gccoeff,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%gcexpo,6*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 !    call MPI_BCAST(quick_basis%gcexpomin,nshell,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 
-!    call MPI_BCAST(KLMN,3*nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
+    call MPI_BCAST(quick_basis%KLMN,3*nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(itype,3*nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(quick_basis%ncenter,nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
     call MPI_BCAST(ncontract,nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
@@ -314,7 +315,6 @@
         ! here we use greed method to obtain the optimized distrubution
         ! please note the algrithm is not the most optimized but is almost is
         call greedy_distrubute(temp1d,nbasis,mpisize,mpi_nbasisn,mpi_nbasis)
-        
     endif
     
     if (bMPI) then
