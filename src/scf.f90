@@ -154,15 +154,15 @@ subroutine electdiis(jscf)
 
 
 #ifdef MPI
-      if (bMPI) then
-         call MPI_BCAST(quick_qm_struct%o,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-         call MPI_BCAST(quick_qm_struct%dense,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-         call MPI_BCAST(quick_qm_struct%co,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-         call MPI_BCAST(quick_qm_struct%E,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-         call MPI_BCAST(quick_method%integralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-         call MPI_BCAST(quick_method%primLimit,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
-         call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
-      endif
+   if (bMPI) then
+      call MPI_BCAST(quick_qm_struct%o,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+      call MPI_BCAST(quick_qm_struct%dense,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+      call MPI_BCAST(quick_qm_struct%co,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+      call MPI_BCAST(quick_qm_struct%E,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+      call MPI_BCAST(quick_method%integralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+      call MPI_BCAST(quick_method%primLimit,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+      call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
+   endif
 #endif
 
    ! Now Begin DIIS
@@ -201,7 +201,7 @@ subroutine electdiis(jscf)
       if (quick_method%HF) then
 #ifdef MPI
          if (bMPI) then
-            call MPI_hfoperator(oneElecO) ! MPI HF
+            call MPI_hfoperator(oneElecO, deltaO) ! MPI HF
          else
             call hfoperator(oneElecO, deltaO)     ! Non-MPI HF
          endif
@@ -209,9 +209,9 @@ subroutine electdiis(jscf)
          call hfoperator(oneElecO, deltaO)
 #endif
       else if (quick_method%DFT) then
-           call dftoperator(deltaO) ! Density Functional Theory Operator
+         call dftoperator(deltaO) ! Density Functional Theory Operator
       else if (quick_method%SEDFT) then
-           call sedftoperator ! Semi-emperical DFT Operator
+         call sedftoperator ! Semi-emperical DFT Operator
       endif
       if (quick_method%debug)  write(ioutfile,*) "after hf"
       if (quick_method%debug)  call debug_SCF(jscf)
@@ -627,6 +627,7 @@ subroutine electdiis(jscf)
          call MPI_BCAST(diisdone,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
          call MPI_BCAST(quick_qm_struct%o,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
          call MPI_BCAST(quick_qm_struct%dense,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+         call MPI_BCAST(quick_qm_struct%denseOld,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
          call MPI_BCAST(quick_qm_struct%co,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
          call MPI_BCAST(quick_qm_struct%E,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
          call MPI_BCAST(quick_method%integralCutoff,1,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)

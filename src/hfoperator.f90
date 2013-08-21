@@ -394,7 +394,7 @@ end subroutine hfoperatordc
 ! Ed Brothers. created at November 27, 2001
 ! 3456789012345678901234567890123456789012345678901234567890123456789012<<STOP
 !*******************************************************
-subroutine mpi_hfoperator(oneElecO)
+subroutine mpi_hfoperator(oneElecO, deltaO)
    !-------------------------------------------------------
    ! The purpose of this subroutine is to form the operator matrix
    ! for a full Hartree-Fock calculation, i.e. the Fock matrix.  The
@@ -415,6 +415,7 @@ subroutine mpi_hfoperator(oneElecO)
    integer II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    double precision,allocatable:: temp2d(:,:)
+   logical deltaO
 
    double precision fmmonearrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
    double precision fmmtwoarrayfirst(0:2,0:2,1:2,1:6,1:6,1:6,1:6)
@@ -453,10 +454,24 @@ subroutine mpi_hfoperator(oneElecO)
    ! master node(with 1e integral and 2e integrals), is the anticipated operator
    !-----------------------------------------------------------------
 
+   ! if only calculate operation difference
+   if (deltaO) then
+      ! save density matrix
+      call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseSave,nbasis)
+      call CopyDMat(quick_qm_struct%oSave,quick_qm_struct%o,nbasis)
+
+      do I=1,nbasis; do J=1,nbasis
+         quick_qm_struct%dense(J,I)=quick_qm_struct%dense(J,I)-quick_qm_struct%denseOld(J,I)
+      enddo; enddo
+
+   endif
+
+
    ! The previous two terms are the one electron part of the Fock matrix.
    ! The next two terms define the two electron part.
 
    call densityCutoff
+
 
    ! We reset the operator value for slave nodes. Actually, in most situation,
    ! they were zero before reset, but to make things safe
@@ -509,6 +524,11 @@ subroutine mpi_hfoperator(oneElecO)
 
    ! sync all nodes
    call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
+
+
+   ! recover density if calculate difference
+   if (deltaO) call CopyDMat(quick_qm_struct%denseSave,quick_qm_struct%dense,nbasis)
+
 
    ! ---------- MPI/MASTER NODE ---------------------
    if (master) then
