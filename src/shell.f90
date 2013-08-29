@@ -38,8 +38,11 @@ subroutine g2eshell
                   XYZA(i)=xyz(i,quick_basis%katom(ics))     ! xyz(A)
                   XYZB(i)=xyz(i,quick_basis%katom(jcs))     ! xyz(B)
                enddo
-               DAB=quick_molspec%atomdistance(quick_basis%katom(ics),quick_basis%katom(jcs))
-
+               !DAB=quick_molspec%atomdistance(quick_basis%katom(ics),quick_basis%katom(jcs))
+               DAB = dsqrt((xyz(1,quick_basis%katom(ics))-xyz(1,quick_basis%katom(jcs)))**2 + &
+                           (xyz(2,quick_basis%katom(ics))-xyz(2,quick_basis%katom(jcs)))**2 + &
+                           (xyz(3,quick_basis%katom(ics))-xyz(3,quick_basis%katom(jcs)))**2 )
+                
                ! P' is the weighting center of NpriI and NpriJ
                !              expo(A)*xyz(A)+expo(B)*xyz(B)
                ! P'(A,B)  = ------------------------------
@@ -732,6 +735,7 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
 
                   itt = itt+1
                   X44(ITT) = X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
+!write(ioutfile,*) "AAA",itt, X44(itt), X2, quick_basis%Xcoeff(Nprik,Npril,K,L)
                endif
             enddo
          enddo
@@ -956,7 +960,7 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                      else
                         if(JJJ.LE.LLL)then
                            call hrrwhole
-                           !    write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
+                               !write(ioutfile,*) "a",IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
                            if(III.eq.JJJ.and.III.eq.KKK.and.III.eq.LLL)then
                               DENSEII=quick_qm_struct%dense(III,III)
 

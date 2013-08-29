@@ -78,6 +78,9 @@ module quick_calculated_module
       ! saved density matrix
       ! the dimension is nbasis*nbasis.
       double precision,dimension(:,:), allocatable :: denseOld
+      ! Initial density matrix
+      ! the dimension is nbasis*nbasis.
+      double precision,dimension(:,:), allocatable :: denseInt
 
       ! A matrix of orbital degeneracies
       integer, dimension(:),allocatable :: iDegen
@@ -197,6 +200,7 @@ contains
       allocate(self%dense(nbasis,nbasis))
       allocate(self%denseSave(nbasis,nbasis))
       allocate(self%denseOld(nbasis,nbasis))
+      allocate(self%denseInt(nbasis,nbasis))
       allocate(self%E(nbasis))
       allocate(self%iDegen(nbasis))
 
@@ -317,6 +321,7 @@ contains
       deallocate(self%dense)
       deallocate(self%denseSave)
       deallocate(self%denseOld)
+      deallocate(self%denseInt)
       deallocate(self%E)
       deallocate(self%iDegen)
 
@@ -385,6 +390,7 @@ contains
       call MPI_BCAST(self%dense,nbasis2,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(self%denseSave,nbasis2,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(self%denseOld,nbasis2,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
+      call MPI_BCAST(self%denseInt,nbasis2,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(self%iDegen,nbasis,mpi_integer,0,MPI_COMM_WORLD,mpierror)
       call MPI_BCAST(self%E,nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
 
@@ -463,7 +469,7 @@ contains
       call zeroMatrix(self%dense,nbasis)
       call zeroMatrix(self%denseSave,nbasis)
       call zeroMatrix(self%denseOld,nbasis)
-
+      call zeroMatrix(self%denseInt,nbasis)
       call zeroVec(self%E,nbasis)
       call zeroiVec(self%iDegen,nbasis)
       call zeroVec(self%Mulliken,natom)

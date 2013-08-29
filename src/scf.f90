@@ -152,7 +152,6 @@ subroutine electdiis(jscf)
    ! and store them in oneElecO and fetch it every scf time.
    call get1e(oneElecO)
 
-
 #ifdef MPI
    if (bMPI) then
       call MPI_BCAST(quick_qm_struct%o,nbasis*nbasis,mpi_double_precision,0,MPI_COMM_WORLD,mpierror)
@@ -164,7 +163,9 @@ subroutine electdiis(jscf)
       call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
    endif
 #endif
-
+   diisdone = .false.
+   deltaO = .false.
+   idiis = 0
    ! Now Begin DIIS
    do while (.not.diisdone)
 
@@ -184,7 +185,6 @@ subroutine electdiis(jscf)
       else
          IDIISfinal=quick_method%maxdiisscf; iidiis=1
       endif
-
       !-----------------------------------------------
       ! Before Delta Densitry Matrix, normal operator is implemented here
       !-----------------------------------------------
@@ -217,10 +217,8 @@ subroutine electdiis(jscf)
       if (quick_method%debug)  call debug_SCF(jscf)
       ! Terminate Operator timer
       call cpu_time(timer_end%TOp)
-
       !------------- MASTER NODE -------------------------------
       if (master) then
-
 
          !-----------------------------------------------
          ! End of Delta Matrix
@@ -557,7 +555,6 @@ subroutine electdiis(jscf)
       !--------------- END MPI/ALL NODES -------------------------------------
 
       if (master) then
-
          ! open data file then write calculated info to dat file
          call quick_open(iDataFile, dataFileName, 'R', 'U', 'R',.true.)
          rewind(iDataFile)
