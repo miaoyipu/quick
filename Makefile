@@ -128,7 +128,7 @@ quick_cuda:
 #	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu_get2e.cu 
 #	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c $(cudafile)
 #	cd $(cudafolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c gpu_write_info.f90
-	cd $(cudafolder) && make all 
+#	cd $(cudafolder) && make all 
 	cp $(cudafolder)/*.o $(objfolder)
 	
 #================= quick core subroutines ===============================

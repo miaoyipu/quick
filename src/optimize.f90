@@ -119,9 +119,30 @@ subroutine optimize(failed)
          enddo
       enddo
 
+#ifdef CUDA
+    call gpu_setup(natom,nbasis, quick_molspec%nElec, quick_molspec%imult, &
+                   quick_molspec%molchg, quick_molspec%iAtomType)
+    call gpu_upload_xyz(xyz)
+    call gpu_upload_atom_and_chg(quick_molspec%iattype, quick_molspec%chg)
+#endif
+
       ! calculate energy first
       call g2eshell
       call schwarzoff
+
+#ifdef CUDA    
+    call gpu_upload_basis(nshell, nprim, jshell, jbasis, maxcontract, &
+    ncontract, itype, aexp, dcoeff, &
+    quick_basis%first_basis_function, quick_basis%last_basis_function, &
+    quick_basis%first_shell_basis_function,quick_basis%last_shell_basis_function, &
+    quick_basis%ncenter, quick_basis%kstart, quick_basis%katom, &
+    quick_basis%ktype, quick_basis%kprim, quick_basis%kshell,quick_basis%Ksumtype, &
+    quick_basis%Qnumber, quick_basis%Qstart, quick_basis%Qfinal,quick_basis%Qsbasis, quick_basis%Qfbasis, &
+    quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
+
+    call gpu_upload_cutoff_matrix(Ycutoff, cutPrim)
+#endif
+
       call getEnergy(failed)
 
       ! Now we have several scheme to obtain gradient. For now,
