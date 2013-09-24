@@ -1,67 +1,127 @@
 <!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Quick : QUICK, a GPU-enabled ab intio quantum chemistry software" />
 
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Quick by miaoyipu</title>
+    <title>Quick</title>
   </head>
 
   <body>
 
-    <header>
-      <div class="container">
-        <h1>Quick</h1>
-        <h2>QUICK, a GPU-enabled ab intio quantum chemistry software</h2>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/miaoyipu/quick">View on GitHub</a>
 
-        <section id="downloads">
-          <a href="https://github.com/miaoyipu/quick/zipball/master" class="btn">Download as .zip</a>
-          <a href="https://github.com/miaoyipu/quick/tarball/master" class="btn">Download as .tar.gz</a>
-          <a href="https://github.com/miaoyipu/quick" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-        </section>
-      </div>
-    </header>
+          <h1 id="project_title">Quick</h1>
+          <h2 id="project_tagline">QUICK, a GPU-enabled ab intio quantum chemistry software</h2>
 
-    <div class="container">
-      <section id="main_content">
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/miaoyipu/quick/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/miaoyipu/quick/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <hr><pre><code>                          QUICK                                   
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+                    Copyright (c) 2012                            
+            Regents of the University of Florida                  
+                   All Rights Reserved                                                                                                 
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<hr><p>This software provided pursuant to a license agreement containing restrictions on its disclosure, duplication, and use. This software contains confidential and proprietary information, and may not be  extracted or distributed, in whole or in part, for any purpose whatsoever, without the express written permission of the authors.This notice, and the associated author list, must be attached to all copies, or extracts, of this software. Any additional restrictions set forth in the license agreement also apply to this software.                                                           </p>
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<hr><p>Cite this work as:
+  Miao,Y.: He, X.: Ayers,K; Brothers, E.: Merz,K. M. QUICK
+  University of Florida, Gainesville, FL, 2012</p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>If you want to use GPU version, please cite:
+  Miao, Y: Merz, K.M. J.Chem.Theory.Comput, XXXX, XXX, XXX-XXX</p>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<p>Tech support: <a href="mailto:miao@qtp.ufl.edu">miao@qtp.ufl.edu</a></p>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<hr><ol>
+<li>INSTALLATION</li>
+</ol><p>To install QUICK, first you may need to configure make.in file. Intel Fortran compiler is recommanded. Then type</p>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<pre><code>  make quick
+</code></pre>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>If you want to install GPU QUICK, NVIDIA CUDA COMPILER is required. You may test 'nvcc --version'. Then type</p>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<pre><code> make quick.cuda
+</code></pre>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>in ./bin directory, you can find executable files.</p>
+
+<ol>
+<li>
+<p>USAGE
+We suggust you to put this direct into PATH. Edit ~/.bashrc, then add this line</p>
+
+<p>export PATH=(YOUR QUICK DIR)/bin:$PATH</p>
+</li>
+</ol><p>where (YOUR QUICK DIR) is your directory.</p>
+
+<p>the basic principal of QUICK is that the simpler, the better. so in the input file, the first line is calculation
+card. For example</p>
+
+<pre><code>HF ncyc=3 energy BASIS=6-31gs denserms=1.0e-7
+</code></pre>
+
+<p>This means HF calculation is wanted, and after 3 cycle, We only calculate difference of Fock matrix, basis set is 
+6-31g**, and the convergence criteria is 1.0E-7. If you don't know anything about quantum chemistry, this card is 
+recommended.</p>
+
+<p>After first line, you input your molecule geometry</p>
+
+<pre><code>     C           4.5916       2.6127       4.3145
+     H           6.8049       4.5138      -2.5775
+     H           8.3134       7.7325      -1.0688
+     H           4.3547       2.9911       3.3201
+     H           4.5176       3.5187       3.7129
+</code></pre>
+
+<p>which is the element and x,y,z coordinates respectively.  </p>
+
+<p>Next, type</p>
+
+<pre><code>  quick mol.in
+</code></pre>
+
+<p>or GPU version</p>
+
+<pre><code>  quick.cuda mol.in
+</code></pre>
+
+<p>if you save the input file as mol.in. It will generate mol.out as output file.</p>
+
+<ol>
+<li>About GPU VERSION
+Currently, QUICK support CUDA version 2.0 and up GPU. We tested on GTX580, M2090 and K20. We can't gureentee our program
+is flawless, and it is experimental now. If you have any question feel free to email the author.</li>
+</ol>
       </section>
     </div>
 
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Quick maintained by <a href="https://github.com/miaoyipu">miaoyipu</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
     
+
   </body>
 </html>
