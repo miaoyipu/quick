@@ -141,6 +141,7 @@ subroutine optimize(failed)
     quick_basis%gccoeff, quick_basis%cons, quick_basis%gcexpo, quick_basis%KLMN)
 
     call gpu_upload_cutoff_matrix(Ycutoff, cutPrim)
+    call gpu_upload_grad(quick_qm_struct%gradient, quick_method%gradCutoff)
 #endif
 
       call getEnergy(failed)
@@ -169,8 +170,9 @@ subroutine optimize(failed)
          !                if (quick_method%DFT) call DFTgrad
          !                if (quick_method%SEDFT) call SEDFTgrad
          !            endif
-
       endif
+
+
 
       if (master) then
 

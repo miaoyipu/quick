@@ -134,6 +134,70 @@ void getAddInt(_gpu_type gpu, int bufferSize, ERI_entry* aoint_buffer)
     QUICK_SAFE_CALL((getAddInt_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>(bufferSize, aoint_buffer)));
 }
 
+// interface to call Kernel subroutine
+void getGrad(_gpu_type gpu)
+{
+    QUICK_SAFE_CALL((getGrad_kernel<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
+}
+
+
+__global__ void getGrad_kernel()
+{
+    unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
+    int totalThreads = blockDim.x*gridDim.x;
+    
+    
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+    
+    for (QUICKULL i = offside; i<jshell2*jshell; i+= totalThreads) {
+        
+        
+        QUICKULL a = (QUICKULL) i/jshell;
+        QUICKULL b = (QUICKULL) (i - a*jshell);
+        
+        
+        int II = devSim.sorted_YCutoffIJ[a].x;
+        int KK = devSim.sorted_YCutoffIJ[b].x;
+        
+        int ii = devSim.sorted_Q[II];
+        int kk = devSim.sorted_Q[KK];
+        
+        if (ii<=kk){
+            
+            int JJ = devSim.sorted_YCutoffIJ[a].y;
+            int LL = devSim.sorted_YCutoffIJ[b].y;
+            
+            int jj = devSim.sorted_Q[JJ];
+            int ll = devSim.sorted_Q[LL];
+            
+            
+            if ( !((devSim.katom[ii] == devSim.katom[jj]) &&
+                   (devSim.katom[ii] == devSim.katom[kk]) &&
+                   (devSim.katom[ii] == devSim.katom[ll]))     // In case 4 indices are in the same atom
+                ) {
+                
+                int nshell = devSim.nshell;
+                QUICKDouble DNMax = MAX(MAX(4.0*LOC2(devSim.cutMatrix, ii, jj, nshell, nshell), 4.0*LOC2(devSim.cutMatrix, kk, ll, nshell, nshell)),
+                                        MAX(MAX(LOC2(devSim.cutMatrix, ii, ll, nshell, nshell),     LOC2(devSim.cutMatrix, ii, kk, nshell, nshell)),
+                                            MAX(LOC2(devSim.cutMatrix, jj, kk, nshell, nshell),     LOC2(devSim.cutMatrix, jj, ll, nshell, nshell))));
+                
+                if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.gradCutoff && \
+                    (LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell) * DNMax) > devSim.gradCutoff) {
+                    
+                    int iii = devSim.sorted_Qnumber[II];
+                    int jjj = devSim.sorted_Qnumber[JJ];
+                    int kkk = devSim.sorted_Qnumber[KK];
+                    int lll = devSim.sorted_Qnumber[LL];
+                    
+                    iclass_grad(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                    
+                }
+            }
+        }
+    }
+}
+
 
 
 // =======   KERNEL SECTION ===========================

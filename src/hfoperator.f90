@@ -718,8 +718,12 @@ subroutine get2e(II_arg)
    common /hrrstore/II,JJ,KK,LL,NBI1,NBI2,NBJ1,NBJ2,NBK1,NBK2,NBL1,NBL2
    II = II_arg
    do JJ = II,jshell
+      testtmp = Ycutoff(II,JJ)
       do KK = II,jshell
          do LL = KK,jshell
+
+          cutoffTest = testtmp * Ycutoff(KK,LL)
+          if (cutoffTest .gt. quick_method%integralCutoff) then
             DNmax =  max(4.0d0*cutmatrix(II,JJ), &
                   4.0d0*cutmatrix(KK,LL), &
                   cutmatrix(II,LL), &
@@ -728,9 +732,9 @@ subroutine get2e(II_arg)
                   cutmatrix(JJ,LL))
             ! (IJ|KL)^2<=(II|JJ)*(KK|LL) if smaller than cutoff criteria, then
             ! ignore the calculation to save computation time
-            if ( (Ycutoff(II,JJ)*Ycutoff(KK,LL)        .gt. quick_method%integralCutoff).and. &
-                  (Ycutoff(II,JJ)*Ycutoff(KK,LL)*DNmax  .gt. quick_method%integralCutoff)) &
+            if ( cutoffTest * DNmax  .gt. quick_method%integralCutoff ) &
                   call shell
+           endif
          enddo
       enddo
    enddo

@@ -276,6 +276,11 @@ subroutine hfgrad
      enddo
   enddo
 
+#ifdef CUDA
+if (quick_method%bCUDA) then
+call gpu_grad(quick_qm_struct%gradient)
+else
+#endif
 
 
   ! ntempxiao1=0
@@ -297,9 +302,7 @@ subroutine hfgrad
                          cutmatrix(II,LL),cutmatrix(II,KK),cutmatrix(JJ,KK),cutmatrix(JJ,LL))
                     cutoffTest=testCutoff*DNmax
                     if(cutoffTest.gt.quick_method%gradCutoff)then
-                       !              print*,II,JJ,KK,LL
                        call shellopt
-                       !              ntempxiao2=ntempxiao2+1
                     endif
                  endif
               endif
@@ -308,7 +311,9 @@ subroutine hfgrad
      enddo
   enddo
 
-  ! stop
+#ifdef CUDA
+endif
+#endif
 
   call cpu_time(timer_end%TGrad)
   timer_cumer%TGrad=timer_end%TGrad-timer_begin%TGrad+timer_cumer%TGrad

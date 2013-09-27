@@ -54,6 +54,7 @@ struct gpu_cutoff_type {
     QUICKDouble                     integralCutoff;
     QUICKDouble                     primLimit;
     QUICKDouble                     DMCutoff;
+    QUICKDouble                     gradCutoff;
     
 };
 
@@ -151,6 +152,7 @@ struct gpu_simulation_type {
     QUICKDouble                     integralCutoff;
     QUICKDouble                     primLimit;
     QUICKDouble                     DMCutoff;
+    QUICKDouble                     gradCutoff;
     
     
     // for ERI generator
@@ -160,6 +162,9 @@ struct gpu_simulation_type {
     QUICKDouble                     leastIntegralCutoff;
     int                             iBatchSize;
     QUICKULL*                       intCount;
+    
+    // For Grad
+    QUICKDouble*                    grad;
 };
 
 struct gpu_basis_type {
@@ -245,6 +250,7 @@ struct gpu_type {
     unsigned int                    threadsPerBlock;
     unsigned int                    twoEThreadsPerBlock;
     unsigned int                    XCThreadsPerBlock;
+    unsigned int                    gradThreadsPerBlock;
     
     // Molecule specification part
     int                             natom;
@@ -264,6 +270,9 @@ struct gpu_type {
     cuda_buffer_type<QUICKDouble>*  chg;
     cuda_buffer_type<DFT_calculated_type>*
                                     DFT_calculated;
+    
+    // For gradient
+    cuda_buffer_type<QUICKDouble>*  grad;
 
     gpu_calculated_type*            gpu_calculated;
     gpu_basis_type*                 gpu_basis;

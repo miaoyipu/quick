@@ -156,6 +156,7 @@ extern "C" void gpu_init_(void)
                 gpu -> threadsPerBlock      =   SM_13_THREADS_PER_BLOCK;
                 gpu -> twoEThreadsPerBlock  =   SM_13_2E_THREADS_PER_BLOCK;
                 gpu -> XCThreadsPerBlock    =   SM_13_XC_THREADS_PER_BLOCK;
+                gpu -> gradThreadsPerBlock  =   SM_13_GRAD_THREADS_PER_BLOCK;
                 break;
         }
     }else {
@@ -163,6 +164,7 @@ extern "C" void gpu_init_(void)
         gpu -> threadsPerBlock          = SM_2X_THREADS_PER_BLOCK;
         gpu -> twoEThreadsPerBlock      = SM_2X_2E_THREADS_PER_BLOCK;
         gpu -> XCThreadsPerBlock        = SM_2X_XC_THREADS_PER_BLOCK;
+        gpu -> gradThreadsPerBlock      = SM_2X_GRAD_THREADS_PER_BLOCK;
     }
     
     PRINTDEBUG("FINISH INIT")
@@ -1056,6 +1058,77 @@ extern "C" void gpu_upload_basis_(int* nshell, int* nprim, int* jshell, int* jba
     
     PRINTDEBUG("COMPLETE UPLOADING BASIS")
 }
+
+
+extern "C" void gpu_upload_grad_(QUICKDouble* grad, QUICKDouble* gradCutoff)
+{
+    
+#ifdef DEBUG
+    cudaEvent_t start,end;
+    cudaEventCreate(&start);
+    cudaEventCreate(&end);
+    cudaEventRecord(start, 0);
+#endif
+    
+    PRINTDEBUG("BEGIN TO UPLOAD GRAD")
+    
+    gpu -> grad = new cuda_buffer_type<QUICKDouble>(grad, 3 * gpu->natom);
+    gpu -> gpu_sim.grad =  gpu -> grad -> _devData;
+    
+    gpu -> gpu_cutoff -> gradCutoff = *gradCutoff;
+    gpu -> gpu_sim.gradCutoff         = gpu -> gpu_cutoff -> gradCutoff;
+    
+#ifdef DEBUG
+    cudaEventRecord(end, 0);
+    cudaEventSynchronize(end);
+    float time;
+    cudaEventElapsedTime(&time, start, end);
+    PRINTUSINGTIME("UPLOAD GRAD",time);
+    cudaEventDestroy(start);
+    cudaEventDestroy(end);
+#endif
+    
+    PRINTDEBUG("COMPLETE UPLOADING GRAD")
+    
+}
+
+extern "C" void gpu_grad_(QUICKDouble* grad)
+{
+    PRINTDEBUG("BEGIN TO RUN GRAD")
+    
+    upload_sim_to_constant(gpu);
+    
+    PRINTDEBUG("BEGIN TO RUN KERNEL")
+    
+    getGrad(gpu);
+    
+    PRINTDEBUG("COMPLETE KERNEL")
+    
+    
+#ifdef DEBUG
+    cudaEvent_t start,end;
+    cudaEventCreate(&start);
+    cudaEventCreate(&end);
+    cudaEventRecord(start, 0);
+#endif
+    
+    
+    gpu -> grad -> Download();
+    gpu -> grad -> Download(grad);
+    
+#ifdef DEBUG
+    cudaEventRecord(end, 0);
+    cudaEventSynchronize(end);
+    float time;
+    cudaEventElapsedTime(&time, start, end);
+    PRINTUSINGTIME("DOWNLOAD GRAD",time);
+    cudaEventDestroy(start);
+    cudaEventDestroy(end);
+#endif
+    
+    PRINTDEBUG("COMPLETE RUNNING GRAD")
+}
+
 
 static bool debut = true;
 static bool incoreInt = true;

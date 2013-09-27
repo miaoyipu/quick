@@ -169,6 +169,10 @@ static const int SM_13_XC_THREADS_PER_BLOCK =   256;
 static const int SM_2X_XC_THREADS_PER_BLOCK =   384;
 
 
+// constant for grad
+static const int SM_13_GRAD_THREADS_PER_BLOCK =   256;
+static const int SM_2X_GRAD_THREADS_PER_BLOCK =   512;
+
 // physical constant, the same with quick_constants_module
 //static const QUICKDouble PI                 =   (QUICKDouble)3.1415926535897932384626433832795;
 //static const QUICKSingle PI_FLOAT           =   (QUICKSingle)3.1415926535897932384626433832795;

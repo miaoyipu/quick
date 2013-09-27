@@ -1907,15 +1907,6 @@ subroutine shellopt
    NNABfirst=sumindex(NII2+NJJ2+1)
    NNCDfirst=sumindex(NKK2+NLL2+1)
 
-   !     print*,'NNCDfirst=',KK,LL,NKK1,NKK2,NLL1,NLL2,NNCD,NNCDfirst
-
-   !      NNA=Sumindex(NII1-1)+1
-
-   !            NNC=Sumindex(NKK1-1)+1
-
-   !       NNA=1
-   !       NNC=1
-
    NNA=Sumindex(NII1-2)+1
 
    NNC=Sumindex(NKK1-2)+1

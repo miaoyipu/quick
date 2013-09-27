@@ -36,20 +36,28 @@ extern "C" void gpu_upload_basis_(int* nshell, int* nprim, int* jshell, int* jba
                                   int* ncenter,   int* kstart,    int* katom,     int* ktype,     int* kprim,  int* kshell, int* Ksumtype, \
                                   int* Qnumber,   int* Qstart,    int* Qfinal,    int* Qsbasis,   int* Qfbasis,\
                                   QUICKDouble* gccoeff,           QUICKDouble* cons,      QUICKDouble* gcexpo, int* KLMN);
+extern "C" void gpu_upload_grad_(QUICKDouble* grad, QUICKDouble* gradCutoff);
+
 
 // call subroutine
 // Fortran subroutine   --->  c interface    ->   kernel interface   ->    global       ->    kernel
 //                            [gpu_get2e]    ->      [get2e]         -> [get2e_kernel]  ->   [iclass]
+
+// c interface [gpu_get2e]
+extern "C" void gpu_get2e_(QUICKDouble* o);
+extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, QUICKDouble* aelec, QUICKDouble* belec, QUICKDouble *o);
+extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxIntegralCutoff, int* intNum, char* intFileName);
+extern "C" void gpu_grad_(QUICKDouble* grad);
+
+// kernel interface [get2e]
 void get2e(_gpu_type gpu);
 void getAOInt(_gpu_type gpu, QUICKULL intStart, QUICKULL intEnd, cudaStream_t streamI, int streamID,  ERI_entry* aoint_buffer);
 void getxc(_gpu_type gpu);
 void get2e_MP2(_gpu_type gpu);
 void getAddInt(_gpu_type gpu, int bufferSize, ERI_entry* aoint_buffer);
+void getGrad(_gpu_type gpu);
 
-extern "C" void gpu_get2e_(QUICKDouble* o);
-extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, QUICKDouble* aelec, QUICKDouble* belec, QUICKDouble *o);
-extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxIntegralCutoff, int* intNum, char* intFileName);
-
+// global [get2e_kernel]
 __global__ void get2e_kernel();
 __global__ void get2e_kernel_spdf();
 __global__ void get2e_kernel_spdf2();
@@ -62,9 +70,10 @@ __global__ void getAOInt_kernel_spdf3(QUICKULL intStart, QUICKULL intEnd, ERI_en
 __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
 __global__ void getxc_kernel();
 __global__ void getAddInt_kernel(int bufferSize, ERI_entry* aoint_buffer);
+__global__ void getGrad_kernel();
 
 
-
+// kernel [iclass]
 __device__ void iclass(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 __device__ void iclass_spdf(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 __device__ void iclass_spdf2(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
@@ -76,6 +85,9 @@ __device__ __forceinline__ void iclass_AOInt_spdf2(int I, int J, int K, int L, u
 __device__ __forceinline__ void iclass_AOInt_spdf3(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
 __device__ __forceinline__ void iclass_AOInt_spdf4(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
 
+
+
+__device__ void iclass_grad(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 
 void upload_sim_to_constant(_gpu_type gpu);
 void upload_sim_to_constant_dft(_gpu_type gpu);
@@ -93,37 +105,37 @@ __device__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
                                 QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
                                 QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
                                 QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
-                                QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);                                                         
+                                QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
 __device__ __forceinline__ QUICKDouble quick_dsqr(QUICKDouble a);
 
 __device__ void vertical(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
-              QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-              QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-              QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-              QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-              QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-              QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
-
-__device__ void vertical_spdf(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
                          QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
                          QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
                          QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
                          QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
                          QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                         QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
+
+__device__ void vertical_spdf(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
+                              QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                              QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                              QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                              QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                              QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
                               QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 __device__ void vertical_spdf2(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
-                              QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                              QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                              QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                              QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                              QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
-                              QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
+                               QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                               QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                               QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                               QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                               QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                               QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 __device__ void vertical_spdf3(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
-                              QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
-                              QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
-                              QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
-                              QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
-                              QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                               QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                               QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                               QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                               QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                               QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
                                QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 __device__ void vertical_spdf4(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
                                QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
@@ -133,7 +145,7 @@ __device__ void vertical_spdf4(int I, int J, int K, int L, QUICKDouble* YVertica
                                QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
                                QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 
-__device__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz, 
+__device__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
                        QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
                        int KLMNAx, int KLMNAy, int KLMNAz,
                        int KLMNBx, int KLMNBy, int KLMNBz,
