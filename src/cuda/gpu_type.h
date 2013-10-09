@@ -165,6 +165,7 @@ struct gpu_simulation_type {
     
     // For Grad
     QUICKDouble*                    grad;
+    QUICKULL*                       gradULL;
 };
 
 struct gpu_basis_type {
@@ -273,6 +274,7 @@ struct gpu_type {
     
     // For gradient
     cuda_buffer_type<QUICKDouble>*  grad;
+    cuda_buffer_type<QUICKULL>*     gradULL;
 
     gpu_calculated_type*            gpu_calculated;
     gpu_basis_type*                 gpu_basis;

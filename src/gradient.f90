@@ -277,9 +277,13 @@ subroutine hfgrad
   enddo
 
 #ifdef CUDA
-if (quick_method%bCUDA) then
-call gpu_grad(quick_qm_struct%gradient)
-else
+    if (quick_method%bCUDA) then
+        call gpu_upload_calculated(quick_qm_struct%o,quick_qm_struct%co, &
+                                   quick_qm_struct%vec,quick_qm_struct%dense)
+        call gpu_upload_cutoff(cutmatrix, quick_method%integralCutoff,quick_method%primLimit)
+        call gpu_upload_grad(quick_qm_struct%gradient, quick_method%gradCutoff)
+        call gpu_grad(quick_qm_struct%gradient)
+    else
 #endif
 
 
@@ -316,7 +320,9 @@ endif
 #endif
 
   call cpu_time(timer_end%TGrad)
+  write(ioutfile, '(2x,"GRADIENT CALCULATION TIME",F15.9, " S")'), timer_end%TGrad-timer_begin%TGrad
   timer_cumer%TGrad=timer_end%TGrad-timer_begin%TGrad+timer_cumer%TGrad
+
   return
 end subroutine hfgrad
 
@@ -627,6 +633,8 @@ subroutine mpi_hfgrad
   ! stop
 
   call cpu_time(timer_end%TGrad)
+
+  write(ioutfile, '(2x,"GRADIENT CALCULATION TIME",F15.9, " S")'), timer_end%TGrad-timer_begin%TGrad
   timer_cumer%TGrad=timer_end%TGrad-timer_begin%TGrad+timer_cumer%TGrad
 
   ! slave node will send infos

@@ -2199,7 +2199,6 @@ subroutine classopt(I,J,K,L,NNA,NNC,NNAB,NNCD,NNABfirst,NNCDfirst)
             do KKK=KKK1,KKK2
                do LLL=LLL1,LLL2
 
-                  !                call hrrwhole(IJKLtype,III,JJJ,KKK,LLL,Y)
                   call hrrwholeopt
 
                   DENSEKI=quick_qm_struct%dense(KKK,III)
@@ -2222,8 +2221,8 @@ subroutine classopt(I,J,K,L,NNA,NNC,NNAB,NNCD,NNABfirst,NNCDfirst)
                   !                        O(LLL,JJJ) = O(LLL,JJJ)-.5d0*DENSEKI*Y
 
                   constant = (4.d0*DENSEJI*DENSELK-DENSEKI*DENSELJ &
-
                         -DENSELI*DENSEKJ)
+
 
                   !                    print*,'here',constant
 
@@ -2241,7 +2240,9 @@ subroutine classopt(I,J,K,L,NNA,NNC,NNAB,NNCD,NNABfirst,NNCDfirst)
             enddo
          enddo
       enddo
+ !  endif !
 
+!if (.false.) then
    else
 
       do III=III1,III2
@@ -2478,6 +2479,8 @@ subroutine classopt(I,J,K,L,NNA,NNC,NNAB,NNCD,NNABfirst,NNCDfirst)
       enddo
    endif
 
+
+
    quick_qm_struct%gradient(iASTART+1) = quick_qm_struct%gradient(iASTART+1)+ &
 
          AGrad1
@@ -2516,12 +2519,15 @@ subroutine classopt(I,J,K,L,NNA,NNC,NNAB,NNCD,NNABfirst,NNCDfirst)
    quick_qm_struct%gradient(iDSTART+3) = quick_qm_struct%gradient(iDSTART+3) &
 
          -AGrad3-BGrad3-CGrad3
-   !   print*,Agrad1,BGrad1,CGrad1,AGrad2,BGrad2,CGrad2,AGrad3,BGrad3,CGrad3
 
-   !    print*,'here'
-   !    print*,constant,Yaa1,Yaa2,Yaa3,Ybb1,Ybb2,Ybb3,Ycc1,Ycc2,Ycc3
+!write(*,*) " II JJ KK LL", II, JJ, KK,LL
+!write(*,*) " I J K L", I, J, K,L
 
-   !      stop
+!write(*,*) AGrad1, AGrad2, AGrad3
+!write(*,*) BGrad1, BGrad2, BGrad3
+!write(*,*) CGrad1, CGrad2, CGrad3
+!write(*,*) iASTART, iBSTART, iCSTART, iDSTART
+
 End subroutine classopt
 
 

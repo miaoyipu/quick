@@ -5,7 +5,7 @@
 //  Created by Yipu Miao on 6/18/13.
 //
 //
-
+#include "gpu_common.h"
 
 /*
  In the following kernel, we treat f orbital into 5 parts.
@@ -863,13 +863,21 @@ __device__ __forceinline__ void iclass_grad
      See M.Head-Gordon and J.A.Pople, Jchem.Phys., 89, No.9 (1988) for VRR algrithem details.
      */
     QUICKDouble store[STOREDIM*STOREDIM];
+    QUICKDouble store2[STOREDIM*STOREDIM];
+    QUICKDouble storeAA[STOREDIM*STOREDIM];
+    QUICKDouble storeBB[STOREDIM*STOREDIM];
+    QUICKDouble storeCC[STOREDIM*STOREDIM];
     
     /*
      Initial the neccessary element for
      */
-    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
-        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+    for (int i = Sumindex[K]+1; i<= Sumindex[K+L+3]; i++) {
+        for (int j = Sumindex[I]+1; j<= Sumindex[I+J+3]; j++) {
             LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            LOC2(storeAA, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            LOC2(storeBB, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            LOC2(storeCC, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            
         }
     }
     
@@ -891,6 +899,9 @@ __device__ __forceinline__ void iclass_grad
         int ii_start = devSim.prim_start[II];
         int jj_start = devSim.prim_start[JJ];
         
+        QUICKDouble AA = LOC2(devSim.gcexpo, III , devSim.Ksumtype[II] - 1, MAXPRIM, devSim.nbasis);
+        QUICKDouble BB = LOC2(devSim.gcexpo, JJJ , devSim.Ksumtype[JJ] - 1, MAXPRIM, devSim.nbasis);
+        
         QUICKDouble AB = LOC2(devSim.expoSum, ii_start+III, jj_start+JJJ, devSim.prim_total, devSim.prim_total);
         QUICKDouble Px = LOC2(devSim.weightedCenterX, ii_start+III, jj_start+JJJ, devSim.prim_total, devSim.prim_total);
         QUICKDouble Py = LOC2(devSim.weightedCenterY, ii_start+III, jj_start+JJJ, devSim.prim_total, devSim.prim_total);
@@ -904,10 +915,12 @@ __device__ __forceinline__ void iclass_grad
         QUICKDouble X1 = LOC4(devSim.Xcoeff, kStartI+III, kStartJ+JJJ, I - devSim.Qstart[II], J - devSim.Qstart[JJ], devSim.jbasis, devSim.jbasis, 2, 2);
         
         for (int j = 0; j<kPrimK*kPrimL; j++){
-            int LLL = (int)j/kPrimK;
+            int LLL = (int) j/kPrimK;
             int KKK = (int) j-kPrimK*LLL;
             
             if (cutoffPrim * LOC2(devSim.cutPrim, kStartK+KKK, kStartL+LLL, devSim.jbasis, devSim.jbasis) > devSim.gradCutoff) {
+                
+                QUICKDouble CC = LOC2(devSim.gcexpo, KKK , devSim.Ksumtype[KK] - 1, MAXPRIM, devSim.nbasis);
                 /*
                  CD = expo(L)+expo(K)
                  ABCD = 1/ (AB + CD) = 1 / (expo(I)+expo(J)+expo(K)+expo(L))
@@ -961,14 +974,35 @@ __device__ __forceinline__ void iclass_grad
                 //QUICKDouble T = AB * CD * ABCD * ( quick_dsqr(Px-Qx) + quick_dsqr(Py-Qy) + quick_dsqr(Pz-Qz));
                 
                 QUICKDouble YVerticalTemp[VDIM1*VDIM2*VDIM3];
-                FmT(I+J+K+L, AB * CD * ABCD * ( quick_dsqr(Px-Qx) + quick_dsqr(Py-Qy) + quick_dsqr(Pz-Qz)), YVerticalTemp);
-                for (int i = 0; i<=I+J+K+L; i++) {
-                    VY(0, 0, i) = VY(0, 0, i) * X2;
+                FmT(I+J+K+L+2, AB * CD * ABCD * ( quick_dsqr(Px-Qx) + quick_dsqr(Py-Qy) + quick_dsqr(Pz-Qz)), YVerticalTemp);
+                for (int i = 0; i<=I+J+K+L+2; i++) {
+                //    VY(0, 0, i) = VY(0, 0, i) * X2;
                 }
-                vertical(I, J, K, L, YVerticalTemp, store, \
+                
+                for (int i = Sumindex[K]+1; i<= Sumindex[K+L+3]; i++) {
+                    for (int j = Sumindex[I]+1; j<= Sumindex[I+J+3]; j++) {
+                        LOC2(store2, j-1, i-1, STOREDIM, STOREDIM) = 0;
+                    }
+                }
+                
+                vertical(I, J + 1, K, L + 1, YVerticalTemp, store2, \
                          Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
                          Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
                          0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+                
+                for (int i = Sumindex[K]+1; i<= Sumindex[K+L+2]; i++) {
+                    for (int j = Sumindex[I]+1; j<= Sumindex[I+J+2]; j++) {
+                        LOC2(store, j-1, i-1, STOREDIM, STOREDIM) += LOC2(store2, j-1, i-1, STOREDIM, STOREDIM) * X2;
+                    }
+                }
+                
+                for (int i = Sumindex[K]+1; i<= Sumindex[K+L+3]; i++) {
+                    for (int j = Sumindex[I]+1; j<= Sumindex[I+J+3]; j++) {
+                        LOC2(storeAA, j-1, i-1, STOREDIM, STOREDIM) += LOC2(store2, j-1, i-1, STOREDIM, STOREDIM) * AA * 2 * X2;
+                        LOC2(storeBB, j-1, i-1, STOREDIM, STOREDIM) += LOC2(store2, j-1, i-1, STOREDIM, STOREDIM) * BB * 2 * X2;
+                        LOC2(storeCC, j-1, i-1, STOREDIM, STOREDIM) += LOC2(store2, j-1, i-1, STOREDIM, STOREDIM) * CC * 2 * X2;
+                    }
+                }
                 
             }
         }
@@ -1007,40 +1041,309 @@ __device__ __forceinline__ void iclass_grad
         IJKLTYPE = 999;
     }
     
-    QUICKDouble hybrid_coeff = 0.0;
-    if (devSim.method == HF){
-        hybrid_coeff = 1.0;
-    }else if (devSim.method == B3LYP){
-        hybrid_coeff = 0.2;
-    }else if (devSim.method == DFT){
-        hybrid_coeff = 0.0;
-    }
+    QUICKDouble AGradx = 0.0;
+    QUICKDouble AGrady = 0.0;
+    QUICKDouble AGradz = 0.0;
+    QUICKDouble BGradx = 0.0;
+    QUICKDouble BGrady = 0.0;
+    QUICKDouble BGradz = 0.0;
+    QUICKDouble CGradx = 0.0;
+    QUICKDouble CGrady = 0.0;
+    QUICKDouble CGradz = 0.0;
     
-    for (int III = III1; III <= III2; III++) {
-        for (int JJJ = MAX(III,JJJ1); JJJ <= JJJ2; JJJ++) {
-            for (int KKK = MAX(III,KKK1); KKK <= KKK2; KKK++) {
-                for (int LLL = MAX(KKK,LLL1); LLL <= LLL2; LLL++) {
-                    
-                    if (III < KKK ||
-                        ((III == JJJ) && (III == LLL)) ||
-                        ((III == JJJ) && (III  < LLL)) ||
-                        ((JJJ == LLL) && (III  < JJJ)) ||
-                        ((III == KKK) && (III  < JJJ)  && (JJJ < LLL))) {
+    int         AStart = (devSim.katom[II]-1) * 3;
+    int         BStart = (devSim.katom[JJ]-1) * 3;
+    int         CStart = (devSim.katom[KK]-1) * 3;
+    int         DStart = (devSim.katom[LL]-1) * 3;
+    
+    
+    QUICKDouble Yaax, Yaay, Yaaz;
+    QUICKDouble Ybbx, Ybby, Ybbz;
+    QUICKDouble Yccx, Yccy, Yccz;
+    
+    int         nbasis = devSim.nbasis;
+    
+    if (II < JJ && II < KK && KK < LL) {
+        for (int III = III1; III <= III2; III++) {
+            for (int JJJ = JJJ1; JJJ <= JJJ2; JJJ++) {
+                for (int KKK = KKK1; KKK <= KKK2; KKK++) {
+                    for (int LLL = LLL1; LLL <= LLL2; LLL++) {
                         
                         
-                        QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L,\
-                                                               III, JJJ, KKK, LLL, IJKLTYPE, store, \
-                                                               RAx, RAy, RAz, RBx, RBy, RBz, \
-                                                               RCx, RCy, RCz, RDx, RDy, RDz);
-                        if (abs(Y) > devSim.integralCutoff) {
-                            devSim.grad[0] = 11.0;
-                        }
+                        QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, nbasis, nbasis);
+                        QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, nbasis, nbasis);
+                        QUICKDouble DENSELJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, nbasis, nbasis);
+                        QUICKDouble DENSELI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, nbasis, nbasis);
+                        QUICKDouble DENSELK = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, nbasis, nbasis);
+                        QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, nbasis, nbasis);
+                        
+                        QUICKDouble constant = ( 4.0 * DENSEJI * DENSELK - DENSEKI * DENSELJ - DENSELI * DENSEKJ);
+                        
+                        hrrwholegrad(&Yaax, &Yaay, &Yaaz, \
+                                     &Ybbx, &Ybby, &Ybbz, \
+                                     &Yccx, &Yccy, &Yccz, \
+                                     I, J, K, L,\
+                                     III, JJJ, KKK, LLL, IJKLTYPE, \
+                                     store, storeAA, storeBB, storeCC, \
+                                     RAx, RAy, RAz, RBx, RBy, RBz, \
+                                     RCx, RCy, RCz, RDx, RDy, RDz);
+                        
+                        AGradx += constant * Yaax;
+                        AGrady += constant * Yaay;
+                        AGradz += constant * Yaaz;
+                        
+                        BGradx += constant * Ybbx;
+                        BGrady += constant * Ybby;
+                        BGradz += constant * Ybbz;
+                        
+                        CGradx += constant * Yccx;
+                        CGrady += constant * Yccy;
+                        CGradz += constant * Yccz;
                         
                     }
                 }
             }
         }
+    }else{
+        for (int III = III1; III <= III2; III++) {
+            for (int JJJ = MAX(III,JJJ1); JJJ <= JJJ2; JJJ++) {
+                for (int KKK = MAX(III,KKK1); KKK <= KKK2; KKK++) {
+                    for (int LLL = MAX(KKK,LLL1); LLL <= LLL2; LLL++) {
+                        
+                        if (III < KKK) {
+                            
+                            hrrwholegrad(&Yaax, &Yaay, &Yaaz, \
+                                         &Ybbx, &Ybby, &Ybbz, \
+                                         &Yccx, &Yccy, &Yccz, \
+                                         I, J, K, L,\
+                                         III, JJJ, KKK, LLL, IJKLTYPE, \
+                                         store, storeAA, storeBB, storeCC, \
+                                         RAx, RAy, RAz, RBx, RBy, RBz, \
+                                         RCx, RCy, RCz, RDx, RDy, RDz);
+                            
+                            if (III < JJJ && KKK < LLL) {
+                                QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, nbasis, nbasis);
+                                QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, nbasis, nbasis);
+                                QUICKDouble DENSELJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, nbasis, nbasis);
+                                QUICKDouble DENSELI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, nbasis, nbasis);
+                                QUICKDouble DENSELK = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, nbasis, nbasis);
+                                QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, nbasis, nbasis);
+                                
+                                QUICKDouble constant = ( 4.0 * DENSEJI * DENSELK - DENSEKI * DENSELJ - DENSELI * DENSEKJ);
+                                
+                                AGradx += constant * Yaax;
+                                AGrady += constant * Yaay;
+                                AGradz += constant * Yaaz;
+                                
+                                BGradx += constant * Ybbx;
+                                BGrady += constant * Ybby;
+                                BGradz += constant * Ybbz;
+                                
+                                CGradx += constant * Yccx;
+                                CGrady += constant * Yccy;
+                                CGradz += constant * Yccz;
+                        
+                                
+                            }else if( III == JJJ && KKK == LLL){
+                                
+                                QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, nbasis, nbasis);
+                                QUICKDouble DENSEKK = (QUICKDouble) LOC2(devSim.dense, KKK-1, KKK-1, nbasis, nbasis);
+                                QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, nbasis, nbasis);
+                                
+                                QUICKDouble constant = (DENSEII * DENSEKK - 0.5 * DENSEKI * DENSEKI);
+                                
+                                
+                                AGradx += constant * Yaax;
+                                AGrady += constant * Yaay;
+                                AGradz += constant * Yaaz;
+                                
+                                BGradx += constant * Ybbx;
+                                BGrady += constant * Ybby;
+                                BGradz += constant * Ybbz;
+                                
+                                CGradx += constant * Yccx;
+                                CGrady += constant * Yccy;
+                                CGradz += constant * Yccz;
+                                
+                                
+                            }else if (JJJ == KKK && JJJ == LLL){
+                                
+                                QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, nbasis, nbasis);
+                                QUICKDouble DENSEJJ = (QUICKDouble) LOC2(devSim.dense, JJJ-1, JJJ-1, nbasis, nbasis);
+                                
+                                QUICKDouble constant = DENSEJJ * DENSEJI;
+                                
+                                
+                                AGradx += constant * Yaax;
+                                AGrady += constant * Yaay;
+                                AGradz += constant * Yaaz;
+                                
+                                BGradx += constant * Ybbx;
+                                BGrady += constant * Ybby;
+                                BGradz += constant * Ybbz;
+                                
+                                CGradx += constant * Yccx;
+                                CGrady += constant * Yccy;
+                                CGradz += constant * Yccz;
+                                
+                            }else if (KKK == LLL && III < JJJ && JJJ != KKK){
+                                
+                                QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, nbasis, nbasis);
+                                QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, KKK-1, JJJ-1, nbasis, nbasis);
+                                QUICKDouble DENSEKK = (QUICKDouble) LOC2(devSim.dense, KKK-1, KKK-1, nbasis, nbasis);
+                                QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, nbasis, nbasis);
+                                
+                                QUICKDouble constant = (2.0* DENSEJI * DENSEKK - DENSEKI * DENSEKJ);
+                                
+                                
+                                AGradx += constant * Yaax;
+                                AGrady += constant * Yaay;
+                                AGradz += constant * Yaaz;
+                                
+                                BGradx += constant * Ybbx;
+                                BGrady += constant * Ybby;
+                                BGradz += constant * Ybbz;
+                                
+                                CGradx += constant * Yccx;
+                                CGrady += constant * Yccy;
+                                CGradz += constant * Yccz;
+                                
+                            }else if ( III == JJJ && KKK < LLL){
+                                
+                                QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, nbasis, nbasis);
+                                QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, KKK-1, III-1, nbasis, nbasis);
+                                QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, nbasis, nbasis);
+                                QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, KKK-1, nbasis, nbasis);
+                                
+                                QUICKDouble constant = (2.0* DENSEKJ * DENSEII - DENSEJI * DENSEKI);
+                                
+                                
+                                AGradx += constant * Yaax;
+                                AGrady += constant * Yaay;
+                                AGradz += constant * Yaaz;
+                                
+                                BGradx += constant * Ybbx;
+                                BGrady += constant * Ybby;
+                                BGradz += constant * Ybbz;
+                                
+                                CGradx += constant * Yccx;
+                                CGrady += constant * Yccy;
+                                CGradz += constant * Yccz;
+                                
+                            }
+                            
+                        }
+                        else{
+                            if (JJJ <= LLL) {
+                                
+                                hrrwholegrad(&Yaax, &Yaay, &Yaaz, \
+                                             &Ybbx, &Ybby, &Ybbz, \
+                                             &Yccx, &Yccy, &Yccz, \
+                                             I, J, K, L,\
+                                             III, JJJ, KKK, LLL, IJKLTYPE, \
+                                             store, storeAA, storeBB, storeCC, \
+                                             RAx, RAy, RAz, RBx, RBy, RBz, \
+                                             RCx, RCy, RCz, RDx, RDy, RDz);
+                                
+                                if (III == JJJ && III == KKK && III == LLL) {
+                                    // Do nothing
+                                }else if (III==JJJ && III==KKK && III < LLL){
+                                    
+                                    QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, nbasis, nbasis);
+                                    QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, nbasis, nbasis);
+                                    
+                                    QUICKDouble constant = DENSEJI * DENSEII;
+                                    
+                                    
+                                    AGradx += constant * Yaax;
+                                    AGrady += constant * Yaay;
+                                    AGradz += constant * Yaaz;
+                                    
+                                    BGradx += constant * Ybbx;
+                                    BGrady += constant * Ybby;
+                                    BGradz += constant * Ybbz;
+                                    
+                                    CGradx += constant * Yccx;
+                                    CGrady += constant * Yccy;
+                                    
+                                    CGradz += constant * Yccz;
+                                }else if (III==KKK && JJJ==LLL && III < JJJ){
+                                    
+                                    QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, nbasis, nbasis);
+                                    QUICKDouble DENSEJJ = (QUICKDouble) LOC2(devSim.dense, JJJ-1, JJJ-1, nbasis, nbasis);
+                                    QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, nbasis, nbasis);
+                                    
+                                    QUICKDouble constant = (1.5 * DENSEJI * DENSEJI - 0.5 * DENSEJJ * DENSEII);
+                                    
+                                    
+                                    AGradx += constant * Yaax;
+                                    AGrady += constant * Yaay;
+                                    AGradz += constant * Yaaz;
+                                    
+                                    BGradx += constant * Ybbx;
+                                    BGrady += constant * Ybby;
+                                    BGradz += constant * Ybbz;
+                                    
+                                    CGradx += constant * Yccx;
+                                    CGrady += constant * Yccy;
+                                    CGradz += constant * Yccz;
+                                    
+                                }else if (III== KKK && III < JJJ && JJJ < LLL){
+                                    QUICKDouble DENSEKI = (QUICKDouble) LOC2(devSim.dense, LLL-1, III-1, nbasis, nbasis);
+                                    QUICKDouble DENSEKJ = (QUICKDouble) LOC2(devSim.dense, LLL-1, JJJ-1, nbasis, nbasis);
+                                    QUICKDouble DENSEII = (QUICKDouble) LOC2(devSim.dense, III-1, III-1, nbasis, nbasis);
+                                    QUICKDouble DENSEJI = (QUICKDouble) LOC2(devSim.dense, JJJ-1, III-1, nbasis, nbasis);
+                                    
+                                    QUICKDouble constant = (3.0 * DENSEJI * DENSEKI - DENSEKJ * DENSEII);
+                                    
+                                    
+                                    AGradx += constant * Yaax;
+                                    AGrady += constant * Yaay;
+                                    AGradz += constant * Yaaz;
+                                    
+                                    BGradx += constant * Ybbx;
+                                    BGrady += constant * Ybby;
+                                    BGradz += constant * Ybbz;
+                                    
+                                    CGradx += constant * Yccx;
+                                    CGrady += constant * Yccy;
+                                    CGradz += constant * Yccz;
+                                    
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
+    
+    
+    
+    
+    GRADADD(devSim.gradULL[AStart], AGradx);
+    GRADADD(devSim.gradULL[AStart + 1], AGrady);
+    GRADADD(devSim.gradULL[AStart + 2], AGradz);
+    
+    
+    GRADADD(devSim.gradULL[BStart], BGradx);
+    GRADADD(devSim.gradULL[BStart + 1], BGrady);
+    GRADADD(devSim.gradULL[BStart + 2], BGradz);
+    
+    
+    GRADADD(devSim.gradULL[CStart], CGradx);
+    GRADADD(devSim.gradULL[CStart + 1], CGrady);
+    GRADADD(devSim.gradULL[CStart + 2], CGradz);
+    
+    
+    GRADADD(devSim.gradULL[DStart], (-AGradx-BGradx-CGradx));
+    GRADADD(devSim.gradULL[DStart + 1], (-AGrady-BGrady-CGrady));
+    GRADADD(devSim.gradULL[DStart + 2], (-AGradz-BGradz-CGradz));
+    
+    //printf("II JJ KK LL= %i %i %i %i\n IJKL= %i %i %i %i\n %f %f %f \n %f %f %f \n %f %f %f \n %i %i %i %i\n", II, JJ, KK, LL, \
+           I, J, K, L, AGradx, AGrady, AGradz, BGradx, BGrady, BGradz, CGradx, CGrady, CGradz, AStart, BStart, CStart, DStart);
+    
     return;
 }
 

@@ -898,8 +898,9 @@ subroutine hrrwholeopt
       do i=1,numangularLnew
          do jxiao=1,numangularR
             Yaa(itemp)=Yaa(itemp)+coefangxiaoLnew(i)*coefangxiaoR(jxiao)* &
-
                   storeAA(angxiaoLnew(i),angxiaoR(jxiao))
+
+
          enddo
       enddo
 
@@ -924,6 +925,7 @@ subroutine hrrwholeopt
 
       Yaa(itemp)=Yaa(itemp)*tempconstant
    enddo
+
    do itemp=1,3
       do itempxiao=1,3
          NA(itempxiao)=quick_basis%KLMN(itempxiao,III)
@@ -937,7 +939,6 @@ subroutine hrrwholeopt
       do i=1,numangularLnew
          do jxiao=1,numangularR
             Ybb(itemp)=Ybb(itemp)+coefangxiaoLnew(i)*coefangxiaoR(jxiao)* &
-
                   storeBB(angxiaoLnew(i),angxiaoR(jxiao))
          enddo
       enddo
@@ -956,7 +957,6 @@ subroutine hrrwholeopt
          do i=1,numangularLnew
             do jxiao=1,numangularR
                Ybb(itemp)=Ybb(itemp)-quick_basis%KLMN(itemp,JJJ)*coefangxiaoLnew(i)* &
-
                      coefangxiaoR(jxiao)*store(angxiaoLnew(i),angxiaoR(jxiao))
             enddo
          enddo
@@ -979,7 +979,6 @@ subroutine hrrwholeopt
       do i=1,numangularL
          do jxiao=1,numangularRnew
             Ycc(itemp)=Ycc(itemp)+coefangxiaoL(i)*coefangxiaoRnew(jxiao)* &
-
                   storeCC(angxiaoL(i),angxiaoRnew(jxiao))
          enddo
       enddo
@@ -995,7 +994,6 @@ subroutine hrrwholeopt
          do i=1,numangularL
             do jxiao=1,numangularRnew
                Ycc(itemp)=Ycc(itemp)-quick_basis%KLMN(itemp,KKK)*coefangxiaoL(i)* &
-
                      coefangxiaoRnew(jxiao)*store(angxiaoL(i),angxiaoRnew(jxiao))
             enddo
          enddo
@@ -1003,6 +1001,8 @@ subroutine hrrwholeopt
 
       Ycc(itemp)=Ycc(itemp)*tempconstant
    enddo
+
+100 continue
 
 end subroutine hrrwholeopt
 

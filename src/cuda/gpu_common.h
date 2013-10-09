@@ -116,6 +116,18 @@ cudaEventDestroy(end);
 
 #define TEXDENSE(a,b) fetch_texture_double(textureDense, (a-1)*devSim.nbasis+(b-1))
 
+
+
+#define GRADADD(address, val) \
+{ \
+    QUICKULL val2 = (QUICKULL) (fabs((val)*GRADSCALE) + (QUICKDouble)0.5); \
+    if ( val < (QUICKDouble)0.0) val2 = 0ull - val2; \
+    QUICKADD(address, val2); \
+}
+
+
+
+
 // CUDA safe call
 #define QUICK_SAFE_CALL(x)\
 {\
@@ -184,6 +196,11 @@ static const int SM_2X_GRAD_THREADS_PER_BLOCK =   512;
 static const QUICKDouble OSCALE                  = (QUICKDouble)1E16;
 static const QUICKDouble ONEOVEROSCALE           = (QUICKDouble)1.0 / OSCALE;
 static const QUICKDouble ONEOVEROSCALESQUARED    = (QUICKDouble)1.0 / (OSCALE * OSCALE);
+
+
+static const QUICKDouble GRADSCALE                  = (QUICKDouble)1E16;
+static const QUICKDouble ONEOVERGRADSCALE           = (QUICKDouble)1.0 / OSCALE;
+static const QUICKDouble ONEOVERGRADSCALESQUARED    = (QUICKDouble)1.0 / (OSCALE * OSCALE);
 
 // SM Version enum
 enum SM_VERSION
