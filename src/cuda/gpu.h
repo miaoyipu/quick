@@ -128,6 +128,14 @@ __device__ void vertical(int I, int J, int K, int L, QUICKDouble* YVerticalTemp,
                          QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
                          QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 
+__device__ void vertical2(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
+                         QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                         QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                         QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                         QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                         QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                         QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
+
 __device__ void vertical_spdf(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
                               QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
                               QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
