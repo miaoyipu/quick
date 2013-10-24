@@ -1,6 +1,152 @@
 #include "include/h_all_files.h"
 #include "include/h_all_subroutines.h"
 
+__device__ void vertical3(int I, int J, int K, int L,
+                          QUICKDouble* YVerticalTemp, QUICKDouble* store,
+                          QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                          QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                          QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                          QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                          QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                          QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom)
+{
+    
+    // WRITE LAST FOR I =            0  J=           0
+    LOC2(store,  0,  0, STOREDIM, STOREDIM) = VY( 0, 0, 0);
+    
+    if ((I+J) >=  0 && (K+L) >= 1) {
+        h2_0_1(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  0 && (K+L) >= 2) {
+        h2_0_2(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  0 && (K+L) >= 3) {
+        h2_0_3(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  0 && (K+L) >= 4) {
+        h2_0_4(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    
+    
+    if ((I+J) >=  1 && (K+L) >= 0) {
+        h2_1_0(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  1 && (K+L) >= 1) {
+        h2_1_1(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  1 && (K+L) >= 2) {
+        h2_1_2(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  1 && (K+L) >= 3) {
+        h2_1_3(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  1 && (K+L) >= 4) {
+        h2_1_4(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    
+    
+    if ((I+J) >=  2 && (K+L) >= 0) {
+        h2_2_0(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  2 && (K+L) >= 1) {
+        h2_2_1(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  2 && (K+L) >= 2) {
+        h2_2_2(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  2 && (K+L) >= 3) {
+        h2_2_3(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  2 && (K+L) >= 4) {
+        h2_2_4(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    
+    
+    if ((I+J) >=  3 && (K+L) >= 0) {
+        h2_3_0(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  3 && (K+L) >= 1) {
+        h2_3_1(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  3 && (K+L) >= 2) {
+        h2_3_2(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  3 && (K+L) >= 3) {
+        h2_3_3(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  3 && (K+L) >= 4) {
+        h2_3_4(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    
+    
+    if ((I+J) >=  4 && (K+L) >= 0) {
+        h2_4_0(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  4 && (K+L) >= 1) {
+        h2_4_1(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  4 && (K+L) >= 2) {
+        h2_4_2(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  4 && (K+L) >= 3) {
+        h2_4_3(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    if ((I+J) >=  4 && (K+L) >= 4) {
+        h2_4_4(YVerticalTemp, store, \
+               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+    
+    
+}
+
+
 __device__ void vertical_spdf(int I, int J, int K, int L,
                          QUICKDouble* YVerticalTemp, QUICKDouble* store,
                          QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
@@ -184,6 +330,8 @@ __device__ void vertical_spdf4(int I, int J, int K, int L,
     }
 }
 
+
+
 __device__ void vertical2(int I, int J, int K, int L,
                          QUICKDouble* YVerticalTemp, QUICKDouble* store,
                          QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
@@ -201,10 +349,12 @@ __device__ void vertical2(int I, int J, int K, int L,
         QUICKDouble x_0_2_0 = Qtempy * VY( 0, 0, 0) + WQtempy * VY( 0, 0, 1);
         QUICKDouble x_0_3_0 = Qtempz * VY( 0, 0, 0) + WQtempz * VY( 0, 0, 1);
         
+                            //if (K<=1 && I <= 1){
         // WRITE LAST FOR I =            0  J=           1
         LOC2(store,  0,  1, STOREDIM, STOREDIM) = x_0_1_0;
         LOC2(store,  0,  2, STOREDIM, STOREDIM) = x_0_2_0;
         LOC2(store,  0,  3, STOREDIM, STOREDIM) = x_0_3_0;
+                            //}
         if ((I+J) >=  0 && (K+L)>= 2) {
             // Subroutine for L =            0  B =            1 , m=           1
             QUICKDouble x_0_1_1 = Qtempx * VY( 0, 0, 1) + WQtempx * VY( 0, 0, 2);
@@ -1672,7 +1822,9 @@ __device__ void vertical2(int I, int J, int K, int L,
                         LOC2(store, 19,  7, STOREDIM, STOREDIM) = x_19_7_0;
                         LOC2(store, 19,  8, STOREDIM, STOREDIM) = x_19_8_0;
                         LOC2(store, 19,  9, STOREDIM, STOREDIM) = x_19_9_0;
-                        if ((I+J) >=  3 && (K+L)>= 3) {
+                        
+                        // if I+J+K+L == 6, then this part is not neccessary to calculate
+                        if ((I+J) >=  3 && (K+L)>= 3 && (I+J+K+L)>6) {
                             // Subroutine for L =            0  B =            1 , m=           1
                             QUICKDouble x_0_1_1 = Qtempx * VY( 0, 0, 1) + WQtempx * VY( 0, 0, 2);
                             QUICKDouble x_0_2_1 = Qtempy * VY( 0, 0, 1) + WQtempy * VY( 0, 0, 2);

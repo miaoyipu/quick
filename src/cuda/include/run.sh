@@ -4,8 +4,10 @@ do
 	do
 	#a='h_'$i'_'$j'.h'
 	#b='h_'$i'_'$j'.cu'
-        c='h_'$i'_'$j'.h'
-	sed -i  's/__noinline__/__inline__ /1' $c 
+        c='f_'$i'_'$j'.h'
+		c2='f2_'$i'_'$j'.h'
+	#	cp $c $c2
+	sed -i '' 's/h_/h2_/1' $c2 
 #echo $b "\\"
 #cp $b $c
 #echo "#include " "\"./"$c"\"" 

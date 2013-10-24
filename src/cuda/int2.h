@@ -18,9 +18,11 @@ __device__ void vertical(int I, int J, int K, int L,
         QUICKDouble x_0_3_0 = Qtempz * VY( 0, 0, 0) + WQtempz * VY( 0, 0, 1);
 
         // WRITE LAST FOR I =            0  J=           1
+                    if (K<=1 && I <=0){
         LOC2(store,  0,  1, STOREDIM, STOREDIM) += x_0_1_0;
         LOC2(store,  0,  2, STOREDIM, STOREDIM) += x_0_2_0;
         LOC2(store,  0,  3, STOREDIM, STOREDIM) += x_0_3_0;
+        }
         if ((I+J) >=  0 && (K+L)>= 2) {
             // Subroutine for L =            0  B =            1 , m=           1
             QUICKDouble x_0_1_1 = Qtempx * VY( 0, 0, 1) + WQtempx * VY( 0, 0, 2);
@@ -36,12 +38,15 @@ __device__ void vertical(int I, int J, int K, int L,
             QUICKDouble x_0_9_0 = Qtempz * x_0_3_0 + WQtempz * x_0_3_1 + CDtemp * (VY( 0, 0, 0) -  ABcom * VY( 0, 0, 1));
 
             // WRITE LAST FOR I =            0  J=           2
+            if (K<=2 && I <=0){
             LOC2(store,  0,  4, STOREDIM, STOREDIM) += x_0_4_0;
             LOC2(store,  0,  5, STOREDIM, STOREDIM) += x_0_5_0;
             LOC2(store,  0,  6, STOREDIM, STOREDIM) += x_0_6_0;
             LOC2(store,  0,  7, STOREDIM, STOREDIM) += x_0_7_0;
             LOC2(store,  0,  8, STOREDIM, STOREDIM) += x_0_8_0;
             LOC2(store,  0,  9, STOREDIM, STOREDIM) += x_0_9_0;
+            }
+            
             if ((I+J) >=  0 && (K+L)>= 3) {
                 // Subroutine for L =            0  B =            1 , m=           2
                 QUICKDouble x_0_1_2 = Qtempx * VY( 0, 0, 2) + WQtempx * VY( 0, 0, 3);
@@ -69,6 +74,7 @@ __device__ void vertical(int I, int J, int K, int L,
                 QUICKDouble x_0_19_0 = Qtempz * x_0_9_0 + WQtempz * x_0_9_1 + CDtemp * 2 * (x_0_3_0 -  ABcom * x_0_3_1);
 
                 // WRITE LAST FOR I =            0  J=           3
+            if (K<=3 && I <=0){
                 LOC2(store,  0, 10, STOREDIM, STOREDIM) += x_0_10_0;
                 LOC2(store,  0, 11, STOREDIM, STOREDIM) += x_0_11_0;
                 LOC2(store,  0, 12, STOREDIM, STOREDIM) += x_0_12_0;
@@ -79,6 +85,8 @@ __device__ void vertical(int I, int J, int K, int L,
                 LOC2(store,  0, 17, STOREDIM, STOREDIM) += x_0_17_0;
                 LOC2(store,  0, 18, STOREDIM, STOREDIM) += x_0_18_0;
                 LOC2(store,  0, 19, STOREDIM, STOREDIM) += x_0_19_0;
+                }
+                
                 if ((I+J) >=  0 && (K+L)>= 4) {
                     // Subroutine for L =            0  B =            1 , m=           3
                     QUICKDouble x_0_1_3 = Qtempx * VY( 0, 0, 3) + WQtempx * VY( 0, 0, 4);
@@ -123,6 +131,7 @@ __device__ void vertical(int I, int J, int K, int L,
                     QUICKDouble x_0_34_0 = Qtempz * x_0_19_0 + WQtempz * x_0_19_1 + CDtemp * 3 * (x_0_9_0 -  ABcom * x_0_9_1);
 
                     // WRITE LAST FOR I =            0  J=           4
+            if (K<=4 && I <=0){
                     LOC2(store,  0, 20, STOREDIM, STOREDIM) += x_0_20_0;
                     LOC2(store,  0, 21, STOREDIM, STOREDIM) += x_0_21_0;
                     LOC2(store,  0, 22, STOREDIM, STOREDIM) += x_0_22_0;
@@ -138,6 +147,7 @@ __device__ void vertical(int I, int J, int K, int L,
                     LOC2(store,  0, 32, STOREDIM, STOREDIM) += x_0_32_0;
                     LOC2(store,  0, 33, STOREDIM, STOREDIM) += x_0_33_0;
                     LOC2(store,  0, 34, STOREDIM, STOREDIM) += x_0_34_0;
+                    }
                 }
             }
         }
@@ -148,9 +158,11 @@ __device__ void vertical(int I, int J, int K, int L,
         QUICKDouble x_2_0_0 = Ptempy * VY( 0, 0, 0) + WPtempy * VY( 0, 0, 1);
         QUICKDouble x_3_0_0 = Ptempz * VY( 0, 0, 0) + WPtempz * VY( 0, 0, 1);
         // WRITE LAST FOR I =            1  J=           0
+        if (I<=1){
         LOC2(store,  1,  0, STOREDIM, STOREDIM) += x_1_0_0;
         LOC2(store,  2,  0, STOREDIM, STOREDIM) += x_2_0_0;
         LOC2(store,  3,  0, STOREDIM, STOREDIM) += x_3_0_0;
+        }
         if ((I+J) >=  1 && (K+L)>= 1) {
             // Subroutine for L =            0  B =            1 , m=           0
             QUICKDouble x_0_1_0 = Qtempx * VY( 0, 0, 0) + WQtempx * VY( 0, 0, 1);
@@ -165,6 +177,7 @@ __device__ void vertical(int I, int J, int K, int L,
             // Subroutine for L =            1  B =            1 , m=           0
 
             // WRITE LAST FOR I =            1  J=           1
+            if (K<=1 && I <=1){
             LOC2(store,  1,  1, STOREDIM, STOREDIM) += (  Ptempx * x_0_1_0 + WPtempx * x_0_1_1 + ABCDtemp * VY( 0, 0, 1));
             LOC2(store,  1,  2, STOREDIM, STOREDIM) += (  Ptempx * x_0_2_0 + WPtempx * x_0_2_1);
             LOC2(store,  1,  3, STOREDIM, STOREDIM) += (  Ptempx * x_0_3_0 + WPtempx * x_0_3_1);
@@ -174,6 +187,7 @@ __device__ void vertical(int I, int J, int K, int L,
             LOC2(store,  3,  1, STOREDIM, STOREDIM) += (  Ptempz * x_0_1_0 + WPtempz * x_0_1_1);
             LOC2(store,  3,  2, STOREDIM, STOREDIM) += (  Ptempz * x_0_2_0 + WPtempz * x_0_2_1);
             LOC2(store,  3,  3, STOREDIM, STOREDIM) += (  Ptempz * x_0_3_0 + WPtempz * x_0_3_1 + ABCDtemp * VY( 0, 0, 1));
+            }
             if ((I+J) >=  1 && (K+L)>= 2) {
                 // Subroutine for L =            0  B =            1 , m=           2
                 QUICKDouble x_0_1_2 = Qtempx * VY( 0, 0, 2) + WQtempx * VY( 0, 0, 3);
@@ -215,7 +229,7 @@ __device__ void vertical(int I, int J, int K, int L,
                 QUICKDouble x_3_7_0 = Ptempz * x_0_7_0 + WPtempz * x_0_7_1;
                 QUICKDouble x_3_8_0 = Ptempz * x_0_8_0 + WPtempz * x_0_8_1;
                 QUICKDouble x_3_9_0 = Ptempz * x_0_9_0 + WPtempz * x_0_9_1 + 2 * ABCDtemp * x_0_3_1;
-
+            if (K<=2 && I <=1){
                 // WRITE LAST FOR I =            1  J=           2
                 LOC2(store,  1,  4, STOREDIM, STOREDIM) += x_1_4_0;
                 LOC2(store,  1,  5, STOREDIM, STOREDIM) += x_1_5_0;
@@ -235,6 +249,7 @@ __device__ void vertical(int I, int J, int K, int L,
                 LOC2(store,  3,  7, STOREDIM, STOREDIM) += x_3_7_0;
                 LOC2(store,  3,  8, STOREDIM, STOREDIM) += x_3_8_0;
                 LOC2(store,  3,  9, STOREDIM, STOREDIM) += x_3_9_0;
+            }
                 if ((I+J) >=  1 && (K+L)>= 3) {
                     // Subroutine for L =            0  B =            1 , m=           3
                     QUICKDouble x_0_1_3 = Qtempx * VY( 0, 0, 3) + WQtempx * VY( 0, 0, 4);
@@ -306,6 +321,7 @@ __device__ void vertical(int I, int J, int K, int L,
                     QUICKDouble x_3_19_0 = Ptempz * x_0_19_0 + WPtempz * x_0_19_1 + 3 * ABCDtemp * x_0_9_1;
 
                     // WRITE LAST FOR I =            1  J=           3
+                                if (K<=3 && I <=1){
                     LOC2(store,  1, 10, STOREDIM, STOREDIM) += x_1_10_0;
                     LOC2(store,  1, 11, STOREDIM, STOREDIM) += x_1_11_0;
                     LOC2(store,  1, 12, STOREDIM, STOREDIM) += x_1_12_0;
@@ -336,6 +352,7 @@ __device__ void vertical(int I, int J, int K, int L,
                     LOC2(store,  3, 17, STOREDIM, STOREDIM) += x_3_17_0;
                     LOC2(store,  3, 18, STOREDIM, STOREDIM) += x_3_18_0;
                     LOC2(store,  3, 19, STOREDIM, STOREDIM) += x_3_19_0;
+                                }
                     if ((I+J) >=  1 && (K+L)>= 4) {
                         // Subroutine for L =            0  B =            1 , m=           4
                         QUICKDouble x_0_1_4 = Qtempx * VY( 0, 0, 4) + WQtempx * VY( 0, 0, 5);
@@ -444,6 +461,7 @@ __device__ void vertical(int I, int J, int K, int L,
                         QUICKDouble x_3_34_0 = Ptempz * x_0_34_0 + WPtempz * x_0_34_1 + 4 * ABCDtemp * x_0_19_1;
 
                         // WRITE LAST FOR I =            1  J=           4
+                                    if (K<=4 && I <=1){
                         LOC2(store,  1, 20, STOREDIM, STOREDIM) += x_1_20_0;
                         LOC2(store,  1, 21, STOREDIM, STOREDIM) += x_1_21_0;
                         LOC2(store,  1, 22, STOREDIM, STOREDIM) += x_1_22_0;
@@ -489,6 +507,7 @@ __device__ void vertical(int I, int J, int K, int L,
                         LOC2(store,  3, 32, STOREDIM, STOREDIM) += x_3_32_0;
                         LOC2(store,  3, 33, STOREDIM, STOREDIM) += x_3_33_0;
                         LOC2(store,  3, 34, STOREDIM, STOREDIM) += x_3_34_0;
+                                    }
                     }
                 }
             }
@@ -522,6 +541,7 @@ __device__ void vertical(int I, int J, int K, int L,
                 // Subroutine for B =            2  L =            1 , m=           0
 
                 // WRITE LAST FOR I =            2  J=           1
+                            if (K<=1 && I <=2){
                 LOC2(store,  4,  1, STOREDIM, STOREDIM) += (Qtempx * x_4_0_0 + WQtempx * x_4_0_1 + ABCDtemp * x_2_0_1);
                 LOC2(store,  4,  2, STOREDIM, STOREDIM) += (Qtempy * x_4_0_0 + WQtempy * x_4_0_1 + ABCDtemp * x_1_0_1);
                 LOC2(store,  4,  3, STOREDIM, STOREDIM) += (Qtempz * x_4_0_0 + WQtempz * x_4_0_1);
@@ -540,6 +560,7 @@ __device__ void vertical(int I, int J, int K, int L,
                 LOC2(store,  9,  1, STOREDIM, STOREDIM) += (Qtempx * x_9_0_0 + WQtempx * x_9_0_1);
                 LOC2(store,  9,  2, STOREDIM, STOREDIM) += (Qtempy * x_9_0_0 + WQtempy * x_9_0_1);
                 LOC2(store,  9,  3, STOREDIM, STOREDIM) += (Qtempz * x_9_0_0 + WQtempz * x_9_0_1 + 2 * ABCDtemp * x_3_0_1);
+                            }
                 if ((I+J) >=  2 && (K+L)>= 2) {
                     // Subroutine for L =            0  B =            1 , m=           0
                     QUICKDouble x_0_1_0 = Qtempx * VY( 0, 0, 0) + WQtempx * VY( 0, 0, 1);
@@ -635,6 +656,7 @@ __device__ void vertical(int I, int J, int K, int L,
 
                     // Subroutine for L =            2  B =            2 , m=           0
 
+                                if (K<=2 && I <=2){
                     // WRITE LAST FOR I =            2  J=           2
                     LOC2(store,  4,  4, STOREDIM, STOREDIM) += (    Ptempx * x_2_4_0 + WPtempx * x_2_4_1 + ABCDtemp * x_2_2_1);
                     LOC2(store,  4,  5, STOREDIM, STOREDIM) += (    Ptempx * x_2_5_0 + WPtempx * x_2_5_1);
@@ -672,6 +694,7 @@ __device__ void vertical(int I, int J, int K, int L,
                     LOC2(store,  9,  7, STOREDIM, STOREDIM) += (    Ptempz * x_3_7_0 + WPtempz * x_3_7_1 + ABtemp * (x_0_7_0 -  CDcom * x_0_7_1));
                     LOC2(store,  9,  8, STOREDIM, STOREDIM) += (    Ptempz * x_3_8_0 + WPtempz * x_3_8_1 + ABtemp * (x_0_8_0 -  CDcom * x_0_8_1));
                     LOC2(store,  9,  9, STOREDIM, STOREDIM) += (    Ptempz * x_3_9_0 + WPtempz * x_3_9_1 + ABtemp * (x_0_9_0 -  CDcom * x_0_9_1) + 2 * ABCDtemp * x_3_3_1);
+                                }
                     if ((I+J) >=  2 && (K+L)>= 3) {
                         // Subroutine for L =            0  B =            1 , m=           4
                         QUICKDouble x_0_1_4 = Qtempx * VY( 0, 0, 4) + WQtempx * VY( 0, 0, 5);
@@ -788,6 +811,7 @@ __device__ void vertical(int I, int J, int K, int L,
 
                         // Subroutine for L =            2  B =            3 , m=           0
 
+                                    if (K<=3 && I <=2){
                         // WRITE LAST FOR I =            2  J=           3
                         LOC2(store,  4, 10, STOREDIM, STOREDIM) += (  Ptempx * x_2_10_0 + WPtempx * x_2_10_1 + ABCDtemp * x_2_5_1);
                         LOC2(store,  4, 11, STOREDIM, STOREDIM) += (  Ptempx * x_2_11_0 + WPtempx * x_2_11_1 + 2 * ABCDtemp * x_2_4_1);
@@ -849,6 +873,7 @@ __device__ void vertical(int I, int J, int K, int L,
                         LOC2(store,  9, 17, STOREDIM, STOREDIM) += (  Ptempz * x_3_17_0 + WPtempz * x_3_17_1 + ABtemp * (x_0_17_0 -  CDcom * x_0_17_1));
                         LOC2(store,  9, 18, STOREDIM, STOREDIM) += (  Ptempz * x_3_18_0 + WPtempz * x_3_18_1 + ABtemp * (x_0_18_0 -  CDcom * x_0_18_1));
                         LOC2(store,  9, 19, STOREDIM, STOREDIM) += (  Ptempz * x_3_19_0 + WPtempz * x_3_19_1 + ABtemp * (x_0_19_0 -  CDcom * x_0_19_1) + 3 * ABCDtemp * x_3_9_1);
+                                    }
                         if ((I+J) >=  2 && (K+L)>= 4) {
                             // Subroutine for L =            0  B =            1 , m=           5
                             QUICKDouble x_0_1_5 = Qtempx * VY( 0, 0, 5) + WQtempx * VY( 0, 0, 6);
@@ -1112,6 +1137,7 @@ __device__ void vertical(int I, int J, int K, int L,
                             QUICKDouble x_9_33_0 = Ptempz * x_3_33_0 + WPtempz * x_3_33_1 + ABtemp * (x_0_33_0 -  CDcom * x_0_33_1);
                             QUICKDouble x_9_34_0 = Ptempz * x_3_34_0 + WPtempz * x_3_34_1 + ABtemp * (x_0_34_0 -  CDcom * x_0_34_1) + 4 * ABCDtemp * x_3_19_1;
 
+                                        if (K<=4 && I <=2){
                             // WRITE LAST FOR I =            2  J=           4
                             LOC2(store,  4, 20, STOREDIM, STOREDIM) += x_4_20_0;
                             LOC2(store,  4, 21, STOREDIM, STOREDIM) += x_4_21_0;
@@ -1203,6 +1229,7 @@ __device__ void vertical(int I, int J, int K, int L,
                             LOC2(store,  9, 32, STOREDIM, STOREDIM) += x_9_32_0;
                             LOC2(store,  9, 33, STOREDIM, STOREDIM) += x_9_33_0;
                             LOC2(store,  9, 34, STOREDIM, STOREDIM) += x_9_34_0;
+                                        }
                         }
                     }
                     if ((I+J) >=  3 && (K+L)>= 2) {
@@ -1427,6 +1454,7 @@ __device__ void vertical(int I, int J, int K, int L,
                         QUICKDouble x_18_9_0 = Qtempz * x_18_3_0 + WQtempz * x_18_3_1 + CDtemp * (x_18_0_0 -  ABcom * x_18_0_1);
                         QUICKDouble x_19_9_0 = Qtempz * x_19_3_0 + WQtempz * x_19_3_1 + CDtemp * (x_19_0_0 -  ABcom * x_19_0_1) + 3 * ABCDtemp * x_9_3_1;
 
+                                    if (K<=2 && I <=3){
                         // WRITE LAST FOR I =            3  J=           2
                         LOC2(store, 10,  4, STOREDIM, STOREDIM) += x_10_4_0;
                         LOC2(store, 10,  5, STOREDIM, STOREDIM) += x_10_5_0;
@@ -1488,6 +1516,7 @@ __device__ void vertical(int I, int J, int K, int L,
                         LOC2(store, 19,  7, STOREDIM, STOREDIM) += x_19_7_0;
                         LOC2(store, 19,  8, STOREDIM, STOREDIM) += x_19_8_0;
                         LOC2(store, 19,  9, STOREDIM, STOREDIM) += x_19_9_0;
+                                    }
                         if ((I+J) >=  3 && (K+L)>= 3) {
                             // Subroutine for L =            0  B =            1 , m=           1
                             QUICKDouble x_0_1_1 = Qtempx * VY( 0, 0, 1) + WQtempx * VY( 0, 0, 2);
@@ -1733,6 +1762,7 @@ __device__ void vertical(int I, int J, int K, int L,
 
                             // Subroutine for B =            3  L =            3 , m=           0
 
+                                        if (K<=3 && I <=3){
                             // WRITE LAST FOR I =            3  J=           3
                             LOC2(store, 10, 10, STOREDIM, STOREDIM) += (Qtempx * x_10_5_0 + WQtempx * x_10_5_1 + ABCDtemp * x_5_5_1);
                             LOC2(store, 10, 11, STOREDIM, STOREDIM) += (Qtempx * x_10_4_0 + WQtempx * x_10_4_1 + CDtemp * (x_10_2_0 -  ABcom * x_10_2_1) + ABCDtemp * (Ptempy * x_3_4_1 + WPtempy * x_3_4_2 + ABCDtemp * x_3_1_2));
@@ -1834,6 +1864,7 @@ __device__ void vertical(int I, int J, int K, int L,
                             LOC2(store, 19, 17, STOREDIM, STOREDIM) += (Qtempx * x_19_7_0 + WQtempx * x_19_7_1 + CDtemp * 2 * (x_19_1_0 -  ABcom * x_19_1_1));
                             LOC2(store, 19, 18, STOREDIM, STOREDIM) += (Qtempy * x_19_8_0 + WQtempy * x_19_8_1 + CDtemp * 2 * (x_19_2_0 -  ABcom * x_19_2_1));
                             LOC2(store, 19, 19, STOREDIM, STOREDIM) += (Qtempz * x_19_9_0 + WQtempz * x_19_9_1 + CDtemp * 2 * (x_19_3_0 -  ABcom * x_19_3_1) + 3 * ABCDtemp * x_9_9_1);
+                                        }
                             if ((I+J) >=  3 && (K+L)>= 4) {
                                 // Subroutine for L =            0  B =            1 , m=           0
                                 QUICKDouble x_0_1_0 = Qtempx * VY( 0, 0, 0) + WQtempx * VY( 0, 0, 1);
@@ -2355,6 +2386,7 @@ __device__ void vertical(int I, int J, int K, int L,
 
                                 // Subroutine for L =            3  B =            4 , m=           0
 
+                                            if (K<=4 && I <=3){
                                 // WRITE LAST FOR I =            3  J=           4
                                 LOC2(store, 10, 20, STOREDIM, STOREDIM) += (    Ptempx * x_5_20_0 + WPtempx * x_5_20_1 + 2 * ABCDtemp * x_5_12_1);
                                 LOC2(store, 10, 21, STOREDIM, STOREDIM) += (    Ptempx * x_5_21_0 + WPtempx * x_5_21_1 + 2 * ABCDtemp * x_5_14_1);
@@ -2506,6 +2538,7 @@ __device__ void vertical(int I, int J, int K, int L,
                                 LOC2(store, 19, 32, STOREDIM, STOREDIM) += (    Ptempz * x_9_32_0 + WPtempz * x_9_32_1 + ABtemp * 2 * (x_3_32_0 -  CDcom * x_3_32_1));
                                 LOC2(store, 19, 33, STOREDIM, STOREDIM) += (    Ptempz * x_9_33_0 + WPtempz * x_9_33_1 + ABtemp * 2 * (x_3_33_0 -  CDcom * x_3_33_1));
                                 LOC2(store, 19, 34, STOREDIM, STOREDIM) += (    Ptempz * x_9_34_0 + WPtempz * x_9_34_1 + ABtemp * 2 * (x_3_34_0 -  CDcom * x_3_34_1) + 4 * ABCDtemp * x_9_19_1);
+                                            }
                             }
                             if ((I+J) >=  4 && (K+L)>= 3) {
                                 // Subroutine for L =            1  B =            0 , m=           6
@@ -3071,6 +3104,7 @@ __device__ void vertical(int I, int J, int K, int L,
                                 QUICKDouble x_33_19_0 = Qtempz * x_33_9_0 + WQtempz * x_33_9_1 + CDtemp * 2 * (x_33_3_0 -  ABcom * x_33_3_1);
                                 QUICKDouble x_34_19_0 = Qtempz * x_34_9_0 + WQtempz * x_34_9_1 + CDtemp * 2 * (x_34_3_0 -  ABcom * x_34_3_1) + 4 * ABCDtemp * x_19_9_1;
 
+                                            if (K<=3 && I <=4){
                                 // WRITE LAST FOR I =            4  J=           3
                                 LOC2(store, 20, 10, STOREDIM, STOREDIM) += x_20_10_0;
                                 LOC2(store, 20, 11, STOREDIM, STOREDIM) += x_20_11_0;
@@ -3222,6 +3256,7 @@ __device__ void vertical(int I, int J, int K, int L,
                                 LOC2(store, 34, 17, STOREDIM, STOREDIM) += x_34_17_0;
                                 LOC2(store, 34, 18, STOREDIM, STOREDIM) += x_34_18_0;
                                 LOC2(store, 34, 19, STOREDIM, STOREDIM) += x_34_19_0;
+                                            }
                                 if ((I+J) >=  4 && (K+L)>= 4) {
                                     // Subroutine for L =            0  B =            1 , m=           2
                                     QUICKDouble x_0_1_2 = Qtempx * VY( 0, 0, 2) + WQtempx * VY( 0, 0, 3);
@@ -3650,6 +3685,7 @@ __device__ void vertical(int I, int J, int K, int L,
 
                                     // Subroutine for B =            4  L =            4 , m=           0
 
+                                                if (K<=4 && I <=4){
                                     // WRITE LAST FOR I =            4  J=           4
                                     LOC2(store, 20, 20, STOREDIM, STOREDIM) += (  Qtempx * x_20_12_0 + WQtempx * (  Qtempx * x_20_8_1 + WQtempx * x_20_8_2 + 2 * ABCDtemp * x_12_8_2) + CDtemp * (x_20_8_0 -  ABcom * x_20_8_1) + 2 * ABCDtemp * (  Qtempx * x_12_8_1 + WQtempx * x_12_8_2 + ABCDtemp * x_8_8_2));
                                     LOC2(store, 20, 21, STOREDIM, STOREDIM) += (  Qtempx * x_20_14_0 + WQtempx * (  Qtempx * x_20_9_1 + WQtempx * x_20_9_2 + 2 * ABCDtemp * x_12_9_2) + CDtemp * (x_20_9_0 -  ABcom * x_20_9_1) + 2 * ABCDtemp * (  Qtempx * x_12_9_1 + WQtempx * x_12_9_2 + ABCDtemp * x_8_9_2));
@@ -3876,6 +3912,7 @@ __device__ void vertical(int I, int J, int K, int L,
                                     LOC2(store, 34, 32, STOREDIM, STOREDIM) += (  Qtempx * x_34_17_0 + WQtempx * (  Qtempx * x_34_7_1 + WQtempx * (  Qtempx * x_34_1_2 + WQtempx * (  Qtempx * x_34_0_3 + WQtempx * x_34_0_4) + CDtemp * (x_34_0_2 -  ABcom * x_34_0_3)) + CDtemp * 2 * (x_34_1_1 -  ABcom * x_34_1_2)) + CDtemp * 3 * (x_34_7_0 -  ABcom * x_34_7_1));
                                     LOC2(store, 34, 33, STOREDIM, STOREDIM) += (  Qtempy * x_34_18_0 + WQtempy * x_34_18_1 + CDtemp * 3 * (x_34_8_0 -  ABcom * x_34_8_1));
                                     LOC2(store, 34, 34, STOREDIM, STOREDIM) += (  Qtempz * x_34_19_0 + WQtempz * x_34_19_1 + CDtemp * 3 * (x_34_9_0 -  ABcom * x_34_9_1) + 4 * ABCDtemp * x_19_19_1);
+                                                }
                                 }
                             }
                         }
@@ -4136,6 +4173,7 @@ __device__ void vertical(int I, int J, int K, int L,
                             QUICKDouble x_33_9_0 = Qtempz * x_33_3_0 + WQtempz * x_33_3_1 + CDtemp * (x_33_0_0 -  ABcom * x_33_0_1);
                             QUICKDouble x_34_9_0 = Qtempz * x_34_3_0 + WQtempz * x_34_3_1 + CDtemp * (x_34_0_0 -  ABcom * x_34_0_1) + 4 * ABCDtemp * x_19_3_1;
 
+                                        if (K<=2 && I <=4){
                             // WRITE LAST FOR I =            4  J=           2
                             LOC2(store, 20,  4, STOREDIM, STOREDIM) += x_20_4_0;
                             LOC2(store, 20,  5, STOREDIM, STOREDIM) += x_20_5_0;
@@ -4227,6 +4265,7 @@ __device__ void vertical(int I, int J, int K, int L,
                             LOC2(store, 34,  7, STOREDIM, STOREDIM) += x_34_7_0;
                             LOC2(store, 34,  8, STOREDIM, STOREDIM) += x_34_8_0;
                             LOC2(store, 34,  9, STOREDIM, STOREDIM) += x_34_9_0;
+                                        }
                         }
                     }
                 }
@@ -4297,6 +4336,7 @@ __device__ void vertical(int I, int J, int K, int L,
                     QUICKDouble x_19_3_0 = Qtempz * x_19_0_0 + WQtempz * x_19_0_1 + 3 * ABCDtemp * x_9_0_1;
 
                     // WRITE LAST FOR I =            3  J=           1
+                                if (K<=1 && I <=3){
                     LOC2(store, 10,  1, STOREDIM, STOREDIM) += x_10_1_0;
                     LOC2(store, 10,  2, STOREDIM, STOREDIM) += x_10_2_0;
                     LOC2(store, 10,  3, STOREDIM, STOREDIM) += x_10_3_0;
@@ -4327,6 +4367,7 @@ __device__ void vertical(int I, int J, int K, int L,
                     LOC2(store, 19,  1, STOREDIM, STOREDIM) += x_19_1_0;
                     LOC2(store, 19,  2, STOREDIM, STOREDIM) += x_19_2_0;
                     LOC2(store, 19,  3, STOREDIM, STOREDIM) += x_19_3_0;
+                                }
                     if ((I+J) >=  4 && (K+L)>= 1) {
                         // Subroutine for L =            1  B =            0 , m=           4
                         QUICKDouble x_1_0_4 = Ptempx * VY( 0, 0, 4) + WPtempx * VY( 0, 0, 5);
@@ -4430,6 +4471,7 @@ __device__ void vertical(int I, int J, int K, int L,
                         QUICKDouble x_34_3_0 = Qtempz * x_34_0_0 + WQtempz * x_34_0_1 + 4 * ABCDtemp * x_19_0_1;
 
                         // WRITE LAST FOR I =            4  J=           1
+                                    if (K<=1 && I <=4){
                         LOC2(store, 20,  1, STOREDIM, STOREDIM) += x_20_1_0;
                         LOC2(store, 20,  2, STOREDIM, STOREDIM) += x_20_2_0;
                         LOC2(store, 20,  3, STOREDIM, STOREDIM) += x_20_3_0;
@@ -4475,6 +4517,7 @@ __device__ void vertical(int I, int J, int K, int L,
                         LOC2(store, 34,  1, STOREDIM, STOREDIM) += x_34_1_0;
                         LOC2(store, 34,  2, STOREDIM, STOREDIM) += x_34_2_0;
                         LOC2(store, 34,  3, STOREDIM, STOREDIM) += x_34_3_0;
+                                    }
                     }
                 }
             }
@@ -4491,6 +4534,8 @@ __device__ void vertical(int I, int J, int K, int L,
             QUICKDouble x_7_0_0 = Ptempx * x_1_0_0 + WPtempx * x_1_0_1 + ABtemp * (VY( 0, 0, 0) -  CDcom * VY( 0, 0, 1));
             QUICKDouble x_8_0_0 = Ptempy * x_2_0_0 + WPtempy * x_2_0_1 + ABtemp * (VY( 0, 0, 0) -  CDcom * VY( 0, 0, 1));
             QUICKDouble x_9_0_0 = Ptempz * x_3_0_0 + WPtempz * x_3_0_1 + ABtemp * (VY( 0, 0, 0) -  CDcom * VY( 0, 0, 1));
+            
+                        if (K<=0 && I <=2){
             // WRITE LAST FOR I =            2  J=           0
             LOC2(store,  4,  0, STOREDIM, STOREDIM) += x_4_0_0;
             LOC2(store,  5,  0, STOREDIM, STOREDIM) += x_5_0_0;
@@ -4498,6 +4543,7 @@ __device__ void vertical(int I, int J, int K, int L,
             LOC2(store,  7,  0, STOREDIM, STOREDIM) += x_7_0_0;
             LOC2(store,  8,  0, STOREDIM, STOREDIM) += x_8_0_0;
             LOC2(store,  9,  0, STOREDIM, STOREDIM) += x_9_0_0;
+                        }
             if ((I+J) >=  3 && (K+L)>= 0) {
                 // Subroutine for L =            1  B =            0 , m=           2
                 QUICKDouble x_1_0_2 = Ptempx * VY( 0, 0, 2) + WPtempx * VY( 0, 0, 3);
@@ -4521,6 +4567,7 @@ __device__ void vertical(int I, int J, int K, int L,
                 QUICKDouble x_17_0_0 = Ptempx * x_7_0_0 + WPtempx * x_7_0_1 + ABtemp * 2 * (x_1_0_0 -  CDcom * x_1_0_1);
                 QUICKDouble x_18_0_0 = Ptempy * x_8_0_0 + WPtempy * x_8_0_1 + ABtemp * 2 * (x_2_0_0 -  CDcom * x_2_0_1);
                 QUICKDouble x_19_0_0 = Ptempz * x_9_0_0 + WPtempz * x_9_0_1 + ABtemp * 2 * (x_3_0_0 -  CDcom * x_3_0_1);
+                            if (K<=0 && I <=3){
                 // WRITE LAST FOR I =            3  J=           0
                 LOC2(store, 10,  0, STOREDIM, STOREDIM) += x_10_0_0;
                 LOC2(store, 11,  0, STOREDIM, STOREDIM) += x_11_0_0;
@@ -4532,6 +4579,7 @@ __device__ void vertical(int I, int J, int K, int L,
                 LOC2(store, 17,  0, STOREDIM, STOREDIM) += x_17_0_0;
                 LOC2(store, 18,  0, STOREDIM, STOREDIM) += x_18_0_0;
                 LOC2(store, 19,  0, STOREDIM, STOREDIM) += x_19_0_0;
+                            }
                 if ((I+J) >=  4 && (K+L)>= 0) {
                     // Subroutine for L =            1  B =            0 , m=           3
                     QUICKDouble x_1_0_3 = Ptempx * VY( 0, 0, 3) + WPtempx * VY( 0, 0, 4);
@@ -4571,6 +4619,7 @@ __device__ void vertical(int I, int J, int K, int L,
                     QUICKDouble x_32_0_0 = Ptempx * x_17_0_0 + WPtempx * x_17_0_1 + ABtemp * 3 * (x_7_0_0 -  CDcom * x_7_0_1);
                     QUICKDouble x_33_0_0 = Ptempy * x_18_0_0 + WPtempy * x_18_0_1 + ABtemp * 3 * (x_8_0_0 -  CDcom * x_8_0_1);
                     QUICKDouble x_34_0_0 = Ptempz * x_19_0_0 + WPtempz * x_19_0_1 + ABtemp * 3 * (x_9_0_0 -  CDcom * x_9_0_1);
+                                if (K<=0 && I <=4){
                     // WRITE LAST FOR I =            4  J=           0
                     LOC2(store, 20,  0, STOREDIM, STOREDIM) += x_20_0_0;
                     LOC2(store, 21,  0, STOREDIM, STOREDIM) += x_21_0_0;
@@ -4587,6 +4636,7 @@ __device__ void vertical(int I, int J, int K, int L,
                     LOC2(store, 32,  0, STOREDIM, STOREDIM) += x_32_0_0;
                     LOC2(store, 33,  0, STOREDIM, STOREDIM) += x_33_0_0;
                     LOC2(store, 34,  0, STOREDIM, STOREDIM) += x_34_0_0;
+                                }
                 }
             }
         }

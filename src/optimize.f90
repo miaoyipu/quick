@@ -298,7 +298,7 @@ subroutine optimize(failed)
       if (bMPI)call MPI_BCAST(done,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
 #endif
 
-    stop
+    !stop
 
    enddo
 
