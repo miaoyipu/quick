@@ -1112,6 +1112,42 @@ extern "C" void gpu_upload_grad_(QUICKDouble* grad, QUICKDouble* gradCutoff)
     
 }
 
+extern "C" void gpu_cleanup_(){
+    SAFE_DELETE(gpu->gpu_basis->ncontract);
+    SAFE_DELETE(gpu->gpu_basis->itype);
+    SAFE_DELETE(gpu->gpu_basis->aexp);
+    SAFE_DELETE(gpu->gpu_basis->dcoeff);
+    SAFE_DELETE(gpu->gpu_basis->ncenter);
+    SAFE_DELETE(gpu->gpu_basis->kstart);
+    SAFE_DELETE(gpu->gpu_basis->katom);
+    SAFE_DELETE(gpu->gpu_basis->kprim);
+    SAFE_DELETE(gpu->gpu_basis->Ksumtype);
+    SAFE_DELETE(gpu->gpu_basis->Qnumber);
+    SAFE_DELETE(gpu->gpu_basis->Qstart);
+    SAFE_DELETE(gpu->gpu_basis->Qfinal);
+    SAFE_DELETE(gpu->gpu_basis->Qsbasis);
+    SAFE_DELETE(gpu->gpu_basis->Qfbasis);
+    SAFE_DELETE(gpu->gpu_basis->gccoeff);
+    SAFE_DELETE(gpu->gpu_basis->cons);
+    SAFE_DELETE(gpu->gpu_basis->gcexpo);
+    SAFE_DELETE(gpu->gpu_basis->KLMN);
+    SAFE_DELETE(gpu->gpu_basis->prim_start);
+    SAFE_DELETE(gpu->gpu_basis->Xcoeff);
+    SAFE_DELETE(gpu->gpu_basis->expoSum);
+    SAFE_DELETE(gpu->gpu_basis->weightedCenterX);
+    SAFE_DELETE(gpu->gpu_basis->weightedCenterY);
+    SAFE_DELETE(gpu->gpu_basis->weightedCenterZ);
+    SAFE_DELETE(gpu->gpu_calculated->distance);
+    SAFE_DELETE(gpu->xyz);
+    SAFE_DELETE(gpu->gpu_basis->sorted_Q);
+    SAFE_DELETE(gpu->gpu_basis->sorted_Qnumber);
+    SAFE_DELETE(gpu->gpu_cutoff->cutMatrix);
+    SAFE_DELETE(gpu->gpu_cutoff->sorted_YCutoffIJ);
+    SAFE_DELETE(gpu->gpu_cutoff->YCutoff);
+    SAFE_DELETE(gpu->gpu_cutoff->cutPrim);
+    
+}
+
 extern "C" void gpu_grad_(QUICKDouble* grad)
 {
     PRINTDEBUG("BEGIN TO RUN GRAD")
@@ -1163,6 +1199,13 @@ extern "C" void gpu_grad_(QUICKDouble* grad)
     
     delete gpu -> grad;
     delete gpu -> gradULL;
+    
+    
+    delete gpu->gpu_calculated->o;
+    delete gpu->gpu_calculated->dense;
+    delete gpu->gpu_calculated->oULL;
+    
+    //delete gpu->gpu_cutoff->cutMatrix;
     
 #ifdef DEBUG
     cudaEventRecord(end, 0);
@@ -1417,8 +1460,11 @@ extern "C" void gpu_addint_(QUICKDouble* o, int* intindex, char* intFileName){
     delete gpu->gpu_calculated->o;
     delete gpu->gpu_calculated->dense;
     delete gpu->gpu_calculated->oULL;
-    
     delete gpu->gpu_cutoff->cutMatrix;
+    delete gpu->gpu_cutoff->sorted_YCutoffIJ;
+    delete gpu->gpu_cutoff->YCutoff;
+    delete gpu->gpu_cutoff->cutPrim;
+    
     
     PRINTDEBUG("COMPLETE RUNNING ADDINT")
 
@@ -1595,6 +1641,7 @@ extern "C" void gpu_getxc_(int* isg, QUICKDouble* sigrad2, QUICKDouble* Eelxc, Q
 	delete gpu->gpu_calculated->o;
 	delete gpu->gpu_calculated->dense;
 	delete gpu->gpu_calculated->oULL;
+    
 }
 
 

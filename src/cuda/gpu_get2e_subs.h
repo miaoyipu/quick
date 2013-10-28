@@ -372,8 +372,9 @@ __device__ __forceinline__ void iclass_spdf4
                 for (int i = 0; i<=I+J+K+L; i++) {
                     VY(0, 0, i) = VY(0, 0, i) * X2;
                 }
+                    QUICKDouble store2[STOREDIM*STOREDIM];
 #ifdef int_spd
-                vertical(I, J, K, L, YVerticalTemp, store, \
+                vertical2(I, J, K, L, YVerticalTemp, store2, \
                          Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
                          Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
                          0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
@@ -402,6 +403,13 @@ __device__ __forceinline__ void iclass_spdf4
                                Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
                                0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
 #endif
+                
+                
+                for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+                    for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+                        LOC2(store, j-1, i-1, STOREDIM, STOREDIM) +=        LOC2(store2, j-1, i-1, STOREDIM, STOREDIM);
+                    }
+                }
                 
             }
         }

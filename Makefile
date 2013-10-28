@@ -112,10 +112,10 @@ all: quick quick.cuda
 
 #================= common subroutine library ============================
 quick_subs:
-	cp $(objfolder)/*.mod $(subfolder)
-	cd $(subfolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
-	ar -r $(libfolder)/quicklib.a $(subfolder)/*.o
-	rm $(subfolder)/*.mod
+#	cp $(objfolder)/*.mod $(subfolder)
+#	cd $(subfolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
+#	ar -r $(libfolder)/quicklib.a $(subfolder)/*.o
+#	rm $(subfolder)/*.mod
 
 #================= quick module library =================================
 quick_modules:

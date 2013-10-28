@@ -144,6 +144,8 @@ if (error != cudaSuccess && error != cudaErrorNotReady)\
 }\
 }
 
+#define SAFE_DELETE(a) if( (a) != NULL ) delete (a); (a) = NULL;
+
 /*
  ****************************************************************
  *  common variables
