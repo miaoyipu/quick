@@ -153,8 +153,28 @@ __global__ void getGrad_kernel()
     for (QUICKULL i = offside; i<jshell2*jshell; i+= totalThreads) {
         
         
-        QUICKULL a = (QUICKULL) i/jshell;
-        QUICKULL b = (QUICKULL) (i - a*jshell);
+        QUICKULL a, b;
+        
+        // That's simply because no sqrt for ULL
+        double aa = (double)((i+1)*1E-4);
+        QUICKULL t = (QUICKULL)(sqrt(aa)*1E2);
+        
+        
+        if ((i+1)==t*t) {
+            t--;
+        }
+        
+        QUICKULL k = i-t*t;
+        if (k<=t) {
+            a = k;
+            b = t;
+        }else {
+            a = t;
+            b = 2*t-k;
+        }
+        
+        //QUICKULL a = (QUICKULL) i/jshell;
+        //QUICKULL b = (QUICKULL) (i - a*jshell);
         
         
         int II = devSim.sorted_YCutoffIJ[a].x;

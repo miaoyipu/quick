@@ -148,6 +148,8 @@ subroutine optimize(failed)
 
       call getEnergy(failed)
 
+      !   This line is for test only
+      !   quick_method%bCUDA = .false.
       ! Now we have several scheme to obtain gradient. For now,
       ! only analytical gradient is available
 
@@ -175,7 +177,9 @@ subroutine optimize(failed)
       endif
 
 #ifdef CUDA
-      call gpu_cleanup()
+      if (quick_method%bCUDA) then
+        call gpu_cleanup()
+      endif
 #endif
 
       if (master) then
@@ -302,7 +306,7 @@ subroutine optimize(failed)
       if (bMPI)call MPI_BCAST(done,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
 #endif
 
-      !stop
+      stop
 
    enddo
 

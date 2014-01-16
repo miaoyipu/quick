@@ -106,7 +106,7 @@ extern "C" void gpu_init_(void)
     	}
         device = gpu->gpu_dev_id;
     }
-
+    
 #ifdef DEBUG
     printf("using gpu: %i\n", device);
 #endif
@@ -123,7 +123,7 @@ extern "C" void gpu_init_(void)
     cudaThreadSynchronize();
     
     cudaDeviceSetCacheConfig(cudaFuncCachePreferL1);
-
+    
     size_t val;
     
     cudaDeviceGetLimit(&val, cudaLimitStackSize);
@@ -134,9 +134,9 @@ extern "C" void gpu_init_(void)
     
     cudaDeviceGetLimit(&val, cudaLimitMallocHeapSize);
     printf("Heap size limit:     %zu\n", val);
-
+    
     cudaDeviceSetLimit(cudaLimitStackSize, 8192);
-
+    
     cudaDeviceGetLimit(&val, cudaLimitStackSize);
     printf("New Stack size limit:    %zu\n", val);
     
@@ -420,212 +420,415 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     gpu -> gpu_cutoff -> sqrQshell  = (gpu -> gpu_basis -> Qshell) * (gpu -> gpu_basis -> Qshell);
     gpu -> gpu_cutoff -> sorted_YCutoffIJ           = new cuda_buffer_type<int2>(gpu->gpu_cutoff->sqrQshell);
     
-    
+
+    int sort_method = 2;
     int a = 0;
     bool flag = true;
     int2 temp;
     
-    for (int q = 0; q <= 3; q++) {
-        for (int p = 0; p <= 3; p++) {
-            
-            if (q + p <= 4) {
-            // First to order ERI type
-            // Second to order primitive Gaussian function number
-                // Third to order Schwartz cutoff upbound
+    
+    if (sort_method == 0) {
+        for (int q = 0; q <= 3; q++) {
+            for (int p = 0; p <= 3; p++) {
                 
-                int b=0;
-                for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
-                    for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
-                        if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == q && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == p) {
-                            if (LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) > 1E-12 &&
-                                gpu->gpu_basis->sorted_Q->_hostData[i] <= gpu->gpu_basis->sorted_Q->_hostData[j]) {
-                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].x = i;
-                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].y = j;
-                                a++;
-                                b++;
+                if (q + p <= 4) {
+                    // First to order ERI type
+                    // Second to order primitive Gaussian function number
+                    // Third to order Schwartz cutoff upbound
+                    
+                    int b=0;
+                    for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
+                        for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
+                            if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == q && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == p) {
+                                if (LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) > 1E-12 &&
+                                    gpu->gpu_basis->sorted_Q->_hostData[i] <= gpu->gpu_basis->sorted_Q->_hostData[j]) {
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].x = i;
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].y = j;
+                                    a++;
+                                    b++;
+                                }
                             }
                         }
                     }
-                }
-                PRINTDEBUG("FINISH STEP 1")
-                printf("a=%i b=%i\n", a, b);
-                for (int i = 0; i < b - 1; i ++)
-                {
-                    flag = true;
-                    for (int j = 0; j < b - i - 1; j ++)
+                    PRINTDEBUG("FINISH STEP 1")
+                    printf("a=%i b=%i\n", a, b);
+                    for (int i = 0; i < b - 1; i ++)
                     {
-                        if ((LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x], \
-                                  gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y], gpu->nshell, gpu->nshell) < \
-                             LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x], \
-                                  gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y], gpu->nshell, gpu->nshell)))
-                        //&&
-                        //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].x] == q &&  \
-                        //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].y]== p &&  \
-                        //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].x] == q && \
-                        //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].y] == p )
+                        flag = true;
+                        for (int j = 0; j < b - i - 1; j ++)
                         {
-                            temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
-                            gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
-                            gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b] = temp;
-                            flag = false;
-                        }
-                    }
-                    
-                    if (flag == true)
-                    break;
-                }
-                
-                PRINTDEBUG("FINISH STEP 2")
-                flag = true;
-                
-                for (int i = 0; i < b - 1; i ++)
-                {
-                    flag = true;
-                    for (int j = 0; j < b - i - 1; j ++)
-                    {
-                        if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
-                            gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] <
-                            gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]] *
-                            gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y]])
-                        {
-                            temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
-                            gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1];
-                            gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1] = temp;
-                            flag = false;
-                        }
-                        else if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
-                                 gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] ==
-                                 gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].x]] *
-                                 gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].y]])
-                        {
-                            if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]]<
-                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]]) {
-                                temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
-                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
-                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b] = temp;
-                                flag = false;
-                            }
-                        }
-                    }
-                    
-                    if (flag == true)
-                    break;
-                }
-                
-                flag = true;
-                PRINTDEBUG("FINISH STEP 3")
-            }
-        }
-    }
-    
-    PRINTDEBUG("WORKING on F Orbital")
-    
-    gpu -> gpu_basis -> fStart = a;
-    gpu -> gpu_sim.fStart = a;
-    
-    printf("df, fd, or ff starts from %i \n", a);
-    
-    for (int q = 0; q <= 3; q++) {
-        for (int p = 0; p <= 3; p++) {
-            
-            if (q == 3 && p == 3) {
-                gpu -> gpu_basis -> ffStart = a;
-                gpu -> gpu_sim.ffStart = a;
-                
-                printf("ff starts from %i \n", a);
-            }
-            
-            if (q + p > 4) {
-                
-                // First to order ERI type
-                // Second to order primitive Gaussian function number
-                // Third to order Schwartz cutoff upbound
-                
-                int b=0;
-                for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
-                    for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
-                        if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == q && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == p) {
-                            if (LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) > 1E-12 &&
-                                gpu->gpu_basis->sorted_Q->_hostData[i] <= gpu->gpu_basis->sorted_Q->_hostData[j]) {
-                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].x = i;
-                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].y = j;
-                                a++;
-                                b++;
-                            }
-                        }
-                    }
-                }
-                
-                PRINTDEBUG("FINISH STEP 1")
-                printf("a=%i b=%i\n", a, b);
-                for (int i = 0; i < b - 1; i ++)
-                {
-                    flag = true;
-                    for (int j = 0; j < b - i - 1; j ++)
-                    {
-                        if ((LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x], \
-                                  gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y], gpu->nshell, gpu->nshell) < \
-                             LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x], \
-                                  gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y], gpu->nshell, gpu->nshell)))
-                            //&&
-                            //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].x] == q &&  \
-                            //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].y]== p &&  \
-                            //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].x] == q && \
-                            //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].y] == p )
-                        {
-                            temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
-                            gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
-                            gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b] = temp;
-                            flag = false;
-                        }
-                    }
-                    
-                    if (flag == true)
-                        break;
-                }
-                
-                PRINTDEBUG("FINISH STEP 2")
-                flag = true;
-                
-                for (int i = 0; i < b - 1; i ++)
-                {
-                    flag = true;
-                    for (int j = 0; j < b - i - 1; j ++)
-                    {
-                        if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
-                            gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] <
-                            gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]] *
-                            gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y]])
-                        {
-                            temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
-                            gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1];
-                            gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1] = temp;
-                            flag = false;
-                        }
-                        else if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
-                                 gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] ==
-                                 gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].x]] *
-                                 gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].y]])
-                        {
-                            if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]]<
-                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]]) {
+                            if ((LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x], \
+                                      gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y], gpu->nshell, gpu->nshell) < \
+                                 LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x], \
+                                      gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y], gpu->nshell, gpu->nshell)))
+                                //&&
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].x] == q &&  \
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].y]== p &&  \
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].x] == q && \
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].y] == p )
+                            {
                                 temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
                                 gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
                                 gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b] = temp;
                                 flag = false;
                             }
                         }
+                        
+                        if (flag == true)
+                            break;
                     }
                     
-                    if (flag == true)
-                        break;
+                    PRINTDEBUG("FINISH STEP 2")
+                    flag = true;
+                    
+                    for (int i = 0; i < b - 1; i ++)
+                    {
+                        flag = true;
+                        for (int j = 0; j < b - i - 1; j ++)
+                        {
+                            if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
+                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] <
+                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]] *
+                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y]])
+                            {
+                                temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1] = temp;
+                                flag = false;
+                            }
+                            else if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
+                                     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] ==
+                                     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].x]] *
+                                     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].y]])
+                            {
+                                if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]]<
+                                    gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]]) {
+                                    temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b] = temp;
+                                    flag = false;
+                                }
+                            }
+                        }
+                        
+                        if (flag == true)
+                            break;
+                    }
+                    
+                    flag = true;
+                    PRINTDEBUG("FINISH STEP 3")
                 }
-                
-                flag = true;
-                PRINTDEBUG("FINISH STEP 3")
-                 
             }
         }
+        
+        PRINTDEBUG("WORKING on F Orbital")
+        
+        gpu -> gpu_basis -> fStart = a;
+        gpu -> gpu_sim.fStart = a;
+        
+        printf("df, fd, or ff starts from %i \n", a);
+        
+        for (int q = 0; q <= 3; q++) {
+            for (int p = 0; p <= 3; p++) {
+                
+                if (q == 3 && p == 3) {
+                    gpu -> gpu_basis -> ffStart = a;
+                    gpu -> gpu_sim.ffStart = a;
+                    
+                    printf("ff starts from %i \n", a);
+                }
+                
+                if (q + p > 4) {
+                    
+                    // First to order ERI type
+                    // Second to order primitive Gaussian function number
+                    // Third to order Schwartz cutoff upbound
+                    
+                    int b=0;
+                    for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
+                        for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
+                            if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == q && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == p) {
+                                if (LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) > 1E-12 &&
+                                    gpu->gpu_basis->sorted_Q->_hostData[i] <= gpu->gpu_basis->sorted_Q->_hostData[j]) {
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].x = i;
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].y = j;
+                                    a++;
+                                    b++;
+                                }
+                            }
+                        }
+                    }
+                    
+                    PRINTDEBUG("FINISH STEP 1")
+                    printf("a=%i b=%i\n", a, b);
+                    for (int i = 0; i < b - 1; i ++)
+                    {
+                        flag = true;
+                        for (int j = 0; j < b - i - 1; j ++)
+                        {
+                            if ((LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x], \
+                                      gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y], gpu->nshell, gpu->nshell) < \
+                                 LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x], \
+                                      gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y], gpu->nshell, gpu->nshell)))
+                                //&&
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].x] == q &&  \
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].y]== p &&  \
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].x] == q && \
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].y] == p )
+                            {
+                                temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b] = temp;
+                                flag = false;
+                            }
+                        }
+                        
+                        if (flag == true)
+                            break;
+                    }
+                    
+                    PRINTDEBUG("FINISH STEP 2")
+                    flag = true;
+                    
+                    for (int i = 0; i < b - 1; i ++)
+                    {
+                        flag = true;
+                        for (int j = 0; j < b - i - 1; j ++)
+                        {
+                            if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
+                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] <
+                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]] *
+                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y]])
+                            {
+                                temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1] = temp;
+                                flag = false;
+                            }
+                            else if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
+                                     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] ==
+                                     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].x]] *
+                                     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].y]])
+                            {
+                                if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]]<
+                                    gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]]) {
+                                    temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b] = temp;
+                                    flag = false;
+                                }
+                            }
+                        }
+                        
+                        if (flag == true)
+                            break;
+                    }
+                    
+                    flag = true;
+                    PRINTDEBUG("FINISH STEP 3")
+                    
+                }
+            }
+        }
+    }
+    
+    
+    if (sort_method == 1) {
+        
+        int b=0;
+        for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
+            for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
+                //if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == q && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == p) {
+                if (LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) > 1E-12 &&
+                    gpu->gpu_basis->sorted_Q->_hostData[i] <= gpu->gpu_basis->sorted_Q->_hostData[j]) {
+                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].x = i;
+                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].y = j;
+                    a++;
+                    b++;
+                }
+                //}
+            }
+        }
+        
+        
+        for (int i = 0; i < b - 1; i ++)
+        {
+            flag = true;
+            for (int j = 0; j < b - i - 1; j ++)
+            {
+                if ((LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x], \
+                          gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y], gpu->nshell, gpu->nshell) < \
+                     LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x], \
+                          gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y], gpu->nshell, gpu->nshell)))
+                    //&&
+                    //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].x] == q &&  \
+                    //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].y]== p &&  \
+                    //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].x] == q && \
+                    //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].y] == p )
+                {
+                    temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
+                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b] = temp;
+                    flag = false;
+                }
+            }
+            
+            if (flag == true)
+                break;
+        }
+        
+        
+        
+        flag = true;
+        
+        
+    }
+    
+    if (sort_method == 2) {
+        QUICKDouble cut1 = 1E-8;
+        QUICKDouble cut2 = 1E-11;
+        
+        for (int q = 0; q <= 3; q++) {
+            for (int p = 0; p <= 3; p++) {
+                
+                if (q + p <= 4) {
+                    // First to order ERI type
+                    // Second to order primitive Gaussian function number
+                    // Third to order Schwartz cutoff upbound
+                    
+                    int b=0;
+                    for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
+                        for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
+                            if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == q && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == p) {
+                                if (LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) > cut1 &&
+                                    gpu->gpu_basis->sorted_Q->_hostData[i] <= gpu->gpu_basis->sorted_Q->_hostData[j]) {
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].x = i;
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].y = j;
+                                    a++;
+                                    b++;
+                                }
+                            }
+                        }
+                    }
+                    
+                    
+                    PRINTDEBUG("FINISH STEP 1")
+                    printf("a=%i b=%i\n", a, b);
+                    for (int i = 0; i < b - 1; i ++)
+                    {
+                        flag = true;
+                        for (int j = 0; j < b - i - 1; j ++)
+                        {
+                            if ((LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x], \
+                                      gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y], gpu->nshell, gpu->nshell) < \
+                                 LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x], \
+                                      gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y], gpu->nshell, gpu->nshell)))
+                                //&&
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].x] == q &&  \
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].y]== p &&  \
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].x] == q && \
+                                //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].y] == p )
+                            {
+                                temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b] = temp;
+                                flag = false;
+                            }
+                        }
+                        
+                        if (flag == true)
+                            break;
+                    }
+                    
+                    PRINTDEBUG("FINISH STEP 2")
+                    flag = true;
+                    
+                    for (int i = 0; i < b - 1; i ++)
+                    {
+                        flag = true;
+                        for (int j = 0; j < b - i - 1; j ++)
+                        {
+                            if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
+                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] <
+                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]] *
+                                gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y]])
+                            {
+                                temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1];
+                                gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b + 1] = temp;
+                                flag = false;
+                            }
+                            else if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]] *
+                                     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y]] ==
+                                     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].x]] *
+                                     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b+1].y]])
+                            {
+                                if (gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x]]<
+                                    gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x]]) {
+                                    temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
+                                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b] = temp;
+                                    flag = false;
+                                }
+                            }
+                        }
+                        
+                        if (flag == true)
+                            break;
+                    }
+                    
+                    flag = true;
+                    PRINTDEBUG("FINISH STEP 3")
+                }
+            }
+        }
+        
+        int b=0;
+        for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
+            for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
+                //if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] == q && gpu->gpu_basis->sorted_Qnumber->_hostData[j] == p) {
+                if (LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) > cut2 &&
+                    LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[i], gpu->gpu_basis->sorted_Q->_hostData[j], gpu->nshell, gpu->nshell) < cut1 &&
+                    gpu->gpu_basis->sorted_Q->_hostData[i] <= gpu->gpu_basis->sorted_Q->_hostData[j]) {
+                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].x = i;
+                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[a].y = j;
+                    a++;
+                    b++;
+                }
+                //}
+            }
+        }
+        
+        
+        for (int i = 0; i < b - 1; i ++)
+        {
+            flag = true;
+            for (int j = 0; j < b - i - 1; j ++)
+            {
+                if ((LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].x], \
+                          gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b].y], gpu->nshell, gpu->nshell) < \
+                     LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].x], \
+                          gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1+a-b].y], gpu->nshell, gpu->nshell)))
+                    //&&
+                    //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].x] == q &&  \
+                    //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+1].y]== p &&  \
+                    //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].x] == q && \
+                    //gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j].y] == p )
+                {
+                    temp = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b];
+                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j+a-b] = gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b];
+                    gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[j + 1+a-b] = temp;
+                    flag = false;
+                }
+            }
+            
+            if (flag == true)
+                break;
+        }
+        
+        
+        
+        flag = true;
     }
     
     
@@ -634,20 +837,20 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     
     gpu->gpu_cutoff->sqrQshell  = a;
     
-     printf("SS = %i\n",a);
-     for (int i = 0; i<a; i++) {
-//     printf("%8i %4i %4i %18.13f Q=%4i %4i %4i %4i prim = %4i %4i\n", i, \
-     gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x, \
-     gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y, \
-     LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], gpu->nshell, gpu->nshell),\
-     gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], \
-     gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], \
-     gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], \
-     gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], \
-     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x]], \
-     gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y]]); 
-     }
-     
+    printf("SS = %i\n",a);
+    for (int i = 0; i<a; i++) {
+        //     printf("%8i %4i %4i %18.13f Q=%4i %4i %4i %4i prim = %4i %4i\n", i, \
+        gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x, \
+        gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y, \
+        LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], gpu->nshell, gpu->nshell),\
+        gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], \
+        gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], \
+        gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], \
+        gpu->gpu_basis->sorted_Qnumber->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], \
+        gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x]], \
+        gpu->gpu_basis->kprim->_hostData[gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y]]);
+    }
+    
     gpu -> gpu_cutoff -> sorted_YCutoffIJ  -> Upload();
     gpu -> gpu_sim.sqrQshell        = gpu -> gpu_cutoff -> sqrQshell;
     gpu -> gpu_sim.YCutoff          = gpu -> gpu_cutoff -> YCutoff -> _devData;
@@ -1310,12 +1513,12 @@ extern "C" void gpu_addint_(QUICKDouble* o, int* intindex, char* intFileName){
                 intERIEntry_tmp[bufferIndex].IJ = aBuffer[j];
                 intERIEntry_tmp[bufferIndex].KL = bBuffer[j];
                 intERIEntry_tmp[bufferIndex].value = intBuffer[j];
-/*
-                int III2 = aBuffer[j] / gpu->nbasis + 1;
-                int JJJ = aBuffer[j] % gpu->nbasis + 1;
-                int KKK = bBuffer[j] / gpu->nbasis + 1;
-                int LLL = bBuffer[j] % gpu->nbasis + 1;
-                printf("%i %i %i %i %f\n", III2,JJJ,KKK,LLL, intBuffer[j]);*/
+                /*
+                 int III2 = aBuffer[j] / gpu->nbasis + 1;
+                 int JJJ = aBuffer[j] % gpu->nbasis + 1;
+                 int KKK = bBuffer[j] / gpu->nbasis + 1;
+                 int LLL = bBuffer[j] % gpu->nbasis + 1;
+                 printf("%i %i %i %i %f\n", III2,JJJ,KKK,LLL, intBuffer[j]);*/
                 bufferIndex ++;
                 int III = aBuffer[j] / gpu->nbasis;
                 ERIEntryByBasis[III] ++;
@@ -1467,7 +1670,7 @@ extern "C" void gpu_addint_(QUICKDouble* o, int* intindex, char* intFileName){
     
     
     PRINTDEBUG("COMPLETE RUNNING ADDINT")
-
+    
 }
 
 //-----------------------------------------------
@@ -1822,7 +2025,7 @@ extern "C" void gpu_aoint_(QUICKDouble* leastIntegralCutoff, QUICKDouble* maxInt
                     aBuffer[bufferInt] = a.IJ;
                     bBuffer[bufferInt] = a.KL;
                     intBuffer[bufferInt] = a.value;
-//printf("%i %i %i %18.10f\n",bufferInt, aBuffer[bufferInt], bBuffer[bufferInt], intBuffer[bufferInt]);
+                    //printf("%i %i %i %18.10f\n",bufferInt, aBuffer[bufferInt], bBuffer[bufferInt], intBuffer[bufferInt]);
                     bufferInt ++;
                     if (bufferInt == BUFFERSIZE) {
                         fwrite(&aBuffer, sizeof(int), BUFFERSIZE, intFile);
