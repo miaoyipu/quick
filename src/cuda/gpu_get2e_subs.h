@@ -73,6 +73,14 @@ __global__ void get2e_kernel_spdf2()
 __global__ void get2e_kernel_spdf3()
 #elif defined int_spdf4
 __global__ void get2e_kernel_spdf4()
+#elif defined int_spdf5
+__global__ void get2e_kernel_spdf5()
+#elif defined int_spdf6
+__global__ void get2e_kernel_spdf6()
+#elif defined int_spdf7
+__global__ void get2e_kernel_spdf7()
+#elif defined int_spdf8
+__global__ void get2e_kernel_spdf8()
 #endif
 {
     unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
@@ -80,10 +88,10 @@ __global__ void get2e_kernel_spdf4()
     
     
     
-#ifdef int_spd
+//#ifdef int_spd
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
     QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
-    
+  /*
 #elif defined int_spdf
     
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
@@ -106,12 +114,34 @@ __global__ void get2e_kernel_spdf4()
     QUICKULL jshell00 = (QUICKULL) devSim.ffStart;
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell00;
     QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
+
+#elif defined int_spdf5
     
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - devSim.fStart;
+
+#elif defined int_spdf6
+    
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - devSim.fStart;
+    
+#elif defined int_spdf7
+    
+    QUICKULL jshell0 = (QUICKULL) devSim.fStart;
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell0;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
+    
+#elif defined int_spdf8
+    
+    QUICKULL jshell0 = (QUICKULL) devSim.fStart;
+    QUICKULL jshell00 = (QUICKULL) devSim.ffStart;
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell00;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
 #endif
-    
+    */
     for (QUICKULL i = offside; i<jshell2*jshell; i+= totalThreads) {
         
-#ifdef int_spd
+//#ifdef int_spd
        /* 
         QUICKULL a, b;
         
@@ -135,7 +165,7 @@ __global__ void get2e_kernel_spdf4()
         QUICKULL a = (QUICKULL) i/jshell;
         QUICKULL b = (QUICKULL) (i - a*jshell);
         
-#elif defined int_spdf
+/*#elif defined int_spdf
         
         
         // Zone 1
@@ -143,12 +173,15 @@ __global__ void get2e_kernel_spdf4()
         QUICKULL a = (QUICKULL) (i - b*jshell);
         b = b + devSim.fStart;
         
+        
 #elif defined int_spdf2
         
         // Zone 2
         QUICKULL a = (QUICKULL) i/jshell;
         QUICKULL b = (QUICKULL) (i - a*jshell);
         a = a + devSim.fStart;
+        
+        
         
 #elif defined int_spdf3
         
@@ -176,8 +209,49 @@ __global__ void get2e_kernel_spdf4()
             a = 0;
             b = 0;
         }
-#endif
+#elif defined int_spdf5
         
+        // Zone 1
+        QUICKULL b = (QUICKULL) i/jshell;
+        QUICKULL a = (QUICKULL) (i - b*jshell);
+        b = b + devSim.fStart;
+        
+#elif defined int_spdf6
+        
+        // Zone 2
+        QUICKULL a = (QUICKULL) i/jshell;
+        QUICKULL b = (QUICKULL) (i - a*jshell);
+        a = a + devSim.fStart;
+
+        
+#elif defined int_spdf7
+        
+        // Zone 3
+        QUICKULL a, b;
+        if (jshell != 0 ) {
+            a = (QUICKULL) i/jshell;
+            b = (QUICKULL) (i - a*jshell);
+            a = a + jshell0;
+            b = b + jshell0;
+        }else{
+            a = 0;
+            b = 0;
+        }
+#elif defined int_spdf8
+        
+        // Zone 4
+        QUICKULL a, b;
+        if (jshell2 != 0 ) {
+            a = (QUICKULL) i/jshell2;
+            b = (QUICKULL) (i - a*jshell2);
+            a = a + jshell00;
+            b = b + jshell0;
+        }else{
+            a = 0;
+            b = 0;
+        }
+#endif
+        */
         int II = devSim.sorted_YCutoffIJ[a].x;
         int KK = devSim.sorted_YCutoffIJ[b].x;
         
@@ -205,23 +279,60 @@ __global__ void get2e_kernel_spdf4()
                 int kkk = devSim.sorted_Qnumber[KK];
                 int lll = devSim.sorted_Qnumber[LL];
 #ifdef int_spd
-                
-                iclass(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //if ( (iii + jjj) <= 4 && (kkk + lll) <= 4) {
+                    iclass(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //}
                 
 #elif defined int_spdf
-                iclass_spdf(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //if ( (kkk + lll) <= 6 && (kkk + lll) > 4) {
+                    iclass_spdf(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //}
+                
                 
 #elif defined int_spdf2
-                
-                iclass_spdf2(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //if ( (iii + jjj) > 4 && (iii + jjj) <= 6 ) {
+                    iclass_spdf2(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //}
                 
 #elif defined int_spdf3
                 
-                iclass_spdf3(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                
+                //if ( (iii + jjj) > 4 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) > 4) {
+                    iclass_spdf3(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //}
                 
 #elif defined int_spdf4
                 
-                iclass_spdf4(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                
+                //if ( (iii + jjj) > 4 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) > 4) {
+                    iclass_spdf4(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //}
+                
+#elif defined int_spdf5
+                
+                //if ( (kkk + lll) <= 6 && (kkk + lll) > 5 && (iii + jjj) >= 4 && (iii + jjj) <= 6) {
+                    iclass_spdf5(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //}
+                
+                
+#elif defined int_spdf6
+                //if ( (iii + jjj) > 5 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) >= 4) {
+                    iclass_spdf6(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //}
+                
+#elif defined int_spdf7
+                
+                
+                //if ( (iii + jjj) > 4 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) > 5) {
+                    iclass_spdf7(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //}
+                
+#elif defined int_spdf8
+                
+                
+               // if ( (iii + jjj) > 5 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) > 5) {
+                    iclass_spdf8(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                //}
 #endif
                 
             }
@@ -243,6 +354,14 @@ __device__ __forceinline__ void iclass_spdf2
 __device__ __forceinline__ void iclass_spdf3
 #elif defined int_spdf4
 __device__ __forceinline__ void iclass_spdf4
+#elif defined int_spdf5
+__device__ __forceinline__ void iclass_spdf5
+#elif defined int_spdf6
+__device__ __forceinline__ void iclass_spdf6
+#elif defined int_spdf7
+__device__ __forceinline__ void iclass_spdf7
+#elif defined int_spdf8
+__device__ __forceinline__ void iclass_spdf8
 #endif
                                       (int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax)
 {
@@ -419,6 +538,30 @@ __device__ __forceinline__ void iclass_spdf4
                                Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
                                Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
                                0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf5
+                
+                vertical_spdf5(I, J, K, L, YVerticalTemp, store, \
+                              Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                              Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                              0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf6
+                
+                vertical_spdf6(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf7
+                
+                vertical_spdf7(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf8
+                
+                vertical_spdf8(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
 #endif
                 
             }
@@ -483,7 +626,7 @@ __device__ __forceinline__ void iclass_spdf4
                                                                III, JJJ, KKK, LLL, IJKLTYPE, store, \
                                                                RAx, RAy, RAz, RBx, RBy, RBz, \
                                                                RCx, RCy, RCz, RDx, RDy, RDz);
-//                        if (abs(Y) > devSim.integralCutoff) {
+//                        if (abs(Y) > devSim.integralCutoff * 0.001) {
                             addint(devSim.oULL, Y, III, JJJ, KKK, LLL, hybrid_coeff, devSim.dense, devSim.nbasis);
 //                        }
                         
@@ -498,6 +641,123 @@ __device__ __forceinline__ void iclass_spdf4
 
 
 #ifdef int_spd
+__global__ void getGrad_kernel()
+#elif defined int_spdf
+__global__ void getGrad_kernel_spdf()
+#elif defined int_spdf2
+__global__ void getGrad_kernel_spdf2()
+#elif defined int_spdf3
+__global__ void getGrad_kernel_spdf3()
+#elif defined int_spdf4
+__global__ void getGrad_kernel_spdf4()
+#elif defined int_spdf5
+__global__ void getGrad_kernel_spdf5()
+#elif defined int_spdf6
+__global__ void getGrad_kernel_spdf6()
+#elif defined int_spdf7
+__global__ void getGrad_kernel_spdf7()
+#elif defined int_spdf8
+__global__ void getGrad_kernel_spdf8()
+#endif
+{
+    unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
+    int totalThreads = blockDim.x*gridDim.x;
+    
+    
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
+    
+    for (QUICKULL i = offside; i<jshell2*jshell; i+= totalThreads) {
+        
+        
+        QUICKULL a, b;
+        
+        // That's simply because no sqrt for ULL
+        double aa = (double)((i+1)*1E-4);
+        QUICKULL t = (QUICKULL)(sqrt(aa)*1E2);
+        
+        
+        if ((i+1)==t*t) {
+            t--;
+        }
+        
+        QUICKULL k = i-t*t;
+        if (k<=t) {
+            a = k;
+            b = t;
+        }else {
+            a = t;
+            b = 2*t-k;
+        }
+        
+        //QUICKULL a = (QUICKULL) i/jshell;
+        //QUICKULL b = (QUICKULL) (i - a*jshell);
+        
+        
+        int II = devSim.sorted_YCutoffIJ[a].x;
+        int KK = devSim.sorted_YCutoffIJ[b].x;
+        
+        int ii = devSim.sorted_Q[II];
+        int kk = devSim.sorted_Q[KK];
+        
+        if (ii<=kk){
+            
+            int JJ = devSim.sorted_YCutoffIJ[a].y;
+            int LL = devSim.sorted_YCutoffIJ[b].y;
+            
+            int jj = devSim.sorted_Q[JJ];
+            int ll = devSim.sorted_Q[LL];
+            
+            
+            if ( !((devSim.katom[ii] == devSim.katom[jj]) &&
+                   (devSim.katom[ii] == devSim.katom[kk]) &&
+                   (devSim.katom[ii] == devSim.katom[ll]))     // In case 4 indices are in the same atom
+                ) {
+                
+                int nshell = devSim.nshell;
+                
+                QUICKDouble DNMax = MAX(MAX(4.0*LOC2(devSim.cutMatrix, ii, jj, nshell, nshell), 4.0*LOC2(devSim.cutMatrix, kk, ll, nshell, nshell)),
+                                        MAX(MAX(LOC2(devSim.cutMatrix, ii, ll, nshell, nshell),     LOC2(devSim.cutMatrix, ii, kk, nshell, nshell)),
+                                            MAX(LOC2(devSim.cutMatrix, jj, kk, nshell, nshell),     LOC2(devSim.cutMatrix, jj, ll, nshell, nshell))));
+                
+                
+                if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.gradCutoff && \
+                    (LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell) * DNMax) > devSim.gradCutoff) {
+                    
+                    int iii = devSim.sorted_Qnumber[II];
+                    int jjj = devSim.sorted_Qnumber[JJ];
+                    int kkk = devSim.sorted_Qnumber[KK];
+                    int lll = devSim.sorted_Qnumber[LL];
+#ifdef int_spd
+                    iclass_grad(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+#elif defined int_spdf
+                    iclass_grad_spdf(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+#elif defined int_spdf2
+                    iclass_grad_spdf2(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+#elif defined int_spdf3
+                    iclass_grad_spdf3(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+#elif defined int_spdf4
+                    iclass_grad_spdf4(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+#elif defined int_spdf5
+                    iclass_grad_spdf5(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+#elif defined int_spdf6
+                    iclass_grad_spdf6(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+#elif defined int_spdf7
+                    iclass_grad_spdf7(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+#elif defined int_spdf8
+                    iclass_grad_spdf8(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+#endif
+                    
+                }
+            }
+        }
+    }
+}
+
+
+
+
+#ifdef int_spd
 __global__ void getAOInt_kernel(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
 #elif defined int_spdf
 __global__ void getAOInt_kernel_spdf(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
@@ -507,6 +767,14 @@ __global__ void getAOInt_kernel_spdf2(QUICKULL intStart, QUICKULL intEnd, ERI_en
 __global__ void getAOInt_kernel_spdf3(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
 #elif defined int_spdf4
 __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
+#elif defined int_spdf5
+__global__ void getAOInt_kernel_spdf5(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
+#elif defined int_spdf6
+__global__ void getAOInt_kernel_spdf6(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
+#elif defined int_spdf7
+__global__ void getAOInt_kernel_spdf7(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
+#elif defined int_spdf8
+__global__ void getAOInt_kernel_spdf8(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
 #endif
 {
     
@@ -564,6 +832,23 @@ __global__ void getAOInt_kernel_spdf4(QUICKULL intStart, QUICKULL intEnd, ERI_en
                 if ((iii + jjj) > 4 || (kkk + lll) > 4) {
                     iclass_AOInt_spdf4(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
                 }
+                
+#elif defined int_spdf5
+                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
+                    iclass_AOInt_spdf5(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
+                }
+#elif defined int_spdf6
+                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
+                    iclass_AOInt_spdf6(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
+                }
+#elif defined int_spdf7
+                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
+                    iclass_AOInt_spdf7(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
+                }
+#elif defined int_spdf8
+                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
+                    iclass_AOInt_spdf8(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
+                }
 #endif
             }
         }
@@ -589,6 +874,14 @@ __device__ __forceinline__ void iclass_AOInt_spdf2
 __device__ __forceinline__ void iclass_AOInt_spdf3
 #elif defined int_spdf4
 __device__ __forceinline__ void iclass_AOInt_spdf4
+#elif defined int_spdf5
+__device__ __forceinline__ void iclass_AOInt_spdf5
+#elif defined int_spdf6
+__device__ __forceinline__ void iclass_AOInt_spdf6
+#elif defined int_spdf7
+__device__ __forceinline__ void iclass_AOInt_spdf7
+#elif defined int_spdf8
+__device__ __forceinline__ void iclass_AOInt_spdf8
 #endif
                             (int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID)
 {
@@ -767,6 +1060,30 @@ __device__ __forceinline__ void iclass_AOInt_spdf4
                                Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
                                Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
                                0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf5
+                
+                vertical_spdf5(I, J, K, L, YVerticalTemp, store, \
+                              Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                              Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                              0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf6
+                
+                vertical_spdf6(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf7
+                
+                vertical_spdf7(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf8
+                
+                vertical_spdf8(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
 #endif
             }
         }
@@ -833,11 +1150,32 @@ __device__ __forceinline__ void iclass_AOInt_spdf4
     }
 }
 
+
+
 /*
  iclass subroutine is to generate 2-electron intergral using HRR and VRR method, which is the most
  performance algrithem for electron intergral evaluation. See description below for details
  */
+#ifdef int_spd
 __device__ __forceinline__ void iclass_grad
+#elif defined int_spdf
+__device__ __forceinline__ void iclass_grad_spdf
+#elif defined int_spdf2
+__device__ __forceinline__ void iclass_grad_spdf2
+#elif defined int_spdf3
+__device__ __forceinline__ void iclass_grad_spdf3
+#elif defined int_spdf4
+__device__ __forceinline__ void iclass_grad_spdf4
+#elif defined int_spdf5
+__device__ __forceinline__ void iclass_grad_spdf5
+#elif defined int_spdf6
+__device__ __forceinline__ void iclass_grad_spdf6
+#elif defined int_spdf7
+__device__ __forceinline__ void iclass_grad_spdf7
+#elif defined int_spdf8
+__device__ __forceinline__ void iclass_grad_spdf8
+#endif
+
 (int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax)
 {
     /*
@@ -990,10 +1328,52 @@ __device__ __forceinline__ void iclass_grad
                 
                 QUICKDouble store2[STOREDIM*STOREDIM];
                 
+#ifdef int_spd
                 vertical2(I, J + 1, K, L + 1, YVerticalTemp, store2, \
                          Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
                          Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
                          0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf
+                vertical2_spdf(I, J + 1, K, L + 1, YVerticalTemp, store2, \
+                          Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                          Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf2
+                vertical2_spdf2(I, J + 1, K, L + 1, YVerticalTemp, store2, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf3
+                vertical2_spdf3(I, J + 1, K, L + 1, YVerticalTemp, store2, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf4
+                vertical2_spdf4(I, J + 1, K, L + 1, YVerticalTemp, store2, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf5
+                vertical2_spdf5(I, J + 1, K, L + 1, YVerticalTemp, store2, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf6
+                vertical2_spdf6(I, J + 1, K, L + 1, YVerticalTemp, store2, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf7
+                vertical2_spdf7(I, J + 1, K, L + 1, YVerticalTemp, store2, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf8
+                vertical2_spdf8(I, J + 1, K, L + 1, YVerticalTemp, store2, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#endif
                 
                 
                 

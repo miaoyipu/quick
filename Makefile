@@ -124,11 +124,11 @@ quick_modules:
 	mv $(modfolder)/*.mod $(modfolder)/*.o $(objfolder)
 #=========== targets for cuda =========================================
 quick_cuda:
-	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu
+#	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu
 #	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu_get2e.cu 
 #	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c $(cudafile)
 #	cd $(cudafolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c gpu_write_info.f90
-#	cd $(cudafolder) && make all 
+	cd $(cudafolder) && make all 
 	cp $(cudafolder)/*.o $(objfolder)
 	
 #================= quick core subroutines ===============================
@@ -138,9 +138,9 @@ main.o: quick_modules
 
 
 #================= quick core subroutines ===============================
-shell.o: quick_modules
-	$(FPP) $(srcfolder)/shell.f90 > $(objfolder)/_shell.f90
-	$(FC) -o $(objfolder)/shell.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_shell.f90
+#shell.o: quick_modules
+#	$(FPP) $(srcfolder)/shell.f90 > $(objfolder)/_shell.f90
+#	$(FC) -o $(objfolder)/shell.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_shell.f90
 
 #=========== targets for BLAS =====================================
 blas:
@@ -242,4 +242,4 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
-include $(srcfolder)/depend 
+include $(srcfolder)/depend2 

@@ -47,6 +47,10 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf2
 #undef int_spdf3
 #undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
 #include "gpu_get2e_subs.h"
 
 #ifdef CUDA_SPDF
@@ -55,6 +59,10 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf2
 #undef int_spdf3
 #undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
 #include "gpu_get2e_subs.h"
 
 #undef int_spd
@@ -62,6 +70,10 @@ void upload_sim_to_constant(_gpu_type gpu){
 #define int_spdf2
 #undef int_spdf3
 #undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
 #include "gpu_get2e_subs.h"
 
 
@@ -70,6 +82,10 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf2
 #define int_spdf3
 #undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
 #include "gpu_get2e_subs.h"
 
 
@@ -78,6 +94,61 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf2
 #undef int_spdf3
 #define int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
+#include "gpu_get2e_subs.h"
+
+
+#undef int_spd
+#undef int_spdf
+#undef int_spdf2
+#undef int_spdf3
+#undef int_spdf4
+#define int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
+#include "gpu_get2e_subs.h"
+
+
+
+#undef int_spd
+#undef int_spdf
+#undef int_spdf2
+#undef int_spdf3
+#undef int_spdf4
+#undef int_spdf5
+#define int_spdf6
+#undef int_spdf7
+#undef int_spdf8
+#include "gpu_get2e_subs.h"
+
+
+
+#undef int_spd
+#undef int_spdf
+#undef int_spdf2
+#undef int_spdf3
+#undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#define int_spdf7
+#undef int_spdf8
+#include "gpu_get2e_subs.h"
+
+
+
+#undef int_spd
+#undef int_spdf
+#undef int_spdf2
+#undef int_spdf3
+#undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#define int_spdf8
 #include "gpu_get2e_subs.h"
 #endif
 
@@ -86,6 +157,10 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf2
 #undef int_spdf3
 #undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
 
 
 // totTime is the timer for GPU 2e time. Only on under debug mode
@@ -107,6 +182,14 @@ void getAOInt(_gpu_type gpu, QUICKULL intStart, QUICKULL intEnd, cudaStream_t st
     QUICK_SAFE_CALL((getAOInt_kernel_spdf3<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
     // Part f-4
     QUICK_SAFE_CALL((getAOInt_kernel_spdf4<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
+    // Part f-5
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf5<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
+    // Part f-6
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf6<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
+    // Part f-7
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf7<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
+    // Part f-8
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf8<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
 #endif 
 }
 
@@ -124,6 +207,14 @@ void get2e(_gpu_type gpu)
     QUICK_SAFE_CALL((get2e_kernel_spdf3<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
     // Part f-4
     QUICK_SAFE_CALL((get2e_kernel_spdf4<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    // Part f-5
+    QUICK_SAFE_CALL((get2e_kernel_spdf5<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    // Part f-6
+    QUICK_SAFE_CALL((get2e_kernel_spdf6<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    // Part f-7
+    QUICK_SAFE_CALL((get2e_kernel_spdf7<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    // Part f-8
+    QUICK_SAFE_CALL((get2e_kernel_spdf8<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
 #endif 
 }
 
@@ -138,87 +229,16 @@ void getAddInt(_gpu_type gpu, int bufferSize, ERI_entry* aoint_buffer)
 void getGrad(_gpu_type gpu)
 {
     QUICK_SAFE_CALL((getGrad_kernel<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
+#ifdef CUDA_SPDF
+    // Part f-1
+    QUICK_SAFE_CALL((getGrad_kernel_spdf<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
+    // Part f-2
+    QUICK_SAFE_CALL((getGrad_kernel_spdf2<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
+    // Part f-3
+    QUICK_SAFE_CALL((getGrad_kernel_spdf3<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()))
+#endif
 }
 
-
-__global__ void getGrad_kernel()
-{
-    unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
-    int totalThreads = blockDim.x*gridDim.x;
-    
-    
-    QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
-    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell;
-    
-    for (QUICKULL i = offside; i<jshell2*jshell; i+= totalThreads) {
-        
-        
-        QUICKULL a, b;
-        
-        // That's simply because no sqrt for ULL
-        double aa = (double)((i+1)*1E-4);
-        QUICKULL t = (QUICKULL)(sqrt(aa)*1E2);
-        
-        
-        if ((i+1)==t*t) {
-            t--;
-        }
-        
-        QUICKULL k = i-t*t;
-        if (k<=t) {
-            a = k;
-            b = t;
-        }else {
-            a = t;
-            b = 2*t-k;
-        }
-        
-        //QUICKULL a = (QUICKULL) i/jshell;
-        //QUICKULL b = (QUICKULL) (i - a*jshell);
-        
-        
-        int II = devSim.sorted_YCutoffIJ[a].x;
-        int KK = devSim.sorted_YCutoffIJ[b].x;
-        
-        int ii = devSim.sorted_Q[II];
-        int kk = devSim.sorted_Q[KK];
-        
-        if (ii<=kk){
-            
-            int JJ = devSim.sorted_YCutoffIJ[a].y;
-            int LL = devSim.sorted_YCutoffIJ[b].y;
-            
-            int jj = devSim.sorted_Q[JJ];
-            int ll = devSim.sorted_Q[LL];
-            
-            
-            if ( !((devSim.katom[ii] == devSim.katom[jj]) &&
-                   (devSim.katom[ii] == devSim.katom[kk]) &&
-                   (devSim.katom[ii] == devSim.katom[ll]))     // In case 4 indices are in the same atom
-                ) {
-                
-                int nshell = devSim.nshell;
-                
-                QUICKDouble DNMax = MAX(MAX(4.0*LOC2(devSim.cutMatrix, ii, jj, nshell, nshell), 4.0*LOC2(devSim.cutMatrix, kk, ll, nshell, nshell)),
-                                        MAX(MAX(LOC2(devSim.cutMatrix, ii, ll, nshell, nshell),     LOC2(devSim.cutMatrix, ii, kk, nshell, nshell)),
-                                            MAX(LOC2(devSim.cutMatrix, jj, kk, nshell, nshell),     LOC2(devSim.cutMatrix, jj, ll, nshell, nshell))));
-                
-                
-                if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.gradCutoff && \
-                    (LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell) * DNMax) > devSim.gradCutoff) {
-                    
-                    int iii = devSim.sorted_Qnumber[II];
-                    int jjj = devSim.sorted_Qnumber[JJ];
-                    int kkk = devSim.sorted_Qnumber[KK];
-                    int lll = devSim.sorted_Qnumber[LL];
-                
-                    iclass_grad(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
-                    
-                }
-            }
-        }
-    }
-}
 
 
 

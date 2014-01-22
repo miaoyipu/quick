@@ -31,8 +31,6 @@ dft.o: $(srcfolder)/dft.f90 quick_modules
 sedftoperator.o: $(srcfolder)/sedftoperator.f90 quick_modules
 
 scf.o: $(srcfolder)/scf.f90 quick_modules
-	$(FPP) $(srcfolder)/scf.f90 > $(objfolder)/_scf.f90
-	$(FC) -o $(objfolder)/scf.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c           $(objfolder)/_scf.f90
 
 uscf.o: $(srcfolder)/uscf.f90 quick_modules
 
