@@ -52,6 +52,45 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf7
 #undef int_spdf8
 #include "gpu_get2e_subs.h"
+#include "gpu_get2e_subs_grad.h"
+
+//===================================
+
+#undef int_spd
+#define int_spdf
+#undef int_spdf2
+#undef int_spdf3
+#undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
+#include "gpu_get2e_subs_grad.h"
+
+#undef int_spd
+#undef int_spdf
+#define int_spdf2
+#undef int_spdf3
+#undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
+#include "gpu_get2e_subs_grad.h"
+
+
+#undef int_spd
+#undef int_spdf
+#undef int_spdf2
+#define int_spdf3
+#undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
+#include "gpu_get2e_subs_grad.h"
+
+//===================================
 
 #ifdef CUDA_SPDF
 #undef int_spd
@@ -229,14 +268,14 @@ void getAddInt(_gpu_type gpu, int bufferSize, ERI_entry* aoint_buffer)
 void getGrad(_gpu_type gpu)
 {
     QUICK_SAFE_CALL((getGrad_kernel<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
-#ifdef CUDA_SPDF
+//#ifdef CUDA_SPDF
     // Part f-1
-    QUICK_SAFE_CALL((getGrad_kernel_spdf<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
+//    QUICK_SAFE_CALL((getGrad_kernel_spdf<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
     // Part f-2
-    QUICK_SAFE_CALL((getGrad_kernel_spdf2<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
+//    QUICK_SAFE_CALL((getGrad_kernel_spdf2<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
     // Part f-3
-    QUICK_SAFE_CALL((getGrad_kernel_spdf3<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()))
-#endif
+//    QUICK_SAFE_CALL((getGrad_kernel_spdf3<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()))
+//#endif
 }
 
 
