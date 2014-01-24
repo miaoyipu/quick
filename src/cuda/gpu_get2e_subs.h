@@ -7,6 +7,14 @@
 //
 #include "gpu_common.h"
 
+#undef STOREDIM
+
+#ifdef int_spd
+#define STOREDIM 35
+#else
+#define STOREDIM 84
+#endif
+
 
 /*
  In the following kernel, we treat f orbital into 5 parts.
@@ -410,7 +418,9 @@ __device__ __forceinline__ void iclass_spdf8
      */
     for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
         for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
-            LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
         }
     }
     
@@ -618,8 +628,13 @@ __device__ __forceinline__ void iclass_spdf8
                         ((JJJ == LLL) && (III  < JJJ)) ||
                         ((III == KKK) && (III  < JJJ)  && (JJJ < LLL))) {
                         
-                        
-                        QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L,\
+#ifdef int_spd
+                        QUICKDouble Y = (QUICKDouble) hrrwhole
+#else  
+                                                               
+                        QUICKDouble Y = (QUICKDouble) hrrwhole2
+#endif
+                                                               (I, J, K, L,\
                                                                III, JJJ, KKK, LLL, IJKLTYPE, store, \
                                                                RAx, RAy, RAz, RBx, RBy, RBz, \
                                                                RCx, RCy, RCz, RDx, RDy, RDz);
@@ -814,7 +829,9 @@ __device__ __forceinline__ void iclass_AOInt_spdf8
      */
     for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
         for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
-            LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
         }
     }
     
@@ -1011,7 +1028,15 @@ __device__ __forceinline__ void iclass_AOInt_spdf8
                 for (int LLL = MAX(KKK,LLL1); LLL <= LLL2; LLL++) {
                     if( (III < JJJ && III < KKK && KKK < LLL) ||
                        (III < KKK || JJJ <= LLL)){
-                        QUICKDouble Y = (QUICKDouble) hrrwhole( I, J, K, L,\
+                        
+#ifdef int_spd
+                        QUICKDouble Y = (QUICKDouble) hrrwhole
+#else
+                        
+                        QUICKDouble Y = (QUICKDouble) hrrwhole2
+#endif
+                        
+                                                              ( I, J, K, L,\
                                                                III, JJJ, KKK, LLL, IJKLTYPE, store, \
                                                                RAx, RAy, RAz, RBx, RBy, RBz, \
                                                                RCx, RCy, RCz, RDx, RDy, RDz);
@@ -1214,6 +1239,10 @@ __device__ __forceinline__ QUICKDouble quick_dsqr(QUICKDouble a)
 }
 
 
+
+#undef STOREDIM
+#define STOREDIM 35
+
 __device__ __forceinline__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
                                                 int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
                                                 QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
@@ -1222,254 +1251,42 @@ __device__ __forceinline__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
                                                 QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz)
 {
     QUICKDouble Y;
-#ifdef CUDA_SP
-    int NAx = LOC2(devSim.KLMN,0,III-1,3,devSim.nbasis);
-    int NAy = LOC2(devSim.KLMN,1,III-1,3,devSim.nbasis);
-    int NAz = LOC2(devSim.KLMN,2,III-1,3,devSim.nbasis);
     
-    int NBx = LOC2(devSim.KLMN,0,JJJ-1,3,devSim.nbasis);
-    int NBy = LOC2(devSim.KLMN,1,JJJ-1,3,devSim.nbasis);
-    int NBz = LOC2(devSim.KLMN,2,JJJ-1,3,devSim.nbasis);
+    int angularL[12], angularR[12];
+    QUICKDouble coefAngularL[12], coefAngularR[12];
+    Y = (QUICKDouble) 0.0;
     
-    int NCx = LOC2(devSim.KLMN,0,KKK-1,3,devSim.nbasis);
-    int NCy = LOC2(devSim.KLMN,1,KKK-1,3,devSim.nbasis);
-    int NCz = LOC2(devSim.KLMN,2,KKK-1,3,devSim.nbasis);
-    
-    int NDx = LOC2(devSim.KLMN,0,LLL-1,3,devSim.nbasis);
-    int NDy = LOC2(devSim.KLMN,1,LLL-1,3,devSim.nbasis);
-    int NDz = LOC2(devSim.KLMN,2,LLL-1,3,devSim.nbasis);
-    
-    
-    int MA = LOC3(devTrans, NAx, NAy, NAz, TRANSDIM, TRANSDIM, TRANSDIM);
-    int MB = LOC3(devTrans, NBx, NBy, NBz, TRANSDIM, TRANSDIM, TRANSDIM);
-    int MC = LOC3(devTrans, NCx, NCy, NCz, TRANSDIM, TRANSDIM, TRANSDIM);
-    int MD = LOC3(devTrans, NDx, NDy, NDz, TRANSDIM, TRANSDIM, TRANSDIM);
-    
-    switch (IJKLTYPE) {
-        case 0:
-        case 10:
-        case 1000:
-        case 1010:
-        {
-            Y = (QUICKDouble) LOC2(store, MA-1, MC-1, STOREDIM, STOREDIM);
-            break;
-        }
-        case 2000:
-        case 20:
-        case 2010:
-        case 1020:
-        case 2020:
-        {
-            Y = (QUICKDouble) LOC2(store, MA-1, MC-1, STOREDIM, STOREDIM) * devSim.cons[III-1] * devSim.cons[JJJ-1] * devSim.cons[KKK-1] * devSim.cons[LLL-1];
-            break;
-        }
-        case 100:
-        {
-            if (NBx != 0) {
-                Y = (QUICKDouble) LOC2(store, MB-1, 0, STOREDIM, STOREDIM) + (RAx-RBx)*LOC2(store, 0, 0, STOREDIM, STOREDIM);
-            }else if (NBy != 0) {
-                Y = (QUICKDouble) LOC2(store, MB-1, 0, STOREDIM, STOREDIM) + (RAy-RBy)*LOC2(store, 0, 0, STOREDIM, STOREDIM);
-            }else if (NBz != 0) {
-                Y = (QUICKDouble) LOC2(store, MB-1, 0, STOREDIM, STOREDIM) + (RAz-RBz)*LOC2(store, 0, 0, STOREDIM, STOREDIM);
-            }
-            break;
-        }
-        case 110:
-        {
-            
-            if (NBx != 0) {
-                Y = (QUICKDouble) LOC2(store, MB-1, MC-1, STOREDIM, STOREDIM) + (RAx-RBx)*LOC2(store, 0, MC-1, STOREDIM, STOREDIM);
-            }else if (NBy != 0) {
-                Y = (QUICKDouble) LOC2(store, MB-1, MC-1, STOREDIM, STOREDIM) + (RAy-RBy)*LOC2(store, 0, MC-1, STOREDIM, STOREDIM);
-            }else if (NBz != 0) {
-                Y = (QUICKDouble) LOC2(store, MB-1, MC-1, STOREDIM, STOREDIM) + (RAz-RBz)*LOC2(store, 0, MC-1, STOREDIM, STOREDIM);
-            }
-            break;
-        }
-        case 101:
-        {
-            QUICKDouble Y1,Y2;
-            if (NDx != 0) {
-                QUICKDouble c = (QUICKDouble) (RCx - RDx);
-                Y1 = (QUICKDouble) LOC2(store, MB-1, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MB-1,  0, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,    0, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store,    0,  0, STOREDIM, STOREDIM);
-            }else if (NDy != 0) {
-                QUICKDouble c = (QUICKDouble) (RCy - RDy);
-                Y1 = (QUICKDouble) LOC2(store, MB-1, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MB-1,  0, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,    0, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store,    0,  0, STOREDIM, STOREDIM);
-            }else if (NDz != 0) {
-                QUICKDouble c = (QUICKDouble) (RCz - RDz);
-                Y1 = (QUICKDouble) LOC2(store, MB-1, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MB-1,  0, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,    0, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store,    0,  0, STOREDIM, STOREDIM);
-            }
-            
-            if (NBx != 0) {
-                Y = Y1 + (RAx-RBx)*Y2;
-            }else if (NBy != 0) {
-                Y = Y1 + (RAy-RBy)*Y2;
-            }else if (NBz != 0) {
-                Y = Y1 + (RAz-RBz)*Y2;
-            }
-            break;
-        }
-        case 111:
-        {
-            QUICKDouble Y1,Y2;
-            int MCD = (int) LOC3(devTrans, NCx+NDx, NCy+NDy, NCz+NDz, TRANSDIM, TRANSDIM, TRANSDIM);
-            if (NDx != 0) {
-                QUICKDouble c = (QUICKDouble) (RCx - RDx);
-                Y1 = (QUICKDouble) LOC2(store, MB-1, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MB-1,  MC-1, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,    0, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store,    0,  MC-1, STOREDIM, STOREDIM);
-            }else if (NDy != 0) {
-                QUICKDouble c = (QUICKDouble) (RCy - RDy);
-                Y1 = (QUICKDouble) LOC2(store, MB-1, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MB-1,  MC-1, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,    0, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store,    0,  MC-1, STOREDIM, STOREDIM);
-            }else if (NDz != 0) {
-                QUICKDouble c = (QUICKDouble) (RCz - RDz);
-                Y1 = (QUICKDouble) LOC2(store, MB-1, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MB-1,  MC-1, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,    0, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store,    0,  MC-1, STOREDIM, STOREDIM);
-            }
-            
-            if (NBx != 0) {
-                Y = Y1 + (RAx-RBx)*Y2;
-            }else if (NBy != 0) {
-                Y = Y1 + (RAy-RBy)*Y2;
-            }else if (NBz != 0) {
-                Y = Y1 + (RAz-RBz)*Y2;
-            }
-            break;
-        }
-        case 1100:
-        {
-            int MAB = (int) LOC3(devTrans, NAx+NBx, NAy+NBy, NAz+NBz, TRANSDIM, TRANSDIM, TRANSDIM);
-            if (NBx != 0) {
-                Y = (QUICKDouble) LOC2(store, MAB-1, 0 , STOREDIM, STOREDIM) + (RAx-RBx)*LOC2(store, MA-1, 0, STOREDIM, STOREDIM);
-            }else if (NBy != 0) {
-                Y = (QUICKDouble) LOC2(store, MAB-1, 0 , STOREDIM, STOREDIM) + (RAy-RBy)*LOC2(store, MA-1, 0, STOREDIM, STOREDIM);
-            }else if (NBz != 0) {
-                Y = (QUICKDouble) LOC2(store, MAB-1, 0 , STOREDIM, STOREDIM) + (RAz-RBz)*LOC2(store, MA-1, 0, STOREDIM, STOREDIM);
-            }
-            break;
-        }
-        case 1110:
-        {
-            int MAB = (int) LOC3(devTrans, NAx+NBx, NAy+NBy, NAz+NBz, TRANSDIM, TRANSDIM, TRANSDIM);
-            
-            if (NBx != 0) {
-                Y = (QUICKDouble) LOC2(store, MAB-1, MC-1 , STOREDIM, STOREDIM) + (RAx-RBx)*LOC2(store, MA-1, MC-1, STOREDIM, STOREDIM);
-            }else if (NBy != 0) {
-                Y = (QUICKDouble) LOC2(store, MAB-1, MC-1 , STOREDIM, STOREDIM) + (RAy-RBy)*LOC2(store, MA-1, MC-1, STOREDIM, STOREDIM);
-            }else if (NBz != 0) {
-                Y = (QUICKDouble) LOC2(store, MAB-1, MC-1 , STOREDIM, STOREDIM) + (RAz-RBz)*LOC2(store, MA-1, MC-1, STOREDIM, STOREDIM);
-            }
-            break;
-        }
-        case 1101:
-        {
-            QUICKDouble Y1,Y2;
-            int MAB = (int) LOC3(devTrans, NAx+NBx, NAy+NBy, NAz+NBz, TRANSDIM, TRANSDIM, TRANSDIM);
-            if (NDx != 0) {
-                QUICKDouble c = (QUICKDouble) (RCx - RDx);
-                Y1 = (QUICKDouble) LOC2(store, MAB-1, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MAB-1,  0, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,  MA-1, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store,  MA-1,  0, STOREDIM, STOREDIM);
-            }else if (NDy != 0) {
-                QUICKDouble c = (QUICKDouble) (RCy - RDy);
-                Y1 = (QUICKDouble) LOC2(store, MAB-1, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MAB-1,  0, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,  MA-1, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store,  MA-1,  0, STOREDIM, STOREDIM);
-            }else if (NDz != 0) {
-                QUICKDouble c = (QUICKDouble) (RCz - RDz);
-                Y1 = (QUICKDouble) LOC2(store, MAB-1, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MAB-1,  0, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,  MA-1, MD-1 , STOREDIM, STOREDIM) + c * LOC2(store,  MA-1,  0, STOREDIM, STOREDIM);
-            }
-            
-            if (NBx != 0) {
-                Y = Y1 + (RAx-RBx)*Y2;
-            }else if (NBy != 0) {
-                Y = Y1 + (RAy-RBy)*Y2;
-            }else if (NBz != 0) {
-                Y = Y1 + (RAz-RBz)*Y2;
-            }
-            break;
-        }
-        case 1111:
-        {
-            QUICKDouble Y1,Y2;
-            int MAB = (int) LOC3(devTrans, NAx+NBx, NAy+NBy, NAz+NBz, TRANSDIM, TRANSDIM, TRANSDIM);
-            int MCD = (int) LOC3(devTrans, NCx+NDx, NCy+NDy, NCz+NDz, TRANSDIM, TRANSDIM, TRANSDIM);
-            
-            if (NDx != 0) {
-                QUICKDouble c = (QUICKDouble) (RCx - RDx);
-                Y1 = (QUICKDouble) LOC2(store, MAB-1, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MAB-1, MC-1, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,  MA-1, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store,  MA-1, MC-1, STOREDIM, STOREDIM);
-            }else if (NDy != 0) {
-                QUICKDouble c = (QUICKDouble) (RCy - RDy);
-                Y1 = (QUICKDouble) LOC2(store, MAB-1, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MAB-1, MC-1, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,  MA-1, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store,  MA-1, MC-1, STOREDIM, STOREDIM);
-            }else if (NDz != 0) {
-                QUICKDouble c = (QUICKDouble) (RCz - RDz);
-                Y1 = (QUICKDouble) LOC2(store, MAB-1, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store, MAB-1, MC-1, STOREDIM, STOREDIM);
-                Y2 = (QUICKDouble) LOC2(store,  MA-1, MCD-1 , STOREDIM, STOREDIM) + c * LOC2(store,  MA-1, MC-1, STOREDIM, STOREDIM);
-            }
-            
-            if (NBx != 0) {
-                Y = Y1 + (RAx-RBx)*Y2;
-            }else if (NBy != 0) {
-                Y = Y1 + (RAy-RBy)*Y2;
-            }else if (NBz != 0) {
-                Y = Y1 + (RAz-RBz)*Y2;
-            }
-            
-            break;
-        }
-        case 1:
-        {
-            if (NDx != 0) {
-                Y = (QUICKDouble) LOC2(store, 0, MD-1, STOREDIM, STOREDIM) + (RCx-RDx)*LOC2(store, 0, 0, STOREDIM, STOREDIM);
-            }else if (NDy != 0) {
-                Y = (QUICKDouble) LOC2(store, 0, MD-1, STOREDIM, STOREDIM) + (RCy-RDy)*LOC2(store, 0, 0, STOREDIM, STOREDIM);
-            }else if (NDz != 0) {
-                Y = (QUICKDouble) LOC2(store, 0, MD-1, STOREDIM, STOREDIM) + (RCz-RDz)*LOC2(store, 0, 0, STOREDIM, STOREDIM);
-            }
-            break;
-        }
-        case 11:
-        {
-            int MCD = (int) LOC3(devTrans, NCx+NDx, NCy+NDy, NCz+NDz, TRANSDIM, TRANSDIM, TRANSDIM);
-            if (NDx != 0) {
-                Y = (QUICKDouble) LOC2(store, 0, MCD-1, STOREDIM, STOREDIM) + (RCx-RDx)*LOC2(store, 0, MC-1, STOREDIM, STOREDIM);
-            }else if (NDy != 0) {
-                Y = (QUICKDouble) LOC2(store, 0, MCD-1, STOREDIM, STOREDIM) + (RCy-RDy)*LOC2(store, 0, MC-1, STOREDIM, STOREDIM);
-            }else if (NDz != 0) {
-                Y = (QUICKDouble) LOC2(store, 0, MCD-1, STOREDIM, STOREDIM) + (RCz-RDz)*LOC2(store, 0, MC-1, STOREDIM, STOREDIM);
-            }
-            break;
-        }
-        case 1001:
-        {
-            if (NDx != 0) {
-                Y = (QUICKDouble) LOC2(store, MA-1, MD-1, STOREDIM, STOREDIM) + (RCx-RDx)*LOC2(store, MA-1, 0, STOREDIM, STOREDIM);
-            }else if (NDy != 0) {
-                Y = (QUICKDouble) LOC2(store, MA-1, MD-1, STOREDIM, STOREDIM) + (RCy-RDy)*LOC2(store, MA-1, 0, STOREDIM, STOREDIM);
-            }else if (NDz != 0) {
-                Y = (QUICKDouble) LOC2(store, MA-1, MD-1, STOREDIM, STOREDIM) + (RCz-RDz)*LOC2(store, MA-1, 0, STOREDIM, STOREDIM);
+    int numAngularL = lefthrr(RAx, RAy, RAz, RBx, RBy, RBz,
+                              LOC2(devSim.KLMN,0,III-1,3,devSim.nbasis), LOC2(devSim.KLMN,1,III-1,3,devSim.nbasis), LOC2(devSim.KLMN,2,III-1,3,devSim.nbasis),
+                              LOC2(devSim.KLMN,0,JJJ-1,3,devSim.nbasis), LOC2(devSim.KLMN,1,JJJ-1,3,devSim.nbasis), LOC2(devSim.KLMN,2,JJJ-1,3,devSim.nbasis),
+                              J, coefAngularL, angularL);
+    int numAngularR = lefthrr(RCx, RCy, RCz, RDx, RDy, RDz,
+                              LOC2(devSim.KLMN,0,KKK-1,3,devSim.nbasis), LOC2(devSim.KLMN,1,KKK-1,3,devSim.nbasis), LOC2(devSim.KLMN,2,KKK-1,3,devSim.nbasis),
+                              LOC2(devSim.KLMN,0,LLL-1,3,devSim.nbasis), LOC2(devSim.KLMN,1,LLL-1,3,devSim.nbasis), LOC2(devSim.KLMN,2,LLL-1,3,devSim.nbasis),
+                              L, coefAngularR, angularR);
+    for (int i = 0; i<numAngularL; i++) {
+        for (int j = 0; j<numAngularR; j++) {
+            if (angularL[i] <= STOREDIM && angularR[j] <= STOREDIM) {
+                Y += coefAngularL[i] * coefAngularR[j] * LOC2(store, angularL[i]-1, angularR[j]-1 , STOREDIM, STOREDIM);
             }
         }
-        case 1011:
-        {
-            int MCD = (int) LOC3(devTrans, NCx+NDx, NCy+NDy, NCz+NDz, TRANSDIM, TRANSDIM, TRANSDIM);
-            if (NDx != 0) {
-                Y = (QUICKDouble) LOC2(store, MA-1, MCD-1, STOREDIM, STOREDIM) + (RCx-RDx)*LOC2(store, MA-1, MC-1, STOREDIM, STOREDIM);
-            }else if (NDy != 0) {
-                Y = (QUICKDouble) LOC2(store, MA-1, MCD-1, STOREDIM, STOREDIM) + (RCy-RDy)*LOC2(store, MA-1, MC-1, STOREDIM, STOREDIM);
-            }else if (NDz != 0) {
-                Y = (QUICKDouble) LOC2(store, MA-1, MCD-1, STOREDIM, STOREDIM) + (RCz-RDz)*LOC2(store, MA-1, MC-1, STOREDIM, STOREDIM);
-            }
-            break;
-        }
-        default:
-            break;
     }
-#else
+    Y = Y * devSim.cons[III-1] * devSim.cons[JJJ-1] * devSim.cons[KKK-1] * devSim.cons[LLL-1];
+//#endif
+    return Y;
+}
+
+#undef STOREDIM
+#define STOREDIM 84
+
+__device__ __forceinline__ QUICKDouble hrrwhole2(int I, int J, int K, int L, \
+                                                int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                                QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                                QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                                QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                                QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz)
+{
+    QUICKDouble Y;
     
     int angularL[12], angularR[12];
     QUICKDouble coefAngularL[12], coefAngularR[12];
@@ -1486,18 +1303,20 @@ __device__ __forceinline__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
     
     for (int i = 0; i<numAngularL; i++) {
         for (int j = 0; j<numAngularR; j++) {
-            Y += coefAngularL[i] * coefAngularR[j] * LOC2(store, angularL[i]-1, angularR[j]-1 , STOREDIM, STOREDIM);
+            if (angularL[i] <= STOREDIM && angularR[j] <= STOREDIM) {
+                Y += coefAngularL[i] * coefAngularR[j] * LOC2(store, angularL[i]-1, angularR[j]-1 , STOREDIM, STOREDIM);
+            }
         }
     }
     
     Y = Y * devSim.cons[III-1] * devSim.cons[JJJ-1] * devSim.cons[KKK-1] * devSim.cons[LLL-1];
-#endif
+    //#endif
     return Y;
 }
 
 
 
-#ifndef CUDA_SP
+//#ifndef CUDA_SP
 
 __device__ __forceinline__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
                                        QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
@@ -2235,5 +2054,7 @@ __device__ __forceinline__ int lefthrr2(QUICKDouble RAx, QUICKDouble RAy, QUICKD
     }
     return numAngularL;
 }
+//#endif
 #endif
-#endif
+
+#undef STOREDIM

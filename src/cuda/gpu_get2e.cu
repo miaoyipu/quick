@@ -16,7 +16,6 @@
 #include "int.h"
 //#endif
 
-#include "int2.h"
 
 /*
  Constant Memory in GPU is fast but quite limited and hard to operate, usually not allocatable and 

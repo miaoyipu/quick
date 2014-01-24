@@ -145,7 +145,26 @@ __device__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
                                 QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
                                 QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
 
+__device__ QUICKDouble hrrwhole2(int I, int J, int K, int L, \
+                                int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+
+
 __device__ __forceinline__ void hrrwholegrad(QUICKDouble* Yaax, QUICKDouble* Yaay, QUICKDouble* Yaaz, \
+                                             QUICKDouble* Ybbx, QUICKDouble* Ybby, QUICKDouble* Ybbz, \
+                                             QUICKDouble* Yccx, QUICKDouble* Yccy, QUICKDouble* Yccz, \
+                                             int I, int J, int K, int L, \
+                                             int III, int JJJ, int KKK, int LLL, int IJKLTYPE, \
+                                             QUICKDouble* store, QUICKDouble* storeAA, QUICKDouble* storeBB, QUICKDouble* storeCC,\
+                                             QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                             QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                             QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                             QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+
+__device__ __forceinline__ void hrrwholegrad2(QUICKDouble* Yaax, QUICKDouble* Yaay, QUICKDouble* Yaaz, \
                                              QUICKDouble* Ybbx, QUICKDouble* Ybby, QUICKDouble* Ybbz, \
                                              QUICKDouble* Yccx, QUICKDouble* Yccy, QUICKDouble* Yccz, \
                                              int I, int J, int K, int L, \
