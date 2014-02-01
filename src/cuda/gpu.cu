@@ -425,7 +425,18 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     int a = 0;
     bool flag = true;
     int2 temp;
+    int maxL = 0;
     
+    for ( int i = 0; i < gpu->gpu_basis->Qshell; i++) {
+        if (gpu->gpu_basis->sorted_Qnumber->_hostData[i] > maxL) {
+            maxL = gpu->gpu_basis->sorted_Qnumber->_hostData[i];
+        }
+    }
+    
+    printf("MAX ANGULAR MOMENT = %i\n", maxL);
+    
+    gpu -> maxL = maxL;
+    gpu -> gpu_sim.maxL = maxL;
     
     if (sort_method == 0) {
         for (int q = 0; q <= 3; q++) {
@@ -839,7 +850,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     
     printf("SS = %i\n",a);
     for (int i = 0; i<a; i++) {
-        //     printf("%8i %4i %4i %18.13f Q=%4i %4i %4i %4i prim = %4i %4i\n", i, \
+             printf("%8i %4i %4i %18.13f Q=%4i %4i %4i %4i prim = %4i %4i\n", i, \
         gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x, \
         gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y, \
         LOC2(YCutoff, gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].x], gpu->gpu_basis->sorted_Q->_hostData[gpu->gpu_cutoff->sorted_YCutoffIJ ->_hostData[i].y], gpu->nshell, gpu->nshell),\

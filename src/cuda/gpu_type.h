@@ -88,6 +88,7 @@ struct gpu_simulation_type {
     int                             Qshell;
     int                             fStart;
     int                             ffStart;
+    int                             maxL;
     
     // Gaussian Type function
     
@@ -265,6 +266,7 @@ struct gpu_type {
     int                             nprim;
     int                             jshell;
     int                             jbasis;
+    int                             maxL;
     
     cuda_buffer_type<int>*          iattype;
     cuda_buffer_type<QUICKDouble>*  xyz;

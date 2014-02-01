@@ -2075,8 +2075,6 @@ subroutine classopt(I,J,K,L,NNA,NNC,NNAB,NNCD,NNABfirst,NNCDfirst)
 
    !       do III=1,quick_basis%kprim(II)
    !         AA=gcexpo(III,quick_basis%ksumtype(II))
-
-
    do MM2=NNC,NNCD
       do MM1=NNA,NNAB
          Ytemp=0.0d0
@@ -2478,8 +2476,12 @@ subroutine classopt(I,J,K,L,NNA,NNC,NNAB,NNCD,NNABfirst,NNCDfirst)
          enddo
       enddo
    endif
-
-
+!if (abs(agrad1).gt.0.or.abs(agrad2).gt.0.or.abs(agrad3).gt.0.or. &
+!    abs(bgrad1).gt.0.or.abs(bgrad2).gt.0.or.abs(bgrad3).gt.0.or. &
+!    abs(cgrad1).gt.0.or.abs(cgrad2).gt.0.or.abs(cgrad3).gt.0 ) then
+!write(*,*) II,JJ,KK,LL,I,J,K,L, Agrad1, Agrad2, Agrad3, Bgrad1, Bgrad2, &
+!Bgrad3,Cgrad1,Cgrad2,Cgrad3
+!endif
 
    quick_qm_struct%gradient(iASTART+1) = quick_qm_struct%gradient(iASTART+1)+ &
 
