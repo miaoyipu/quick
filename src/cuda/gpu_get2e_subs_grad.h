@@ -11,9 +11,9 @@
 #undef STOREDIM
 
 #ifdef int_spd
-#define STOREDIM 35
+#define STOREDIM STOREDIM_S
 #else
-#define STOREDIM 84
+#define STOREDIM STOREDIM_L
 #endif
 
 #ifdef int_spd
@@ -908,7 +908,7 @@ __device__ __forceinline__ void iclass_grad_spdf8
 
 
 #undef STOREDIM
-#define STOREDIM 35
+#define STOREDIM STOREDIM_S
 
 __device__ __forceinline__ void hrrwholegrad(QUICKDouble* Yaax, QUICKDouble* Yaay, QUICKDouble* Yaaz, \
                                              QUICKDouble* Ybbx, QUICKDouble* Ybby, QUICKDouble* Ybbz, \
@@ -1257,7 +1257,7 @@ __device__ __forceinline__ void hrrwholegrad(QUICKDouble* Yaax, QUICKDouble* Yaa
 }
 
 #undef STOREDIM
-#define STOREDIM 84
+#define STOREDIM STOREDIM_L
 
 __device__ __forceinline__ void hrrwholegrad2(QUICKDouble* Yaax, QUICKDouble* Yaay, QUICKDouble* Yaaz, \
                                              QUICKDouble* Ybbx, QUICKDouble* Ybby, QUICKDouble* Ybbz, \

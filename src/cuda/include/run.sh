@@ -1,13 +1,15 @@
-for i in {0..6}
+for i in 7
 do
-	for j in {0..6}
+	for j in {0..7}
 	do
 	#a='h_'$i'_'$j'.h'
 	#b='h_'$i'_'$j'.cu'
-        c='f_'$i'_'$j'.h'
-		c2='f2_'$i'_'$j'.h'
+        #c='f_'$i'_'$j'.h'
+		c2='f2_'$j'_'$i'.h'
+echo $c2
 	#	cp $c $c2
-	sed -i '' 's/h_/h2_/1' $c2 
+	sed -i  's/h_/h2_/1' $c2
+	sed -i  's/+=/=/g' $c2 
 #echo $b "\\"
 #cp $b $c
 #echo "#include " "\"./"$c"\"" 

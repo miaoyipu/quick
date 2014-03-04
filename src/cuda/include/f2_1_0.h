@@ -1,4 +1,4 @@
-__device__ __noinline__  void h2_1_0(QUICKDouble* YVerticalTemp, QUICKDouble* store,
+__device__ __inline__  void h2_1_0(QUICKDouble* YVerticalTemp, QUICKDouble* store,
                                    QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
                                    QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
                                    QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \

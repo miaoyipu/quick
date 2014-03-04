@@ -10,9 +10,9 @@
 #undef STOREDIM
 
 #ifdef int_spd
-#define STOREDIM 35
+#define STOREDIM STOREDIM_S
 #else
-#define STOREDIM 84
+#define STOREDIM STOREDIM_L
 #endif
 
 
@@ -125,27 +125,28 @@ __global__ void get2e_kernel_spdf8()
 #elif defined int_spdf5
     
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
-    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - devSim.fStart;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - devSim.ffStart;
 
 #elif defined int_spdf6
     
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell;
-    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - devSim.fStart;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - devSim.ffStart;
     
 #elif defined int_spdf7
     
     QUICKULL jshell0 = (QUICKULL) devSim.fStart;
+    QUICKULL jshell00 = (QUICKULL) devSim.ffStart;
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell0;
-    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell00;
     
 #elif defined int_spdf8
     
-    QUICKULL jshell0 = (QUICKULL) devSim.fStart;
+    QUICKULL jshell0 = (QUICKULL) devSim.ffStart;
     QUICKULL jshell00 = (QUICKULL) devSim.ffStart;
     QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell00;
     QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
 #endif
-    for (QUICKULL i = offside; i<jshell2*jshell; i+= totalThreads) {
+    for (QUICKULL i = offside; i < jshell * jshell2; i+= totalThreads) {
         
 #ifdef int_spd
        /* 
@@ -165,7 +166,6 @@ __global__ void get2e_kernel_spdf8()
             a = t;
             b = 2*t-k;
         }
-        
         */
         // Zone 0
         QUICKULL a = (QUICKULL) i/jshell;
@@ -217,17 +217,17 @@ __global__ void get2e_kernel_spdf8()
         }
 #elif defined int_spdf5
         
-        // Zone 1
+        // Zone 5
         QUICKULL b = (QUICKULL) i/jshell;
         QUICKULL a = (QUICKULL) (i - b*jshell);
-        b = b + devSim.fStart;
+        b = b + devSim.ffStart;
         
 #elif defined int_spdf6
         
         // Zone 2
         QUICKULL a = (QUICKULL) i/jshell;
         QUICKULL b = (QUICKULL) (i - a*jshell);
-        a = a + devSim.fStart;
+        a = a + devSim.ffStart;
 
         
 #elif defined int_spdf7
@@ -238,7 +238,7 @@ __global__ void get2e_kernel_spdf8()
             a = (QUICKULL) i/jshell;
             b = (QUICKULL) (i - a*jshell);
             a = a + jshell0;
-            b = b + jshell0;
+            b = b + jshell00;
         }else{
             a = 0;
             b = 0;
@@ -302,40 +302,40 @@ __global__ void get2e_kernel_spdf8()
 #elif defined int_spdf3
                 
                 
-                if ( (iii + jjj) > 4 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) > 4) {
+                if ( (iii + jjj) >= 5 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) >= 5) {
                     iclass_spdf3(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
                 }
                 
 #elif defined int_spdf4
                 
                 
-                if ( (iii + jjj) > 4 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) > 4) {
+                if ( (iii + jjj) == 6 && (kkk + lll) <= 6 && (kkk + lll) >= 5) {
                     iclass_spdf4(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
                 }
                 
 #elif defined int_spdf5
                 
-                if ( (kkk + lll) <= 6 && (kkk + lll) > 5 && (iii + jjj) >= 4 && (iii + jjj) <= 6) {
+                if ( (kkk + lll) == 6 && (iii + jjj) >= 4 && (iii + jjj) <= 6) {
                     iclass_spdf5(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
                 }
                 
                 
 #elif defined int_spdf6
-                if ( (iii + jjj) > 5 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) >= 4) {
+                if ( (iii + jjj) == 6 && (kkk + lll) <= 6 && (kkk + lll) >= 4) {
                     iclass_spdf6(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
                 }
                 
 #elif defined int_spdf7
                 
                 
-                if ( (iii + jjj) > 4 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) > 5) {
+                if ( (iii + jjj) >=5 && (iii + jjj) <= 6 && (kkk + lll) == 6) {
                     iclass_spdf7(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
                 }
                 
 #elif defined int_spdf8
                 
                 
-                if ( (iii + jjj) > 5 && (iii + jjj) <= 6 && (kkk + lll) <= 6 && (kkk + lll) > 5) {
+                if ( (iii + jjj) == 6 && (kkk + lll) == 6) {
                     iclass_spdf8(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
                 }
 #endif
@@ -1241,7 +1241,7 @@ __device__ __forceinline__ QUICKDouble quick_dsqr(QUICKDouble a)
 
 
 #undef STOREDIM
-#define STOREDIM 35
+#define STOREDIM STOREDIM_S
 
 __device__ __forceinline__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
                                                 int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
@@ -1277,7 +1277,7 @@ __device__ __forceinline__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
 }
 
 #undef STOREDIM
-#define STOREDIM 84
+#define STOREDIM STOREDIM_L
 
 __device__ __forceinline__ QUICKDouble hrrwhole2(int I, int J, int K, int L, \
                                                 int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
