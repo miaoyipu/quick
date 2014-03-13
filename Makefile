@@ -112,10 +112,10 @@ all: quick quick.cuda
 
 #================= common subroutine library ============================
 quick_subs:
-#	cp $(objfolder)/*.mod $(subfolder)
-#	cd $(subfolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
-#	ar -r $(libfolder)/quicklib.a $(subfolder)/*.o
-#	rm $(subfolder)/*.mod
+	cp $(objfolder)/*.mod $(subfolder)
+	cd $(subfolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c *.f90
+	ar -r $(libfolder)/quicklib.a $(subfolder)/*.o
+	rm $(subfolder)/*.mod
 
 #================= quick module library =================================
 quick_modules:
@@ -124,11 +124,11 @@ quick_modules:
 	mv $(modfolder)/*.mod $(modfolder)/*.o $(objfolder)
 #=========== targets for cuda =========================================
 quick_cuda:
-#	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu
+	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu.cu
 #	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c gpu_get2e.cu 
 #	cd $(cudafolder) && $(CUDAC) $(CUDA_FLAGS) -c $(cudafile)
 #	cd $(cudafolder) && $(FC) $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c gpu_write_info.f90
-	cd $(cudafolder) && make all 
+#	cd $(cudafolder) && make all 
 	cp $(cudafolder)/*.o $(objfolder)
 	
 #================= quick core subroutines ===============================
@@ -136,11 +136,15 @@ main.o: quick_modules
 	$(FPP) $(srcfolder)/main.f90 > $(objfolder)/_main.f90
 	$(FC) -o $(objfolder)/main.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_main.f90
 
-
 #================= quick core subroutines ===============================
-#shell.o: quick_modules
-#	$(FPP) $(srcfolder)/shell.f90 > $(objfolder)/_shell.f90
-#	$(FC) -o $(objfolder)/shell.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_shell.f90
+hfoperator.o: quick_modules
+	$(FPP) $(srcfolder)/hfoperator.f90 > $(objfolder)/_hfoperator.f90
+	$(FC) -o $(objfolder)/hfoperator.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_hfoperator.f90
+
+scf.o: quick_modules
+	$(FPP) $(srcfolder)/scf.f90 > $(objfolder)/_scf.f90
+	$(FC) -o $(objfolder)/scf.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_scf.f90
+
 
 #=========== targets for BLAS =====================================
 blas:
@@ -242,4 +246,4 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
-include $(srcfolder)/depend2 
+include $(srcfolder)/depend 

@@ -213,22 +213,22 @@ subroutine electdiis(jscf)
       else if (quick_method%SEDFT) then
          call sedftoperator ! Semi-emperical DFT Operator
       endif
-      if (quick_method%debug)  write(ioutfile,*) "after hf"
+      if (quick_method%debug)  write(ioutfile,*) "hehe hf"
       if (quick_method%debug)  call debug_SCF(jscf)
+
       ! Terminate Operator timer
       call cpu_time(timer_end%TOp)
       !------------- MASTER NODE -------------------------------
       if (master) then
-
          !-----------------------------------------------
          ! End of Delta Matrix
          !-----------------------------------------------
-
          call cpu_time(timer_begin%TDII)
          call CopyDMat(quick_qm_struct%o,quick_qm_struct%oSave,nbasis)
          call CopyDMat(quick_qm_struct%dense,quick_qm_struct%denseOld,nbasis)
 
-
+         !if (quick_method%debug)  write(ioutfile,*) "hehe hf"
+         !if (quick_method%debug)  call debug_SCF(jscf)
 
          !-----------------------------------------------
          ! 2)  Form error matrix for step i.
@@ -341,6 +341,7 @@ subroutine electdiis(jscf)
          !       |  B(2,1)      B(2,2)     . . .     B(2,J)      -1  |
          !       |  .            .                     .          .  |
          ! B =   |  .            .                     .          .  |
+         !       |  .            .                     .          .  |
          !       |  .            .                     .          .  |
          !       |  B(I,1)      B(I,2)     . . .     B(I,J)      -1  |
          !       | -1            -1        . . .      -1          0  |
@@ -458,7 +459,6 @@ subroutine electdiis(jscf)
 
             goto 111
          endif
-
          !-----------------------------------------------
          ! 7) Form a new operator matrix based on O(new) = [Sum over i] c(i)O(i)
          ! If the solution to step eight failed, skip this step and revert
@@ -476,19 +476,19 @@ subroutine electdiis(jscf)
                enddo
             enddo
          endif
-
          !-----------------------------------------------
          ! 8) Diagonalize the operator matrix to form a new density matrix.
          ! First you have to transpose this into an orthogonal basis, which
          ! is accomplished by calculating Transpose[X] . O . X.
          !-----------------------------------------------
-
 #ifdef CUDA
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
                nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
 
          call cublas_DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
                nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
+         !call Dmatmul(nbasis, quick_qm_struct%o, quick_qm_struct%x, quick_scratch%hold)
+         !call Dmatmul(nbasis, quick_qm_struct%x, quick_scratch%hold, quick_qm_struct%o)
 #else
          call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%o, &
                nbasis, quick_qm_struct%x, nbasis, 0.0d0, quick_scratch%hold,nbasis)
@@ -496,11 +496,13 @@ subroutine electdiis(jscf)
          call DGEMM ('n', 'n', nbasis, nbasis, nbasis, 1.0d0, quick_qm_struct%x, &
                nbasis, quick_scratch%hold, nbasis, 0.0d0, quick_qm_struct%o,nbasis)
 #endif
+
          ! Now diagonalize the operator matrix.
          call cpu_time(timer_begin%TDiag)
          call DIAG(nbasis,quick_qm_struct%o,nbasis,quick_method%DMCutoff,V2,quick_qm_struct%E,&
                quick_qm_struct%idegen,quick_qm_struct%vec,IERROR)
          call cpu_time(timer_end%TDiag)
+
 
          ! Calculate C = XC' and form a new density matrix.
          ! The C' is from the above diagonalization.  Also, save the previous
@@ -632,7 +634,8 @@ subroutine electdiis(jscf)
          call MPI_BARRIER(MPI_COMM_WORLD,mpierror)
       endif
 #endif
-
+      if (quick_method%debug)  write(ioutfile,*) "after hf"
+      if (quick_method%debug)  call debug_SCF(jscf)
    enddo
    return
 end subroutine electdiis

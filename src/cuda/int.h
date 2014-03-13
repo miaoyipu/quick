@@ -378,7 +378,7 @@ __device__ void vertical_spdf8(int I, int J, int K, int L,
                                QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom)
 {
     if ((I+J) >=  6 && (K+L) >= 6) {
-        //h_6_6(YVerticalTemp, store, \
+        h_6_6(YVerticalTemp, store, \
               Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
               WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
     }

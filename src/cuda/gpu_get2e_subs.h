@@ -263,13 +263,17 @@ __global__ void get2e_kernel_spdf8()
         int ii = devSim.sorted_Q[II];
         int kk = devSim.sorted_Q[KK];
         
+        
         if (ii<=kk){
+            
             
             int JJ = devSim.sorted_YCutoffIJ[a].y;
             int LL = devSim.sorted_YCutoffIJ[b].y;
             
             int jj = devSim.sorted_Q[JJ];
             int ll = devSim.sorted_Q[LL];
+            
+            
             
             int nshell = devSim.nshell;
             QUICKDouble DNMax = MAX(MAX(4.0*LOC2(devSim.cutMatrix, ii, jj, nshell, nshell), 4.0*LOC2(devSim.cutMatrix, kk, ll, nshell, nshell)),
@@ -283,6 +287,7 @@ __global__ void get2e_kernel_spdf8()
                 int jjj = devSim.sorted_Qnumber[JJ];
                 int kkk = devSim.sorted_Qnumber[KK];
                 int lll = devSim.sorted_Qnumber[LL];
+                
 #ifdef int_spd
                 //if ( (iii + jjj) <= 4 && (kkk + lll) <= 4) {
                     iclass(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
@@ -342,6 +347,8 @@ __global__ void get2e_kernel_spdf8()
                 
             }
         }
+            
+                                           
     }
 }
 
@@ -416,6 +423,8 @@ __device__ __forceinline__ void iclass_spdf8
     /*
      Initial the neccessary element for
      */
+    
+#ifdef int_spd
     for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
         for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
             if ( i <= STOREDIM && j <= STOREDIM) {
@@ -423,6 +432,80 @@ __device__ __forceinline__ void iclass_spdf8
             }
         }
     }
+#elif defined int_spdf
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#elif defined int_spdf2
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#elif defined int_spdf3
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#elif defined int_spdf4
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#elif defined int_spdf5
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#elif defined int_spdf6
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#elif defined int_spdf7
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#elif defined int_spdf8
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#endif
+    
     
     for (int i = 0; i<kPrimI*kPrimJ;i++){
         int JJJ = (int) i/kPrimI;
@@ -617,6 +700,7 @@ __device__ __forceinline__ void iclass_spdf8
         hybrid_coeff = 0.0;
     }
     
+    
     for (int III = III1; III <= III2; III++) {
         for (int JJJ = MAX(III,JJJ1); JJJ <= JJJ2; JJJ++) {
             for (int KKK = MAX(III,KKK1); KKK <= KKK2; KKK++) {
@@ -756,6 +840,7 @@ __global__ void getAOInt_kernel_spdf8(QUICKULL intStart, QUICKULL intEnd, ERI_en
 
 
 
+
 /*
  iclass subroutine is to generate 2-electron intergral using HRR and VRR method, which is the most
  performance algrithem for electron intergral evaluation. See description below for details
@@ -779,7 +864,7 @@ __device__ __forceinline__ void iclass_AOInt_spdf7
 #elif defined int_spdf8
 __device__ __forceinline__ void iclass_AOInt_spdf8
 #endif
-                            (int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID)
+(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID)
 {
     
     /*
@@ -961,9 +1046,9 @@ __device__ __forceinline__ void iclass_AOInt_spdf8
 #elif defined int_spdf5
                 
                 vertical_spdf5(I, J, K, L, YVerticalTemp, store, \
-                              Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
-                              Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
-                              0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
 #elif defined int_spdf6
                 
                 vertical_spdf6(I, J, K, L, YVerticalTemp, store, \
@@ -1036,10 +1121,10 @@ __device__ __forceinline__ void iclass_AOInt_spdf8
                         QUICKDouble Y = (QUICKDouble) hrrwhole2
 #endif
                         
-                                                              ( I, J, K, L,\
-                                                               III, JJJ, KKK, LLL, IJKLTYPE, store, \
-                                                               RAx, RAy, RAz, RBx, RBy, RBz, \
-                                                               RCx, RCy, RCz, RDx, RDy, RDz);
+                        ( I, J, K, L,\
+                         III, JJJ, KKK, LLL, IJKLTYPE, store, \
+                         RAx, RAy, RAz, RBx, RBy, RBz, \
+                         RCx, RCy, RCz, RDx, RDy, RDz);
                         
                         if (abs(Y) > devSim.maxIntegralCutoff){
                             ERI_entry a;
@@ -1171,7 +1256,7 @@ __device__ __forceinline__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerti
     
     
     if (X > 33.0) {
-
+        
     }else if( X > 15.0){
         WW1 += (( 1.9623264149430E-01 *XINV-4.9695241464490E-01 )*XINV - \
                 6.0156581186481E-05 )*E;
@@ -1191,6 +1276,7 @@ __device__ __forceinline__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerti
                   2.290098979647E-05 )*Y+1.526537461148E-04 )*Y- \
                 8.81947375894379E-04 )*Y+4.33207949514611E-03 )*Y- \
               1.75257821619926E-02 )*Y+5.28406320615584E-02 ;
+	WW1 = (X+X)*F1+E;  
     }else if (X > 1.0){
         QUICKDouble Y = (QUICKDouble) X - 2.0 ;
         F1 = ((((((((((-1.61702782425558E-10 *Y+1.96215250865776E-09  )*Y- \
@@ -1199,24 +1285,21 @@ __device__ __forceinline__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerti
                   1.16740298039895E-04  )*Y+7.24888732052332E-04  )*Y- \
                 3.79490003707156E-03  )*Y+1.61723488664661E-02  )*Y- \
               5.29428148329736E-02  )*Y+1.15702180856167E-01 ;
-    }else if (X > 3.0E-7){
+	WW1 = (X+X)*F1+E;  
+    }else if ((X > 3.0E-5) || ((X> 3.0E-07) && (MaxM < 6))){
         
         F1 =(((((((( -8.36313918003957E-08 *X+1.21222603512827E-06  )*X- \
                    1.15662609053481E-05  )*X+9.25197374512647E-05  )*X- \
                  6.40994113129432E-04  )*X+3.78787044215009E-03  )*X- \
                1.85185172458485E-02  )*X+7.14285713298222E-02  )*X- \
              1.99999999997023E-01  )*X+3.33333333333318E-01 ;
+	WW1 = (X+X)*F1+E;
     }else{
         WW1 = (1.0 - X)/(QUICKDouble)(2.0 * MaxM+1);
     }
     
-    if ( X <= 5.0 && X > 3.0E-7) {
-        WW1 += (X+X)*F1;
-    }
     
-    
-    
-    if (X > 3.0E-7 ) {
+    if ((X > 3.0E-5) || ((X> 3.0E-07) && (MaxM < 6))) {
         LOC3(YVerticalTemp, 0, 0, 0, VDIM1, VDIM2, VDIM3) = WW1;
         for (int m = 1; m<= MaxM; m++) {
             LOC3(YVerticalTemp, 0, 0, m, VDIM1, VDIM2, VDIM3) = (((2*m-1)*LOC3(YVerticalTemp, 0, 0, m-1, VDIM1, VDIM2, VDIM3))- E)*0.5*XINV;
@@ -1272,7 +1355,7 @@ __device__ __forceinline__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
         }
     }
     Y = Y * devSim.cons[III-1] * devSim.cons[JJJ-1] * devSim.cons[KKK-1] * devSim.cons[LLL-1];
-//#endif
+    //#endif
     return Y;
 }
 
@@ -1280,11 +1363,11 @@ __device__ __forceinline__ QUICKDouble hrrwhole(int I, int J, int K, int L, \
 #define STOREDIM STOREDIM_L
 
 __device__ __forceinline__ QUICKDouble hrrwhole2(int I, int J, int K, int L, \
-                                                int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
-                                                QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
-                                                QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
-                                                QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
-                                                QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz)
+                                                 int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                                 QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                                 QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                                 QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                                 QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz)
 {
     QUICKDouble Y;
     
@@ -1836,10 +1919,10 @@ __device__ __forceinline__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDo
             angularL[10] = (int) LOC3(devTrans, KLMNAx,   KLMNAy+1, KLMNAz,   TRANSDIM, TRANSDIM, TRANSDIM);
         }
     }
-
-
+    
+    
     angularL[numAngularL - 1] = (int) LOC3(devTrans, KLMNAx, KLMNAy, KLMNAz, TRANSDIM, TRANSDIM, TRANSDIM);
-
+    
     return numAngularL;
 }
 

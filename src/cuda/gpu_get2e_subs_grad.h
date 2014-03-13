@@ -98,8 +98,8 @@ __global__ void getGrad_kernel_spdf8()
                                             MAX(LOC2(devSim.cutMatrix, jj, kk, nshell, nshell),     LOC2(devSim.cutMatrix, jj, ll, nshell, nshell))));
                 
                 
-                if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.gradCutoff && \
-                    (LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell) * DNMax) > devSim.gradCutoff) {
+                if ((LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell))> devSim.integralCutoff && \
+                    (LOC2(devSim.YCutoff, kk, ll, nshell, nshell) * LOC2(devSim.YCutoff, ii, jj, nshell, nshell) * DNMax) > devSim.integralCutoff) {
                     
                     int iii = devSim.sorted_Qnumber[II];
                     int jjj = devSim.sorted_Qnumber[JJ];
@@ -249,7 +249,7 @@ __device__ __forceinline__ void iclass_grad
             int LLL = (int) j/kPrimK;
             int KKK = (int) j-kPrimK*LLL;
             
-            if (cutoffPrim * LOC2(devSim.cutPrim, kStartK+KKK, kStartL+LLL, devSim.jbasis, devSim.jbasis) > devSim.gradCutoff) {
+            if (cutoffPrim * LOC2(devSim.cutPrim, kStartK+KKK, kStartL+LLL, devSim.jbasis, devSim.jbasis) > devSim.primLimit) {
                 
                 QUICKDouble CC = LOC2(devSim.gcexpo, KKK , devSim.Ksumtype[KK] - 1, MAXPRIM, devSim.nbasis);
                 /*
@@ -563,6 +563,21 @@ __device__ __forceinline__ void iclass_grad_spdf8
     int kStartL = devSim.kstart[LL]-1;
     
     
+    QUICKDouble AGradx = 0.0;
+    QUICKDouble AGrady = 0.0;
+    QUICKDouble AGradz = 0.0;
+    QUICKDouble BGradx = 0.0;
+    QUICKDouble BGrady = 0.0;
+    QUICKDouble BGradz = 0.0;
+    QUICKDouble CGradx = 0.0;
+    QUICKDouble CGrady = 0.0;
+    QUICKDouble CGradz = 0.0;
+    
+    int         AStart = (devSim.katom[II]-1) * 3;
+    int         BStart = (devSim.katom[JJ]-1) * 3;
+    int         CStart = (devSim.katom[KK]-1) * 3;
+    int         DStart = (devSim.katom[LL]-1) * 3;
+    
     /*
      store saves temp contracted integral as [as|bs] type. the dimension should be allocatable but because
      of cuda limitation, we can not do that now.
@@ -609,7 +624,7 @@ __device__ __forceinline__ void iclass_grad_spdf8
             int LLL = (int) j/kPrimK;
             int KKK = (int) j-kPrimK*LLL;
             
-            if (cutoffPrim * LOC2(devSim.cutPrim, kStartK+KKK, kStartL+LLL, devSim.jbasis, devSim.jbasis) > devSim.gradCutoff) {
+            if (cutoffPrim * LOC2(devSim.cutPrim, kStartK+KKK, kStartL+LLL, devSim.jbasis, devSim.jbasis) > devSim.integralCutoff) {
                 
                 QUICKDouble CC = LOC2(devSim.gcexpo, KKK , devSim.Ksumtype[KK] - 1, MAXPRIM, devSim.nbasis);
                 /*
@@ -726,20 +741,6 @@ __device__ __forceinline__ void iclass_grad_spdf8
 #endif
                 
                 
-                QUICKDouble AGradx = 0.0;
-                QUICKDouble AGrady = 0.0;
-                QUICKDouble AGradz = 0.0;
-                QUICKDouble BGradx = 0.0;
-                QUICKDouble BGrady = 0.0;
-                QUICKDouble BGradz = 0.0;
-                QUICKDouble CGradx = 0.0;
-                QUICKDouble CGrady = 0.0;
-                QUICKDouble CGradz = 0.0;
-                
-                int         AStart = (devSim.katom[II]-1) * 3;
-                int         BStart = (devSim.katom[JJ]-1) * 3;
-                int         CStart = (devSim.katom[KK]-1) * 3;
-                int         DStart = (devSim.katom[LL]-1) * 3;
                 
                 
                 QUICKDouble RBx, RBy, RBz;
@@ -859,24 +860,6 @@ __device__ __forceinline__ void iclass_grad_spdf8
                 }
                 
                 
-                GRADADD(devSim.gradULL[AStart], AGradx);
-                GRADADD(devSim.gradULL[AStart + 1], AGrady);
-                GRADADD(devSim.gradULL[AStart + 2], AGradz);
-                
-                
-                GRADADD(devSim.gradULL[BStart], BGradx);
-                GRADADD(devSim.gradULL[BStart + 1], BGrady);
-                GRADADD(devSim.gradULL[BStart + 2], BGradz);
-                
-                
-                GRADADD(devSim.gradULL[CStart], CGradx);
-                GRADADD(devSim.gradULL[CStart + 1], CGrady);
-                GRADADD(devSim.gradULL[CStart + 2], CGradz);
-                
-                
-                GRADADD(devSim.gradULL[DStart], (-AGradx-BGradx-CGradx));
-                GRADADD(devSim.gradULL[DStart + 1], (-AGrady-BGrady-CGrady));
-                GRADADD(devSim.gradULL[DStart + 2], (-AGradz-BGradz-CGradz));
                 
                 /*
                 if ( abs(AGradx) > 0 || abs(AGrady) > 0 || abs(AGradz) > 0 ||
@@ -896,6 +879,24 @@ __device__ __forceinline__ void iclass_grad_spdf8
     
     
     
+    GRADADD(devSim.gradULL[AStart], AGradx);
+    GRADADD(devSim.gradULL[AStart + 1], AGrady);
+    GRADADD(devSim.gradULL[AStart + 2], AGradz);
+    
+    
+    GRADADD(devSim.gradULL[BStart], BGradx);
+    GRADADD(devSim.gradULL[BStart + 1], BGrady);
+    GRADADD(devSim.gradULL[BStart + 2], BGradz);
+    
+    
+    GRADADD(devSim.gradULL[CStart], CGradx);
+    GRADADD(devSim.gradULL[CStart + 1], CGrady);
+    GRADADD(devSim.gradULL[CStart + 2], CGradz);
+    
+    
+    GRADADD(devSim.gradULL[DStart], (-AGradx-BGradx-CGradx));
+    GRADADD(devSim.gradULL[DStart + 1], (-AGrady-BGrady-CGrady));
+    GRADADD(devSim.gradULL[DStart + 2], (-AGradz-BGradz-CGradz));
     
     return;
 }

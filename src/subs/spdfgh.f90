@@ -1405,6 +1405,10 @@
              ixiao=trans(B(1),B(2),B(3))
              Yxiaotemp(i,jtemp,mtemp)=Ptemp(j)*Yxiaotemp(ixiao,jtemp,mtemp) &
                                      +WPtemp(j)*Yxiaotemp(ixiao,jtemp,mtemp+1)
+!if (ilxiao.eq.1.and.ibxiao.eq.6.and.mtemp.eq.1) then
+!write(*,*) "from spdfgh 2", Yxiaotemp(i,jtemp,mtemp), Yxiaotemp(ixiao,jtemp,mtemp), &
+!Yxiaotemp(ixiao,jtemp,mtemp+1),i,jtemp, ixiao,jtemp,mtemp
+!endif
              if(Mcal(j,i).ge.2)then
 !               B(j)=B(j)-1
 !               itemp=trans(B(1),B(2),B(3))
@@ -1417,12 +1421,22 @@
                                        -CDcom*Yxiaotemp(ihigh,jtemp,mtemp+1))
 !                Yxiaotemp(i,jtemp,mtemp)=Yxiaotemp(i,jtemp,mtemp)+ABtemp*(Yxiaotemp(1,jtemp,mtemp) &
 !                                       -CDcom*Yxiaotemp(1,jtemp,mtemp+1))
+!if (ilxiao.eq.1.and.ibxiao.eq.6.and.mtemp.eq.1) then
+!write(*,*) "from spdfgh 3", Yxiaotemp(i,jtemp,mtemp), Yxiaotemp(ihigh,jtemp,mtemp), & 
+!Yxiaotemp(ihigh,jtemp,mtemp+1),i,jtemp,ihigh,jtemp,mtemp
+!endif
+
              endif
              if(Axiao(j).ne.0)then
                Axiao(j)=Axiao(j)-1
                secondxiao=trans(Axiao(1),Axiao(2),Axiao(3))
                Yxiaotemp(i,jtemp,mtemp)=Yxiaotemp(i,jtemp,mtemp) &
                                        +Mcal(j,jtemp)*ABCDtemp*Yxiaotemp(ixiao,secondxiao,mtemp+1)
+!if (ilxiao.eq.1.and.ibxiao.eq.6.and.mtemp.eq.1) then
+!write(*,*) "from spdfgh 4", Yxiaotemp(i,jtemp,1),Yxiaotemp(ixiao,secondxiao,mtemp+1),&
+!        i,jtemp,ixiao,secondxiao,mtemp 
+!endif
+
              endif
              goto 555
            endif

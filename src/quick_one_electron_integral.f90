@@ -57,7 +57,6 @@ subroutine fullx
    ! Now diagonalize HOLD to generate the eigenvectors and eigenvalues.
 
    call DIAG(NBASIS,quick_scratch%hold,NBASIS,quick_method%DMCutoff,V,Sminhalf,IDEGEN1,quick_scratch%hold2,IERROR)
-
    ! Consider the following:
 
    ! X = U * s^(-.5) * transpose(U)
@@ -90,15 +89,18 @@ subroutine fullx
    ! half. (Lower Diagonal)
 
    do I=1,nbasis
+      if (Sminhalf(I).gt.1E-4) then
       Sminhalf(I) = Sminhalf(I)**(-.5d0)
+      else
+      Sminhalf(I) = 0.0d0
+      endif
    enddo
+
 
    ! Transpose U onto X then copy on to U.  Now U contains U transpose.
 
    call transpose(quick_scratch%hold2,quick_qm_struct%x,nbasis)
    call copyDMat(quick_qm_struct%x,quick_scratch%hold2,nbasis)
-
-
    ! Now calculate X.
    ! Xij = Sum(k=1,m) Transpose(U)kj * s^(-.5)kk * Transpose(U)ki
 
@@ -106,7 +108,8 @@ subroutine fullx
       do J=I,nbasis
          sum = 0.d0
          do K=1,nbasis
-            sum = quick_scratch%hold2(K,I)*quick_scratch%hold2(K,J)*Sminhalf(K)+sum
+            sum = sum+quick_scratch%hold2(K,I)*quick_scratch%hold2(K,J)*Sminhalf(K)
+!write(*,*)  k,j,quick_scratch%hold2(K,J),Sminhalf(K),sum
          enddo
          quick_qm_struct%x(I,J) = sum
          quick_qm_struct%x(J,I) = quick_qm_struct%x(I,J)
@@ -1737,6 +1740,10 @@ subroutine get1e(oneElecO)
    
          call copySym(quick_qm_struct%o,nbasis)
          call CopyDMat(quick_qm_struct%o,oneElecO,nbasis)
+         if (quick_method%debug) then
+                write(iOutFile,*) "ONE ELECTRON MATRIX"
+                call PriSym(iOutFile,nbasis,oneElecO,'f14.8')
+         endif
       endif
 #ifdef MPI
    else

@@ -394,7 +394,7 @@ __device__ __inline__ f_6_6_t :: f_6_6_t ( f_6_5_t t_6_5_0, f_6_5_t t_6_5_1, f_6
     x_81_69 = Qtempx * t_6_5_0.x_81_50 + WQtempx * t_6_5_1.x_81_50 + CDtemp * 4 * ( t_6_4_0.x_81_26 -  ABcom * t_6_4_1.x_81_26 ) + 6 * ABCDtemp * t_5_5_1.x_53_50 ;
     x_82_69 = Qtempx * t_6_5_0.x_82_50 + WQtempx * t_6_5_1.x_82_50 + CDtemp * 4 * ( t_6_4_0.x_82_26 -  ABcom * t_6_4_1.x_82_26 ) ;
     x_83_69 = Qtempx * t_6_5_0.x_83_50 + WQtempx * t_6_5_1.x_83_50 + CDtemp * 4 * ( t_6_4_0.x_83_26 -  ABcom * t_6_4_1.x_83_26 ) ;
-    x_56_70 = Qtempx * t_6_5_0.x_56_54 + WQtempx * t_6_5_1.x_56_54 + 4 * ABCDtemp * t_5_5_1.x_38_54 ;
+    /*x_56_70 = Qtempx * t_6_5_0.x_56_54 + WQtempx * t_6_5_1.x_56_54 + 4 * ABCDtemp * t_5_5_1.x_38_54 ;
     x_57_70 = Qtempx * t_6_5_0.x_57_54 + WQtempx * t_6_5_1.x_57_54 + ABCDtemp * t_5_5_1.x_48_54 ;
     x_58_70 = Qtempx * t_6_5_0.x_58_54 + WQtempx * t_6_5_1.x_58_54 + ABCDtemp * t_5_5_1.x_47_54 ;
     x_59_70 = Qtempx * t_6_5_0.x_59_54 + WQtempx * t_6_5_1.x_59_54 + ABCDtemp * t_5_5_1.x_41_54 ;
@@ -785,5 +785,5 @@ __device__ __inline__ f_6_6_t :: f_6_6_t ( f_6_5_t t_6_5_0, f_6_5_t t_6_5_1, f_6
     x_80_83 = Qtempz * t_6_5_0.x_80_55 + WQtempz * t_6_5_1.x_80_55 + CDtemp * 5 * ( t_6_4_0.x_80_34 -  ABcom * t_6_4_1.x_80_34 ) ;
     x_81_83 = Qtempz * t_6_5_0.x_81_55 + WQtempz * t_6_5_1.x_81_55 + CDtemp * 5 * ( t_6_4_0.x_81_34 -  ABcom * t_6_4_1.x_81_34 ) ;
     x_82_83 = Qtempz * t_6_5_0.x_82_55 + WQtempz * t_6_5_1.x_82_55 + CDtemp * 5 * ( t_6_4_0.x_82_34 -  ABcom * t_6_4_1.x_82_34 ) ;
-    x_83_83 = Qtempz * t_6_5_0.x_83_55 + WQtempz * t_6_5_1.x_83_55 + CDtemp * 5 * ( t_6_4_0.x_83_34 -  ABcom * t_6_4_1.x_83_34 ) + 6 * ABCDtemp * t_5_5_1.x_55_55 ;
+    x_83_83 = Qtempz * t_6_5_0.x_83_55 + WQtempz * t_6_5_1.x_83_55 + CDtemp * 5 * ( t_6_4_0.x_83_34 -  ABcom * t_6_4_1.x_83_34 ) + 6 * ABCDtemp * t_5_5_1.x_55_55 */;
 }

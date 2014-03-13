@@ -621,17 +621,17 @@ subroutine shell
                   ! Fm(T) = integral(1,0) {t   exp(-Tt )dt}
                   ! NABCD is the m value, and FM returns the FmT value
                   call FmT(NABCD,T,FM)
+
                   do iitemp=0,NABCD
                      ! Yxiaotemp(1,1,iitemp) is the starting point of recurrsion
                      Yxiaotemp(1,1,iitemp)=FM(iitemp)/ABCDxiao
                      !              _______________________________
                      ! ABCDxiao = \/expo(I)+expo(J)+expo(K)+expo(L)
                   enddo
-                  ITT=ITT+1
 
+                  ITT=ITT+1
                   ! now we will do vrr and and the double-electron integral
                   call vertical(NABCDTYPE)
-
                   do I2=NNC,NNCD
                      do I1=NNA,NNAB
                         Yxiao(ITT,I1,I2)=Yxiaotemp(I1,I2,0)
@@ -735,7 +735,6 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
 
                   itt = itt+1
                   X44(ITT) = X2*quick_basis%Xcoeff(Nprik,Npril,K,L)
-!write(ioutfile,*) "AAA",itt, X44(itt), X2, quick_basis%Xcoeff(Nprik,Npril,K,L)
                endif
             enddo
          enddo
@@ -859,7 +858,7 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                do KKK=KKK1,KKK2
                   do LLL=LLL1,LLL2
                      call hrrwhole
-                     !write(*,*) IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL,III,JJJ,KKK,LLL
+                     !write(*,*) Y,III,JJJ,KKK,LLL
                      DENSEKI=quick_qm_struct%dense(KKK,III)
                      DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
                      DENSELJ=quick_qm_struct%dense(LLL,JJJ)
@@ -889,7 +888,7 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                   do LLL=max(KKK,LLL1),LLL2
                      if(III.LT.KKK)then
                         call hrrwhole
-                        !  write(*,*) IJKLTYPE, NABCDTYPE,Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
+                          !write(*,*) Y,III,JJJ,KKK,LLL
                         if(III.lt.JJJ.and.KKK.lt.LLL)then
                            DENSEKI=quick_qm_struct%dense(KKK,III)
                            DENSEKJ=quick_qm_struct%dense(KKK,JJJ)
@@ -943,6 +942,8 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                            quick_qm_struct%o(KKK,III) = quick_qm_struct%o(KKK,III)-.5d0*DENSEKJ*Y
                            quick_qm_struct%o(KKK,JJJ) = quick_qm_struct%o(KKK,JJJ)-.5d0*DENSEKI*Y
                            quick_qm_struct%o(JJJ,KKK) = quick_qm_struct%o(JJJ,KKK)-.5d0*DENSEKI*Y
+
+
                            !        ! Find all the (ik|jj) integrals where j>i, k>j.
                            elseif(III.eq.JJJ.and.KKK.lt.LLL)then
                            DENSEII=quick_qm_struct%dense(III,III)
@@ -960,7 +961,7 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
                      else
                         if(JJJ.LE.LLL)then
                            call hrrwhole
-                               !write(ioutfile,*) "a",IJKLTYPE,NABCDTYPE, Y, II,JJ,KK,LL, III,JJJ,KKK,LLL
+                           !   write(*,*) Y, III,JJJ,KKK,LLL
                            if(III.eq.JJJ.and.III.eq.KKK.and.III.eq.LLL)then
                               DENSEII=quick_qm_struct%dense(III,III)
 
@@ -1006,6 +1007,7 @@ subroutine iclass(I,J,K,L,NNA,NNC,NNAB,NNCD)
          enddo
       endif
    endif
+
    201 return
 End subroutine iclass
 
