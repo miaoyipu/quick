@@ -385,6 +385,40 @@ __device__ void vertical_spdf8(int I, int J, int K, int L,
 }
 
 
+__device__ void vertical_spdf9(int I, int J, int K, int L,
+                               QUICKDouble* YVerticalTemp, QUICKDouble* store,
+                               QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                               QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                               QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                               QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                               QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                               QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom)
+{
+    if ((I+J) >=  6 && (K+L) >= 6) {
+        h_6_6_II(YVerticalTemp, store, \
+                Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+                WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+}
+
+
+__device__ void vertical_spdf10(int I, int J, int K, int L,
+                               QUICKDouble* YVerticalTemp, QUICKDouble* store,
+                               QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                               QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                               QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                               QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                               QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                               QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom)
+{
+    if ((I+J) >=  6 && (K+L) >= 6) {
+        h_6_6_III(YVerticalTemp, store, \
+                 Ptempx, Ptempy, Ptempz, WPtempx, WPtempy, WPtempz, Qtempx, Qtempy, Qtempz,  \
+                 WQtempx, WQtempy, WQtempz, ABCDtemp, ABtemp, CDtemp,  ABcom, CDcom);
+    }
+}
+
+
 
 __device__ void vertical2_spdf(int I, int J, int K, int L,
                                QUICKDouble* YVerticalTemp, QUICKDouble* store,

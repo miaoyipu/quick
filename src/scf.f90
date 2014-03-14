@@ -215,7 +215,11 @@ subroutine electdiis(jscf)
       endif
       if (quick_method%debug)  write(ioutfile,*) "hehe hf"
       if (quick_method%debug)  call debug_SCF(jscf)
-
+!do i = 1, nbasis
+!do j = 1, nbasis
+!write(*,*) i,j,quick_qm_struct%o(i,j)
+!enddo
+!enddo
       ! Terminate Operator timer
       call cpu_time(timer_end%TOp)
       !------------- MASTER NODE -------------------------------

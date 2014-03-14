@@ -89,6 +89,10 @@ __global__ void get2e_kernel_spdf6()
 __global__ void get2e_kernel_spdf7()
 #elif defined int_spdf8
 __global__ void get2e_kernel_spdf8()
+#elif defined int_spdf9
+__global__ void get2e_kernel_spdf9()
+#elif defined int_spdf10
+__global__ void get2e_kernel_spdf10()
 #endif
 {
     unsigned int offside = blockIdx.x*blockDim.x+threadIdx.x;
@@ -140,6 +144,19 @@ __global__ void get2e_kernel_spdf8()
     QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell00;
     
 #elif defined int_spdf8
+    
+    QUICKULL jshell0 = (QUICKULL) devSim.ffStart;
+    QUICKULL jshell00 = (QUICKULL) devSim.ffStart;
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell00;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
+    
+#elif defined int_spdf9
+    
+    QUICKULL jshell0 = (QUICKULL) devSim.ffStart;
+    QUICKULL jshell00 = (QUICKULL) devSim.ffStart;
+    QUICKULL jshell = (QUICKULL) devSim.sqrQshell - jshell00;
+    QUICKULL jshell2 = (QUICKULL) devSim.sqrQshell - jshell0;
+#elif defined int_spdf10
     
     QUICKULL jshell0 = (QUICKULL) devSim.ffStart;
     QUICKULL jshell00 = (QUICKULL) devSim.ffStart;
@@ -256,6 +273,33 @@ __global__ void get2e_kernel_spdf8()
             a = 0;
             b = 0;
         }
+        
+#elif defined int_spdf9
+        
+        // Zone 4
+        QUICKULL a, b;
+        if (jshell2 != 0 ) {
+            a = (QUICKULL) i/jshell2;
+            b = (QUICKULL) (i - a*jshell2);
+            a = a + jshell00;
+            b = b + jshell0;
+        }else{
+            a = 0;
+            b = 0;
+        }
+#elif defined int_spdf10
+        
+        // Zone 4
+        QUICKULL a, b;
+        if (jshell2 != 0 ) {
+            a = (QUICKULL) i/jshell2;
+            b = (QUICKULL) (i - a*jshell2);
+            a = a + jshell00;
+            b = b + jshell0;
+        }else{
+            a = 0;
+            b = 0;
+        }
 #endif
         int II = devSim.sorted_YCutoffIJ[a].x;
         int KK = devSim.sorted_YCutoffIJ[b].x;
@@ -289,9 +333,7 @@ __global__ void get2e_kernel_spdf8()
                 int lll = devSim.sorted_Qnumber[LL];
                 
 #ifdef int_spd
-                //if ( (iii + jjj) <= 4 && (kkk + lll) <= 4) {
                     iclass(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
-                //}
                 
 #elif defined int_spdf
                 if ( (kkk + lll) <= 6 && (kkk + lll) > 4) {
@@ -343,12 +385,24 @@ __global__ void get2e_kernel_spdf8()
                 if ( (iii + jjj) == 6 && (kkk + lll) == 6) {
                     iclass_spdf8(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
                 }
+#elif defined int_spdf9
+                
+                
+                if ( (iii + jjj) == 6 && (kkk + lll) == 6) {
+                    iclass_spdf9(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                }
+#elif defined int_spdf10
+                
+                
+                if ( (iii + jjj) == 6 && (kkk + lll) == 6) {
+                    iclass_spdf10(iii, jjj, kkk, lll, ii, jj, kk, ll, DNMax);
+                }
 #endif
                 
             }
         }
             
-                                           
+        
     }
 }
 
@@ -374,6 +428,10 @@ __device__ __forceinline__ void iclass_spdf6
 __device__ __forceinline__ void iclass_spdf7
 #elif defined int_spdf8
 __device__ __forceinline__ void iclass_spdf8
+#elif defined int_spdf9
+__device__ __forceinline__ void iclass_spdf9
+#elif defined int_spdf10
+__device__ __forceinline__ void iclass_spdf10
 #endif
                                       (int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax)
 {
@@ -496,6 +554,24 @@ __device__ __forceinline__ void iclass_spdf8
         }
     }
 #elif defined int_spdf8
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#elif defined int_spdf9
+    
+    for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
+        for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
+            if ( i <= STOREDIM && j <= STOREDIM) {
+                LOC2(store, j-1, i-1, STOREDIM, STOREDIM) = 0;
+            }
+        }
+    }
+#elif defined int_spdf10
     
     for (int i = Sumindex[K+1]+1; i<= Sumindex[K+L+2]; i++) {
         for (int j = Sumindex[I+1]+1; j<= Sumindex[I+J+2]; j++) {
@@ -652,6 +728,18 @@ __device__ __forceinline__ void iclass_spdf8
                                Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
                                Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
                                0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf9
+                
+                vertical_spdf9(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf10
+                
+                vertical_spdf10(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
 #endif
                 
             }
@@ -755,6 +843,10 @@ __global__ void getAOInt_kernel_spdf6(QUICKULL intStart, QUICKULL intEnd, ERI_en
 __global__ void getAOInt_kernel_spdf7(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
 #elif defined int_spdf8
 __global__ void getAOInt_kernel_spdf8(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
+#elif defined int_spdf9
+__global__ void getAOInt_kernel_spdf9(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
+#elif defined int_spdf10
+__global__ void getAOInt_kernel_spdf10(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID)
 #endif
 {
     
@@ -829,6 +921,14 @@ __global__ void getAOInt_kernel_spdf8(QUICKULL intStart, QUICKULL intEnd, ERI_en
                 if ((iii + jjj) > 4 || (kkk + lll) > 4) {
                     iclass_AOInt_spdf8(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
                 }
+#elif defined int_spdf9
+                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
+                    iclass_AOInt_spdf9(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
+                }
+#elif defined int_spdf10
+                if ((iii + jjj) > 4 || (kkk + lll) > 4) {
+                    iclass_AOInt_spdf10(iii, jjj, kkk, lll, ii, jj, kk, ll, 1.0, aoint_buffer, streamID);
+                }
 #endif
             }
         }
@@ -863,6 +963,10 @@ __device__ __forceinline__ void iclass_AOInt_spdf6
 __device__ __forceinline__ void iclass_AOInt_spdf7
 #elif defined int_spdf8
 __device__ __forceinline__ void iclass_AOInt_spdf8
+#elif defined int_spdf9
+__device__ __forceinline__ void iclass_AOInt_spdf9
+#elif defined int_spdf10
+__device__ __forceinline__ void iclass_AOInt_spdf10
 #endif
 (int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID)
 {
@@ -1064,6 +1168,18 @@ __device__ __forceinline__ void iclass_AOInt_spdf8
 #elif defined int_spdf8
                 
                 vertical_spdf8(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf9
+                
+                vertical_spdf9(I, J, K, L, YVerticalTemp, store, \
+                               Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
+                               Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
+                               0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
+#elif defined int_spdf10
+                
+                vertical_spdf10(I, J, K, L, YVerticalTemp, store, \
                                Px - RAx, Py - RAy, Pz - RAz, (Px*AB+Qx*CD)*ABCD - Px, (Py*AB+Qy*CD)*ABCD - Py, (Pz*AB+Qz*CD)*ABCD - Pz, \
                                Qx - RCx, Qy - RCy, Qz - RCz, (Px*AB+Qx*CD)*ABCD - Qx, (Py*AB+Qy*CD)*ABCD - Qy, (Pz*AB+Qz*CD)*ABCD - Qz, \
                                0.5 * ABCD, 0.5 / AB, 0.5 / CD, AB * ABCD, CD * ABCD);
@@ -1276,7 +1392,7 @@ __device__ __forceinline__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerti
                   2.290098979647E-05 )*Y+1.526537461148E-04 )*Y- \
                 8.81947375894379E-04 )*Y+4.33207949514611E-03 )*Y- \
               1.75257821619926E-02 )*Y+5.28406320615584E-02 ;
-	WW1 = (X+X)*F1+E;  
+	WW1 += (X+X)*F1;
     }else if (X > 1.0){
         QUICKDouble Y = (QUICKDouble) X - 2.0 ;
         F1 = ((((((((((-1.61702782425558E-10 *Y+1.96215250865776E-09  )*Y- \
@@ -1285,21 +1401,21 @@ __device__ __forceinline__ void FmT(int MaxM, QUICKDouble X, QUICKDouble* YVerti
                   1.16740298039895E-04  )*Y+7.24888732052332E-04  )*Y- \
                 3.79490003707156E-03  )*Y+1.61723488664661E-02  )*Y- \
               5.29428148329736E-02  )*Y+1.15702180856167E-01 ;
-	WW1 = (X+X)*F1+E;  
-    }else if ((X > 3.0E-5) || ((X> 3.0E-07) && (MaxM < 6))){
+	WW1 += (X+X)*F1;
+    }else if (X > 3.0E-5 || (X> 3.0E-7 && MaxM < 6)){
         
         F1 =(((((((( -8.36313918003957E-08 *X+1.21222603512827E-06  )*X- \
                    1.15662609053481E-05  )*X+9.25197374512647E-05  )*X- \
                  6.40994113129432E-04  )*X+3.78787044215009E-03  )*X- \
                1.85185172458485E-02  )*X+7.14285713298222E-02  )*X- \
              1.99999999997023E-01  )*X+3.33333333333318E-01 ;
-	WW1 = (X+X)*F1+E;
+	WW1 += (X+X)*F1;
     }else{
         WW1 = (1.0 - X)/(QUICKDouble)(2.0 * MaxM+1);
     }
     
     
-    if ((X > 3.0E-5) || ((X> 3.0E-07) && (MaxM < 6))) {
+    if (X > 3.0E-5 || (X> 3.0E-7 && MaxM < 6)) {
         LOC3(YVerticalTemp, 0, 0, 0, VDIM1, VDIM2, VDIM3) = WW1;
         for (int m = 1; m<= MaxM; m++) {
             LOC3(YVerticalTemp, 0, 0, m, VDIM1, VDIM2, VDIM3) = (((2*m-1)*LOC3(YVerticalTemp, 0, 0, m-1, VDIM1, VDIM2, VDIM3))- E)*0.5*XINV;

@@ -50,6 +50,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs.h"
 #include "gpu_get2e_subs_grad.h"
 
@@ -65,6 +67,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs_grad.h"
 
 #undef int_spd
@@ -76,6 +80,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs_grad.h"
 
 
@@ -88,6 +94,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs_grad.h"
 
 
@@ -103,6 +111,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs.h"
 
 #undef int_spd
@@ -114,6 +124,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs.h"
 
 
@@ -126,6 +138,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs.h"
 
 
@@ -138,6 +152,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs.h"
 
 
@@ -150,6 +166,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs.h"
 
 
@@ -163,6 +181,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #define int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs.h"
 
 
@@ -176,6 +196,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #define int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 #include "gpu_get2e_subs.h"
 
 
@@ -189,6 +211,35 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #define int_spdf8
+#undef int_spdf9
+#undef int_spdf10
+#include "gpu_get2e_subs.h"
+
+
+#undef int_spd
+#undef int_spdf
+#undef int_spdf2
+#undef int_spdf3
+#undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
+#define int_spdf9
+#undef int_spdf10
+#include "gpu_get2e_subs.h"
+
+#undef int_spd
+#undef int_spdf
+#undef int_spdf2
+#undef int_spdf3
+#undef int_spdf4
+#undef int_spdf5
+#undef int_spdf6
+#undef int_spdf7
+#undef int_spdf8
+#undef int_spdf9
+#define int_spdf10
 #include "gpu_get2e_subs.h"
 #endif
 
@@ -201,6 +252,8 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf6
 #undef int_spdf7
 #undef int_spdf8
+#undef int_spdf9
+#undef int_spdf10
 
 
 // totTime is the timer for GPU 2e time. Only on under debug mode
@@ -230,6 +283,10 @@ void getAOInt(_gpu_type gpu, QUICKULL intStart, QUICKULL intEnd, cudaStream_t st
     QUICK_SAFE_CALL((getAOInt_kernel_spdf7<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
     // Part f-8
     QUICK_SAFE_CALL((getAOInt_kernel_spdf8<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
+    // Part f-9
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf9<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
+    // Part f-10
+    QUICK_SAFE_CALL((getAOInt_kernel_spdf10<<<gpu->blocks, gpu->twoEThreadsPerBlock, 0, streamI>>>( intStart, intEnd, aoint_buffer, streamID)));
 #endif*/
 }
 
@@ -255,6 +312,10 @@ void get2e(_gpu_type gpu)
     QUICK_SAFE_CALL((get2e_kernel_spdf7<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
     // Part f-8
     QUICK_SAFE_CALL((get2e_kernel_spdf8<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    // Part f-9
+    QUICK_SAFE_CALL((get2e_kernel_spdf9<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    // Part f-10
+    QUICK_SAFE_CALL((get2e_kernel_spdf10<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
 #endif 
 }
 

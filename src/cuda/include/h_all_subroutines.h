@@ -46,6 +46,8 @@
 #include  "f_6_4.h"
 #include  "f_6_5.h"
 #include  "f_6_6.h"
+#include  "f_6_6_II.h"
+#include  "f_6_6_III.h"
 #include  "f_7_0.h"
 #include  "f_7_1.h"
 #include  "f_7_2.h"

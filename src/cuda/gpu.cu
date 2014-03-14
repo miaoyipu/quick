@@ -439,7 +439,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     gpu -> gpu_sim.maxL = maxL;
     
     if (sort_method == 0) {
-        QUICKDouble cut1 = 1E-12;
+        QUICKDouble cut1 = 1E-15;
         QUICKDouble cut2 = 1E-4;
         for (int qp = 0; qp <= 6 ; qp++){
             for (int q = 0; q <= 3; q++) {

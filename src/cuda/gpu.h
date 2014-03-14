@@ -67,6 +67,8 @@ __global__ void get2e_kernel_spdf5();
 __global__ void get2e_kernel_spdf6();
 __global__ void get2e_kernel_spdf7();
 __global__ void get2e_kernel_spdf8();
+__global__ void get2e_kernel_spdf9();
+__global__ void get2e_kernel_spdf10();
 
 
 __global__ void getAOInt_kernel(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
@@ -78,6 +80,8 @@ __global__ void getAOInt_kernel_spdf5(QUICKULL intStart, QUICKULL intEnd, ERI_en
 __global__ void getAOInt_kernel_spdf6(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
 __global__ void getAOInt_kernel_spdf7(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
 __global__ void getAOInt_kernel_spdf8(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
+__global__ void getAOInt_kernel_spdf9(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
+__global__ void getAOInt_kernel_spdf10(QUICKULL intStart, QUICKULL intEnd, ERI_entry* aoint_buffer, int streamID);
 
 
 __global__ void getGrad_kernel();
@@ -104,6 +108,8 @@ __device__ void iclass_spdf5(int I, int J, int K, int L, unsigned int II, unsign
 __device__ void iclass_spdf6(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 __device__ void iclass_spdf7(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 __device__ void iclass_spdf8(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
+__device__ void iclass_spdf9(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
+__device__ void iclass_spdf10(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax);
 
 __device__ __forceinline__ void iclass_AOInt(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
 __device__ __forceinline__ void iclass_AOInt_spdf(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
@@ -114,6 +120,8 @@ __device__ __forceinline__ void iclass_AOInt_spdf5(int I, int J, int K, int L, u
 __device__ __forceinline__ void iclass_AOInt_spdf6(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
 __device__ __forceinline__ void iclass_AOInt_spdf7(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
 __device__ __forceinline__ void iclass_AOInt_spdf8(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
+__device__ __forceinline__ void iclass_AOInt_spdf9(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
+__device__ __forceinline__ void iclass_AOInt_spdf10(int I, int J, int K, int L, unsigned int II, unsigned int JJ, unsigned int KK, unsigned int LL, QUICKDouble DNMax, ERI_entry* aoint_buffer, int streamID);
 
 
 
@@ -270,6 +278,20 @@ __device__ void vertical_spdf7(int I, int J, int K, int L, QUICKDouble* YVertica
                                QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 
 __device__ void vertical_spdf8(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
+                               QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                               QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                               QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                               QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                               QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                               QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
+__device__ void vertical_spdf9(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
+                               QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
+                               QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
+                               QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
+                               QUICKDouble WQtempx,QUICKDouble WQtempy,QUICKDouble WQtempz, \
+                               QUICKDouble ABCDtemp,QUICKDouble ABtemp, \
+                               QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
+__device__ void vertical_spdf10(int I, int J, int K, int L, QUICKDouble* YVerticalTemp, QUICKDouble* store, \
                                QUICKDouble Ptempx, QUICKDouble Ptempy, QUICKDouble Ptempz,  \
                                QUICKDouble WPtempx,QUICKDouble WPtempy,QUICKDouble WPtempz, \
                                QUICKDouble Qtempx, QUICKDouble Qtempy, QUICKDouble Qtempz,  \
