@@ -810,9 +810,9 @@ __device__ __forceinline__ void iclass_spdf10
                                                                III, JJJ, KKK, LLL, IJKLTYPE, store, \
                                                                RAx, RAy, RAz, RBx, RBy, RBz, \
                                                                RCx, RCy, RCz, RDx, RDy, RDz);
-//                        if (abs(Y) > devSim.integralCutoff * 0.001) {
+                        if (abs(Y) > 0.0e0) {
                             addint(devSim.oULL, Y, III, JJJ, KKK, LLL, hybrid_coeff, devSim.dense, devSim.nbasis);
-//                        }
+                        }
                         
                     }
                 }

@@ -84,15 +84,15 @@ module quick_method_module
         integer :: ncyc =1000
         
         ! following are some cutoff criteria
-        double precision :: integralCutoff = 1.0d-11   ! integral cutoff
+        double precision :: integralCutoff = 1.0d-9   ! integral cutoff
         double precision :: leastIntegralCutoff = LEASTCUTOFF  ! the smallest cutoff
         double precision :: maxIntegralCutoff = 1.0d-12
-        double precision :: primLimit      = 1.0d-11   ! prime cutoff
+        double precision :: primLimit      = 1.0d-9   ! prime cutoff
         double precision :: gradCutoff     = 1.0d-7   ! gradient cutoff
         double precision :: DMCutoff       = 1.0d-10  ! density matrix cutoff
         !tol
         double precision :: pmaxrms        = 1.0d-4   ! density matrix convergence criteria
-        double precision :: aCutoff        = 1.0d-11   ! 2e cutoff
+        double precision :: aCutoff        = 1.0d-9   ! 2e cutoff
         double precision :: basisCufoff    = 1.0d-10  ! basis set cutoff
         !signif
         
@@ -547,17 +547,17 @@ endif
             self%iopt = 0
             self%ncyc = 1000
 
-            self%integralCutoff = 1.0d-11   ! integral cutoff
+            self%integralCutoff = 1.0d-9   ! integral cutoff
             self%leastIntegralCutoff = LEASTCUTOFF 
                                            ! smallest integral cutoff, used in conventional SCF
             self%maxIntegralCutoff = 1.0d-12
                                            ! smallest integral cutoff, used in conventional SCF
-            self%primLimit      = 1.0d-11   ! prime cutoff
+            self%primLimit      = 1.0d-9   ! prime cutoff
             self%gradCutoff     = 1.0d-7   ! gradient cutoff
             self%DMCutoff       = 1.0d-10  ! density matrix cutoff
 
             self%pmaxrms        = 1.0d-4   ! density matrix convergence criteria
-            self%aCutoff        = 1.0d-11   ! 2e cutoff
+            self%aCutoff        = 1.0d-9   ! 2e cutoff
             self%basisCufoff    = 1.0d-10  ! basis set cutoff
         
             self%stepMax        = .1d0/0.529177249d0
