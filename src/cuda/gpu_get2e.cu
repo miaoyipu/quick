@@ -13,7 +13,6 @@
 #include <cuda.h>
 
 //#ifdef CUDA_SPDF
-#include "int.h"
 //#endif
 
 
@@ -31,14 +30,8 @@ static __constant__ int devTrans[TRANSDIM*TRANSDIM*TRANSDIM];
 static __constant__ int Sumindex[10]={0,0,1,4,10,20,35,56,84,120};
 
 
-/*
- upload gpu simulation type to constant memory
- */
-void upload_sim_to_constant(_gpu_type gpu){
-    cudaError_t status;
-	status = cudaMemcpyToSymbol(devSim, &gpu->gpu_sim, sizeof(gpu_simulation_type));
-	PRINTERROR(status, " cudaMemcpyToSymbol, sim copy to constants failed")
-}
+#include "gpu_get2e_subs_hrr.h"
+#include "int.h"
 
 
 #define int_spd
@@ -254,6 +247,17 @@ void upload_sim_to_constant(_gpu_type gpu){
 #undef int_spdf8
 #undef int_spdf9
 #undef int_spdf10
+
+
+
+/*
+ upload gpu simulation type to constant memory
+ */
+void upload_sim_to_constant(_gpu_type gpu){
+    cudaError_t status;
+	status = cudaMemcpyToSymbol(devSim, &gpu->gpu_sim, sizeof(gpu_simulation_type));
+	PRINTERROR(status, " cudaMemcpyToSymbol, sim copy to constants failed")
+}
 
 
 // totTime is the timer for GPU 2e time. Only on under debug mode

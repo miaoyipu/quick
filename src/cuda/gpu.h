@@ -160,6 +160,62 @@ __device__ QUICKDouble hrrwhole2(int I, int J, int K, int L, \
                                 QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
                                 QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
 
+__device__ QUICKDouble hrrwhole2_2(int I, int J, int K, int L, \
+                                 int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                 QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                 QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                 QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                 QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+
+__device__ QUICKDouble hrrwhole2_3(int I, int J, int K, int L, \
+                                 int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                 QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                 QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                 QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                   QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+__device__ QUICKDouble hrrwhole2_4(int I, int J, int K, int L, \
+                                   int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                   QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                   QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                   QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                   QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+__device__ QUICKDouble hrrwhole2_5(int I, int J, int K, int L, \
+                                   int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                   QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                   QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                   QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                   QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+__device__ QUICKDouble hrrwhole2_6(int I, int J, int K, int L, \
+                                   int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                   QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                   QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                   QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                   QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+__device__ QUICKDouble hrrwhole2_7(int I, int J, int K, int L, \
+                                   int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                   QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                   QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                   QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                   QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+__device__ QUICKDouble hrrwhole2_8(int I, int J, int K, int L, \
+                                   int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                   QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                   QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                   QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                   QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+__device__ QUICKDouble hrrwhole2_9(int I, int J, int K, int L, \
+                                   int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                   QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                   QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                   QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                   QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+__device__ QUICKDouble hrrwhole2_10(int I, int J, int K, int L, \
+                                   int III, int JJJ, int KKK, int LLL, int IJKLTYPE, QUICKDouble* store, \
+                                   QUICKDouble RAx,QUICKDouble RAy,QUICKDouble RAz, \
+                                   QUICKDouble RBx,QUICKDouble RBy,QUICKDouble RBz, \
+                                   QUICKDouble RCx,QUICKDouble RCy,QUICKDouble RCz, \
+                                   QUICKDouble RDx,QUICKDouble RDy,QUICKDouble RDz);
+
 
 __device__ __forceinline__ void hrrwholegrad(QUICKDouble* Yaax, QUICKDouble* Yaay, QUICKDouble* Yaaz, \
                                              QUICKDouble* Ybbx, QUICKDouble* Ybby, QUICKDouble* Ybbz, \
@@ -368,6 +424,28 @@ __device__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
                        int KLMNAx, int KLMNAy, int KLMNAz,
                        int KLMNBx, int KLMNBy, int KLMNBz,
                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
+
+__device__ int lefthrr1(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
+                        QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
+                        int KLMNAx, int KLMNAy, int KLMNAz,
+                        int KLMNBx, int KLMNBy, int KLMNBz,
+                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
+__device__ int lefthrr2(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
+                       QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
+                       int KLMNAx, int KLMNAy, int KLMNAz,
+                       int KLMNBx, int KLMNBy, int KLMNBz,
+                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
+__device__ int lefthrr3(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
+                        QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
+                        int KLMNAx, int KLMNAy, int KLMNAz,
+                        int KLMNBx, int KLMNBy, int KLMNBz,
+                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
+__device__ int lefthrr23(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
+                        QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
+                        int KLMNAx, int KLMNAy, int KLMNAz,
+                        int KLMNBx, int KLMNBy, int KLMNBz,
+                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
+
 
 
 //__device__ void gpu_grid_b3lyp(int irad, int iradtemp, int iatm);
