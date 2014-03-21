@@ -84,15 +84,15 @@ module quick_method_module
         integer :: ncyc =1000
         
         ! following are some cutoff criteria
-        double precision :: integralCutoff = 1.0d-9   ! integral cutoff
+        double precision :: integralCutoff = 1.0d-7   ! integral cutoff
         double precision :: leastIntegralCutoff = LEASTCUTOFF  ! the smallest cutoff
         double precision :: maxIntegralCutoff = 1.0d-12
-        double precision :: primLimit      = 1.0d-9   ! prime cutoff
+        double precision :: primLimit      = 1.0d-7   ! prime cutoff
         double precision :: gradCutoff     = 1.0d-7   ! gradient cutoff
         double precision :: DMCutoff       = 1.0d-10  ! density matrix cutoff
         !tol
         double precision :: pmaxrms        = 1.0d-4   ! density matrix convergence criteria
-        double precision :: aCutoff        = 1.0d-9   ! 2e cutoff
+        double precision :: aCutoff        = 1.0d-7   ! 2e cutoff
         double precision :: basisCufoff    = 1.0d-10  ! basis set cutoff
         !signif
         
@@ -469,7 +469,7 @@ endif
             if (index(keywd,'CUTOFF=') /= 0) then
                 self%acutoff = rdnml(keywd,'CUTOFF')
                 self%integralCutoff=self%acutoff !min(self%integralCutoff,self%acutoff)
-                self%primLimit=self%acutoff*0.001 !min(self%integralCutoff,self%acutoff)
+                self%primLimit=1E-20 !self%acutoff*0.001 !min(self%integralCutoff,self%acutoff)
             endif
         
             ! Max DIIS cycles
@@ -547,17 +547,17 @@ endif
             self%iopt = 0
             self%ncyc = 1000
 
-            self%integralCutoff = 1.0d-9   ! integral cutoff
+            self%integralCutoff = 1.0d-7   ! integral cutoff
             self%leastIntegralCutoff = LEASTCUTOFF 
                                            ! smallest integral cutoff, used in conventional SCF
             self%maxIntegralCutoff = 1.0d-12
                                            ! smallest integral cutoff, used in conventional SCF
-            self%primLimit      = 1.0d-9   ! prime cutoff
+            self%primLimit      = 1.0d-7   ! prime cutoff
             self%gradCutoff     = 1.0d-7   ! gradient cutoff
             self%DMCutoff       = 1.0d-10  ! density matrix cutoff
 
             self%pmaxrms        = 1.0d-4   ! density matrix convergence criteria
-            self%aCutoff        = 1.0d-9   ! 2e cutoff
+            self%aCutoff        = 1.0d-7   ! 2e cutoff
             self%basisCufoff    = 1.0d-10  ! basis set cutoff
         
             self%stepMax        = .1d0/0.529177249d0
@@ -642,17 +642,17 @@ endif
             
              if(PRMS.le.TEN_TO_MINUS5 .and. self%integralCutoff.gt.1.0d0/(10.0d0**8.5d0))then
                 self%integralCutoff=TEN_TO_MINUS9
-                self%primLimit=min(self%integralCutoff*0.001,self%primLimit)
+                self%primLimit=min(self%integralCutoff,self%primLimit)
              endif
              
             if(PRMS.le.TEN_TO_MINUS6 .and. self%integralCutoff.gt.1.0d0/(10.0d0**9.5d0))then
                 self%integralCutoff=TEN_TO_MINUS10
-                self%primLimit=min(self%integralCutoff*0.001,self%primLimit)
+                self%primLimit=min(self%integralCutoff,self%primLimit)
             endif
 
             if(PRMS.le.TEN_TO_MINUS7 .and.quick_method%integralCutoff.gt.1.0d0/(10.0d0**10.5d0))then
             quick_method%integralCutoff=TEN_TO_MINUS11
-            quick_method%primLimit=min(quick_method%integralCutoff*0.001,self%primLimit)
+            quick_method%primLimit=min(quick_method%integralCutoff,self%primLimit)
             endif
         
         end subroutine adjust_Cutoff

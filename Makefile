@@ -137,13 +137,9 @@ main.o: quick_modules
 	$(FC) -o $(objfolder)/main.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_main.f90
 
 #================= quick core subroutines ===============================
-hfoperator.o: quick_modules
-	$(FPP) $(srcfolder)/hfoperator.f90 > $(objfolder)/_hfoperator.f90
-	$(FC) -o $(objfolder)/hfoperator.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_hfoperator.f90
-
-scf.o: quick_modules
-	$(FPP) $(srcfolder)/scf.f90 > $(objfolder)/_scf.f90
-	$(FC) -o $(objfolder)/scf.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_scf.f90
+basis.o: quick_modules
+	$(FPP) $(srcfolder)/basis.f90 > $(objfolder)/_basis.f90
+	$(FC) -o $(objfolder)/basis.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_basis.f90
 
 
 #=========== targets for BLAS =====================================
@@ -246,4 +242,4 @@ TAGS: $(SRC)
 tags: $(SRC)
 	ctags $(SRC)
 
-include $(srcfolder)/depend2 
+include $(srcfolder)/depend 

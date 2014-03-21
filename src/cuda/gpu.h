@@ -418,28 +418,17 @@ __device__ void vertical2_spdf8(int I, int J, int K, int L, QUICKDouble* YVertic
                                QUICKDouble CDtemp, QUICKDouble ABcom, QUICKDouble CDcom);
 
 
+__device__ int lefthrr_s(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
+                       QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
+                       int KLMNAx, int KLMNAy, int KLMNAz,
+                       int KLMNBx, int KLMNBy, int KLMNBz,
+                       int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
 
 __device__ int lefthrr(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
                        QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
                        int KLMNAx, int KLMNAy, int KLMNAz,
                        int KLMNBx, int KLMNBy, int KLMNBz,
                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
-
-__device__ int lefthrr1(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
-                        QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
-                        int KLMNAx, int KLMNAy, int KLMNAz,
-                        int KLMNBx, int KLMNBy, int KLMNBz,
-                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
-__device__ int lefthrr2(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
-                       QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
-                       int KLMNAx, int KLMNAy, int KLMNAz,
-                       int KLMNBx, int KLMNBy, int KLMNBz,
-                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
-__device__ int lefthrr3(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
-                        QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
-                        int KLMNAx, int KLMNAy, int KLMNAz,
-                        int KLMNBx, int KLMNBy, int KLMNBz,
-                        int IJTYPE,QUICKDouble* coefAngularL, int* angularL);
 __device__ int lefthrr23(QUICKDouble RAx, QUICKDouble RAy, QUICKDouble RAz,
                         QUICKDouble RBx, QUICKDouble RBy, QUICKDouble RBz,
                         int KLMNAx, int KLMNAy, int KLMNAz,
