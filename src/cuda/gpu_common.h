@@ -197,7 +197,7 @@ static const int SM_2X_GRAD_THREADS_PER_BLOCK =   512;
 
 
 // Energy Scale
-static const QUICKDouble OSCALE                  = (QUICKDouble)1E16;
+static const QUICKDouble OSCALE                  = (QUICKDouble) 1E16;
 static const QUICKDouble ONEOVEROSCALE           = (QUICKDouble)1.0 / OSCALE;
 static const QUICKDouble ONEOVEROSCALESQUARED    = (QUICKDouble)1.0 / (OSCALE * OSCALE);
 

@@ -25,7 +25,7 @@ module quick_size_module
     integer, parameter :: MAXRADGRID = 400
 
     ! M value of the lbfgs optimizer.
-    integer, parameter :: MLBFGS = 5
+    integer, parameter :: MLBFGS = 200
     
     ! Minimal iteration for SCF
     integer, parameter :: MIN_SCF = 3

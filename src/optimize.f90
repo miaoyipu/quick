@@ -18,7 +18,7 @@ subroutine optimize(failed)
    logical lsearch,diis
    integer IMCSRCH,nstor,ndiis
    double precision gnorm,dnorm,diagter,safeDX,gntest,gtest,sqnpar,accls,oldGrad(3*natom),coordsold(natom*3)
-
+   double precision EChg
 #ifdef MPI
    include "mpif.h"
 #endif
@@ -37,8 +37,9 @@ subroutine optimize(failed)
    diagco=.false.
    iprint(1)=-1
    iprint(2)=0
-   EPS=1.d-6
+   EPS=1.d-9
    XTOL=1.d-11
+   EChg=0.0
 
    ! For right now, there is no way to adjust these and only analytical gradients
    ! are available.  This should be changed later.
@@ -91,9 +92,9 @@ subroutine optimize(failed)
          write(ioutfile,'(12("="))')
          write(ioutfile,*)
          write(ioutfile,'("GEOMETRY INPUT")')
-         write(ioutfile,'("ELEMENT",6x,"X",9x,"Y",9x,"Z")')
+         write(ioutfile,'("ELEMENT",6x,"X",14x,"Y",14x,"Z")')
          do J=1,natom
-            Write (ioutfile,'(2x,A2,6x,F7.4,3x,F7.4,3x,F7.4)') &
+            Write (ioutfile,'(2x,A2,6x,F12.6,3x,F12.6,3x,F12.6)') &
                   symbol(quick_molspec%iattype(J)),xyz(1,J)*0.529177249d0, &
                   xyz(2,J)*0.529177249d0,xyz(3,J)*0.529177249d0
          enddo
@@ -181,7 +182,7 @@ subroutine optimize(failed)
         call gpu_cleanup()
       endif
 #endif
-
+        !quick_method%bCUDA=.true.
       if (master) then
 
          if (failed) return
@@ -196,6 +197,7 @@ subroutine optimize(failed)
                coordsnew((J-1)*3 + K) = xyz(K,J)
             enddo
          enddo
+
          ! Now let's call LBFGS.
          call LBFGS(natom*3,MLBFGS,coordsnew,quick_qm_struct%Etot,quick_qm_struct%gradient,DIAGCO,HDIAG,IPRINT,EPS,XTOL,W,IFLAG)
 
@@ -211,7 +213,6 @@ subroutine optimize(failed)
          gtest=0.5d0
          gntest = max(gtest*sqnpar*0.25d0,gtest)
          accls=0.0d0
-
          !-----------------------------------------------------------------------
          ! We have a new set of coordinates, copy it onto the xyz array,
          ! and get a new energy and set of gradients. Be sure to check stepsize.
@@ -228,6 +229,8 @@ subroutine optimize(failed)
                if (tempgeo > quick_method%stepMax) then
                   xyz(K,J) =  xyz(K,J)+(coordsnew((J-1)*3+K)-xyz(K,J))*quick_method%stepMax/tempgeo
                   tempgeo = quick_method%stepMax*0.529177249d0
+               !else if (abs(quick_qm_struct%gradient((J-1)*3 + K))>0.001) then
+               !  xyz(K,J) = (coordsnew((J-1)*3 + K)-XYZ(K,J))*3+XYZ(K,J)
                else
                   tempgeo = tempgeo*0.529177249d0
                   xyz(K,J) = coordsnew((J-1)*3 + K)
@@ -265,20 +268,24 @@ subroutine optimize(failed)
 
          if (i.gt.1) then
             Write (ioutfile,'(" OPTIMZATION STATISTICS:")')
-            Write (ioutfile,'(" ENERGY CHANGE           =",E20.10)') quick_qm_struct%Etot-Elast
-            Write (ioutfile,'(" MAXIMUM GEOMETRY CHANGE =",E20.10,"(REQUEST=",E12.5")")') geomax,quick_method%geoMaxCrt
-            Write (ioutfile,'(" GEOMETRY CHANGE RMS     =",E20.10,"(REQUEST=",E12.5")")') georms,quick_method%gRMSCrt
-            Write (ioutfile,'(" MAXIMUM GRADIENT ELEMENT=",E20.10,"(REQUEST=",E12.5")")') gradmax,quick_method%gradMaxCrt
-            Write (ioutfile,'(" GRADIENT NORM           =",E20.10,"(REQUEST=",E12.5")")') gradnorm,quick_method%gNormCrt
-
+            Write (ioutfile,'(" ENERGY CHANGE           =",E20.10," (REQUEST=",E12.5")")') quick_qm_struct%Etot-Elast, &
+                                                                                        quick_method%EChange
+            Write (ioutfile,'(" MAXIMUM GEOMETRY CHANGE =",E20.10," (REQUEST=",E12.5")")') geomax,quick_method%geoMaxCrt
+            Write (ioutfile,'(" GEOMETRY CHANGE RMS     =",E20.10," (REQUEST=",E12.5")")') georms,quick_method%gRMSCrt
+            !Write (ioutfile,'(" MAXIMUM GRADIENT ELEMENT=",E20.10," (REQUEST=",E12.5")")') gradmax,quick_method%gradMaxCrt
+            Write (ioutfile,'(" GRADIENT NORM           =",E20.10," (REQUEST=",E12.5")")') gradnorm,quick_method%gNormCrt
+            
+            EChg = quick_qm_struct%Etot-Elast
             done = quick_method%geoMaxCrt.gt.geomax
-            done = done.and.quick_method%gRMSCrt.gt.georms
-            done = done.and.quick_method%gradMaxCrt.gt.gradmax
-            done = done.and.quick_method%gNormCrt.gt.gradnorm
+            done = done.and.(quick_method%EChange.gt.abs(EChg))
+            done = done.and.(quick_method%gRMSCrt.gt.georms)
+            !done = done.and.(quick_method%gradMaxCrt.gt.gradmax * 10 .or. (EChg.gt.0 .and. i.gt.5))
+            !done = done.and.quick_method%gNormCrt.gt.gradnorm
          else
             Write (ioutfile,'(" OPTIMZATION STATISTICS:")')
             Write (ioutfile,'(" MAXIMUM GRADIENT ELEMENT=",E20.10,"(REQUEST=",E20.10")")') gradmax,quick_method%gradMaxCrt
             done = quick_method%gradMaxCrt.gt.gradmax
+            done = done.and.quick_method%gNormCrt.gt.gradnorm
             if (done) then
                Write (ioutfile,'(" NO SIGNAFICANT CHANGE, NO NEED TO OPTIMIZE. USE INITIAL GEOMETRY.")')
                do j=1,natom
@@ -306,7 +313,7 @@ subroutine optimize(failed)
       if (bMPI)call MPI_BCAST(done,1,mpi_logical,0,MPI_COMM_WORLD,mpierror)
 #endif
 
-      stop
+      !stop
 
    enddo
 

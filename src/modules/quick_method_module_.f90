@@ -101,9 +101,9 @@ module quick_method_module
                                                       ! max change of one step
         double precision :: geoMaxCrt      = .0018d0  ! max geometry change
         double precision :: gRMSCrt        = .0012d0  ! geometry rms change
-        double precision :: gradMaxCrt     = .00045d0 ! max gradient change
-        double precision :: gNormCrt      = .00030d0 ! gradient normalization
-        
+        double precision :: gradMaxCrt     = .001d0 ! max gradient change
+        double precision :: gNormCrt       = .00030d0 ! gradient normalization
+        double precision :: EChange        = 1.0d-6   ! Energy change
 #ifdef CUDA
         logical :: bCUDA                ! if CUDA is used here
 #endif        
@@ -470,6 +470,7 @@ endif
                 self%acutoff = rdnml(keywd,'CUTOFF')
                 self%integralCutoff=self%acutoff !min(self%integralCutoff,self%acutoff)
                 self%primLimit=1E-20 !self%acutoff*0.001 !min(self%integralCutoff,self%acutoff)
+                self%gradCutoff=self%acutoff
             endif
         
             ! Max DIIS cycles
@@ -564,8 +565,9 @@ endif
                                            ! max change of one step
             self%geoMaxCrt      = .0018d0  ! max geometry change
             self%gRMSCrt        = .0012d0  ! geometry rms change
-            self%gradMaxCrt     = .00045d0 ! max gradient change
+            self%gradMaxCrt     = .00100d0 ! max gradient change
             self%gNormCrt       = .00030d0 ! gradient normalization
+            self%EChange        = 1.0d-6
             self%gridSpacing    = 0.1
             self%lapgridspacing = 0.1
 #ifdef CUDA

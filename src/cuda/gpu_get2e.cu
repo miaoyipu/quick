@@ -300,26 +300,28 @@ void get2e(_gpu_type gpu)
     // Part spd
     QUICK_SAFE_CALL((get2e_kernel<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
 #ifdef CUDA_SPDF
-    // Part f-1
-    QUICK_SAFE_CALL((get2e_kernel_spdf<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
-    // Part f-2
-    QUICK_SAFE_CALL((get2e_kernel_spdf2<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
-    // Part f-3
-    QUICK_SAFE_CALL((get2e_kernel_spdf3<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
-    // Part f-4
-    QUICK_SAFE_CALL((get2e_kernel_spdf4<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
-    // Part f-5
-    QUICK_SAFE_CALL((get2e_kernel_spdf5<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
-    // Part f-6
-    QUICK_SAFE_CALL((get2e_kernel_spdf6<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
-    // Part f-7
-    QUICK_SAFE_CALL((get2e_kernel_spdf7<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
-    // Part f-8
-    QUICK_SAFE_CALL((get2e_kernel_spdf8<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
-    // Part f-9
-    QUICK_SAFE_CALL((get2e_kernel_spdf9<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
-    // Part f-10
-    QUICK_SAFE_CALL((get2e_kernel_spdf10<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    if (gpu->maxL >= 3) {
+        // Part f-1
+        QUICK_SAFE_CALL((get2e_kernel_spdf<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+        // Part f-2
+        QUICK_SAFE_CALL((get2e_kernel_spdf2<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+        // Part f-3
+        QUICK_SAFE_CALL((get2e_kernel_spdf3<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+        // Part f-4
+        QUICK_SAFE_CALL((get2e_kernel_spdf4<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+        // Part f-5
+        QUICK_SAFE_CALL((get2e_kernel_spdf5<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+        // Part f-6
+        QUICK_SAFE_CALL((get2e_kernel_spdf6<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+        // Part f-7
+        QUICK_SAFE_CALL((get2e_kernel_spdf7<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+        // Part f-8
+        QUICK_SAFE_CALL((get2e_kernel_spdf8<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+        // Part f-9
+        QUICK_SAFE_CALL((get2e_kernel_spdf9<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+        // Part f-10
+        QUICK_SAFE_CALL((get2e_kernel_spdf10<<<gpu->blocks, gpu->twoEThreadsPerBlock>>>()));
+    }
 #endif 
 }
 
@@ -334,14 +336,16 @@ void getAddInt(_gpu_type gpu, int bufferSize, ERI_entry* aoint_buffer)
 void getGrad(_gpu_type gpu)
 {
     QUICK_SAFE_CALL((getGrad_kernel<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
-//#ifdef CUDA_SPDF
-    // Part f-1
-    QUICK_SAFE_CALL((getGrad_kernel_spdf<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
-    // Part f-2
-    QUICK_SAFE_CALL((getGrad_kernel_spdf2<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
-    // Part f-3
-//    QUICK_SAFE_CALL((getGrad_kernel_spdf3<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()))
-//#endif
+    if (gpu->maxL >= 2) {
+        //#ifdef CUDA_SPDF
+        // Part f-1
+        QUICK_SAFE_CALL((getGrad_kernel_spdf<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
+        // Part f-2
+        QUICK_SAFE_CALL((getGrad_kernel_spdf2<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()));
+        // Part f-3
+        //    QUICK_SAFE_CALL((getGrad_kernel_spdf3<<<gpu->blocks, gpu->gradThreadsPerBlock>>>()))
+        //#endif
+    }
 }
 
 

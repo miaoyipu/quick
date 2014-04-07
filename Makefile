@@ -137,15 +137,15 @@ main.o: quick_modules
 	$(FC) -o $(objfolder)/main.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_main.f90
 
 #================= quick core subroutines ===============================
-basis.o: quick_modules
-	$(FPP) $(srcfolder)/basis.f90 > $(objfolder)/_basis.f90
-	$(FC) -o $(objfolder)/basis.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_basis.f90
+optimize.o: quick_modules
+	$(FPP) $(srcfolder)/optimize.f90 > $(objfolder)/_optimize.f90
+	$(FC) -o $(objfolder)/optimize.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_optimize.f90
 
 
 #=========== targets for BLAS =====================================
 blas:
-#	cd $(blasfolder) && make
-#	cp $(blasfolder)/*.a $(libfolder)
+	cd $(blasfolder) && make
+	cp $(blasfolder)/*.a $(libfolder)
 
 #=========== targets for CUBLAS =====================================
 fortran_thunking.o:

@@ -438,6 +438,9 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
     gpu -> maxL = maxL;
     gpu -> gpu_sim.maxL = maxL;
     
+    gpu -> gpu_basis -> fStart = 0;
+    gpu -> gpu_sim.fStart = 0;
+    
     if (sort_method == 0) {
         QUICKDouble cut1 = 1E-10;
         QUICKDouble cut2 = 1E-4;
@@ -445,23 +448,6 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
             for (int q = 0; q <= 3; q++) {
                 for (int p = 0; p <= 3; p++) {
                     if (p+q==qp){
-                        if (q==2 && p==3){
-                            printf("df, fd, or ff starts from %i \n", a);
-                            gpu -> gpu_basis -> fStart = a;
-                            gpu -> gpu_sim.fStart = a;
-                        }
-                        
-                        if (p+q==6){
-                            
-                            printf("df, fd, or ff starts from %i \n", a);
-                            gpu -> gpu_basis -> ffStart = a;
-                            gpu -> gpu_sim.ffStart = a;
-                        }
-                        
-                        //            if (q + p <= 4) {
-                        // First to order ERI type
-                        // Second to order primitive Gaussian function number
-                        // Third to order Schwartz cutoff upbound
                         
                         int b=0;
                         for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
@@ -515,6 +501,30 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
                         }
                         flag = true;
                         PRINTDEBUG("FINISH STEP 3")
+                        
+                        if (b != 0) {
+                            
+                            if (q==2 && p==3){
+                                printf("df, fd, or ff starts from %i \n", a);
+                                gpu -> gpu_basis -> fStart = a - b;
+                                gpu -> gpu_sim.fStart = a - b;
+                            }
+                            
+                            if (p+q==6){
+                                
+                                printf("df, fd, or ff starts from %i \n", a);
+                                gpu -> gpu_basis -> ffStart = a - b;
+                                gpu -> gpu_sim.ffStart = a - b;
+                            }
+
+                        }
+                        
+                        //            if (q + p <= 4) {
+                        // First to order ERI type
+                        // Second to order primitive Gaussian function number
+                        // Third to order Schwartz cutoff upbound
+                        
+                        
                     }
                 }
             }
@@ -523,21 +533,7 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
             for (int q = 0; q <= 3; q++) {
                 for (int p = 0; p <= 3; p++) {
                     if (p+q==qp){
-
-			if (q==2 && p==3 && gpu -> gpu_sim.fStart == 0){
-                            printf("df, fd, or ff starts from %i \n", a);
-                            gpu -> gpu_basis -> fStart = a;
-                            gpu -> gpu_sim.fStart = a;
-                        }
-
-                        if (p+q==6 && gpu -> gpu_sim.fStart == 0){
-
-                            printf("df, fd, or ff starts from %i \n", a);
-                            gpu -> gpu_basis -> ffStart = a;
-                            gpu -> gpu_sim.ffStart = a;
-                        }
-
-
+                        
                         int b=0;
                         for (int i = 0; i < gpu->gpu_basis->Qshell; i++) {
                             for (int j = 0; j<gpu->gpu_basis->Qshell; j++) {
@@ -617,11 +613,39 @@ extern "C" void gpu_upload_cutoff_matrix_(QUICKDouble* YCutoff,QUICKDouble* cutP
                                 break;
                         }
                         flag = true;
+                        
+                        if (b != 0) {
+                            if (q==2 && p==3 && gpu -> gpu_sim.fStart == 0){
+                                printf("df, fd, or ff starts from %i \n", a);
+                                gpu -> gpu_basis -> fStart = a - b;
+                                gpu -> gpu_sim.fStart = a - b;
+                            }
+                            
+                            if (p+q==6 && gpu -> gpu_sim.ffStart == 0){
+                                
+                                printf("df, fd, or ff starts from %i \n", a);
+                                gpu -> gpu_basis -> ffStart = a - b;
+                                gpu -> gpu_sim.ffStart = a - b;
+                            }
+                        }
+                        
                         PRINTDEBUG("FINISH STEP 3")
                     }
                 }
             }
         }
+        
+        if (gpu -> gpu_sim.ffStart == 0) {
+            gpu -> gpu_sim.ffStart = a;
+            gpu -> gpu_basis -> ffStart = a;
+        }
+        
+        
+        if (gpu -> gpu_sim.fStart == 0) {
+            gpu -> gpu_sim.fStart = a;
+            gpu -> gpu_basis -> fStart = a;
+        }
+        
         
         //  }
         /*

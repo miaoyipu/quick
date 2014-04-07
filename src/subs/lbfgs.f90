@@ -9,7 +9,7 @@
 
     INTEGER :: N,M,IPRINT(2),IFLAG
     double precision :: X(N),G(N),DIAG(N),W(N*(2*M+1)+2*M)
-    double precision :: F,EPS,XTOL
+    double precision :: F,EPS,XTOL, STEPLENGTH
     LOGICAL :: DIAGCO
 
 ! LIMITED MEMORY BFGS METHOD FOR LARGE SCALE OPTIMIZATION
@@ -238,6 +238,7 @@
 ! INITIALIZE
 ! ----------
 
+    !STEPLENGTH = 1.0d0
     IF(IFLAG == 0) GO TO 10
     GO TO (172,100) IFLAG
     10 ITER= 0
@@ -280,7 +281,7 @@
         W(ISPT+I)= -G(I)*DIAG(I)
     enddo
     GNORM= DSQRT(DDOT(N,G,1,G,1))
-    STP1= ONE/GNORM
+    STP1=ONE/GNORM
 
 ! PARAMETERS FOR LINE SEARCH ROUTINE
 
