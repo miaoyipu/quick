@@ -18,7 +18,7 @@ PLAT = _LINUX
 #  selected.  Define LOADER and LOADOPTS to refer to the loader and 
 #  desired load options for your machine.
 #
-FORTRAN  = ifort
+FORTRAN  = $(FC)
 OPTS     = -O3
 DRVOPTS  = $(OPTS)
 NOOPT    =
