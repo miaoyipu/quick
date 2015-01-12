@@ -31,7 +31,7 @@ FC=gfortran
 #FFLAGS = -O3
 #FFLAGS = -i4 -O3 -auto -assume byterecl -w95 -cm 
 #FFLAGS = -g -O3 -traceback
-FFLAGS = -O3 -lm  -mtune=native  -ffree-form  -fno-whole-file -DGNU -cpp
+FFLAGS = -O3 -lm  -mtune=native  -ffree-form  -DGNU -cpp
 LD = $(FC)
 LDFLAGS = $(FFLAGS)
 #LDFLAGS = $(FFLAGS)
