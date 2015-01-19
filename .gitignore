@@ -7,4 +7,3 @@ src/*.bak
 src/Makefile
 example/*
 src/subs/*.o
-lib/*.a

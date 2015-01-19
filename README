@@ -30,21 +30,43 @@
 
 1. INSTALLATION
 
-To install QUICK, first you may need to configure make.in file. Intel Fortran compiler is recommanded. Then type
+To install QUICK, first you may need to configure make.in file. Intel Fortran compiler is recommanded. 
 
-      make quick
+	 ! Copy corresponding make.in file from makein folder and rename it to make.in. 
 
-If you want to install GPU QUICK, NVIDIA CUDA COMPILER is required. You may test 'nvcc --version'. Then type
+Then type
+
+     make quick
+
+1.1 CUDA VERSION INSTALLATION
+If you want to install GPU QUICK, NVIDIA CUDA COMPILER is required, which uses make.in.gnu.cuda. You may test 'nvcc --version'.
+Copy make.in.gnu.cuda to from makein folder to your directory and remane it to make.in
+
+	cp ./makein/make.in.gnu.cuda ./make.in
+
+Before compiler, you must set CUDA_HOME in make.in file if not set in bashfile, otherwise, CUBLAS and other libraries can not been
+compiled or linked. Notice, if you want to support f orbital, set CUDA_SPDF=y in make.in file you copied from make.in.gpu.cuda, 
+which will take a little bit long time and memory to compile, otherwise, set CUDA_SPDF=n for s, p and d orbital. (Default is not)
+	
+	! Modify CUDA_HOME=(your cuda home) in make.in file
+	
+	! Modify CUDA_SPDF=y or n in make.in file if you want or do not want to support gpu f function 
+
+Then type
      
      make quick.cuda
 
-in ./bin directory, you can find executable files.
+in ./bin directory, you can find executable files. 
 
 
 2. USAGE
 We suggust you to put this direct into PATH. Edit ~/.bashrc, then add this line
 
     export PATH=(YOUR QUICK DIR)/bin:$PATH
+
+and add basis set path
+	
+	export QUICK_BASIS=(YOUR QUICK DIR)/basis
 
 where (YOUR QUICK DIR) is your directory.
 
