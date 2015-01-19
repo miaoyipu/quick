@@ -44,6 +44,11 @@ objfolder = ./obj
 exefile = ./bin/quick
 
 #----------------------
+# exe folder location
+#----------------------
+exefolder = ./bin
+
+#----------------------
 # library file location
 #----------------------
 libfolder = ./lib
@@ -137,9 +142,9 @@ main.o: quick_modules
 	$(FC) -o $(objfolder)/main.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_main.f90
 
 #================= quick core subroutines ===============================
-optimize.o: quick_modules
-	$(FPP) $(srcfolder)/optimize.f90 > $(objfolder)/_optimize.f90
-	$(FC) -o $(objfolder)/optimize.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_optimize.f90
+#optimize.o: quick_modules
+#	$(FPP) $(srcfolder)/optimize.f90 > $(objfolder)/_optimize.f90
+#	$(FC) -o $(objfolder)/optimize.o $(CPPDEFS) $(CPPFLAGS) $(FFLAGS) -c   $(objfolder)/_optimize.f90
 
 
 #=========== targets for BLAS =====================================
@@ -186,6 +191,7 @@ cpconfig.MPI:
 #************************************************************************
 
 quick: cpconfig quick_modules quick_subs $(OBJ) blas fake_amber_interface.o
+	mkdir -p $(libfolder) $(objfolder) $(exefolder) 
 	cp $(libfolder)/quicklib.a $(objfolder)
 	cp $(libfolder)/blas.a $(objfolder)
 	cd $(objfolder) && $(FC) -o quick  $(OBJ) $(modobjall) quicklib.a blas.a fake_amber_interface.o $(LDFLAGS)
@@ -193,6 +199,7 @@ quick: cpconfig quick_modules quick_subs $(OBJ) blas fake_amber_interface.o
 	rm -f $(srcfolder)/*.mod $(srcfolder)/*.o
 
 quick.cuda: cpconfig.cuda quick_cuda quick_modules quick_subs $(OBJ) fake_amber_interface.o fortran_thunking.o
+	mkdir -p $(libfolder) $(objfolder) $(exefolder) 
 	cp $(libfolder)/quicklib.a $(objfolder)
 	cd $(objfolder) && $(FC) -o quick.cuda $(OBJ) $(modobjall) $(cudaobj) quicklib.a fake_amber_interface.o fortran_thunking.o $(CFLAGS) $(LDFLAGS) 
 	mv $(objfolder)/quick.cuda $(exefile).cuda 
