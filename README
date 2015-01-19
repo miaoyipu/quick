@@ -1,7 +1,7 @@
 !************************************************************************
 !                              QUICK                                   **
 !                                                                      **
-!                        Copyright (c) 2012                            **
+!                        Copyright (c) 2014                            **
 !                Regents of the University of Florida                  **
 !                       All Rights Reserved.                           **
 !                                                                      **
@@ -18,11 +18,13 @@
 !
 !  Cite this work as:
 !  Miao,Y.: He, X.: Ayers,K; Brothers, E.: Merz,K. M. QUICK
-!  University of Florida, Gainesville, FL, 2012
+!  University of Florida, Gainesville, FL, 2014 and
+!  Michigan State University, East Lansing, MI, 2014
 !
 !
 !  If you want to use GPU version, please cite:
-!  Miao, Y: Merz, K.M. J.Chem.Theory.Comput, XXXX, XXX, XXX-XXX
+!  Miao, Y., Merz, K. M. (2013) Acceleration of Electron Repulsion Integral Evaluation on Graphics Processing Units 
+!     via Use of Recurrence Relations Journal of Chemical Theory and Computation 9, 965–976.
 ! 
 !  Tech support: miao@qtp.ufl.edu
 !************************************************************************
